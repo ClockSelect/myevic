@@ -45,3 +45,12 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+bin/dataflash.bin
+bin/fmc.bin
+bin/myevic.elf
+*.sh
+constants.txt
+disasm/disasmVTC303.zip
+*.o
+startfiles
+projects/testasm/testasm/VisualGDBCache/testasm-Debug/MemoryUtilizationReport.xml
