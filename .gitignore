@@ -49,8 +49,8 @@ bin/dataflash.bin
 bin/fmc.bin
 bin/myevic.elf
 *.sh
-constants.txt
-disasm/disasmVTC303.zip
+disasm/*
+obj/*
+projects/*
 *.o
 startfiles
-projects/testasm/testasm/VisualGDBCache/testasm-Debug/MemoryUtilizationReport.xml

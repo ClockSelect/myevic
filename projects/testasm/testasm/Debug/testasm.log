@@ -1,0 +1,11 @@
+﻿  VisualGDB: Run "cmd.exe /c "H:\Program Files\Sysprogs\VisualGDB\make.exe" CONFIG=Debug clean" in directory "H:\cygwin\home\Ferox\myevic\projects\testasm\testasm" on local computer
+  cmd /C del /S /Q Debug
+  H:\cygwin\home\Ferox\myevic\projects\testasm\testasm\Debug\testasm.log
+  The process cannot access the file because it is being used by another process.
+  VisualGDB: Run "cmd.exe /c "H:\Program Files\Sysprogs\VisualGDB\make.exe" CONFIG=Debug" in directory "H:\cygwin\home\Ferox\myevic\projects\testasm\testasm" on local computer
+  H:\GNUToolsARMEmbedded\5.3.2016q1/bin/arm-none-eabi-gcc.exe -ggdb -ffunction-sections -O0 -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mthumb -Os -fdata-sections -ffunction-sections   -IH:/cygwin/home/Ferox/myevic/projects/testasm -IH:/cygwin/home/Ferox/evic-sdk/nuvoton-sdk/Library/CMSIS/Include -IH:/cygwin/home/Ferox/evic-sdk/nuvoton-sdk/Library/Device/Nuvoton/M451Series/Include -IH:/cygwin/home/Ferox/evic-sdk/nuvoton-sdk/Library/StdDriver/inc -DDEBUG=1   -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mthumb -Os -fdata-sections -ffunction-sections   -DDEBUG=1 -c ../eVic_VTC_Mini_V3.03_dec.s -o Debug/eVic_VTC_Mini_V3.03_dec.o -MD -MF Debug/eVic_VTC_Mini_V3.03_dec.dep
+  H:\GNUToolsARMEmbedded\5.3.2016q1/bin/arm-none-eabi-g++.exe -o Debug/testasm.elf -Wl,-gc-sections -nostdlib -nostartfiles -TH:/cygwin/home/Ferox/myevic/projects/testasm/linker.ld     -Wl,--start-group Debug/eVic_VTC_Mini_V3.03_dec.o     -Wl,--end-group
+  H:\GNUToolsARMEmbedded\5.3.2016q1/bin/arm-none-eabi-objcopy.exe -O binary Debug/testasm.elf Debug/testasm.bin
+  ------------------- Memory utilization report -------------------
+  Used FLASH: 56KB
+  Used RAM: 0 bytes

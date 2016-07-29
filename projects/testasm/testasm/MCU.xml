@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<EmbeddedProfile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ToolchainID>com.sysprogs.gnuarm.arm-eabi</ToolchainID>
+  <BspID>com.visualgdb.bsp.in-place</BspID>
+  <BspVersion>1.0</BspVersion>
+  <MCUProperties>
+    <Entries />
+  </MCUProperties>
+  <BSPSourceFolderName>Device-specific files</BSPSourceFolderName>
+  <InPlaceMCU>
+    <CompilationFlags>
+      <PreprocessorMacros />
+      <IncludeDirectories>
+        <string>H:/cygwin/home/Ferox/myevic/projects/testasm</string>
+        <string>H:/cygwin/home/Ferox/evic-sdk/nuvoton-sdk/Library/CMSIS/Include</string>
+        <string>H:/cygwin/home/Ferox/evic-sdk/nuvoton-sdk/Library/Device/Nuvoton/M451Series/Include</string>
+        <string>H:/cygwin/home/Ferox/evic-sdk/nuvoton-sdk/Library/StdDriver/inc</string>
+      </IncludeDirectories>
+      <CFLAGS>-mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mthumb -Os -fdata-sections -ffunction-sections</CFLAGS>
+      <CXXFLAGS>-mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mthumb -Os -fdata-sections -ffunction-sections</CXXFLAGS>
+      <LDFLAGS>-nostdlib -nostartfiles</LDFLAGS>
+      <ASFLAGS>-mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mthumb -Os -fdata-sections -ffunction-sections</ASFLAGS>
+      <LinkerScript>H:/cygwin/home/Ferox/myevic/projects/testasm/linker.ld</LinkerScript>
+      <COMMONFLAGS />
+      <EnableLinkerGroups>true</EnableLinkerGroups>
+    </CompilationFlags>
+    <AdditionalSourceFiles />
+    <FLASHSize>0</FLASHSize>
+    <RAMSize>0</RAMSize>
+    <FLASHBase>4294967295</FLASHBase>
+    <RAMBase>4294967295</RAMBase>
+    <AdditionalSourcesRequiredForTesting>false</AdditionalSourcesRequiredForTesting>
+  </InPlaceMCU>
+  <MCUMakFile>mcu.mak</MCUMakFile>
+  <FrameworkProperties>
+    <Entries />
+  </FrameworkProperties>
+</EmbeddedProfile>
