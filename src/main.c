@@ -22,8 +22,7 @@ void SleepIfIdle();
 
 __myevic__ void CustomStartup()
 {
-	InitRTC( 0 );
-
+// Useless function - testing purpose
 //------------------------------------------------------------------------------
 
 	if ( 0 )
@@ -178,7 +177,8 @@ __myevic__ void InitHardware()
 
 	InitTimers();
 
-//	orgInitUSB();
+	InitUSB();
+	InitRTC( 0 );
 
 	PutTextf( "\n\nJoyetech APROM\n" );
 	PutTextf( "CPU @ %dHz(PLL@ %dHz)\n", SystemCoreClock, PllClock );
@@ -219,7 +219,7 @@ __myevic__ void Main()
 	CustomStartup();
 
 	InitUSB();
-	
+
 	while ( 1 )
 	{
 		while ( Flags68 & 0x200 )
