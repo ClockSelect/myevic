@@ -182,7 +182,7 @@ extern uint8_t	fbBirdColumn;					// .ds.b 1
 extern uint8_t	fbBirdCycle;					// .ds.b 1
 extern uint8_t	fbBirdLine;						// .ds.b 1
 extern uint8_t	fbBirdDisp;						// .ds.b 1
-extern uint8_t	fdDead;							// .ds.b 1
+extern uint8_t	fbDead;							// .ds.b 1
 extern uint8_t	fbAnimStep;						// .ds.b 1
 extern uint8_t	fbAnimTimer;					// .ds.b 1
 extern uint16_t	fbScore;						// .ds.b 2

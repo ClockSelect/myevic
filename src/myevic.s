@@ -1380,10 +1380,10 @@ def_864:				@ ...
 @ ---------------------------------------------------------------------------
 
 loc_8D2:				@ ...
-		LDRB	R0, [R4,#(fdDead - fbBirdLine)]
+		LDRB	R0, [R4,#(fbDead - fbBirdLine)]
 		CMP	R0, #3
 		BNE	loc_8DC
-		STRB	R5, [R4,#(fdDead - fbBirdLine)]
+		STRB	R5, [R4,#(fbDead - fbBirdLine)]
 		STRB	R0, [R4,#(fbAnimStep - fbBirdLine)]
 
 loc_8DC:				@ ...
@@ -1512,7 +1512,7 @@ loc_9D4:				@ ...
 		STRB	R5, [R4,#(fbAnimStep - fbBirdLine)]
 		LDR	R0, =fbCurrentTimeout
 		STRB	R5, [R4,#(fbAnimTimer -	fbBirdLine)]
-		STRB	R5, [R4,#(fdDead - fbBirdLine)]
+		STRB	R5, [R4,#(fbDead - fbBirdLine)]
 		LDRB	R0, [R0]
 		BL	fbDeleteTimeout
 		LDR	R0, =TMR0Counter
@@ -1581,7 +1581,7 @@ orgfbGame:
 		PUSH.W	{R2-R8,LR}
 		LDR	R4, =fbBirdLine
 		MOVS	R7, #0
-		LDRB	R0, [R4,#(fdDead - fbBirdLine)]
+		LDRB	R0, [R4,#(fbDead - fbBirdLine)]
 		CBZ	R0, loc_AC6
 		STRB	R7, [R4,#(fbAnimTimer -	fbBirdLine)]
 		LDR	R1, =dfData
@@ -1712,7 +1712,7 @@ loc_B8E:				@ ...
 @ ---------------------------------------------------------------------------
 
 loc_BA0:				@ ...
-		STRB	R7, [R4,#(fdDead - fbBirdLine)]
+		STRB	R7, [R4,#(fbDead - fbBirdLine)]
 
 loc_BA2:				@ ...
 		LDRB.W	R0, [R8]
@@ -1731,7 +1731,7 @@ loc_BA2:				@ ...
 		BGE	loc_BC6
 
 loc_BC4:				@ ...
-		STRB	R7, [R4,#(fdDead - fbBirdLine)]
+		STRB	R7, [R4,#(fbDead - fbBirdLine)]
 
 loc_BC6:				@ ...
 		LDRB	R0, [R5]
@@ -1749,7 +1749,7 @@ loc_BC6:				@ ...
 		BGE	loc_BE4
 
 loc_BE2:				@ ...
-		STRB	R7, [R4,#(fdDead - fbBirdLine)]
+		STRB	R7, [R4,#(fbDead - fbBirdLine)]
 
 loc_BE4:				@ ...
 		LDRB	R0, [R6]
@@ -1767,7 +1767,7 @@ loc_BE4:				@ ...
 		BGE	loc_C02
 
 loc_C00:				@ ...
-		STRB	R7, [R4,#(fdDead - fbBirdLine)]
+		STRB	R7, [R4,#(fbDead - fbBirdLine)]
 
 loc_C02:				@ ...
 		LDRH	R0, [R4,#(fbScore - fbBirdLine)]
@@ -5553,10 +5553,10 @@ locret_24F6:				@ ...
 orgfbMoveBird:
 		PUSH	{R4,LR}
 		LDR	R4, =fbBirdLine
-		LDRB	R0, [R4,#(fdDead - fbBirdLine)]
+		LDRB	R0, [R4,#(fbDead - fbBirdLine)]
 		CBZ	R0, loc_250C
 		ADDS	R0, R0,	#1
-		STRB	R0, [R4,#(fdDead - fbBirdLine)]
+		STRB	R0, [R4,#(fbDead - fbBirdLine)]
 		LDR	R0, =fbCurrentTimeout
 		LDRB	R0, [R0]
 		BL	fbDeleteTimeout

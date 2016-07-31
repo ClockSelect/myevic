@@ -263,7 +263,7 @@ fbBirdColumn:		.byte	16
 fbBirdCycle:		.ds.b	1
 fbBirdLine:			.byte	24
 fbBirdDisp:			.ds.b	1
-fdDead:				.ds.b	1
+fbDead:				.ds.b	1
 fbAnimStep:			.ds.b	1
 fbAnimTimer:		.ds.b	1
 					.ds.b	1

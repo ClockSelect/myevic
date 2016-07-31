@@ -35,7 +35,7 @@
 .global fbBirdLine
 .global fbBirdDisp
 .global fbScore
-.global fdDead
+.global fbDead
 .global fbColumn1
 .global fbColumn2
 .global fbColumn3
