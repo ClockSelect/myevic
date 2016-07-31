@@ -27,15 +27,12 @@ __myevic__ void FMCReadCounters()
 	uint32_t pc, v;
 	uint32_t idx;
 
-	idx = 0;
-	do
+	for ( idx = 0 ; idx < FMC_FLASH_PAGE_SIZE ; idx += 4 )
 	{
 		v = FMC_Read( DATAFLASH_PUFFCNTR_BASE + idx );
-		if ( v == -1 ) break;
-		idx += 4;
+		if ( v == ~0 ) break;
 		pc = v;
 	}
-	while ( idx < FMC_FLASH_PAGE_SIZE );
 
 	fmcCntrsIndex = idx;
 
