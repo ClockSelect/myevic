@@ -45,12 +45,11 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
-bin/dataflash.bin
-bin/fmc.bin
-bin/myevic.elf
+bin/
+!bin/myevic.bin
 *.sh
-disasm/*
-obj/*
-projects/*
+disasm/
+obj/
+projects/
 *.o
 startfiles
