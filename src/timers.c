@@ -1,4 +1,5 @@
 #include "myevic.h"
+#include "dataflash.h"
 #include "screens.h"
 #include "myrtc.h"
 #include "M451Series.h"
@@ -93,7 +94,7 @@ __myevic__ void TMR2_IRQHandler()
 			  || (!(TMR2Counter % 13u) && dfFBSpeed == 1)
 			  || (!(TMR2Counter % 10u) && dfFBSpeed == 2) )
 			{
-				TickFBTimeouts();
+				fbTickTimeouts();
 			}
 		}
 	}

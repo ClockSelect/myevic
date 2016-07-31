@@ -2,6 +2,7 @@
 #define __EVENTS_H_
 
 //==============================================================================
+// Events 100+ are custom events not existing in the OFW
 
 #define EVENT_DOUBLE_FIRE	100
 #define EVENT_EDIT_CONTRAST	101

@@ -143,7 +143,7 @@
 
 
 Startup:				@ ...
-		LDR.W	SP, =Stack_Top
+		ldr.w	sp, =Stack_Top
 
 		ldr		r4, =RAMInitTable
 		ldr		r5, =RAMInitEnd
@@ -157,8 +157,8 @@ Startup:				@ ...
 3:		bl		MemClear2
 		b		2b
 1:
-		LDR	R0, =(Main+1)
-		BX	R0 @ Main
+		ldr	r0, =(Main+1)
+		bx	r0
 
 		.balign 4,0
 		.pool
@@ -241,6 +241,7 @@ Default_Handler:
 
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
 Random:					@ ...
 		LDR	R1, =RNGSeed
@@ -269,6 +270,7 @@ SetRandSeed:				@ ...
 
 @ End of function SetRandSeed
 
+		.endif
 		
 @ =============== S U B	R O U T	I N E =======================================
 
@@ -1295,8 +1297,9 @@ loc_83A:
 
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
-fbDeathScreen:				@ ...
+orgfbDeathScreen:				@ ...
 
 var_14		= -0x14
 
@@ -1332,7 +1335,7 @@ loc_880:				@ ...
 		MOVS	R0, #10
 
 loc_886:				@ ...
-		BL	SetTimeoutValue
+		BL	fbSetTimeoutValue
 		LDRB	R0, [R4,#(fbAnimStep - fbBirdLine)]
 		ADDS	R0, R0,	#1
 		STRB	R0, [R4,#(fbAnimStep - fbBirdLine)]
@@ -1349,7 +1352,7 @@ loc_892:				@ ...
 		STRB	R0, [R4,#(fbAnimStep - fbBirdLine)]
 		POP.W	{R2-R6,LR}
 		MOVS	R0, #100
-		B.W	SetTimeoutValue
+		B.W	fbSetTimeoutValue
 @ ---------------------------------------------------------------------------
 
 loc_8A6:				@ ...
@@ -1360,11 +1363,11 @@ loc_8A6:				@ ...
 		STRB	R5, [R4,#(fbAnimStep - fbBirdLine)]
 		STRH	R5, [R4,#(fbScore - fbBirdLine)]
 		LDR	R0, =(fbStartScreen+1)
-		BL	CreateTimeout
-		LDR	R0, =CurrentTimeout
+		BL	fbCreateTimeout
+		LDR	R0, =fbCurrentTimeout
 		LDRB	R0, [R0]
 		POP.W	{R2-R6,LR}
-		B.W	DeleteTimeout
+		B.W	fbDeleteTimeout
 @ ---------------------------------------------------------------------------
 
 def_864:				@ ...
@@ -1385,7 +1388,7 @@ loc_8D2:				@ ...
 
 loc_8DC:				@ ...
 		MOVS	R0, #200
-		BL	SetTimeoutValue
+		BL	fbSetTimeoutValue
 
 loc_8E2:				@ ...
 		LDRB	R0, [R4]
@@ -1419,11 +1422,11 @@ loc_8E2:				@ ...
 		ADR	R2, aScore
 		MOVS	R1, #18
 		MOVS	R0, #27
-		BL	fbDrawTextXY
+		BL	fbDrawText
 		ADR	R2, aBest
 		MOVS	R1, #36
 		MOVS	R0, #27
-		BL	fbDrawTextXY
+		BL	fbDrawText
 		LDRH	R0, [R4,#(fbScore - fbBirdLine)]
 		BL	fbNumDigits
 		MOV	R2, R0
@@ -1442,7 +1445,7 @@ loc_8E2:				@ ...
 		BL	j_DisplayRefresh
 		BL	fbCLSBuf
 		MOVS	R0, #4
-		BL	SetTimeoutValue
+		BL	fbSetTimeoutValue
 		LDR	R1, =UpdateDFTimer
 		MOVS	R0, #50
 		STRB	R0, [R1]
@@ -1463,6 +1466,8 @@ aBest:	.ascii "BEST"
 
 		.balign 4,0
 		.pool
+
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
@@ -1505,21 +1510,21 @@ loc_9D4:				@ ...
 		MOVS	R0, #24
 		STRB	R0, [R4]
 		STRB	R5, [R4,#(fbAnimStep - fbBirdLine)]
-		LDR	R0, =CurrentTimeout
+		LDR	R0, =fbCurrentTimeout
 		STRB	R5, [R4,#(fbAnimTimer -	fbBirdLine)]
 		STRB	R5, [R4,#(fdDead - fbBirdLine)]
 		LDRB	R0, [R0]
-		BL	DeleteTimeout
+		BL	fbDeleteTimeout
 		LDR	R0, =TMR0Counter
 		LDR	R0, [R0,#(TMR1Counter -	TMR0Counter)]
 		BL	SetRandSeed
 		LDR	R0, =(fbGame+1)
-		BL	CreateTimeout
+		BL	fbCreateTimeout
 		LDR	R0, =(fbCheckFire+1)
-		BL	CreateTimeout
+		BL	fbCreateTimeout
 		POP.W	{R4-R6,LR}
 		LDR	R0, =(fbMoveBird+1)
-		B.W	CreateTimeout
+		B.W	fbCreateTimeout
 @ ---------------------------------------------------------------------------
 
 loc_A28:				@ ...
@@ -1547,7 +1552,7 @@ loc_A3A:				@ ...
 		ADDS	R0, #16
 		UXTB	R1, R0
 		MOVS	R0, #10
-		BL	fbDrawTextXY
+		BL	fbDrawText
 		LDRB	R0, [R4]
 		ADDS	R0, #16
 		UXTB	R0, R0
@@ -1556,7 +1561,7 @@ loc_A3A:				@ ...
 		BL	fbCLSBuf
 		POP.W	{R4-R6,LR}
 		MOVS	R0, #0xA
-		B.W	SetTimeoutValue
+		B.W	fbSetTimeoutValue
 @ End of function fbStartScreen
 
 @ ---------------------------------------------------------------------------
@@ -1570,8 +1575,9 @@ aFlappyBird:	.ascii "Flappy Bird"
 
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
-fbGame:					@ ...
+orgfbGame:	
 		PUSH.W	{R2-R8,LR}
 		LDR	R4, =fbBirdLine
 		MOVS	R7, #0
@@ -1587,12 +1593,12 @@ fbGame:					@ ...
 		STRH.W	R0, [R1,#(dfFBBest - dfData)]
 
 loc_AB4:				@ ...
-		LDR	R0, =CurrentTimeout
+		LDR	R0, =fbCurrentTimeout
 		LDRB	R0, [R0]
-		BL	DeleteTimeout
+		BL	fbDeleteTimeout
 		POP.W	{R2-R8,LR}
 		LDR	R0, =(fbDeathScreen+1)
-		B.W	CreateTimeout
+		B.W	fbCreateTimeout
 @ ---------------------------------------------------------------------------
 
 loc_AC6:				@ ...
@@ -1781,12 +1787,14 @@ loc_C02:				@ ...
 		BL	fbCLSBuf
 		POP.W	{R2-R8,LR}
 		MOVS	R0, #4
-		B.W	SetTimeoutValue
+		B.W	fbSetTimeoutValue
 @ End of function fbGame
 
 @ ---------------------------------------------------------------------------
 		.balign 4,0
 		.pool
+
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
@@ -2853,8 +2861,9 @@ orgResetWatchDog:
 
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
-fbCreateColumn:				@ ...
+orgfbCreateColumn:
 		PUSH	{R4,LR}
 		MOV	R4, R1
 		CMP	R0, #0x7F
@@ -2881,15 +2890,16 @@ locret_13DA:				@ ...
 		POP	{R4,PC}
 @ End of function fbCreateColumn
 
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
 @ in R0	Callback fct
 @ out R0 Timeout # or 255
 
-CreateTimeout:				@ ...
+fbCreateTimeout:				@ ...
 		PUSH	{R4,R5,LR}
-		LDR	R5, =TimeoutMask
+		LDR	R5, =fbTimeoutMask
 		MOVS	R1, #1
 		UXTH	R4, R0
 		LDRB	R2, [R5,#2]
@@ -2915,7 +2925,7 @@ loc_13FA:				@ ...
 		BCC	loc_13E8
 		MOVS	R0, #0xFF
 		POP	{R4,R5,PC}
-@ End of function CreateTimeout
+@ End of function fbCreateTimeout
 
 @ ---------------------------------------------------------------------------
 		.balign 4,0
@@ -3876,7 +3886,7 @@ loc_1964:				@ ...
 		LDR	R0, [R3,#8]
 		LDR	R4, =dfData
 		MOVS	R1, #0xC
-		STR.W	R0, [R4,#(fmcCID - dfData)]
+		STR.W	R0, [R4,#(dffmcCID - dfData)]
 		STR	R1, [R3,#0xC]
 		STR	R7, [R3,#4]
 		STR	R5, [R3,#0x10]
@@ -3886,7 +3896,7 @@ loc_197A:				@ ...
 		LSLS	R0, R0,	#31
 		BNE	loc_197A
 		LDR	R0, [R3,#8]
-		STR.W	R0, [R4,#(fmcDID - dfData)]
+		STR.W	R0, [R4,#(dffmcDID - dfData)]
 		STR	R1, [R3,#0xC]
 		MOV.W	R12, #4
 		STR.W	R12, [R3,#4]
@@ -3897,7 +3907,7 @@ loc_1992:				@ ...
 		LSLS	R0, R0,	#31
 		BNE	loc_1992
 		LDR	R0, [R3,#8]
-		STR.W	R0, [R4,#(fmcPID - dfData)]
+		STR.W	R0, [R4,#(dffmcPID - dfData)]
 		MOVS	R0, #0
 
 loc_19A0:				@ ...
@@ -3915,7 +3925,7 @@ loc_19AC:				@ ...
 		ADD.W	R2, R4,	R0,LSL#2
 		ADDS	R0, R0,	#1
 		UXTB	R0, R0
-		STR.W	R1, [R2,#(fmcUID -	dfData)]
+		STR.W	R1, [R2,#(dffmcUID -	dfData)]
 		CMP	R0, #3
 		BCC	loc_19A0
 		MOVS	R0, #0
@@ -3935,7 +3945,7 @@ loc_19D4:				@ ...
 		ADD.W	R8, R4,	R0,LSL#2
 		ADDS	R0, R0,	#1
 		UXTB	R0, R0
-		STR.W	R2, [R8,#(fmcUCID - dfData)]
+		STR.W	R2, [R8,#(dffmcUCID - dfData)]
 		CMP	R0, #4
 		BCC	loc_19C8
 		MOVS	R1, #2
@@ -4199,7 +4209,7 @@ orgResetDataFlash:				@ ...
 		STRH.W	R0, [R4,#(dfTCRM1 - dfHWVersion)]
 		STRH.W	R0, [R4,#(dfTCRM2 - dfHWVersion)]
 		STRH.W	R0, [R4,#(dfTCRM3 - dfHWVersion)]
-		STRB.W	R5, [R4,#(byte_2000033D	- dfHWVersion)]
+		STRB.W	R5, [R4,#(dfbyte_2000033D	- dfHWVersion)]
 		STRH.W	R5, [R4,#(dfFBBest - dfHWVersion)]
 		STRB.W	R5, [R4,#(dfFBSpeed - dfHWVersion)]
 		BL	CpyTmpCoefsNI
@@ -4590,10 +4600,10 @@ loc_1F4A:				@ ...
 		UXTB	R0, R0
 		CMP	R0, #3
 		BCC	loc_1F38
-		LDRB.W	R0, [R5,#(byte_2000033D	- dfData)]
+		LDRB.W	R0, [R5,#(dfbyte_2000033D	- dfData)]
 		CMP	R0, #2
 		BCC	loc_1F5E
-		STRB.W	R4, [R5,#(byte_2000033D	- dfData)]
+		STRB.W	R4, [R5,#(dfbyte_2000033D	- dfData)]
 
 loc_1F5E:				@ ...
 		LDRB.W	R0, [R5,#(dfFBSpeed - dfData)]
@@ -5538,17 +5548,18 @@ locret_24F6:				@ ...
 
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
-fbMoveBird:				@ ...
+orgfbMoveBird:
 		PUSH	{R4,LR}
 		LDR	R4, =fbBirdLine
 		LDRB	R0, [R4,#(fdDead - fbBirdLine)]
 		CBZ	R0, loc_250C
 		ADDS	R0, R0,	#1
 		STRB	R0, [R4,#(fdDead - fbBirdLine)]
-		LDR	R0, =CurrentTimeout
+		LDR	R0, =fbCurrentTimeout
 		LDRB	R0, [R0]
-		BL	DeleteTimeout
+		BL	fbDeleteTimeout
 
 loc_250C:				@ ...
 		LDR	R0, =dfData
@@ -5595,12 +5606,14 @@ loc_254A:				@ ...
 		STRB	R0, [R4]
 		POP.W	{R4,LR}
 		MOVS	R0, #8
-		B.W	SetTimeoutValue
+		B.W	fbSetTimeoutValue
 @ End of function fbMoveBird
 
 @ ---------------------------------------------------------------------------
 		.balign 4,0
 		.pool
+		
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
@@ -5879,13 +5892,13 @@ loc_280C:				@ ...
 		CMP	R0, R1
 		BNE	loc_2872
 		ADR	R0, aCompanyId_____
-		LDR.W	R1, [R4,#(fmcCID - dfData)]
+		LDR.W	R1, [R4,#(dffmcCID - dfData)]
 		BL	PutTextf
 		ADR	R0, aDeviceId______
-		LDR.W	R1, [R4,#(fmcDID - dfData)]
+		LDR.W	R1, [R4,#(dffmcDID - dfData)]
 		BL	PutTextf
 		ADR	R0, aProductId_____
-		LDR.W	R1, [R4,#(fmcPID - dfData)]
+		LDR.W	R1, [R4,#(dffmcPID - dfData)]
 		BL	PutTextf
 		LDRB	R1, [R4,#(dfBootFlag - dfData)]
 		ADR	R0, aU8updateaprom_
@@ -7872,12 +7885,12 @@ orgCpyTmpCoefsNI:
 @ =============== S U B	R O U T	I N E =======================================
 
 
-InitTimeouts:
-		LDR	R0, =TimeoutMask
+fbInitTimeouts:
+		LDR	R0, =fbTimeoutMask
 		MOVS	R1, #0
 		LDR	R2, =TimeoutsTable
-		STRB	R1, [R0,#(CurrentTimeout - TimeoutMask)]
-		STRB	R1, [R0,#(UsedTimeouts - TimeoutMask)]
+		STRB	R1, [R0,#(fbCurrentTimeout - fbTimeoutMask)]
+		STRB	R1, [R0,#(fbUsedTimeouts - fbTimeoutMask)]
 		MOV	R0, R1
 
 loc_38BC:				@ ...
@@ -7889,7 +7902,7 @@ loc_38BC:				@ ...
 		CMP	R0, #3
 		BCC	loc_38BC
 		BX	LR
-@ End of function InitTimeouts
+@ End of function fbInitTimeouts
 
 @ ---------------------------------------------------------------------------
 		.balign 4,0
@@ -8321,14 +8334,14 @@ loc_3B6E:				@ ...
 		STRB	R5, [R0,#(BatRefreshTmr	- KeyUpTimer)]
 		MOVW	R0, #3000
 		STRH	R0, [R1]
-		BL	InitTimeouts
+		BL	fbInitTimeouts
 		BL	j_DisplayRefresh
 		MOVS	R0, #24
 		BL	fbBirdAnim
 		ADD	SP, SP,	#0x44
 		LDR	R0, =(fbStartScreen+1)
 		POP.W	{R4-R11,LR}
-		B.W	CreateTimeout
+		B.W	fbCreateTimeout
 @ ---------------------------------------------------------------------------
 
 loc_3BA8:				@ ...
@@ -11390,9 +11403,9 @@ loc_4E8E:				@ ...
 		STR	R0, [R1]
 		MOVS	R0, #0xFF
 		STRB	R0, [R7,#(Event	- KeyUpTimer)]
-		LDR	R0, =CurrentTimeout
+		LDR	R0, =fbCurrentTimeout
 		LDRB	R0, [R0]
-		BL	DeleteTimeout
+		BL	fbDeleteTimeout
 		BL	MainView
 
 loc_4EB4:				@ ...
@@ -11424,8 +11437,8 @@ loc_4EC8:				@ ...
 
 @ R0 Timeout #
 
-DeleteTimeout:
-		LDR	R2, =TimeoutMask
+fbDeleteTimeout:
+		LDR	R2, =fbTimeoutMask
 		MOVS	R1, #1
 		LSLS	R1, R0
 		LDRB	R3, [R2,#2]
@@ -11435,7 +11448,7 @@ DeleteTimeout:
 		MOVS	R1, #0
 		STRB.W	R1, [R2,R0,LSL#3]
 		BX	LR
-@ End of function DeleteTimeout
+@ End of function fbDeleteTimeout
 
 @ ---------------------------------------------------------------------------
 		.balign 4,0
@@ -13410,13 +13423,13 @@ locret_5AD6:				@ ...
 @ =============== S U B	R O U T	I N E =======================================
 
 
-SetTimeoutValue:
-		LDR	R2, =TimeoutMask
+fbSetTimeoutValue:
+		LDR	R2, =fbTimeoutMask
 		LDR	R1, =TimeoutsTable
-		LDRB	R2, [R2,#(CurrentTimeout - TimeoutMask)]
+		LDRB	R2, [R2,#(fbCurrentTimeout - fbTimeoutMask)]
 		STRB.W	R0, [R1,R2,LSL#3]
 		BX	LR
-@ End of function SetTimeoutValue
+@ End of function fbSetTimeoutValue
 
 @ ---------------------------------------------------------------------------
 		.balign 4,0
@@ -17936,7 +17949,7 @@ loc_7AF4:				@ ...
 
 loc_7B06:				@ ...
 		POP	{R4,R5}
-		B.W	TickFBTimeouts
+		B.W	fbTickTimeouts
 @ ---------------------------------------------------------------------------
 
 loc_7B0C:				@ ...
@@ -18016,21 +18029,21 @@ locret_7B88:				@ ...
 @ =============== S U B	R O U T	I N E =======================================
 
 
-CallTimeouts:
+fbCallTimeouts:
 		PUSH	{R4-R6,LR}
-		LDR	R4, =TimeoutMask
+		LDR	R4, =fbTimeoutMask
 		MOVS	R0, #1
 		LDR	R5, =TimeoutsTable
 		STRB	R0, [R4]
 		MOVS	R0, #0
-		STRB	R0, [R4,#(CurrentTimeout - TimeoutMask)]
+		STRB	R0, [R4,#(fbCurrentTimeout - fbTimeoutMask)]
 
 loc_7BAA:				@ ...
-		LDRB	R0, [R4,#(UsedTimeouts - TimeoutMask)]
+		LDRB	R0, [R4,#(fbUsedTimeouts - fbTimeoutMask)]
 		LDRB	R1, [R4]
 		TST	R0, R1
 		BEQ	loc_7BC2
-		LDRB	R0, [R4,#(CurrentTimeout - TimeoutMask)]
+		LDRB	R0, [R4,#(fbCurrentTimeout - fbTimeoutMask)]
 		LDRB.W	R1, [R5,R0,LSL#3]
 		CBNZ	R1, loc_7BC2
 		ADD.W	R0, R5,	R0,LSL#3
@@ -18041,14 +18054,14 @@ loc_7BC2:				@ ...
 		LDRB	R0, [R4]
 		LSLS	R0, R0,	#1
 		STRB	R0, [R4]
-		LDRB	R0, [R4,#(CurrentTimeout - TimeoutMask)]
+		LDRB	R0, [R4,#(fbCurrentTimeout - fbTimeoutMask)]
 		ADDS	R0, R0,	#1
 		UXTB	R0, R0
-		STRB	R0, [R4,#(CurrentTimeout - TimeoutMask)]
+		STRB	R0, [R4,#(fbCurrentTimeout - fbTimeoutMask)]
 		CMP	R0, #3
 		BCC	loc_7BAA
 		POP	{R4-R6,PC}
-@ End of function CallTimeouts
+@ End of function fbCallTimeouts
 
 @ ---------------------------------------------------------------------------
 		.balign 4,0
@@ -18679,7 +18692,7 @@ loc_8036:				@ ...
 @ =============== S U B	R O U T	I N E =======================================
 
 
-fbDrawTextXY:
+fbDrawText:
 		PUSH	{R4-R6,LR}
 		MOV	R4, R2
 		MOV	R6, R1
@@ -18700,7 +18713,7 @@ loc_8056:				@ ...
 		CMP	R2, #0
 		BNE	loc_8048
 		POP	{R4-R6,PC}
-@ End of function fbDrawTextXY
+@ End of function fbDrawText
 
 
 @ =============== S U B	R O U T	I N E =======================================
@@ -19982,17 +19995,18 @@ orgInitUSB:
 
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
-fbCheckFire:
+orgfbCheckFire:
 		PUSH	{R4,LR}
 		LDR	R4, =fbBirdLine
 		LDRB	R0, [R4,#2]
 		CBZ	R0, loc_8848
 		ADDS	R0, R0,	#1
 		STRB	R0, [R4,#2]
-		LDR	R0, =CurrentTimeout
+		LDR	R0, =fbCurrentTimeout
 		LDRB	R0, [R0]
-		BL	DeleteTimeout
+		BL	fbDeleteTimeout
 
 loc_8848:				@ ...
 		LDRSB.W	R0, [R4]
@@ -20014,7 +20028,7 @@ loc_8868:				@ ...
 		STRB	R0, [R4,#(fbBirdDisp - fbBirdLine)]
 		POP.W	{R4,LR}
 		MOVS	R0, #0xA
-		B.W	SetTimeoutValue
+		B.W	fbSetTimeoutValue
 @ ---------------------------------------------------------------------------
 
 loc_8874:				@ ...
@@ -20034,6 +20048,8 @@ locret_887C:				@ ...
 @ ---------------------------------------------------------------------------
 		.balign 4,0
 		.pool
+		
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
@@ -20047,7 +20063,7 @@ j_DisplayRefresh:
 @ =============== S U B	R O U T	I N E =======================================
 
 
-TickFBTimeouts:
+fbTickTimeouts:
 		LDR	R2, =TimeoutsTable
 		MOVS	R0, #0
 
@@ -20063,7 +20079,7 @@ loc_88A4:				@ ...
 		CMP	R0, #3
 		BCC	loc_8898
 		BX	LR
-@ End of function TickFBTimeouts
+@ End of function fbTickTimeouts
 
 @ ---------------------------------------------------------------------------
 		.balign 4,0
@@ -21457,7 +21473,7 @@ loc_9196:				@ ...
 		LDRH	R0, [R7]
 		LSLS	R0, R0,	#22
 		BPL	loc_91DC
-		BL	CallTimeouts
+		BL	fbCallTimeouts
 		LDR	R0, [R6]
 		LSLS	R1, R0,	#28
 		BPL	loc_91CA
@@ -21840,9 +21856,9 @@ Plantage:
 
 
 @ ---------------------------------------------------------------------------
-@ ul mysqrtul( ul )
+@ ul sqrtul( ul )
 
-mysqrtul:
+sqrtul:
 		fmsr	s0, r0
 		fuitos	s0, s0
 		fsqrts	s0, s0

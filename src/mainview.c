@@ -1,4 +1,5 @@
 #include "myevic.h"
+#include "dataflash.h"
 #include "screens.h"
 #include "display.h"
 #include "battery.h"
@@ -10,6 +11,7 @@
 //=============================================================================
 
 unsigned char	ShowDateFlag = 0;
+unsigned char	AnalogClock = 0;
 
 //=============================================================================
 //----- (00001654) --------------------------------------------------------
@@ -87,7 +89,7 @@ __myevic__ void DrawPwrLine( int pwr, int line )
 	if ( BLINKITEM(2) && PD2 && PD3 )
 		return;
 
-	if ( Anim3d )
+	if ( Anim3d || AnalogClock )
 	{
 		if ( Screen == 1 && !EditModeTimer )
 			return;
@@ -125,7 +127,7 @@ __myevic__ void DrawCoilLine( int line )
 {
 	unsigned int rez;
 
-	if ( Anim3d )
+	if ( Anim3d || AnalogClock )
 	{
 		if ( Screen == 1 && !EditModeTimer )
 			return;
@@ -187,7 +189,7 @@ __myevic__ void DrawAPTLine( int line )
 	if ( BLINKITEM(4) )
 		return;
 
-	if ( Anim3d )
+	if ( Anim3d || AnalogClock )
 	{
 		if ( Screen == 1 && !EditModeTimer )
 			return;
@@ -545,11 +547,15 @@ __myevic__ void ShowMainView()
 		DrawCoilLine( 71 );
 		DrawAPTLine( 90 );
 
-		if ( Anim3d )
+		if ( Screen == 1 && !EditModeTimer )
 		{
-			if ( Screen == 1 && !EditModeTimer )
+			if ( Anim3d )
 			{
 				anim3d( 1 );
+			}
+			else if ( AnalogClock )
+			{
+				DrawClock();
 			}
 		}
 
@@ -563,3 +569,21 @@ __myevic__ void ShowMainView()
 	}
 }
 
+
+//=========================================================================
+__myevic__ void DrawClock()
+{
+	S_RTC_TIME_DATA_T rtd;
+	GetRTC( &rtd );
+
+	DrawFillRect( 0, 44, 63, 106, 0 );
+	DrawCircle( 32, 75, 25, 1 );
+
+	int32_t h = ( rtd.u32Hour % 12 ) * 30;
+	int32_t m = ( rtd.u32Minute ) * 6;
+	int32_t s = ( rtd.u32Second ) * 6;
+
+	DrawLine( 32, 75, 32 + (( sine( h ) * 12 ) >> 16 ), 75 - (( cosine( h ) * 12 ) >> 16 ), 1 );
+	DrawLine( 32, 75, 32 + (( sine( m ) * 20 ) >> 16 ), 75 - (( cosine( m ) * 20 ) >> 16 ), 1 );
+	DrawLine( 32, 75, 32 + (( sine( s ) * 16 ) >> 16 ), 75 - (( cosine( s ) * 16 ) >> 16 ), 1 );
+}

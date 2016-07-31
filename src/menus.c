@@ -94,11 +94,11 @@ __myevic__ void GameIClick()
 		Flags64 |= 0x24000u;
 		BatRefreshTmr = 0;
 		SleepTimer = 3000;
-		InitTimeouts();
+		fbInitTimeouts();
 		ClearScreenBuffer();
 		DisplayRefresh();
 	//	fbBirdAnim( 24 );
-		CreateTimeout( fbStartScreen + 1 );
+		fbCreateTimeout( fbStartScreen + 1 );
 	}
 }
 

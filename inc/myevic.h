@@ -13,6 +13,7 @@
 
 //=============================================================================
 
+/*
 extern uint8_t	SavedDF[0x100];		// .ds.b 0x100
 
 extern uint32_t	dfData;
@@ -55,21 +56,22 @@ extern uint16_t	dfSavedCfgRez[10];
 extern uint16_t	dfSavedCfgPwr[10];
 extern uint16_t	dfFBBest;
 extern uint8_t	dfFBSpeed;
-extern uint8_t	byte_2000033D;
+extern uint8_t	dfbyte_2000033D;
 extern uint8_t	dfContrast;
 extern uint8_t	dfModesSel;
 extern uint16_t	dfClkRatio;
 
 extern uint32_t	dfFWVersion;
-extern uint32_t	fmcCID;
-extern uint32_t	fmcDID;
-extern uint32_t	fmcPID;
-extern uint32_t	fmcUID[3];
-extern uint32_t	fmcUCID[4];
+extern uint32_t	dffmcCID;
+extern uint32_t	dffmcDID;
+extern uint32_t	dffmcPID;
+extern uint32_t	dffmcUID[3];
+extern uint32_t	dffmcUCID[4];
 extern uint32_t	dfPuffCount;
 extern uint32_t	dfTimeCount;
 extern uint32_t	dfProductID;
 extern uint32_t	dfMaxHWVersion;
+*/
 
 extern union
 {
@@ -176,31 +178,6 @@ extern uint8_t	ShowWeakBatFlag;				// .ds.b 1
 extern uint32_t	StdOut;							// .ds.b 4
 
 /*
-extern volatile uint8_t	g_usbd_RemoteWakeupEn;	// .ds.b 1
-extern uint32_t	g_usbd_CtrlInPointer;			// .ds.b 4
-extern uint32_t	g_usbd_CtrlInSize;				// .ds.b 4
-extern uint32_t	g_usbd_CtrlOutPointer;			// .ds.b 4
-extern uint32_t	g_usbd_CtrlOutSize;				// .ds.b 4
-extern uint32_t	g_usbd_CtrlOutSizeLimit;		// .ds.b 4
-extern uint32_t	g_usbd_UsbAddr;					// .ds.b 4
-extern uint32_t	g_usbd_UsbConfig;				// .ds.b 4
-extern uint32_t	g_usbd_CtrlMaxPktSize;			// .ds.b 4
-extern uint32_t	g_usbd_UsbAltInterface;			// .ds.b 4
-extern uint32_t	g_usbd_pfnVendorRequest;		// .ds.b 4
-extern uint32_t	g_usbd_pfnClassRequest;			// .ds.b 4
-extern uint32_t	g_usbd_pfnSetInterface;			// .ds.b 4
-extern uint32_t	g_usbd_pfnSetConfigCallback;	// .ds.b 4
-extern uint32_t	g_u32EpStallLock;				// .ds.b 4
-extern uint32_t	g_usbd_sInfo;					// .ds.b 4
-extern uint8_t	g_usbd_SetupPacket;				// .ds.b 1
-extern uint8_t	usbdSetupRq;					// .ds.b 1
-extern uint8_t	usbdSetupVal;					// .ds.b 1
-extern uint8_t	usbdSetupValH;					// .ds.b 1
-extern uint16_t	usbdSetupIdx;					// .ds.b 2
-extern uint8_t	usbdSetupLen;					// .ds.b 1
-extern uint8_t	usbdSetupLenH;					// .ds.b 1
-*/
-
 extern uint8_t	fbBirdColumn;					// .ds.b 1
 extern uint8_t	fbBirdCycle;					// .ds.b 1
 extern uint8_t	fbBirdLine;						// .ds.b 1
@@ -212,10 +189,11 @@ extern uint16_t	fbScore;						// .ds.b 2
 extern uint8_t	fbColumn1[5];					// .ds.b 5
 extern uint8_t	fbColumn2[5];					// .ds.b 5
 extern uint8_t	fbColumn3[5];					// .ds.b 5
-extern uint8_t	TimeoutMask;					// .ds.b 1
-extern uint8_t	CurrentTimeout;					// .ds.b 1
-extern uint8_t	UsedTimeouts;					// .ds.b 1
+extern uint8_t	fbTimeoutMask;					// .ds.b 1
+extern uint8_t	fbCurrentTimeout;					// .ds.b 1
+extern uint8_t	fbUsedTimeouts;					// .ds.b 1
 extern uint32_t	RNGSeed;						// .ds.b 4
+*/
 
 extern uint32_t	dword_20000168;					// .ds.b 4
 
@@ -236,11 +214,11 @@ extern void MemClear2( void*, void*, const uint32_t );
 extern void DrawHexDigit( int x, int y, int v );
 extern void DrawHexLong( int x, int y, int v, int font );
 
-extern void InitTimeouts();
-extern void DeleteTimeout( int );
-extern void CallTimeouts();
-extern int	CreateTimeout( void (*cb)( void ) );
-extern void TickFBTimeouts();
+extern void fbInitTimeouts();
+extern void fbDeleteTimeout( int );
+extern void fbCallTimeouts();
+extern int	fbCreateTimeout( void (*cb)( void ) );
+extern void fbTickTimeouts();
 extern void fbBirdAnim( int );
 extern void fbStartScreen();
 
@@ -248,7 +226,7 @@ extern uint32_t PutTextf( char *s, ... );
 
 //=============================================================================
 
-extern uint32_t mysqrtul( uint32_t v );
+extern uint32_t sqrtul( uint32_t v );
 
 //=============================================================================
 

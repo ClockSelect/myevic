@@ -1,5 +1,14 @@
 #include "myevic.h"
+#include "dataflash.h"
 #include "myrtc.h"
+
+
+//=============================================================================
+// DataFlash parameters global structure
+
+dfStruct_t DataFlash;
+
+uint8_t ParamsBackup[DATAFLASH_PRMS_SIZE];
 
 
 //=============================================================================
@@ -26,7 +35,7 @@ __myevic__ void FMCReadCounters()
 		idx += 4;
 		pc = v;
 	}
-	while ( idx < 0x800 );
+	while ( idx < FMC_FLASH_PAGE_SIZE );
 
 	fmcCntrsIndex = idx;
 
@@ -50,7 +59,7 @@ __myevic__ void FMCWriteCounters()
 	SYS_UnlockReg();
 	FMC_ENABLE_ISP();
 
-	if ( fmcCntrsIndex >= 0x800u )
+	if ( fmcCntrsIndex >= FMC_FLASH_PAGE_SIZE )
 	{
 		FMC_Erase( 0x1F000 );
 		FMC_Erase( 0x1F800 );
@@ -97,7 +106,7 @@ __myevic__ void ResetDataFlash()
 	int hwv;
 
 	hwv = dfHWVersion;
-	MemClear( &dfCRC, 0x100 );
+	MemClear( DataFlash.params, DATAFLASH_PRMS_SIZE );
 	dfHWVersion = hwv;
 	dfMagic = 54;
 	dfMode = 4;
@@ -126,7 +135,7 @@ __myevic__ void ResetDataFlash()
 	dfTCRM1 = 120;
 	dfTCRM2 = 120;
 	dfTCRM3 = 120;
-	byte_2000033D = 0;
+	dfbyte_2000033D = 0;
 	dfFBBest = 0;
 	dfFBSpeed = 0;
 	CpyTmpCoefsNI();
@@ -253,8 +262,8 @@ __myevic__ void DFCheckValuesValidity()
 	}
 	while ( i < 3 );
 
-	if ( byte_2000033D >= 2u )
-		byte_2000033D = 0;
+	if ( dfbyte_2000033D >= 2u )
+		dfbyte_2000033D = 0;
 
 	if ( dfFBSpeed > 2u )
 		dfFBSpeed = 0;
@@ -362,7 +371,7 @@ __myevic__ uint32_t CalcPageCRC( uint32_t *pu32Addr )
 	{
 		CRC_WRITE_DATA( addr[idx] );
 	}
-	while ( ++idx < (0x100-4)/2 );
+	while ( ++idx < (DATAFLASH_PRMS_SIZE-4)/2 );
 
 	crc = CRC_GetChecksum();
 
@@ -415,21 +424,21 @@ __myevic__ void UpdateDataFlash()
 	dfAtoRez = AtoRez;
 	dfAtoStatus = AtoStatus;
 
-	df = (uint8_t*)&dfCRC;
+	df = (uint8_t*)&DataFlash.params;
 
-	for ( idx = 0 ; idx < 0x100 ; ++idx )
+	for ( idx = 0 ; idx < DATAFLASH_PRMS_SIZE ; ++idx )
 	{
-		if ( df[idx] != SavedDF[idx] )
+		if ( df[idx] != ParamsBackup[idx] )
 			break;
 	}
 
-	if ( idx != 0x100 )
+	if ( idx != DATAFLASH_PRMS_SIZE )
 	{
-		dfCRC = CalcPageCRC( &dfCRC );
-		MemCpy( SavedDF, &dfCRC, 0x100u );
+		dfCRC = CalcPageCRC( DataFlash.params );
+		MemCpy( ParamsBackup, DataFlash.params, DATAFLASH_PRMS_SIZE );
 		SYS_UnlockReg();
 		FMC_ENABLE_ISP();
-		WriteDataFlash( 0x1E000, &dfCRC );
+		WriteDataFlash( 0x1E000, DataFlash.params );
 		FMC_DISABLE_ISP();
 		SYS_LockReg();
 	}
@@ -448,26 +457,26 @@ __myevic__ void InitDataFlash()
 	SYS_UnlockReg();
 	FMC_ENABLE_ISP();
 
-	MemClear( &dfData, 0x800u );
+	MemClear( &DataFlash, sizeof( DataFlash ) );
 
-	fmcCID = FMC_ReadCID();
+	dffmcCID = FMC_ReadCID();
 
 	FMC->ISPCMD = FMC_ISPCMD_READ_DID;
 	FMC->ISPADDR = 0;
 	FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
 	while( FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk );
-	fmcDID = FMC->ISPDAT;
+	dffmcDID = FMC->ISPDAT;
 
-	fmcPID = FMC_ReadPID();
+	dffmcPID = FMC_ReadPID();
 
 	for ( i = 0 ; i < 3 ; ++i )
 	{
-		fmcUID[i] = FMC_ReadUID( i );
+		dffmcUID[i] = FMC_ReadUID( i );
 	}
 
 	for ( i = 0 ; i < 4 ; ++i )
 	{
-		fmcUCID[i] = FMC_ReadUCID( i );
+		dffmcUCID[i] = FMC_ReadUCID( i );
 	}
 
 	FMC_ReadConfig( cfg, 2 );
@@ -476,10 +485,10 @@ __myevic__ void InitDataFlash()
 
 	if ( FMCCheckConfig( cfg ) )
 	{
-		addr = FMCLoadDFFirstPage( addr, &dfCRC );
+		addr = FMCLoadDFFirstPage( addr, DataFlash.params );
 	}
 
-	if ( CalcPageCRC( &dfCRC ) != dfCRC )
+	if ( CalcPageCRC( DataFlash.params ) != dfCRC )
 	{
 		if ( addr == 0x1E000 )
 		{
@@ -491,9 +500,9 @@ __myevic__ void InitDataFlash()
 		}
 
 		hwv = dfHWVersion;
-		FMCRead100( addr, &dfCRC );
+		FMCRead100( addr, DataFlash.params );
 
-		if ( CalcPageCRC( &dfCRC ) == dfCRC )
+		if ( CalcPageCRC( DataFlash.params ) == dfCRC )
 		{
 			UpdateDataFlash();
 		}
@@ -563,7 +572,7 @@ __myevic__ void InitDataFlash()
 				dfHWVersion / 10u % 10,
 				dfHWVersion % 10u );
 
-	if ( dfMagic == 0x36 && CalcPageCRC( &dfCRC ) == dfCRC )
+	if ( dfMagic == 0x36 && CalcPageCRC( DataFlash.params ) == dfCRC )
 	{
 		DFCheckValuesValidity();
 	}
@@ -581,7 +590,7 @@ __myevic__ void InitDataFlash()
 
 	dfStatus &=  ~1;
 	dfUIVersion = 2;
-	MemCpy( SavedDF, &dfCRC, 0x100u );
+	MemCpy( ParamsBackup, DataFlash.params, DATAFLASH_PRMS_SIZE );
 
 	if ( dfBootFlag )
 	{
@@ -596,7 +605,7 @@ __myevic__ void InitDataFlash()
 // Writes 2kB from RAM R1 to DF R0
 __myevic__ void FMCWrite800( uint32_t u32Addr, uint32_t *pu32Data )
 {
-	for ( uint32_t idx = 0 ; idx < 0x800 / 4 ; ++idx )
+	for ( uint32_t idx = 0 ; idx < FMC_FLASH_PAGE_SIZE / 4 ; ++idx )
 	{
 		FMC_Write( u32Addr + 4 * idx, pu32Data[ idx ] );
 	}
@@ -607,7 +616,7 @@ __myevic__ void FMCWrite800( uint32_t u32Addr, uint32_t *pu32Data )
 // Compares 2kB (0x800) DF @R0 with RAM @R1
 __myevic__ uint32_t FMCVerif800( uint32_t u32Addr, uint32_t *pu32Data )
 {
-	for ( uint32_t idx = 0 ; idx < 0x800 / 4 ; ++idx )
+	for ( uint32_t idx = 0 ; idx < FMC_FLASH_PAGE_SIZE / 4 ; ++idx )
 	{
 		if ( FMC_Read( u32Addr + 4 * idx ) != pu32Data[ idx ] )
 		{

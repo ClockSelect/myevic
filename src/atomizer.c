@@ -1,4 +1,5 @@
 #include "myevic.h"
+#include "dataflash.h"
 #include "battery.h"
 #include "timers.h"
 #include "meadc.h"
@@ -58,7 +59,7 @@ __myevic__ uint16_t GetAtoVWVolts( uint16_t pwr )
 	}
 	else
 	{
-		volts = mysqrtul( 10 * pwr * AtoRez );
+		volts = sqrtul( 10 * pwr * AtoRez );
 
 		ClampAtoVolts();
 
@@ -607,7 +608,7 @@ __myevic__ uint16_t GetVoltsForPower( uint16_t pwr )
 {
 	uint16_t v;
 
-	v = mysqrtul( (uint32_t)pwr * AtoRezMilli );
+	v = sqrtul( (uint32_t)pwr * AtoRezMilli );
 
 	if ( v > MaxVWVolts ) v = MaxVWVolts;
 
@@ -736,8 +737,8 @@ __myevic__ void SetMinMaxVolts()
 	}
 	else
 	{
-		AtoMinVolts = mysqrtul( 10ul * 10 * AtoRez );
-		AtoMaxVolts = mysqrtul( 10ul * MaxPower * AtoRez );
+		AtoMinVolts = sqrtul( 10ul * 10 * AtoRez );
+		AtoMaxVolts = sqrtul( 10ul * MaxPower * AtoRez );
 		ClampAtoVolts();
 	}
 }

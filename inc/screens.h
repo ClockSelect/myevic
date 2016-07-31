@@ -8,7 +8,9 @@
 //==============================================================================
 
 extern unsigned char ShowDateFlag;
+extern unsigned char AnalogClock;
 extern int IsClockOnScreen();
+extern void DrawClock();
 
 //==============================================================================
 

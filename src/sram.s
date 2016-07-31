@@ -124,13 +124,13 @@ Flags64:			.ds.b	4	@ Flags1 (20000064)
 								@ 19	0x00080000  Batt < 10%
 								@ 21	0x00200000  1Hz	Oscillator
 								@ 23	0x00800000  ?
-								@ 27	0x08000000  ? (relative	to rez TI)
-								@ 28	0x10000000  ? (relative	to rez NI)
-								@ 31	0x80000000  ? (relative	to rez SS)
+								@ 27	0x08000000  Unchecked rez TI
+								@ 28	0x10000000  Unchecked rez NI
+								@ 31	0x80000000  Unchecked rez SS
 
 Flags68:			.ds.b	4	@ Flags2 (20000068)
 								@ 0		0x00000001  Edit TCR value
-								@ 1		0x00000002  ? (relative	to rez TCR)
+								@ 1		0x00000002  nchecked rez TCR
 								@ 4     0x00000010  Editing TC pwr value
 								@ 8		0x00000100  TMR3 1Hz
 								@ 9		0x00000200  In Flappy Bird
@@ -224,7 +224,7 @@ ShowWeakBatFlag:	.ds.b	1
 					.ds.b	1
 					.ds.b	1
 					.ds.b	1
-StdOut:		.ds.b	4
+StdOut:				.ds.b	4
 
 
 			.ifne	keeporglibs_usbd
@@ -271,10 +271,13 @@ fbScore:			.ds.b	2
 fbColumn1:			.ds.b	5
 fbColumn2:			.ds.b	5
 fbColumn3:			.ds.b	5
-TimeoutMask:		.ds.b	1
-CurrentTimeout:		.ds.b	1
-UsedTimeouts:		.ds.b	1
+fbTimeoutMask:		.ds.b	1
+fbCurrentTimeout:	.ds.b	1
+fbUsedTimeouts:		.ds.b	1
+
+					.ifne	keeporgcode
 RNGSeed:			.ds.b	4
+					.endif
 
 dword_20000168:		.ds.b	4
 
@@ -291,11 +294,13 @@ TMR1Counter:		.ds.b	4
 TMR2Counter:		.ds.b	4
 TMR3Counter:		.ds.b	4
 
-SavedDF:			.ds.b	0x100
-
 @ ===========================================================================
 @ DataFlash Area
 @ ---------------------------------------------------------------------------
+
+					.ifne keeporgcode
+
+SavedDF:			.ds.b	0x100
 
 dfData:				.ds.b	4	@ 0x2000027C
 dfCRC:				.ds.b	4
@@ -355,7 +360,7 @@ dfFBSpeed:			.ds.b	1	@ Flappy Bird Speed
 								@ 0 Easy    62.5Hz 0.016s
 								@ 1 Normal  76.9Hz 0.013s
 								@ 2 Hard   100.0Hz 0.010s
-byte_2000033D:		.ds.b	1
+dfbyte_2000033D:		.ds.b	1
 
 dfContrast:			.ds.b	1	@ Screen contrast
 dfModesSel:			.ds.b	1	@ Mode selector mask
@@ -370,16 +375,16 @@ dfClkRatio:			.ds.b	2	@ RTC LIRC/X32 ratio constant
 
 @ ---------------------------------------------------------------------------
 @ End of real DataFlash Area
-@ ===========================================================================
+@ ---------------------------------------------------------------------------
 
 dfPage2:			.ds.b	4
 dfFWVersion:		.ds.b	4
 					.ds.b	4
-fmcCID:				.ds.b	4
-fmcDID:				.ds.b	4
-fmcPID:				.ds.b	4
-fmcUID:				.ds.b	4*3
-fmcUCID:			.ds.b	4*4
+dffmcCID:			.ds.b	4
+dffmcDID:			.ds.b	4
+dffmcPID:			.ds.b	4
+dffmcUID:			.ds.b	4*3
+dffmcUCID:			.ds.b	4*4
 dfPuffCount:		.ds.b	4
 dfTimeCount:		.ds.b	4
 dfProductID:		.ds.b	4
@@ -394,7 +399,11 @@ gPlayfield:
 					.if (( . - dfData ) != 0x800 )
 					.error "Invalid Dataflash full size!"
 					.endif
+					
+					.endif
 
+@ ---------------------------------------------------------------------------
+@ End of DataFlash Area
 @ ===========================================================================
 
 					.ifne	keeporgcode_usbd

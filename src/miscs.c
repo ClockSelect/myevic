@@ -1,4 +1,5 @@
 #include "myevic.h"
+#include "dataflash.h"
 #include "display.h"
 
 //=========================================================================
@@ -292,3 +293,21 @@ __myevic__ void anim3d( int refresh )
 	}
 }
 
+
+//=========================================================================
+// Pseudo-random number generator
+
+uint32_t RNGSeed;
+
+//----- (000001CC) --------------------------------------------------------
+__myevic__ uint32_t Random()
+{
+  RNGSeed = 0x41c64e6d * RNGSeed + 12345;
+  return RNGSeed >> 1;
+}
+
+//----- (000001E0) --------------------------------------------------------
+__myevic__ void SetRandSeed( uint32_t s )
+{
+  RNGSeed = s;
+}

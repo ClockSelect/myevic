@@ -490,7 +490,6 @@ __myevic__ void InitUSB()
 #define HID_CMD_RESET		0xB4
 #define HID_CMD_FMCREAD		0xC0
 
-#define PAGE_SIZE			2048
 
 typedef struct __attribute__((packed))
 {
@@ -505,15 +504,15 @@ typedef struct __attribute__((packed))
 /*
 extern CMD_T hidCmd;
 
-extern uint8_t hidData[PAGE_SIZE];
-extern uint32_t hidDFData[PAGE_SIZE/4];
+extern uint8_t hidData[FMC_FLASH_PAGE_SIZE];
+extern uint32_t hidDFData[FMC_FLASH_PAGE_SIZE/4];
 extern uint32_t hidDataIndex;
 */
 
 CMD_T hidCmd;
 
-uint8_t hidData[PAGE_SIZE];
-uint32_t hidDFData[PAGE_SIZE/4];
+uint8_t hidData[FMC_FLASH_PAGE_SIZE];
+uint32_t hidDFData[FMC_FLASH_PAGE_SIZE/4];
 uint32_t hidDataIndex;
 
 //=============================================================================
@@ -561,7 +560,7 @@ __myevic__ void usbdEP2Handler()
 				int32_t  u32Size = hidCmd.u32Arg2 - hidCmd.u32Signature;
 				if ( u32Size > 0 )
 				{
-					if ( u32Size > PAGE_SIZE ) u32Size = PAGE_SIZE;
+					if ( u32Size > FMC_FLASH_PAGE_SIZE ) u32Size = FMC_FLASH_PAGE_SIZE;
 
 					SYS_UnlockReg();
 					FMC_ENABLE_ISP();
@@ -569,7 +568,7 @@ __myevic__ void usbdEP2Handler()
 					for ( int i = 0 ; i < u32Size ; i += 4 )
 					{
 						uint32_t data = FMC_Read( u32Addr + i );
-						MemCpy( &hidData[ PAGE_SIZE - u32Size + i ], &data, 4 );
+						MemCpy( &hidData[ FMC_FLASH_PAGE_SIZE - u32Size + i ], &data, 4 );
 					}
 
 					FMC_DISABLE_ISP();
@@ -583,7 +582,7 @@ __myevic__ void usbdEP2Handler()
 			{
 				USBD_MemCopy(
 					(uint8_t *)(USBD_BUF_BASE + USBD_GET_EP_BUF_ADDR(EP2)),
-					&hidData[ PAGE_SIZE - hidDataIndex ],
+					&hidData[ FMC_FLASH_PAGE_SIZE - hidDataIndex ],
 					EP2_MAX_PKT_SIZE
 				);
 				USBD_SET_PAYLOAD_LEN( EP2, EP2_MAX_PKT_SIZE );
@@ -641,14 +640,14 @@ __myevic__ uint32_t hidGetInfoCmd( CMD_T *pCmd )
 
 	if ( u32ParamLen )
 	{
-		dfData = Checksum( (uint8_t *)&dfCRC, PAGE_SIZE - 4 );
+		dfChecksum = Checksum( (uint8_t *)&dfCRC, FMC_FLASH_PAGE_SIZE - 4 );
 
-		if ( u32StartAddr + u32ParamLen > PAGE_SIZE )
+		if ( u32StartAddr + u32ParamLen > FMC_FLASH_PAGE_SIZE )
 		{
-			u32ParamLen = PAGE_SIZE - u32StartAddr;
+			u32ParamLen = FMC_FLASH_PAGE_SIZE - u32StartAddr;
 		}
 
-		MemCpy( hidData, ((uint8_t *)&dfData) + u32StartAddr, u32ParamLen );
+		MemCpy( hidData, ((uint8_t *)&DataFlash) + u32StartAddr, u32ParamLen );
 
 		hidDataIndex = u32ParamLen;
 		pCmd->u32Signature = u32ParamLen;
@@ -670,7 +669,7 @@ __myevic__ uint32_t hidGetInfoCmd( CMD_T *pCmd )
 __myevic__ uint32_t hidBootLogoCmd( CMD_T *pCmd )
 {
 	PutTextf( "Set Boot Logo command - Start page: %d\t\tLen: %d\n", pCmd->u32Arg1, pCmd->u32Arg2 );
-	MemClear( hidData, PAGE_SIZE );
+	MemClear( hidData, FMC_FLASH_PAGE_SIZE );
 	hidDataIndex = 0;
 	pCmd->u32Signature = 0;
 	return 0;
@@ -690,7 +689,7 @@ __myevic__ uint32_t hidSetParamCmd( CMD_T *pCmd )
 __myevic__ uint32_t hidLDUpdateCmd( CMD_T *pCmd )
 {
 	PutTextf( "Update LDROM command - Start page: %d\t\tLen: %d\n", pCmd->u32Arg1, pCmd->u32Arg2 );
-	MemClear( hidData, PAGE_SIZE );
+	MemClear( hidData, FMC_FLASH_PAGE_SIZE );
 	hidDataIndex = 0;
 	pCmd->u32Signature = 0;
 	return 0;
@@ -715,9 +714,9 @@ __myevic__ uint32_t hidFMCReadCmd( CMD_T *pCmd )
 	
 	if ( u32ParamLen )
 	{
-		if ( u32ParamLen > PAGE_SIZE )
+		if ( u32ParamLen > FMC_FLASH_PAGE_SIZE )
 		{
-			u32ParamLen = PAGE_SIZE;
+			u32ParamLen = FMC_FLASH_PAGE_SIZE;
 		}
 
 		SYS_UnlockReg();
@@ -846,9 +845,9 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 			{
 				u8Cmd = 0;
 
-				if ( u32StartAddr + u32DataSize > PAGE_SIZE )
+				if ( u32StartAddr + u32DataSize > FMC_FLASH_PAGE_SIZE )
 				{
-					sz = PAGE_SIZE - u32StartAddr;
+					sz = FMC_FLASH_PAGE_SIZE - u32StartAddr;
 				}
 				else
 				{
@@ -859,13 +858,17 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 
 				PutTextf( "Set Sys Param complete.\n" );
 
-				if ( Checksum( (uint8_t*)&hidDFData[1], PAGE_SIZE - 4 ) == hidDFData[0] )
+				if ( Checksum( (uint8_t*)&hidDFData[1], FMC_FLASH_PAGE_SIZE - 4 ) == hidDFData[0] )
 				{
-					#define DFOFFSET(p) (int)(((uint8_t*)&(p))-(uint8_t*)&dfData)
-					PutTextf( "\tCompany ID ............................ [0x%08x]\n", hidDFData[DFOFFSET(fmcCID)>>2] );
-					PutTextf( "\tDevice ID ............................. [0x%08x]\n", hidDFData[DFOFFSET(fmcDID)>>2] );
-					PutTextf( "\tProduct ID ............................ [0x%08x]\n", hidDFData[DFOFFSET(fmcPID)>>2] );
-					PutTextf( "\tu8UpdateAPRom ......................... [0x%08x]\n", (((char*)hidDFData)+DFOFFSET(dfBootFlag)) );
+					#define DFOFFSET(p) (int)(((uint8_t*)&(p))-(uint8_t*)&DataFlash)
+					PutTextf( "\tCompany ID ............................ [0x%08x]\n",
+								hidDFData[DFOFFSET(dffmcCID)>>2] );
+					PutTextf( "\tDevice ID ............................. [0x%08x]\n",
+								hidDFData[DFOFFSET(dffmcDID)>>2] );
+					PutTextf( "\tProduct ID ............................ [0x%08x]\n",
+								hidDFData[DFOFFSET(dffmcPID)>>2] );
+					PutTextf( "\tu8UpdateAPRom ......................... [0x%08x]\n",
+								(((char*)hidDFData)+DFOFFSET(dfBootFlag)) );
 					#undef DFOFFSET
 
 					MemCpy( &dfCRC, &hidDFData[1], 0x100 );
@@ -891,7 +894,7 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 			USBD_MemCopy( hidDataPtr, pu8Buffer, EP3_MAX_PKT_SIZE );
 			hidDataIndex += EP3_MAX_PKT_SIZE;
 
-			if ( hidDataIndex < PAGE_SIZE && hidDataIndex + u32ByteCount < u32DataSize )
+			if ( hidDataIndex < FMC_FLASH_PAGE_SIZE && hidDataIndex + u32ByteCount < u32DataSize )
 			{
 				break;
 			}
@@ -914,7 +917,7 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 				PutTextf( "Data Flash Verify error! 0x%x\n", 4 * veo - 4 );
 			}
 
-			MemClear( hidData, PAGE_SIZE );
+			MemClear( hidData, FMC_FLASH_PAGE_SIZE );
 			u32ByteCount += hidDataIndex;
 
 			PutTextf( "g_u32BytesInPageBuf %d, u32LenCnt 0x%x\n", hidDataIndex, u32ByteCount );
@@ -940,7 +943,7 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 			USBD_MemCopy( hidDataPtr, pu8Buffer, EP3_MAX_PKT_SIZE );
 			hidDataIndex += EP3_MAX_PKT_SIZE;
 
-			if ( hidDataIndex < PAGE_SIZE && hidDataIndex + u32ByteCount < u32DataSize )
+			if ( hidDataIndex < FMC_FLASH_PAGE_SIZE && hidDataIndex + u32ByteCount < u32DataSize )
 			{
 				break;
 			}
@@ -963,7 +966,7 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 				PutTextf( "Data Flash Verify error! 0x%x\n", 4 * veo - 4 );
 			}
 
-			MemClear( hidData, PAGE_SIZE );
+			MemClear( hidData, FMC_FLASH_PAGE_SIZE );
 			u32ByteCount += hidDataIndex;
 			hidDataIndex = 0;
 

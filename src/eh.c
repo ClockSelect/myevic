@@ -95,10 +95,10 @@ __myevic__ void EventHandler()
 					Flags64 |= 0x4000u;
 					BatRefreshTmr = 0;
 					SleepTimer = 3000;
-					InitTimeouts();
+					fbInitTimeouts();
 					DisplayRefresh();
 					fbBirdAnim( 24 );
-					CreateTimeout( fbStartScreen + 1 );
+					fbCreateTimeout( fbStartScreen + 1 );
 				}
 				return;
 			}

@@ -6,7 +6,7 @@
 #include "myrtc.h"
 #include "dataflash.h"
 #include "atomizer.h"
-#include "M451Series.h"
+#include "flappy.h"
 
 #include "events.h"
 
@@ -316,7 +316,7 @@ __myevic__ void GetUserInput()
 				{
 					Flags68 &= ~0x200u;
 					Event = -1;
-					DeleteTimeout(CurrentTimeout);
+					fbDeleteTimeout(fbCurrentTimeout);
 					MainView();
 				}
 			}
@@ -673,7 +673,7 @@ __myevic__ int CustomEvents()
 			vret = EvtContrastMenu();
 			break;
 
-		case EVENT_ENTER_MENUS:	// Contrast screen
+		case EVENT_ENTER_MENUS:	// Menus screen
 			vret = EvtEnterMenus();
 			break;
 

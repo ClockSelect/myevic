@@ -15,6 +15,7 @@
 
 
 //=============================================================================
+// Forward declarations
 
 void SleepIfIdle();
 
@@ -96,17 +97,21 @@ __myevic__ void CustomStartup()
 //----- (0000652C) --------------------------------------------------------
 void InitDevices()
 {
-	// Internal 12MHz oscillator
+	// Internal 22.1184MHz oscillator
 	CLK_EnableXtalRC( CLK_PWRCTL_HIRCEN_Msk );
 	CLK_WaitClockReady( CLK_STATUS_HIRCSTB_Msk );
 	CLK_SetHCLK( CLK_CLKSEL0_HCLKSEL_HIRC, CLK_CLKDIV0_HCLK( 1 ) );
 
-	// 12MHz & 32kHz external crystals
-	CLK_EnableXtalRC( CLK_PWRCTL_HXTEN_Msk|CLK_PWRCTL_LXTEN_Msk );
-	CLK_WaitClockReady( CLK_STATUS_HXTSTB_Msk|CLK_STATUS_LXTSTB_Msk );
+	// 12.000MHz external crystal
+	CLK_EnableXtalRC( CLK_PWRCTL_HXTEN_Msk );
+	CLK_WaitClockReady( CLK_STATUS_HXTSTB_Msk );
+
+	//  32.768kHz external crystal
+	CLK_EnableXtalRC( CLK_PWRCTL_LXTEN_Msk );
+	CLK_WaitClockReady( CLK_STATUS_LXTSTB_Msk );
 
 	// FMC Frequency Optimisation mode <= 72MHz
-	FMC->FTCTL |= ( 7 << FMC_FTCTL_FOM_Pos );
+	FMC_EnableFreqOptimizeMode( FMC_FTCTL_OPTIMIZE_72MHZ );
 
 	// Setup PLL to 144MHz and HCLK source to PLL/2
 	CLK_SetCoreClock( 72000000 );
@@ -130,6 +135,7 @@ void InitDevices()
 	CLK_EnableModuleClock( WDT_MODULE );
 	CLK_SetModuleClock( WDT_MODULE, CLK_CLKSEL1_WDTSEL_LIRC, 0 );
 
+	// SPI0 CLK = PCLK0/1
 	CLK_EnableModuleClock( SPI0_MODULE );
 
 	// EADC CLK = PCLK1/8
@@ -225,7 +231,7 @@ __myevic__ void Main()
 		while ( Flags68 & 0x200 )
 		{
 			// Flappy Bird game loop
-			CallTimeouts();
+			fbCallTimeouts();
 			if ( Flags64 & 8 )
 			{
 				// 100Hz
@@ -249,8 +255,6 @@ __myevic__ void Main()
 		{
 			GetAtoCurrent();
 		}
-
-	//	asm( "WFI" );
 
 		if ( Flags64 & 1 )
 		{
