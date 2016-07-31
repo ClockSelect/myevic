@@ -6,10 +6,10 @@
 typedef struct
 {
 	int8_t	x;
-	int8_t	unk1;
-	int8_t	unk2;
-	int8_t	unk3;
-	int8_t	unk4;
+	uint8_t	unk1;
+	uint8_t	unk2;
+	uint8_t	unk3;
+	uint8_t	unk4;
 }
 fbColumn_t;
 

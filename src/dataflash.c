@@ -106,6 +106,7 @@ __myevic__ void ResetDataFlash()
 	int hwv;
 
 	hwv = dfHWVersion;
+	if ( hwv < 100 || hwv > 111 ) hwv = 100;
 	MemClear( DataFlash.params, DATAFLASH_PARAMS_SIZE );
 	dfHWVersion = hwv;
 	dfMagic = 0x36;
@@ -408,16 +409,19 @@ __myevic__ void WriteDataFlash( uint32_t u32Addr, const uint32_t *pu32Data )
 		offset = 0;
 		FMC_Erase( u32Addr );
 	}
-	else if ( offset % FMC_FLASH_PAGE_SIZE == DATAFLASH_PARAMS_SIZE )
+	else if ( offset < DATAFLASH_PARAMS_SPACE - FMC_FLASH_PAGE_SIZE )
 	{
-		FMC_Erase( u32Addr + offset - DATAFLASH_PARAMS_SIZE + FMC_FLASH_PAGE_SIZE );
+		if ( offset % FMC_FLASH_PAGE_SIZE == DATAFLASH_PARAMS_SIZE )
+		{
+			FMC_Erase( u32Addr + offset - DATAFLASH_PARAMS_SIZE + FMC_FLASH_PAGE_SIZE );
+		}
 	}
 
 	u32Addr += offset;
 
 	for ( offset = 0 ; offset < DATAFLASH_PARAMS_SIZE ; offset += 4 )
 	{
-		FMC_Write( u32Addr + offset, pu32Data[ offset << 2 ] );
+		FMC_Write( u32Addr + offset, pu32Data[ offset / 4 ] );
 	}
 }
 

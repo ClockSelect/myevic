@@ -8,7 +8,7 @@
 //-------------------------------------------------------------------------
 
 // End of APROM address (on a 128k chip)
-#define DATAFLASH_APROM_END			0x20000
+#define DATAFLASH_APROM_END			0x00020000
 
 // Time & Puffs counters space
 #define DATAFLASH_TIMECNTR_BASE		(DATAFLASH_APROM_END-FMC_FLASH_PAGE_SIZE)

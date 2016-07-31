@@ -12,7 +12,7 @@ __myevic__ void fbCreateColumn( int8_t hpos, fbColumn_t *column )
 {
 	uint8_t vpos;
 
-	if ( hpos <= 127 )
+	if ( hpos > 0 )
 	{
 		column->x = hpos;
 		vpos = Random() % 24 + 1;
