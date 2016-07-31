@@ -3403,7 +3403,7 @@ loc_16BA:				@ ...
 		BCC	loc_16AA
 		MOVS	R0, #0
 		POP	{R4-R7,PC}
-@ End of function FMCWrite800
+@ End of function FMCWritePage
 
 @ ---------------------------------------------------------------------------
 		.balign 4,0
@@ -3448,7 +3448,7 @@ loc_16EA:				@ ...
 
 locret_1704:				@ ...
 		POP	{R4-R7,PC}
-@ End of function FMCVerif800
+@ End of function FMCVerifyPage
 
 @ ---------------------------------------------------------------------------
 		.balign 4,0
@@ -3491,7 +3491,7 @@ loc_1734:				@ ...
 loc_1736:				@ ...
 		ADDS	R2, R2,	#1
 		BEQ	loc_1742
-		BL	FMCWrite800
+		BL	FMCWritePage
 		MOVS	R0, #0
 		POP	{PC}
 @ ---------------------------------------------------------------------------
@@ -3499,7 +3499,7 @@ loc_1736:				@ ...
 loc_1742:				@ ...
 		MOVS	R0, #1
 		POP	{PC}
-@ End of function FMCEraseWrite800
+@ End of function FMCEraseWritePage
 
 @ ---------------------------------------------------------------------------
 		.balign 4,0
@@ -3839,7 +3839,7 @@ loc_1922:				@ ...
 
 		.ifne	keeporgcode
 
-orgFMCRead100:
+orgFMCRead256:
 		PUSH	{R4-R6,LR}
 		MOV	R5, R1
 		MOV	R6, R0
@@ -3853,7 +3853,7 @@ loc_192E:				@ ...
 		CMP	R4, #0xFF
 		BLS	loc_192E
 		POP	{R4-R6,PC}
-@ End of function FMCRead100
+@ End of function FMCRead256
 
 @ ---------------------------------------------------------------------------
 		.balign 4,0
@@ -3957,7 +3957,7 @@ loc_19D4:				@ ...
 		CBZ	R0, loc_1A0A
 		ADDS	R1, R4,	#4
 		MOV	R0, R8
-		BL	FMCLoadDFFirstPage
+		BL	ReadDataFlash
 		MOV	R6, R0
 
 loc_1A0A:				@ ...
@@ -3978,7 +3978,7 @@ loc_1A1E:				@ ...
 loc_1A22:				@ ...
 		ADDS	R1, R4,	#(dfCRC	- dfData)
 		LDR.W	R8, [R4,#(dfHWVersion -	dfData)]
-		BL	FMCRead100
+		BL	FMCRead256
 		ADDS	R0, R4,	#4
 		BL	CalcPageCRC
 		LDR	R1, [R4,#(dfCRC	- dfData)]
@@ -3997,7 +3997,7 @@ loc_1A42:				@ ...
 		MOV.W	R1, #0x40000000
 		MOV	R8, R7
 		STR.W	R7, [R1,#0x100]	@ Lock registers
-		BL	GetProductID
+		BL	SetProductID
 		LDR	R2, [R4,#(dfHWVersion -	dfData)]
 		LDR	R6, =UpdateDFTimer
 		CMP	R2, #102
@@ -4268,10 +4268,10 @@ loc_1D18:				@ ...
 loc_1D20:				@ ...
 		MOV	R1, R8
 		MOV	R0, R5
-		BL	FMCRead100
+		BL	FMCRead256
 		MOV	R0, R5
 		POP.W	{R4-R8,PC}
-@ End of function FMCLoadDFFirstPage
+@ End of function ReadDataFlash
 
 @ ---------------------------------------------------------------------------
 		.balign 4,0
@@ -4755,7 +4755,7 @@ loc_2046:				@ ...
 
 locret_205E:				@ ...
 		POP	{R4,PC}
-@ End of function UpdateFlash
+@ End of function DataFlashUpdateTick
 
 @ ---------------------------------------------------------------------------
 		.balign 4,0
@@ -4773,7 +4773,7 @@ orgGetProductID:
 		LDR	R0, =dfPage2
 		STRD.W	R1, R2,	[R0,#(dfProductID - dfPage2)]
 		BX	LR
-@ End of function GetProductID
+@ End of function SetProductID
 
 @ ---------------------------------------------------------------------------
 		.balign 4,0
@@ -5952,7 +5952,7 @@ loc_28A2:				@ ...
 		BL	FMCEnableISP
 		MOV	R0, R7
 		LDR	R1, =hidData
-		BL	FMCEraseWrite800
+		BL	FMCEraseWritePage
 		CBZ	R0, loc_28C8
 		B	loc_28C2
 @ ---------------------------------------------------------------------------
@@ -5968,7 +5968,7 @@ loc_28C2:				@ ...
 loc_28C8:				@ ...
 		MOV	R0, R7
 		LDR	R1, =hidData
-		BL	FMCVerif800
+		BL	FMCVerifyPage
 		CBZ	R0, loc_28DC
 		LSLS	R1, R0,	#2
 		ADR	R0, aDataFlashVerif
@@ -6023,7 +6023,7 @@ loc_2930:				@ ...
 		BL	FMC_EnableLDUpdate
 		MOV	R0, R7
 		LDR	R1, =hidData
-		BL	FMCEraseWrite800
+		BL	FMCEraseWritePage
 		CBZ	R0, loc_2956
 		ADR	R0, aDataFlashErase
 		BL	PutTextf
@@ -6031,7 +6031,7 @@ loc_2930:				@ ...
 loc_2956:				@ ...
 		MOV	R0, R7
 		LDR	R1, =hidData
-		BL	FMCVerif800
+		BL	FMCVerifyPage
 		CBZ	R0, loc_296A
 		LSLS	R1, R0,	#2
 		ADR	R0, aDataFlashVerif
@@ -12930,7 +12930,7 @@ orgDrawLOGO:
 loc_5814:				@ ...
 		ADD.W	R1, R5,	R4,LSL#8
 		ADD.W	R0, R8,	R4,LSL#8
-		BL	FMCRead100
+		BL	FMCRead256
 		ADDS	R4, R4,	#1
 		UXTB	R4, R4
 		CMP	R4, #2
@@ -12963,7 +12963,7 @@ loc_5854:				@ ...
 loc_5862:				@ ...
 		ADD.W	R1, R5,	R4,LSL#8
 		ADD.W	R0, R8,	R4,LSL#8
-		BL	FMCRead100
+		BL	FMCRead256
 		ADDS	R4, R4,	#1
 		UXTB	R4, R4
 		CMP	R4, #2
@@ -21496,7 +21496,7 @@ loc_91CA:				@ ...
 		BPL	loc_9196
 		BIC.W	R0, R0,	#0x10
 		STR	R0, [R6]
-		BL	UpdateFlash
+		BL	DataFlashUpdateTick
 		B	loc_9196
 @ ---------------------------------------------------------------------------
 
@@ -21608,7 +21608,7 @@ loc_9298:				@ ...
 		BPL	loc_92D6
 		BIC.W	R0, R0,	#0x10
 		STR	R0, [R6]
-		BL	UpdateFlash
+		BL	DataFlashUpdateTick
 		LDR	R1, [R6]
 		LSLS	R0, R1,	#23
 		BPL	loc_92B4

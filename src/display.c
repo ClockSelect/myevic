@@ -280,7 +280,7 @@ __myevic__ uint32_t DrawImageInv( const int x, const int y, const uint16_t img )
 //----- (000057D4) --------------------------------------------------------
 __myevic__ void DrawLOGO( const int x, const int y )
 {
-	uint8_t buffer[0x200];
+	uint8_t buffer[DATAFLASH_LOGO_SIZE];
 	image_t *img;
 	uint32_t base_addr;
 
@@ -289,26 +289,26 @@ __myevic__ void DrawLOGO( const int x, const int y )
 	switch ( DisplayModel )
 	{
 		case 0:
-			base_addr = 0x19200;
+			base_addr = DATAFLASH_LOGO_1306_BASE;
 			break;
 
 		case 1:
-			base_addr = 0x19000;
+			base_addr = DATAFLASH_LOGO_1327_BASE;
 			break;
 
 		default:
 			return;
 	}
 
-	MemClear( buffer, 0x200 );
+	MemClear( buffer, DATAFLASH_LOGO_SIZE );
 	img = (image_t*)buffer;
 
 	SYS_UnlockReg();
 	FMC_ENABLE_ISP();
 
-	for ( uint32_t addr = 0; addr < 0x200 ; addr += 0x100 )
+	for ( uint32_t addr = 0; addr < DATAFLASH_LOGO_SIZE ; addr += 0x100 )
 	{
-		FMCRead100( base_addr + addr, (uint32_t*)( buffer + addr ) );
+		FMCRead256( base_addr + addr, (uint32_t*)( buffer + addr ) );
 	}
 
 	FMC_DISABLE_ISP();
@@ -331,6 +331,7 @@ __myevic__ void DrawLOGO( const int x, const int y )
 
 
 //=========================================================================
+//-------------------------------------------------------------------------
 __myevic__ uint16_t* Value2Str( uint16_t *str, int v, int dp, uint16_t z, int nd )
 {
 	uint16_t dot;

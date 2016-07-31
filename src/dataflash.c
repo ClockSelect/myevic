@@ -8,12 +8,12 @@
 
 dfStruct_t DataFlash;
 
-uint8_t ParamsBackup[DATAFLASH_PRMS_SIZE];
+uint8_t ParamsBackup[DATAFLASH_PARAMS_SIZE];
 
 
 //=============================================================================
 //----- (00002064) --------------------------------------------------------
-__myevic__ void GetProductID()
+__myevic__ void SetProductID()
 {
 	dfProductID = *(uint32_t*)"E052";
 	dfMaxHWVersion = 0x00010101;
@@ -30,7 +30,7 @@ __myevic__ void FMCReadCounters()
 	idx = 0;
 	do
 	{
-		v = FMC_Read( 0x1F000 + idx );
+		v = FMC_Read( DATAFLASH_PUFFCNTR_BASE + idx );
 		if ( v == -1 ) break;
 		idx += 4;
 		pc = v;
@@ -42,7 +42,7 @@ __myevic__ void FMCReadCounters()
 	if ( idx )
 	{
 		dfPuffCount = pc;
-		dfTimeCount = FMC_Read( 0x1F800 + idx - 4 );
+		dfTimeCount = FMC_Read( DATAFLASH_TIMECNTR_BASE + idx - 4 );
 	}
 	else
 	{
@@ -61,13 +61,13 @@ __myevic__ void FMCWriteCounters()
 
 	if ( fmcCntrsIndex >= FMC_FLASH_PAGE_SIZE )
 	{
-		FMC_Erase( 0x1F000 );
-		FMC_Erase( 0x1F800 );
+		FMC_Erase( DATAFLASH_PUFFCNTR_BASE );
+		FMC_Erase( DATAFLASH_TIMECNTR_BASE );
 		fmcCntrsIndex = 0;
 	}
 
-	FMC_Write( 0x1F000 + fmcCntrsIndex, dfPuffCount );
-	FMC_Write( 0x1F800 + fmcCntrsIndex, dfTimeCount );
+	FMC_Write( DATAFLASH_PUFFCNTR_BASE + fmcCntrsIndex, dfPuffCount );
+	FMC_Write( DATAFLASH_TIMECNTR_BASE + fmcCntrsIndex, dfTimeCount );
 	fmcCntrsIndex += 4;
 
 	FMC_DISABLE_ISP();
@@ -106,9 +106,9 @@ __myevic__ void ResetDataFlash()
 	int hwv;
 
 	hwv = dfHWVersion;
-	MemClear( DataFlash.params, DATAFLASH_PRMS_SIZE );
+	MemClear( DataFlash.params, DATAFLASH_PARAMS_SIZE );
 	dfHWVersion = hwv;
-	dfMagic = 54;
+	dfMagic = 0x36;
 	dfMode = 4;
 	dfVWVolts = 330;
 	dfPower = MaxPower;
@@ -141,8 +141,8 @@ __myevic__ void ResetDataFlash()
 	CpyTmpCoefsNI();
 	CpyTmpCoefsTI();
 	dfStatus = 0;
-	MemClear( dfSavedCfgRez, 20 );
-	MemClear( dfSavedCfgPwr, 20 );
+	MemClear( dfSavedCfgRez, sizeof(dfSavedCfgRez) );
+	MemClear( dfSavedCfgPwr, sizeof(dfSavedCfgPwr) );
 	FMCWriteCounters();
 	dfContrast = 45;
 	dfModesSel = 0;
@@ -156,16 +156,16 @@ __myevic__ void DFCheckValuesValidity()
 {
 	int i,v;
 
-	if ( dfMode >= 7u )
+	if ( dfMode >= 7 )
 		dfMode = 4;
 
-	if ( dfVWVolts > MaxVWVolts || dfVWVolts < 50u )
+	if ( dfVWVolts > MaxVWVolts || dfVWVolts < 50 )
 		dfVWVolts = 330;
 
-	if ( dfPower > MaxPower || dfPower < 10u )
+	if ( dfPower > MaxPower || dfPower < 10 )
 		dfPower = MaxPower;
 
-	if ( dfTCPower > MaxTCPower || dfTCPower < 10u )
+	if ( dfTCPower > MaxTCPower || dfTCPower < 10 )
 		dfTCPower = MaxTCPower;
 
 	if ( dfPuffCount > 99999 || dfTimeCount > 999999 )
@@ -201,34 +201,34 @@ __myevic__ void DFCheckValuesValidity()
 	}
 
 
-	if ( dfRezTI > 150u )
+	if ( dfRezTI > 150 )
 		dfRezTI = 0;
 
-	if ( dfRezNI > 150u )
+	if ( dfRezNI > 150 )
 		dfRezNI = 0;
 
-	if ( dfRezLockedTI > 1u )
+	if ( dfRezLockedTI > 1 )
 		dfRezLockedTI = 0;
 
-	if ( dfRezLockedNI > 1u )
+	if ( dfRezLockedNI > 1 )
 		dfRezLockedNI = 0;
 
-	if ( dfStealthOn > 1u )
+	if ( dfStealthOn > 1 )
 		dfStealthOn = 0;
 
-	if ( dfTiOn > 1u )
+	if ( dfTiOn > 1 )
 		dfTiOn = 1;
 
-	if ( dfRezSS > 150u )
+	if ( dfRezSS > 150 )
 		dfRezSS = 0;
 
-	if ( dfRezLockedSS > 1u )
+	if ( dfRezLockedSS > 1 )
 		dfRezLockedSS = 0;
 
-	if ( dfRezTCR > 150u )
+	if ( dfRezTCR > 150 )
 		dfRezTCR = 0;
 
-	if ( dfRezLockedTCR > 1u )
+	if ( dfRezLockedTCR > 1 )
 		dfRezLockedTCR = 0;
 
 	i = 0;
@@ -262,10 +262,10 @@ __myevic__ void DFCheckValuesValidity()
 	}
 	while ( i < 3 );
 
-	if ( dfbyte_2000033D >= 2u )
+	if ( dfbyte_2000033D >= 2 )
 		dfbyte_2000033D = 0;
 
-	if ( dfFBSpeed > 2u )
+	if ( dfFBSpeed > 2 )
 		dfFBSpeed = 0;
 
 	i = 0;
@@ -281,8 +281,8 @@ __myevic__ void DFCheckValuesValidity()
 	}
 	if ( i < 10 )
 	{
-		MemClear(dfSavedCfgRez, 0x14u);
-		MemClear(dfSavedCfgPwr, 0x14u);
+		MemClear( dfSavedCfgRez, sizeof(dfSavedCfgRez) );
+		MemClear( dfSavedCfgPwr, sizeof(dfSavedCfgPwr) );
 	}
 
 	if ( dfModesSel & 0x80 || ( dfModesSel & 0x7F ) == 0x7F )
@@ -297,20 +297,20 @@ __myevic__ void DFCheckValuesValidity()
 //----- (000018D0) --------------------------------------------------------
 __myevic__ int FMCCheckConfig( unsigned long cfg[] )
 {
-	if ( cfg[0] & 1 || cfg[1] != 0x1E000 )
+	if ( cfg[0] & 1 || cfg[1] != DATAFLASH_PARAMS_BASE )
 	{
 		FMC_EnableConfigUpdate();
 		FMC_Erase( FMC_CONFIG_BASE );
 
 		cfg[0] &= ~1;
-		cfg[1] = 0x1E000;
+		cfg[1] = DATAFLASH_PARAMS_BASE;
 
 		if ( FMC_WriteConfig( cfg, 2 ) < 0 )
 			return 0;
 
 		FMC_ReadConfig( cfg, 2 );
 
-		if ( cfg[0] & 1 || cfg[1] != 0x1E000 )
+		if ( cfg[0] & 1 || cfg[1] != DATAFLASH_PARAMS_BASE )
 			return 0;
 
 		SYS_ResetChip();
@@ -321,7 +321,7 @@ __myevic__ int FMCCheckConfig( unsigned long cfg[] )
 
 //=============================================================================
 //----- (00001926) --------------------------------------------------------
-__myevic__ void FMCRead100( uint32_t u32Addr, uint32_t *pu32Buf )
+__myevic__ void FMCRead256( uint32_t u32Addr, uint32_t *pu32Buf )
 {
 	for ( uint32_t offset = 0 ; offset < 0x100 ; offset += 4 )
 	{
@@ -333,23 +333,29 @@ __myevic__ void FMCRead100( uint32_t u32Addr, uint32_t *pu32Buf )
 
 //=============================================================================
 //----- (00001CEC) --------------------------------------------------------
-__myevic__ uint32_t FMCLoadDFFirstPage( uint32_t u32Addr, uint32_t *pu32Buf )
+__myevic__ uint32_t ReadDataFlash( uint32_t u32Addr, uint32_t *pu32Buf )
 {
-	uint32_t offset = 0;
-	do
+	uint32_t offset;
+
+	for ( offset = 0 ; offset < DATAFLASH_PARAMS_SPACE ; offset += DATAFLASH_PARAMS_SIZE )
 	{
 		if ( FMC_Read( u32Addr + offset ) == ~0 && FMC_Read( u32Addr + offset + 4 ) == ~0 )
+		{
 			break;
-		offset += 0x100;
+		}
+		offset += DATAFLASH_PARAMS_SIZE;
 	}
-	while ( offset < 0x1000 );
 
 	if ( offset )
 	{
-		u32Addr += offset - 0x100;
+		u32Addr += offset - DATAFLASH_PARAMS_SIZE;
 	}
 
-	FMCRead100( u32Addr, pu32Buf );
+	for ( offset = 0 ; offset < DATAFLASH_PARAMS_SIZE ; offset += 0x100 )
+	{
+		FMCRead256( u32Addr + offset, pu32Buf + offset / 4 );
+	}
+
 	return u32Addr;
 }
 
@@ -358,9 +364,9 @@ __myevic__ uint32_t FMCLoadDFFirstPage( uint32_t u32Addr, uint32_t *pu32Buf )
 //----- (0000119C) --------------------------------------------------------
 __myevic__ uint32_t CalcPageCRC( uint32_t *pu32Addr )
 {
-	uint32_t idx; // r1@1
-	uint16_t *addr; // r4@1
-	uint32_t crc; // r0@3
+	uint32_t idx;
+	uint16_t *addr;
+	uint32_t crc;
 
 	CRC_Open( CRC_CCITT, 0, 0xFFFF, CRC_CPU_WDATA_16 );
 
@@ -371,7 +377,7 @@ __myevic__ uint32_t CalcPageCRC( uint32_t *pu32Addr )
 	{
 		CRC_WRITE_DATA( addr[idx] );
 	}
-	while ( ++idx < (DATAFLASH_PRMS_SIZE-4)/2 );
+	while ( ++idx < ( DATAFLASH_PARAMS_SIZE - 4 ) / 2 );
 
 	crc = CRC_GetChecksum();
 
@@ -387,29 +393,31 @@ __myevic__ uint32_t CalcPageCRC( uint32_t *pu32Addr )
 // in DF after u32Addr
 __myevic__ void WriteDataFlash( uint32_t u32Addr, const uint32_t *pu32Data )
 {
-	uint32_t offset; // r4@1
+	uint32_t offset;
 
-	for ( offset = 0 ; offset < 0x1000 ; offset += 0x100 )
+	for ( offset = 0 ; offset < DATAFLASH_PARAMS_SPACE ; offset += DATAFLASH_PARAMS_SIZE )
 	{
 		if ( FMC_Read( u32Addr + offset ) == ~0 && FMC_Read( u32Addr + offset + 4 ) == ~0 )
+		{
 			break;
+		}
 	}
 
-	if ( offset == 0x1000 )
+	if ( offset >= DATAFLASH_PARAMS_SPACE )
 	{
 		offset = 0;
 		FMC_Erase( u32Addr );
 	}
-	else if ( offset == 0x100 )
+	else if ( offset % FMC_FLASH_PAGE_SIZE == DATAFLASH_PARAMS_SIZE )
 	{
-		FMC_Erase( u32Addr + 0x200 );
+		FMC_Erase( u32Addr + offset - DATAFLASH_PARAMS_SIZE + FMC_FLASH_PAGE_SIZE );
 	}
 
-	u32Addr = u32Addr + offset;
+	u32Addr += offset;
 
-	for ( int i = 0 ; i < 0x100 / 4 ; ++i )
+	for ( offset = 0 ; offset < DATAFLASH_PARAMS_SIZE ; offset += 4 )
 	{
-		FMC_Write( u32Addr + 4 * i, pu32Data[i] );
+		FMC_Write( u32Addr + offset, pu32Data[ offset << 2 ] );
 	}
 }
 
@@ -418,27 +426,27 @@ __myevic__ void WriteDataFlash( uint32_t u32Addr, const uint32_t *pu32Data )
 //----- (00001D30) --------------------------------------------------------
 __myevic__ void UpdateDataFlash()
 {
-	uint8_t *df; // r4@1
-	uint32_t idx; // r0@1
+	uint8_t *df;
+	uint32_t idx;
 
 	dfAtoRez = AtoRez;
 	dfAtoStatus = AtoStatus;
 
 	df = (uint8_t*)&DataFlash.params;
 
-	for ( idx = 0 ; idx < DATAFLASH_PRMS_SIZE ; ++idx )
+	for ( idx = 0 ; idx < DATAFLASH_PARAMS_SIZE ; ++idx )
 	{
 		if ( df[idx] != ParamsBackup[idx] )
 			break;
 	}
 
-	if ( idx != DATAFLASH_PRMS_SIZE )
+	if ( idx != DATAFLASH_PARAMS_SIZE )
 	{
 		dfCRC = CalcPageCRC( DataFlash.params );
-		MemCpy( ParamsBackup, DataFlash.params, DATAFLASH_PRMS_SIZE );
+		MemCpy( ParamsBackup, DataFlash.params, DATAFLASH_PARAMS_SIZE );
 		SYS_UnlockReg();
 		FMC_ENABLE_ISP();
-		WriteDataFlash( 0x1E000, DataFlash.params );
+		WriteDataFlash( DATAFLASH_PARAMS_BASE, DataFlash.params );
 		FMC_DISABLE_ISP();
 		SYS_LockReg();
 	}
@@ -464,7 +472,8 @@ __myevic__ void InitDataFlash()
 	FMC->ISPCMD = FMC_ISPCMD_READ_DID;
 	FMC->ISPADDR = 0;
 	FMC->ISPTRG = FMC_ISPTRG_ISPGO_Msk;
-	while( FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk );
+	while( FMC->ISPTRG & FMC_ISPTRG_ISPGO_Msk )
+		;
 	dffmcDID = FMC->ISPDAT;
 
 	dffmcPID = FMC_ReadPID();
@@ -481,26 +490,30 @@ __myevic__ void InitDataFlash()
 
 	FMC_ReadConfig( cfg, 2 );
 
-	addr = 0x1E000;
+	addr = DATAFLASH_PARAMS_BASE;
 
 	if ( FMCCheckConfig( cfg ) )
 	{
-		addr = FMCLoadDFFirstPage( addr, DataFlash.params );
+		addr = ReadDataFlash( addr, DataFlash.params );
 	}
 
 	if ( CalcPageCRC( DataFlash.params ) != dfCRC )
 	{
-		if ( addr == 0x1E000 )
+		if ( addr == DATAFLASH_PARAMS_BASE )
 		{
-			addr = 0x1EF00;
+			addr = DATAFLASH_PARAMS_END - DATAFLASH_PARAMS_SIZE;
 		}
 		else
 		{
-			addr -= 0x100;
+			addr -= DATAFLASH_PARAMS_SIZE;
 		}
 
 		hwv = dfHWVersion;
-		FMCRead100( addr, DataFlash.params );
+
+		for ( i = 0 ; i < DATAFLASH_PARAMS_SIZE ; i += 0x100 )
+		{
+			FMCRead256( addr + i, &DataFlash.params[ i / 4 ] );
+		}
 
 		if ( CalcPageCRC( DataFlash.params ) == dfCRC )
 		{
@@ -517,7 +530,7 @@ __myevic__ void InitDataFlash()
 	FMC_DISABLE_ISP();
 	SYS_LockReg();
 
-	GetProductID();
+	SetProductID();
 
 	switch ( dfHWVersion )
 	{
@@ -590,7 +603,8 @@ __myevic__ void InitDataFlash()
 
 	dfStatus &=  ~1;
 	dfUIVersion = 2;
-	MemCpy( ParamsBackup, DataFlash.params, DATAFLASH_PRMS_SIZE );
+
+	MemCpy( ParamsBackup, DataFlash.params, DATAFLASH_PARAMS_SIZE );
 
 	if ( dfBootFlag )
 	{
@@ -603,7 +617,7 @@ __myevic__ void InitDataFlash()
 //=============================================================================
 //----- (0000169C) --------------------------------------------------------
 // Writes 2kB from RAM R1 to DF R0
-__myevic__ void FMCWrite800( uint32_t u32Addr, uint32_t *pu32Data )
+__myevic__ void FMCWritePage( uint32_t u32Addr, uint32_t *pu32Data )
 {
 	for ( uint32_t idx = 0 ; idx < FMC_FLASH_PAGE_SIZE / 4 ; ++idx )
 	{
@@ -614,7 +628,7 @@ __myevic__ void FMCWrite800( uint32_t u32Addr, uint32_t *pu32Data )
 //=============================================================================
 //----- (000016D0) --------------------------------------------------------
 // Compares 2kB (0x800) DF @R0 with RAM @R1
-__myevic__ uint32_t FMCVerif800( uint32_t u32Addr, uint32_t *pu32Data )
+__myevic__ uint32_t FMCVerifyPage( uint32_t u32Addr, uint32_t *pu32Data )
 {
 	for ( uint32_t idx = 0 ; idx < FMC_FLASH_PAGE_SIZE / 4 ; ++idx )
 	{
@@ -630,7 +644,7 @@ __myevic__ uint32_t FMCVerif800( uint32_t u32Addr, uint32_t *pu32Data )
 //=============================================================================
 //----- (0000170C) --------------------------------------------------------
 // Erase & writes 2kB from RAM R1 to DF R0
-__myevic__ int FMCEraseWrite800( uint32_t u32Addr, uint32_t *src )
+__myevic__ int FMCEraseWritePage( uint32_t u32Addr, uint32_t *src )
 {
 	if ( FMC_Erase( u32Addr ) == -1 )
 	{
@@ -638,7 +652,7 @@ __myevic__ int FMCEraseWrite800( uint32_t u32Addr, uint32_t *src )
 	}
 	else
 	{
-		FMCWrite800( u32Addr, src );
+		FMCWritePage( u32Addr, src );
 		return 0;
 	}
 }
@@ -646,7 +660,7 @@ __myevic__ int FMCEraseWrite800( uint32_t u32Addr, uint32_t *src )
 
 //=============================================================================
 //----- (00002030) --------------------------------------------------------
-__myevic__ void UpdateFlash()
+__myevic__ void DataFlashUpdateTick()
 {
 	if ( UpdateDFTimer )
 	{

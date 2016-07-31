@@ -4,10 +4,34 @@
 #include "M451Series.h"
 
 //=========================================================================
+// Configuration constants
+//-------------------------------------------------------------------------
+
+// End of APROM address (on a 128k chip)
+#define DATAFLASH_APROM_END			0x20000
+
+// Time & Puffs counters space
+#define DATAFLASH_TIMECNTR_BASE		(DATAFLASH_APROM_END-FMC_FLASH_PAGE_SIZE)
+#define DATAFLASH_PUFFCNTR_BASE		(DATAFLASH_TIMECNTR_BASE-FMC_FLASH_PAGE_SIZE)
+
+// Available space for parameters
+#define DATAFLASH_PARAMS_SPACE		(2*FMC_FLASH_PAGE_SIZE)
+#define DATAFLASH_PARAMS_END		DATAFLASH_PUFFCNTR_BASE
+#define DATAFLASH_PARAMS_BASE		(DATAFLASH_PARAMS_END-DATAFLASH_PARAMS_SPACE)
+
+// Custom Logo space
+// Those addresses are hardcoded in Joyetech's custom logo utility so
+//  we have to hardcode them here too.
+#define DATAFLASH_LOGO_SIZE			0x200
+#define DATAFLASH_LOGO_1327_BASE	0x19000
+#define DATAFLASH_LOGO_1306_BASE	0x19200
+
+
+//=========================================================================
 // DataFlash content structure
 // Padding bytes added by compiler to ensure correct alignements are
-// indicated and can eventually be used to store usefull parameters
-// without increasing the total data size.
+//  indicated and can eventually be used to store usefull parameters
+//  without increasing the total data size.
 //-------------------------------------------------------------------------
 
 typedef struct dfParams
@@ -66,9 +90,9 @@ dfParams_t;
 
 //-------------------------------------------------------------------------
 // Information part
-// This part is stored is RAM but never written to the DataFlash.
+// This part is stored in RAM but never written to the DataFlash.
 // It contains usefull infos that can be retreived in plus of the
-// parameters part by using the HID_CMD_GETINFO usb command.
+//  parameters part by using the HID_CMD_GETINFO usb command.
 //-------------------------------------------------------------------------
 
 typedef struct
@@ -90,9 +114,19 @@ dfInfos_t;
 
 #define ALIGN256(x) (((x)&0xffu)?((x)-((x)&0xffu)+0x100u):(x))
 
-#define DATAFLASH_PRMS_SIZE ALIGN256(sizeof(dfParams_t))
-#define DATAFLASH_INFO_SIZE ALIGN256(sizeof(dfInfos_t))
-#define DATAFLASH_FREE_SIZE (FMC_FLASH_PAGE_SIZE-DATAFLASH_PRMS_SIZE-DATAFLASH_INFO_SIZE)
+#define DATAFLASH_PARAMS_SIZE	ALIGN256(sizeof(dfParams_t))
+#define DATAFLASH_INFOS_SIZE	ALIGN256(sizeof(dfInfos_t))
+#define DATAFLASH_FREE_SIZE		(FMC_FLASH_PAGE_SIZE-DATAFLASH_PARAMS_SIZE-DATAFLASH_INFOS_SIZE)
+
+//-------------------------------------------------------------------------
+// It's important for DATAFLASH_PARAMS_SIZE to be a divider of
+//	DATAFLASH_PARAMS_SPACE for all the functions of cycling to work
+//	properly. Unfortunatly, we can't check this in the preprocessor
+//	due to the sizeof() operation.
+// It won't be a problem as long as the size of the parameters do not
+//	exceed 0x200 bytes. Just be aware.
+// In any case, parameters size should never exceed 0x700 bytes.
+//-------------------------------------------------------------------------
 
 
 typedef struct dfStruct
@@ -101,12 +135,12 @@ typedef struct dfStruct
 	union
 	{
 		dfParams_t	p;
-		uint32_t	params[DATAFLASH_PRMS_SIZE/4];
+		uint32_t	params[DATAFLASH_PARAMS_SIZE/4];
 	};
 	union
 	{
 		dfInfos_t	i;
-		uint32_t	infos[DATAFLASH_INFO_SIZE/4];
+		uint32_t	infos[DATAFLASH_INFOS_SIZE/4];
 	};
 
 	uint32_t free_pages[DATAFLASH_FREE_SIZE/4];
@@ -190,23 +224,16 @@ extern dfStruct_t DataFlash;
 extern void InitDataFlash();
 extern void ResetDataFlash();
 extern void DFCheckValuesValidity();
-extern void FMCReadCounters();
-extern void FMCWriteCounters();
-
-extern void CpyTmpCoefsNI();
-extern void CpyTmpCoefsTI();
-
-extern void WriteDataFlash( uint32_t u32Addr, const uint32_t *pu32Data );
 extern void UpdateDataFlash();
-extern void UpdateFlash();
+extern void DataFlashUpdateTick();
 
 //-------------------------------------------------------------------------
 
-extern void FMCWrite800( uint32_t u32Addr, uint32_t *pu32Data );
-extern uint32_t FMCVerif800( uint32_t u32Addr, uint32_t *pu32Data );
-extern int FMCEraseWrite800( uint32_t u32Addr, uint32_t *src );
+extern void FMCWritePage( uint32_t u32Addr, uint32_t *pu32Data );
+extern int  FMCEraseWritePage( uint32_t u32Addr, uint32_t *pu32Data );
+extern uint32_t FMCVerifyPage( uint32_t u32Addr, uint32_t *pu32Data );
 
-extern void FMCRead100( uint32_t u32Addr, uint32_t *pu32Buf );
+extern void FMCRead256( uint32_t u32Addr, uint32_t *pu32Buf );
 
 //=========================================================================
 

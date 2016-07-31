@@ -247,7 +247,7 @@ __myevic__ void Main()
 			{
 				// 10Hz
 				Flags64 &= ~0x10u;
-				UpdateFlash();
+				DataFlashUpdateTick();
 			}
 		}
 
@@ -333,7 +333,7 @@ __myevic__ void Main()
 			// 10Hz
 			Flags64 &= ~0x10u;
 
-			UpdateFlash();
+			DataFlashUpdateTick();
 
 			if ( Flags64 & 0x100 )
 				++FireDuration;

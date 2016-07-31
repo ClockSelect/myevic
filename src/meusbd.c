@@ -640,7 +640,7 @@ __myevic__ uint32_t hidGetInfoCmd( CMD_T *pCmd )
 
 	if ( u32ParamLen )
 	{
-		dfChecksum = Checksum( (uint8_t *)&dfCRC, FMC_FLASH_PAGE_SIZE - 4 );
+		dfChecksum = Checksum( (uint8_t *)DataFlash.params, FMC_FLASH_PAGE_SIZE - 4 );
 
 		if ( u32StartAddr + u32ParamLen > FMC_FLASH_PAGE_SIZE )
 		{
@@ -858,20 +858,20 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 
 				PutTextf( "Set Sys Param complete.\n" );
 
-				if ( Checksum( (uint8_t*)&hidDFData[1], FMC_FLASH_PAGE_SIZE - 4 ) == hidDFData[0] )
-				{
-					#define DFOFFSET(p) (int)(((uint8_t*)&(p))-(uint8_t*)&DataFlash)
-					PutTextf( "\tCompany ID ............................ [0x%08x]\n",
-								hidDFData[DFOFFSET(dffmcCID)>>2] );
-					PutTextf( "\tDevice ID ............................. [0x%08x]\n",
-								hidDFData[DFOFFSET(dffmcDID)>>2] );
-					PutTextf( "\tProduct ID ............................ [0x%08x]\n",
-								hidDFData[DFOFFSET(dffmcPID)>>2] );
-					PutTextf( "\tu8UpdateAPRom ......................... [0x%08x]\n",
-								(((char*)hidDFData)+DFOFFSET(dfBootFlag)) );
-					#undef DFOFFSET
+				dfStruct_t * df = (dfStruct_t*)hidDFData;
 
-					MemCpy( &dfCRC, &hidDFData[1], 0x100 );
+				if ( Checksum( (uint8_t*)df->params, FMC_FLASH_PAGE_SIZE - 4 ) == df->Checksum )
+				{
+					PutTextf( "\tCompany ID ............................ [0x%08x]\n",
+								df->i.fmcCID );
+					PutTextf( "\tDevice ID ............................. [0x%08x]\n",
+								df->i.fmcDID  );
+					PutTextf( "\tProduct ID ............................ [0x%08x]\n",
+								df->i.fmcPID );
+					PutTextf( "\tu8UpdateAPRom ......................... [0x%08x]\n",
+								df->p.BootFlag );
+
+					MemCpy( DataFlash.params, df->params, DATAFLASH_PARAMS_SIZE );
 
 					DFCheckValuesValidity();
 					UpdateDataFlash();
@@ -906,12 +906,12 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 			SYS_UnlockReg();
 			FMC_ENABLE_ISP();
 
-			if ( FMCEraseWrite800( u32Page, (uint32_t*)hidData ) )
+			if ( FMCEraseWritePage( u32Page, (uint32_t*)hidData ) )
 			{
 				PutTextf( "Data Flash Erase error!\n" );
 			}
 
-			veo = FMCVerif800( u32Page, (uint32_t*)hidData );
+			veo = FMCVerifyPage( u32Page, (uint32_t*)hidData );
 			if ( veo )
 			{
 				PutTextf( "Data Flash Verify error! 0x%x\n", 4 * veo - 4 );
@@ -955,12 +955,12 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 			FMC_ENABLE_ISP();
 			FMC_EnableLDUpdate();
 
-			if ( FMCEraseWrite800( u32Page, (uint32_t*)hidData ) )
+			if ( FMCEraseWritePage( u32Page, (uint32_t*)hidData ) )
 			{
 				PutTextf( "Data Flash Erase error!\n" );
 			}
 
-			veo = FMCVerif800( u32Page, (uint32_t*)hidData );
+			veo = FMCVerifyPage( u32Page, (uint32_t*)hidData );
 			if ( veo )
 			{
 				PutTextf( "Data Flash Verify error! 0x%x\n", 4 * veo - 4 );
