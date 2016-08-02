@@ -32,6 +32,7 @@
 // Padding bytes added by compiler to ensure correct alignements are
 //  indicated and can eventually be used to store usefull parameters
 //  without increasing the total data size.
+// Useless fields may also be recycled.
 //-------------------------------------------------------------------------
 
 typedef struct dfParams
@@ -54,7 +55,7 @@ typedef struct dfParams
 	uint16_t	RezNI;
 	uint8_t		RezLockedTI;
 	uint8_t		RezLockedNI;
-	uint8_t		TiOn;
+	uint8_t		TiOn;		// useless
 	uint8_t		StealthOn;
 	uint16_t	TempCoefsNI[21];
 	uint16_t	TempCoefsTI[21];
@@ -65,12 +66,10 @@ typedef struct dfParams
 //	1-byte pad
 	uint16_t	RezSS;
 	uint8_t		RezLockedSS;
-	uint8_t		UIVersion;
+	uint8_t		UIVersion;	// useless
 	uint8_t		TCRIndex;
 //	1-byte pad
-	uint16_t	TCRM1;
-	uint16_t	TCRM2;
-	uint16_t	TCRM3;
+	uint16_t	TCRM[3];
 	uint16_t	RezTCR;
 	uint8_t		RezLockedTCR;
 //	1-byte pad
@@ -79,7 +78,7 @@ typedef struct dfParams
 	uint16_t	SavedCfgPwr[10];
 	uint16_t	FBBest;
 	uint8_t		FBSpeed;
-	uint8_t		byte_2000033D;
+	uint8_t		byte_2000033D;	// unused
 	uint8_t		Contrast;
 	uint8_t		ModesSel;
 	uint16_t	ClkRatio;
@@ -93,6 +92,7 @@ dfParams_t;
 // This part is stored in RAM but never written to the DataFlash.
 // It contains usefull infos that can be retreived in plus of the
 //  parameters part by using the HID_CMD_GETINFO usb command.
+// Used by firwmare update software.
 //-------------------------------------------------------------------------
 
 typedef struct
@@ -125,7 +125,7 @@ dfInfos_t;
 //	due to the sizeof() operation.
 // It won't be a problem as long as the size of the parameters do not
 //	exceed 0x200 bytes. Just be aware.
-// In any case, parameters size should never exceed 0x700 bytes.
+// In any case, parameters size should never exceed 0x600 bytes.
 //-------------------------------------------------------------------------
 
 
@@ -142,8 +142,11 @@ typedef struct dfStruct
 		dfInfos_t	i;
 		uint32_t	infos[DATAFLASH_INFOS_SIZE/4];
 	};
-
-	uint32_t free_pages[DATAFLASH_FREE_SIZE/4];
+	union
+	{
+		uint32_t	free_pages[DATAFLASH_FREE_SIZE/4];
+		Playfield_t	playfield;
+	};
 }
 dfStruct_t;
 
@@ -191,9 +194,7 @@ extern dfStruct_t DataFlash;
 #define dfRezLockedSS	DFP(RezLockedSS)
 #define dfUIVersion		DFP(UIVersion)
 #define dfTCRIndex		DFP(TCRIndex)
-#define dfTCRM1			DFP(TCRM1)
-#define dfTCRM2			DFP(TCRM2)
-#define dfTCRM3			DFP(TCRM3)
+#define dfTCRM			DFP(TCRM)
 #define dfRezTCR		DFP(RezTCR)
 #define dfRezLockedTCR	DFP(RezLockedTCR)
 #define dfLastTCMode	DFP(LastTCMode)
@@ -216,6 +217,8 @@ extern dfStruct_t DataFlash;
 #define dfTimeCount     DFI(TimeCount)
 #define dfProductID     DFI(ProductID)
 #define dfMaxHWVersion  DFI(MaxHWVersion)
+
+#define gPlayfield		DataFlash.playfield
 
 
 //=========================================================================

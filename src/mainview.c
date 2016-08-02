@@ -6,7 +6,6 @@
 #include "myrtc.h"
 #include "atomizer.h"
 #include "miscs.h"
-#include "M451Series.h"
 
 //=============================================================================
 
@@ -61,7 +60,7 @@ __myevic__ void DrawMode()
 			break;
 		case 3:
 			DrawString( String_TCR, 0, 2 );
-			DrawValue( 25, 2, (&dfTCRM1)[(int)dfTCRIndex], 0, 0x0B, 3 );
+			DrawValue( 25, 2, dfTCRM[dfTCRIndex], 0, 0x0B, 3 );
 			if ( !BLINKITEM(1) )
 			{
 				DrawImage( 49, 2, 0xA8 );

@@ -22,7 +22,7 @@ __myevic__ void SSD1327_SetColsRowsAddrs(char col_start, char col_end, char row_
 __myevic__ void SSD1327_Refresh()
 {
 	SSD1327_SetColsRowsAddrs( 16, 47, 0, 127 );
-	DisplaySendData( ScreenBuffer, 0x400u );
+	DisplaySendData( ScreenBuffer, 0x400 );
 }
 
 
@@ -217,8 +217,8 @@ __myevic__ uint32_t SSD1327_Bitmap( int x, int y, const image_t *image, int colo
 			}
 			else
 			{
-				ml = SSD_MaskLeft[shiftl];
-				mr = SSD_MaskRight[shiftl];
+				ml = ByteMaskLeft[shiftl];
+				mr = ByteMaskRight[shiftl];
 
 				if ( npix <= shiftl )
 				{
@@ -228,7 +228,7 @@ __myevic__ uint32_t SSD1327_Bitmap( int x, int y, const image_t *image, int colo
 					}
 					else
 					{
-						ScreenBuffer[laddr] &= ml | SSD_MaskRight[ /* ? */ shiftl - npix ];
+						ScreenBuffer[laddr] &= ml | ByteMaskRight[ /* ? */ shiftl - npix ];
 					}
 					ScreenBuffer[laddr] |= ( pixels >> shiftr ) & mr;
 				}
@@ -244,7 +244,7 @@ __myevic__ uint32_t SSD1327_Bitmap( int x, int y, const image_t *image, int colo
 					}
 					else
 					{
-						ScreenBuffer[laddr+1] &= SSD_MaskRight[ shiftl + 8 - npix ];
+						ScreenBuffer[laddr+1] &= ByteMaskRight[ shiftl + 8 - npix ];
 						ScreenBuffer[laddr+1] |= ( pixels << shiftl ) & ml;
 					}
 				}

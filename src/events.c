@@ -316,7 +316,7 @@ __myevic__ void GetUserInput()
 				{
 					Flags68 &= ~0x200u;
 					Event = -1;
-					fbDeleteTimeout(fbCurrentTimeout);
+					fbInitTimeouts();
 					MainView();
 				}
 			}

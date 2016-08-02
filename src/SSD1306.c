@@ -211,10 +211,10 @@ __myevic__ uint32_t SSD1306_Bitmap( int x, int y, const image_t *image, int colo
 
 			if ( shift )
 			{
-				ScreenBuffer[ addr ] &= SSD_MaskRight[shift];
-				ScreenBuffer[ addr ] |= ( pixels << shift ) & SSD_MaskLeft[shift];
-				ScreenBuffer[ addr + 0x40 ] &= SSD_MaskLeft[shift];
-				ScreenBuffer[ addr + 0x40 ] |= ( pixels >> ( 8 - shift )) & SSD_MaskRight[shift];
+				ScreenBuffer[ addr ] &= ByteMaskRight[shift];
+				ScreenBuffer[ addr ] |= ( pixels << shift ) & ByteMaskLeft[shift];
+				ScreenBuffer[ addr + 0x40 ] &= ByteMaskLeft[shift];
+				ScreenBuffer[ addr + 0x40 ] |= ( pixels >> ( 8 - shift )) & ByteMaskRight[shift];
 			}
 			else
 			{

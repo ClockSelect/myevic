@@ -2,8 +2,407 @@
 #include "dataflash.h"
 #include "display.h"
 #include "miscs.h"
+#include "timers.h"
 
 #include "flappy.h"
+
+//=========================================================================
+
+typedef struct fbColumn_s
+{
+	int8_t	x;
+	int8_t	top_bot;
+	int8_t	top_nbb;
+	int8_t	bot_top;
+	int8_t	bot_nbb;
+}
+fbColumn_t;
+
+//-------------------------------------------------------------------------
+
+uint8_t		fbBirdColumn = 16;
+uint8_t		fbBirdCycle = 0;
+uint8_t		fbBirdLine = 24;
+int8_t		fbBirdDisp = 0;
+uint8_t		fbDead = 0;
+uint8_t		fbAnimStep = 0;
+uint8_t		fbAnimTimer = 0;
+uint16_t	fbScore = 0;
+fbColumn_t	fbColumn1 = { 0 };
+fbColumn_t	fbColumn2 = { 0 };
+fbColumn_t	fbColumn3 = { 0 };
+uint8_t		fbTimeoutMask = 0;
+uint8_t		fbCurrentTimeout = 0;
+uint8_t		fbUsedTimeouts = 0;
+
+//-------------------------------------------------------------------------
+
+extern const uint8_t	fbColumnBody[];
+extern const uint8_t	fbColumnBottom[];
+extern const uint8_t	fbColumnTop[];
+extern const uint8_t	fbBird0[];
+extern const uint8_t	fbBird1[];
+extern const uint8_t	fbBird2[];
+extern const uint8_t	fbBirdDead[];
+extern const uint8_t	fbFont[95][16];
+
+//-------------------------------------------------------------------------
+
+#define FB_NUM_TIMERS 3
+
+typedef void (FB_TIMEOUT_FUNC( void ));
+
+typedef struct fbTimeout_s
+{
+	uint8_t			delay;
+	FB_TIMEOUT_FUNC	*function;
+}
+fbTimeout_t;
+
+fbTimeout_t fbTimeoutsTable[FB_NUM_TIMERS];
+
+
+//=========================================================================
+//----- (000038B0) --------------------------------------------------------
+__myevic__ void fbInitTimeouts()
+{
+	fbCurrentTimeout = 0;
+	fbUsedTimeouts = 0;
+
+	for ( int i = 0 ; i < FB_NUM_TIMERS ; ++i )
+	{
+		fbTimeoutsTable[i].delay = 0;
+		fbTimeoutsTable[i].function = 0;
+	}
+}
+
+
+//=========================================================================
+//----- (000013DC) --------------------------------------------------------
+__myevic__ int fbCreateTimeout( FB_TIMEOUT_FUNC f )
+{
+	uint8_t mask = 1;
+
+	for ( int i = 0 ; i < FB_NUM_TIMERS ; ++i )
+	{
+		if ( !( mask & fbUsedTimeouts ) )
+		{
+			fbUsedTimeouts |= mask;
+			fbTimeoutsTable[i].function = f;
+			return i;
+		}
+		mask <<= 1;
+	}
+	return -1;
+}
+
+
+//=========================================================================
+//----- (00004EEC) --------------------------------------------------------
+__myevic__ void fbDeleteTimeout( int to )
+{
+	fbUsedTimeouts &= ~( 1 << to );
+	fbTimeoutsTable[to].delay = 0;
+}
+
+
+//=========================================================================
+//----- (00005ADC) --------------------------------------------------------
+__myevic__ void fbSetTimeoutDelay( int v )
+{
+	fbTimeoutsTable[fbCurrentTimeout].delay = v;
+}
+
+
+//=========================================================================
+//----- (00008894) --------------------------------------------------------
+// Called at a frequency depending on the choosen difficulty:
+//		Easy    62.5Hz 0.016s
+//		Normal  76.9Hz 0.013s
+//		Hard   100.0Hz 0.010s
+
+__myevic__ void fbTickTimeouts()
+{
+	for ( int i = 0 ; i < FB_NUM_TIMERS ; ++i )
+	{
+		if ( fbTimeoutsTable[i].delay )
+		{
+			--fbTimeoutsTable[i].delay;
+		}
+	}
+}
+
+
+//=========================================================================
+//----- (00007B9C) --------------------------------------------------------
+__myevic__ void fbCallTimeouts()
+{
+	fbTimeoutMask = 1;
+
+	for ( fbCurrentTimeout = 0 ; fbCurrentTimeout < FB_NUM_TIMERS ; ++fbCurrentTimeout )
+	{
+		if ( fbUsedTimeouts & fbTimeoutMask )
+		{
+			if ( !fbTimeoutsTable[fbCurrentTimeout].delay )
+			{
+				fbTimeoutsTable[fbCurrentTimeout].function();
+			}
+		}
+		fbTimeoutMask <<= 1;
+	}
+}
+
+
+//=========================================================================
+//----- (00001348) --------------------------------------------------------
+__myevic__ void fbCLSBuf()
+{
+	MemClear2( 0, ScreenBuffer, SCREEN_BUFFER_SIZE );
+}
+
+
+//=========================================================================
+//----- (000022B8) --------------------------------------------------------
+__myevic__ void fbFillScreen( char v )
+{
+	MemSet( ScreenBuffer, SCREEN_BUFFER_SIZE, v );
+}
+
+
+//=========================================================================
+//----- (000024DC) --------------------------------------------------------
+__myevic__ int fbNumDigits( int v )
+{
+	int nd = 0;
+
+	while ( v )
+	{
+		v /= 10;
+		++nd;
+	}
+
+	if ( !nd ) nd = 1;
+
+	return nd;
+}
+
+
+//=========================================================================
+//----- (00008188) --------------------------------------------------------
+__myevic__ void fbPlot( int x, int y, int color )
+{
+	int xx;
+	int i;
+	uint8_t pix;
+
+	if ( x >= 0 && y >= 0 && x <= 127 && y <= 63 )
+	{
+		xx = 127 - x;
+		if ( DisplayModel )
+		{
+			i = 8 * xx + ( y >> 3 );
+			pix = 1 << ( 7 - ( y & 7 ));
+		}
+		else
+		{
+			i = 64 * ( xx >> 3 ) + y;
+			pix = 1 << ( xx & 7 );
+		}
+		if ( color ) ScreenBuffer[i] |= pix;
+		else ScreenBuffer[i] &= ~pix;
+	}
+}
+
+
+//=========================================================================
+//----- (0000805E) --------------------------------------------------------
+__myevic__ void fbDrawSprite( int x, int y, int w, int h, const uint8_t bitmap[] )
+{
+	int bpl;
+	uint8_t pixels;
+
+	bpl = w >> 3;
+
+	for ( ; h ; --h )
+	{
+		for ( int i = 0 ; i < bpl ; ++i )
+		{
+			pixels = *bitmap++;
+			for ( int j = 0 ; j < 8 ; ++j )
+			{
+				if ( pixels & 1 ) fbPlot( x + 8 * i + j, y, 1 );
+				pixels >>= 1;
+			}
+		}
+		++y;
+	}
+}
+
+
+//=========================================================================
+//----- (00007F9C) --------------------------------------------------------
+__myevic__ void fbDrawChar( int x, int y, const char c )
+{
+	fbDrawSprite( x, y, 8, 16, fbFont[c-32] );
+}
+
+
+//=========================================================================
+//----- (00007FB8) --------------------------------------------------------
+__myevic__ void fbDrawNumber( int x, int y, int nd, int v )
+{
+	char d;
+
+	if ( nd > 5 ) nd = 5;
+	
+	for ( ; nd > 0 ; --nd )
+	{
+		switch ( nd )
+		{
+			case 5:
+				d = v / 10000;
+				break;
+			case 4:
+				d = v % 10000 / 1000;
+				break;
+			case 3:
+				d = v % 1000 / 100;
+				break;
+			case 2:
+				d = v % 100 / 10;
+				break;
+			case 1:
+				d = v % 10;
+				break;
+			default:
+				break;
+		}
+
+		fbDrawChar( x, y, '0' + d );
+		x += 8;
+	}
+}
+
+
+//=========================================================================
+//----- (0000803E) --------------------------------------------------------
+__myevic__ void fbDrawText( int x, int y, const char *s )
+{
+	for ( ; *s ; ++s )
+	{
+		fbDrawChar( x, y, *s );
+		x += 8;
+	}
+}
+
+
+//=========================================================================
+//----- (000080BA) --------------------------------------------------------
+__myevic__ void fbDrawRect( int x1, int y1, int x2, int y2, int color, int fill )
+{
+	int dx, dy;
+	int i, j, t;
+
+	if ( x1 > x2 ) { t = x1; x1 = x2; x2 = t; }
+	if ( y1 > y2 ) { t = y1; y1 = y2; y2 = t; }
+
+	dx = x2 - x1;
+	dy = y2 - y1;
+
+	if ( fill )
+	{
+		for ( j = y1 ; j <= y2 ; ++j )
+		{
+			for ( i = 0 ; i <= dx ; ++i ) fbPlot( x1 + i, j, color );
+		}
+	}
+	else
+	{
+		for ( i = dx ; i >= 0 ; --i )
+		{
+			fbPlot( x1 + i, y1, color);
+		}
+
+		if ( dy )
+		{
+			for ( i = dx ; i >= 0 ; --i )
+			{
+				fbPlot( x1 + i, y2, color );
+			}
+
+			for ( j = dy - 1 ; j ; --j )
+			{
+				fbPlot( x1, y1 + j, color);
+			}
+
+			for ( j = dy - 1 ; j ; --j )
+			{
+				fbPlot( x2, y1 + j, color);
+			}
+		}
+	}
+}
+
+
+//=========================================================================
+//----- (00001798) --------------------------------------------------------
+__myevic__ void fbDrawDeadBird( int y )
+{
+	fbDrawSprite( 10, y, 16, 16, fbBirdDead );
+}
+
+
+//=========================================================================
+//----- (0000504C) --------------------------------------------------------
+__myevic__ void fbBirdAnim( int line )
+{
+	const uint8_t *sprite = 0;
+
+	if ( fbBirdCycle == 1 )
+	{
+		sprite = fbBird0;
+	}
+	else if ( fbBirdCycle == 2 )
+	{
+		sprite = fbBird1;
+	}
+	else if ( fbBirdCycle == 3 )
+	{
+		sprite = fbBird2;
+	}
+	else if ( fbBirdCycle == 4 )
+	{
+		sprite = fbBird0;
+	}
+
+	if ( sprite )
+	{
+		fbDrawSprite( fbBirdColumn, line, 16, 16, sprite );
+	}
+
+	if ( ++fbBirdCycle == 5 ) fbBirdCycle = 1;
+}
+
+
+//=========================================================================
+//----- (000050A0) --------------------------------------------------------
+__myevic__ void fbDrawColumn( const fbColumn_t *c )
+{
+	int i;
+
+	for ( i = 0 ; i < c->top_nbb ; ++i )
+	{
+		fbDrawSprite( c->x, 8 * i, 24, 8, fbColumnBody );
+	}
+	for ( i = 0 ; i < c->bot_nbb ; ++i )
+	{
+		fbDrawSprite( c->x, 56 - 8 * i, 24, 8, fbColumnBody );
+	}
+	fbDrawSprite( c->x, c->top_bot - 8	, 24, 8, fbColumnBody );
+	fbDrawSprite( c->x, c->top_bot		, 24, 8, fbColumnBottom );
+	fbDrawSprite( c->x, c->bot_top		, 24, 8, fbColumnTop );
+	fbDrawSprite( c->x, c->bot_top + 8	, 24, 8, fbColumnBody );
+}
 
 
 //=========================================================================
@@ -16,11 +415,11 @@ __myevic__ void fbCreateColumn( int8_t hpos, fbColumn_t *column )
 	{
 		column->x = hpos;
 		vpos = (int8_t)( Random() % 24 + 1 );
-		column->unk1 = vpos;
-		column->unk2 = vpos >> 3;
+		column->top_bot = vpos;
+		column->top_nbb = vpos >> 3;
 		vpos += 40;
-		column->unk3 = vpos - 8;
-		column->unk4 = (64 - vpos) >> 3;
+		column->bot_top = vpos - 8;
+		column->bot_nbb = (64 - vpos) >> 3;
 	}
 }
 
@@ -32,16 +431,16 @@ __myevic__ void fbDeathScreen()
 	switch ( fbAnimStep )
 	{
 		case 0:
-			fbFillScreen( 0xFF );
+			fbFillScreen( -1 );
 			DisplayRefresh();
-			fbCLSBuf();
-			fbSetTimeoutValue( 5 );
+			fbSetTimeoutDelay( 5 );
 			++fbAnimStep;
 			break;
 
 		case 1:
+			fbCLSBuf();
 			DisplayRefresh();
-			fbSetTimeoutValue( 10 );
+			fbSetTimeoutDelay( 10 );
 			++fbAnimStep;
 			break;
 
@@ -49,7 +448,7 @@ __myevic__ void fbDeathScreen()
 			if ( !PE0 )
 			{
 				fbAnimStep = 4;
-				fbSetTimeoutValue(100);
+				fbSetTimeoutDelay( 100 );
 			}
 			break;
 
@@ -72,16 +471,16 @@ __myevic__ void fbDeathScreen()
 					fbDead = 0;
 					fbAnimStep = 3;
 				}
-				fbSetTimeoutValue( 200 );
+				fbSetTimeoutDelay( 200 );
 			}
 			else
 			{
 				fbBirdLine += 4;
 			}
 			fbDrawDeadBird( fbBirdLine );
-			fbDrawColumn( fbColumn1.unk32, fbColumn1.unk4 );
-			fbDrawColumn( fbColumn2.unk32, fbColumn2.unk4 );
-			fbDrawColumn( fbColumn3.unk32, fbColumn3.unk4 );
+			fbDrawColumn( &fbColumn1 );
+			fbDrawColumn( &fbColumn2 );
+			fbDrawColumn( &fbColumn3 );
 			fbDrawRect( 26, 16, 98, 52, 0, 1 );
 			fbDrawRect( 26, 16, 98, 52, 1, 0 );
 			fbDrawText( 27, 18, "SCORE" );
@@ -90,7 +489,7 @@ __myevic__ void fbDeathScreen()
 			fbDrawNumber( 71, 36, fbNumDigits( dfFBBest ), dfFBBest );
 			DisplayRefresh();
 			fbCLSBuf();
-			fbSetTimeoutValue( 4 );
+			fbSetTimeoutDelay( 4 );
 			UpdateDFTimer = 50;
 			break;
 	}
@@ -113,9 +512,9 @@ __myevic__ void fbGame()
 		return;
 	}
 
-	fbDrawColumn( fbColumn1.unk32, fbColumn1.unk4 );
-	fbDrawColumn( fbColumn2.unk32, fbColumn2.unk4 );
-	fbDrawColumn( fbColumn3.unk32, fbColumn3.unk4 );
+	fbDrawColumn( &fbColumn1 );
+	fbDrawColumn( &fbColumn2 );
+	fbDrawColumn( &fbColumn3 );
 
 	fbColumn1.x -= 2;
 	if ( fbAnimStep > 0 ) fbColumn2.x -= 2;
@@ -137,19 +536,19 @@ __myevic__ void fbGame()
 	else fbBirdAnim( fbBirdLine );
 
 	if ( fbColumn1.x >= -8 && fbColumn1.x <= 31
-			&& (fbColumn1.unk1 + 6 > fbBirdLine || fbColumn1.unk3 - 12 < fbBirdLine) )
+			&& (fbColumn1.top_bot + 6 > fbBirdLine || fbColumn1.bot_top - 12 < fbBirdLine) )
 	{
 		fbDead = 1;
 	}
 
 	if ( fbColumn2.x >= -8 && fbColumn2.x <= 31
-			&& (fbColumn2.unk1 + 6 > fbBirdLine || fbColumn2.unk3 - 12 < fbBirdLine) )
+			&& (fbColumn2.top_bot + 6 > fbBirdLine || fbColumn2.bot_top - 12 < fbBirdLine) )
 	{
 		fbDead = 1;
 	}
 
 	if ( fbColumn3.x >= -8 && fbColumn3.x <= 31
-			&& (fbColumn3.unk1 + 6 > fbBirdLine || fbColumn3.unk3 - 12 < fbBirdLine) )
+			&& (fbColumn3.top_bot + 6 > fbBirdLine || fbColumn3.bot_top - 12 < fbBirdLine) )
 	{
 		fbDead = 1;
 	}
@@ -158,7 +557,7 @@ __myevic__ void fbGame()
 	fbDrawNumber( 64 - 4 * nd, 4, nd, fbScore);
 	DisplayRefresh();
 	fbCLSBuf();
-	fbSetTimeoutValue( 4 );
+	fbSetTimeoutDelay( 4 );
 }
 
 
@@ -187,7 +586,7 @@ __myevic__ void fbCheckFire()
 			fbBirdDisp = -14;
 		}
 
-		fbSetTimeoutValue( 10 );
+		fbSetTimeoutDelay( 10 );
 	}
 }
 
@@ -224,6 +623,59 @@ __myevic__ void fbMoveBird()
 		fbBirdLine = fbBirdLine + fbBirdDisp / 12 + 1;
 	}
 
-	fbSetTimeoutValue( 8 );
+	fbSetTimeoutDelay( 8 );
+}
+
+
+//=========================================================================
+//----- (00006758) --------------------------------------------------------
+__myevic__ void fbSetBirdColumn( uint8_t c )
+{
+  fbBirdColumn = c;
+}
+
+
+//=========================================================================
+//----- (000009B0) --------------------------------------------------------
+__myevic__ void fbStartScreen()
+{
+	fbScore = 0;
+
+	if ( PE0 )
+	{
+		if ( fbAnimStep )
+		{
+			if ( ++fbBirdLine == 4 )
+			fbAnimStep = 0;
+		}
+		else
+		{
+			--fbBirdLine;
+			if ( fbBirdLine == 0 )
+			fbAnimStep = 1;
+		}
+		fbSetBirdColumn( 100 );
+		fbDrawText( 10, fbBirdLine + 16, "Flappy Bird" );
+		fbBirdAnim( fbBirdLine + 16 );
+		DisplayRefresh();
+		fbCLSBuf();
+		fbSetTimeoutDelay( 10 );
+	}
+	else
+	{
+		fbCreateColumn( 127, &fbColumn1 );
+		fbCreateColumn( 127, &fbColumn2 );
+		fbCreateColumn( 127, &fbColumn3 );
+		fbSetBirdColumn( 16 );
+		fbBirdLine = 24;
+		fbAnimStep = 0;
+		fbAnimTimer = 0;
+		fbDead = 0;
+		fbDeleteTimeout( fbCurrentTimeout );
+		SetRandSeed( TMR1Counter );
+		fbCreateTimeout( fbGame );
+		fbCreateTimeout( fbCheckFire );
+		fbCreateTimeout( fbMoveBird );
+	}
 }
 

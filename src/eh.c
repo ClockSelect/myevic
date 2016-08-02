@@ -9,7 +9,7 @@
 #include "timers.h"
 #include "meadc.h"
 #include "atomizer.h"
-#include "M451Series.h"
+#include "flappy.h"
 
 
 //----- (000039E0) --------------------------------------------------------
@@ -22,8 +22,6 @@ __myevic__ void EventHandler()
 	int v22;
 	int v23;
 	int tempf;
-	unsigned int v35;
-	short v36;
 	unsigned int v41;
 	short v42;
 	short v43;
@@ -32,7 +30,6 @@ __myevic__ void EventHandler()
 	unsigned int v46;
 	unsigned int v47;
 	signed short v48;
-	unsigned int v49;
 	unsigned int v53;
 	short v54;
 	unsigned int v57;
@@ -92,7 +89,7 @@ __myevic__ void EventHandler()
 				{
 					Flags68 |= 0x200;
 					Screen = 0;
-					Flags64 |= 0x4000u;
+					Flags64 |= 0x4000;
 					BatRefreshTmr = 0;
 					SleepTimer = 3000;
 					fbInitTimeouts();
@@ -423,7 +420,7 @@ __myevic__ void EventHandler()
 					TCR = 120;
 					break;
 				case 4:
-					TCR = ((unsigned short *)&dfTCRM1)[dfTCRIndex];
+					TCR = dfTCRM[dfTCRIndex];
 					break;
 				default:
 					break;
@@ -549,7 +546,7 @@ __myevic__ void EventHandler()
 			ScreenDuration = 10;
 			return;
 
-		case 38:	// Change interface version
+		case 38:	// Change interface version (unused)
 			if ( !(dfStatus & 1) )
 				return;
 			if ( ++dfUIVersion > 2 ) dfUIVersion = 0;
@@ -567,7 +564,7 @@ __myevic__ void EventHandler()
 			ScreenDuration = 5;
 			return;
 
-		case 33:	// Ti ON/OFF
+		case 33:	// Ti ON/OFF (unused)
 			if ( !(dfStatus & 1) )
 				return;
 			dfTiOn = ( dfTiOn == 0 );
@@ -820,11 +817,9 @@ __myevic__ void EventHandler()
 					{
 						if ( EditTCRIndex >= 3 ) EditTCRIndex = 0;
 
-						v49 = ((unsigned short*)(&dfTCRM1))[EditTCRIndex];
-						if ( v49 > 1 )
+						if ( dfTCRM[EditTCRIndex] > 1 )
 						{
-							v36 = v49 - 1;
-							((unsigned short*)(&dfTCRM1))[EditTCRIndex] = v36;
+							--dfTCRM[EditTCRIndex];
 						}
 					}
 					else
@@ -1024,10 +1019,9 @@ __myevic__ void EventHandler()
 					{
 						if ( EditTCRIndex > 2u ) EditTCRIndex = 0;
 
-						v35 = ((unsigned short*)(&dfTCRM1))[EditTCRIndex];
-						if ( ++v35 < 1000 )
+						if ( dfTCRM[EditTCRIndex] < 999 )
 						{
-							((unsigned short*)(&dfTCRM1))[EditTCRIndex] = v35;
+							++dfTCRM[EditTCRIndex];
 						}
 					}
 					else
@@ -1041,7 +1035,7 @@ __myevic__ void EventHandler()
 			}
 			else if (( Screen >= 80 ) && ( Screen < 100u ))
 			{
-				if ( ++MenuPage > 2u )
+				if ( ++MenuPage > 2 )
 				{
 					MenuPage = 1;
 				}

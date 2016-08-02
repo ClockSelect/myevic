@@ -1335,7 +1335,7 @@ loc_880:				@ ...
 		MOVS	R0, #10
 
 loc_886:				@ ...
-		BL	fbSetTimeoutValue
+		BL	fbSetTimeoutDelay
 		LDRB	R0, [R4,#(fbAnimStep - fbBirdLine)]
 		ADDS	R0, R0,	#1
 		STRB	R0, [R4,#(fbAnimStep - fbBirdLine)]
@@ -1352,7 +1352,7 @@ loc_892:				@ ...
 		STRB	R0, [R4,#(fbAnimStep - fbBirdLine)]
 		POP.W	{R2-R6,LR}
 		MOVS	R0, #100
-		B.W	fbSetTimeoutValue
+		B.W	fbSetTimeoutDelay
 @ ---------------------------------------------------------------------------
 
 loc_8A6:				@ ...
@@ -1388,7 +1388,7 @@ loc_8D2:				@ ...
 
 loc_8DC:				@ ...
 		MOVS	R0, #200
-		BL	fbSetTimeoutValue
+		BL	fbSetTimeoutDelay
 
 loc_8E2:				@ ...
 		LDRB	R0, [R4]
@@ -1445,7 +1445,7 @@ loc_8E2:				@ ...
 		BL	j_DisplayRefresh
 		BL	fbCLSBuf
 		MOVS	R0, #4
-		BL	fbSetTimeoutValue
+		BL	fbSetTimeoutDelay
 		LDR	R1, =UpdateDFTimer
 		MOVS	R0, #50
 		STRB	R0, [R1]
@@ -1471,8 +1471,9 @@ aBest:	.ascii "BEST"
 
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
-fbStartScreen:				@ ...
+orgfbStartScreen:
 		PUSH	{R4-R6,LR}
 		LDR	R4, =fbBirdLine
 		LDR	R0, =0x40004900
@@ -1561,7 +1562,7 @@ loc_A3A:				@ ...
 		BL	fbCLSBuf
 		POP.W	{R4-R6,LR}
 		MOVS	R0, #0xA
-		B.W	fbSetTimeoutValue
+		B.W	fbSetTimeoutDelay
 @ End of function fbStartScreen
 
 @ ---------------------------------------------------------------------------
@@ -1572,6 +1573,8 @@ loc_A3A:				@ ...
 aFlappyBird:	.ascii "Flappy Bird"
 		.byte 0
 		.balign 4,0
+		
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
@@ -1787,7 +1790,7 @@ loc_C02:				@ ...
 		BL	fbCLSBuf
 		POP.W	{R2-R8,LR}
 		MOVS	R0, #4
-		B.W	fbSetTimeoutValue
+		B.W	fbSetTimeoutDelay
 @ End of function fbGame
 
 @ ---------------------------------------------------------------------------
@@ -2800,8 +2803,9 @@ orgCelsiusToF:
 
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
-fbCLSBuf:
+orgfbCLSBuf:
 		LDR	R1, =ScreenBuffer
 		MOVS	R2, #0
 		MOV	R0, R2
@@ -2834,6 +2838,8 @@ loc_134E:				@ ...
 @ ---------------------------------------------------------------------------
 		.balign 4,0
 		.pool
+
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
@@ -2894,10 +2900,12 @@ locret_13DA:				@ ...
 
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
+		
 @ in R0	Callback fct
 @ out R0 Timeout # or 255
 
-fbCreateTimeout:				@ ...
+orgfbCreateTimeout:
 		PUSH	{R4,R5,LR}
 		LDR	R5, =fbTimeoutMask
 		MOVS	R1, #1
@@ -2909,7 +2917,7 @@ loc_13E8:				@ ...
 		TST	R1, R2
 		BNE	loc_13FA
 		ORRS	R2, R1
-		LDR	R1, =TimeoutsTable
+		LDR	R1, =fbTimeoutsTable
 		STRB	R2, [R5,#2]
 		ADD.W	R1, R1,	R0,LSL#3
 		STR	R4, [R1,#4]
@@ -2930,6 +2938,8 @@ loc_13FA:				@ ...
 @ ---------------------------------------------------------------------------
 		.balign 4,0
 		.pool
+		
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
@@ -3577,8 +3587,9 @@ loc_178C:				@ ...
 
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
-fbDrawDeadBird:
+orgfbDrawDeadBird:
 
 var_8		= -8
 
@@ -3596,6 +3607,8 @@ var_8		= -8
 @ ---------------------------------------------------------------------------
 		.balign 4,0
 		.pool
+
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
@@ -4161,7 +4174,7 @@ aDataFlashReIni:.ascii "Data Flash Re-Initialization\n"
 
 		.ifne	keeporgcode
 
-orgResetDataFlash:				@ ...
+orgResetDataFlash:
 		PUSH	{R4-R6,LR}
 		LDR	R4, =dfData
 		MOV.W	R1, #0x100
@@ -5061,7 +5074,7 @@ loc_21E2:				@ ...
 
 		.ifne	0
 
-FMCRead_2:			@ ...
+FMCRead_2:
 		LDR	R1, =0x4000C000
 		MOVS	R2, #0
 		STR	R2, [R1,#0xC]
@@ -5088,7 +5101,7 @@ loc_21FE:				@ ...
 
 		.ifne	keeporglibs_fmc
 		
-FMC_ReadConfig:				@ ...
+FMC_ReadConfig:
 		PUSH.W	{R4-R8,LR}
 		MOV	R5, R1
 		MOV	R6, R0
@@ -5118,7 +5131,7 @@ loc_222A:				@ ...
 
 		.ifne	keeporglibs_fmc
 @inline
-FMCWrite:				@ ...
+FMCWrite:
 		LDR	R2, =0x4000C000
 		MOVS	R3, #0x21	@ FLASH	32-bit Program
 		STR	R3, [R2,#0xC]	@ FMC_ISPCMD
@@ -5144,7 +5157,7 @@ loc_2242:				@ ...
 
 		.ifne	keeporglibs_fmc
 		
-FMC_WriteConfig:				@ ...
+FMC_WriteConfig:
 		PUSH.W	{R4-R10,LR}
 		MOV	R7, R1
 		MOV	R6, R0
@@ -5211,8 +5224,9 @@ FarenheitToC:				@ ...
 
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
-fbFillScreen:				@ ...
+orgfbFillScreen:
 		LDR	R1, =ScreenBuffer
 		MOVS	R2, #0
 
@@ -5244,12 +5258,14 @@ loc_22BC:				@ ...
 @ ---------------------------------------------------------------------------
 		.balign 4,0
 		.pool
+		
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
 		.ifne	keeporgcode
 
-GPD_IRQHandler:	
+orgGPD_IRQHandler:	
 		MOV.W	R0, #0x40004000
 		LDR.W	R1, [R0,#0xE0]	@ PD_INTSRC
 		LSLS	R2, R1,	#24
@@ -5294,7 +5310,7 @@ loc_2328:				@ ...
 @ =============== S U B	R O U T	I N E =======================================
 
 
-GPE_IRQHandler:				@ ...
+orgGPE_IRQHandler:				@ ...
 		MOV.W	R0, #0x40004000
 		LDR.W	R1, [R0,#0x120]
 		STR.W	R1, [R0,#0x120]
@@ -5305,7 +5321,7 @@ GPE_IRQHandler:				@ ...
 @ =============== S U B	R O U T	I N E =======================================
 
 
-GPF_IRQHandler:				@ ...
+orgGPF_IRQHandler:				@ ...
 		MOV.W	R0, #0x40004000
 		LDR.W	R1, [R0,#0x160]
 		STR.W	R1, [R0,#0x160]
@@ -5521,8 +5537,9 @@ loc_24D4:				@ ...
 
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
-fbNumDigits:				@ ...
+orgfbNumDigits:
 		MOV	R1, R0
 		MOVS	R0, #0
 		MOVS	R2, #10
@@ -5544,6 +5561,8 @@ loc_24EC:				@ ...
 locret_24F6:				@ ...
 		BX	LR
 @ End of function fbNumDigits
+
+		.endif
 
 
 @ =============== S U B	R O U T	I N E =======================================
@@ -5606,7 +5625,7 @@ loc_254A:				@ ...
 		STRB	R0, [R4]
 		POP.W	{R4,LR}
 		MOVS	R0, #8
-		B.W	fbSetTimeoutValue
+		B.W	fbSetTimeoutDelay
 @ End of function fbMoveBird
 
 @ ---------------------------------------------------------------------------
@@ -7884,11 +7903,12 @@ orgCpyTmpCoefsNI:
 		
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
-fbInitTimeouts:
+orgfbInitTimeouts:
 		LDR	R0, =fbTimeoutMask
 		MOVS	R1, #0
-		LDR	R2, =TimeoutsTable
+		LDR	R2, =fbTimeoutsTable
 		STRB	R1, [R0,#(fbCurrentTimeout - fbTimeoutMask)]
 		STRB	R1, [R0,#(fbUsedTimeouts - fbTimeoutMask)]
 		MOV	R0, R1
@@ -7907,6 +7927,8 @@ loc_38BC:				@ ...
 @ ---------------------------------------------------------------------------
 		.balign 4,0
 		.pool
+		
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
@@ -11435,16 +11457,18 @@ loc_4EC8:				@ ...
 
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
+
 @ R0 Timeout #
 
-fbDeleteTimeout:
+orgfbDeleteTimeout:
 		LDR	R2, =fbTimeoutMask
 		MOVS	R1, #1
 		LSLS	R1, R0
 		LDRB	R3, [R2,#2]
 		BICS	R3, R1
 		STRB	R3, [R2,#2]
-		LDR	R2, =TimeoutsTable
+		LDR	R2, =fbTimeoutsTable
 		MOVS	R1, #0
 		STRB.W	R1, [R2,R0,LSL#3]
 		BX	LR
@@ -11453,6 +11477,8 @@ fbDeleteTimeout:
 @ ---------------------------------------------------------------------------
 		.balign 4,0
 		.pool
+
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
@@ -11632,8 +11658,9 @@ loc_5032:				@ ...
 
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
-fbBirdAnim:
+orgfbBirdAnim:
 		PUSH	{R3-R5,LR}
 		LDR	R4, =fbBirdColumn
 		MOV	R1, R0
@@ -11695,10 +11722,13 @@ loc_5094:				@ ...
 		.balign 4,0
 		.pool
 
+		.endif
+
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
-fbDrawColumn:
+orgfbDrawColumn:
 
 var_28		= -0x28
 
@@ -11784,6 +11814,8 @@ loc_50F0:				@ ...
 @ ---------------------------------------------------------------------------
 		.balign 4,0
 		.pool
+
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
@@ -13370,7 +13402,7 @@ orgDrawStringCentered:
 
 		.ifne	keeporgcode
 
-ScreenOff:
+orgScreenOff:
 		LDR	R0, =DisplayModel
 		LDRB	R0, [R0]
 		CBZ	R0, loc_5ABA
@@ -13397,7 +13429,7 @@ locret_5ABE:				@ ...
 
 		.ifne	keeporgcode
 
-DisplayRefresh:
+orgDisplayRefresh:
 		LDR	R0, =DisplayModel
 		LDRB	R0, [R0]
 		CBZ	R0, loc_5AD2
@@ -13422,18 +13454,21 @@ locret_5AD6:				@ ...
 
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
-fbSetTimeoutValue:
+orgfbSetTimeoutDelay:
 		LDR	R2, =fbTimeoutMask
-		LDR	R1, =TimeoutsTable
+		LDR	R1, =fbTimeoutsTable
 		LDRB	R2, [R2,#(fbCurrentTimeout - fbTimeoutMask)]
 		STRB.W	R0, [R1,R2,LSL#3]
 		BX	LR
-@ End of function fbSetTimeoutValue
+@ End of function fbSetTimeoutDelay
 
 @ ---------------------------------------------------------------------------
 		.balign 4,0
 		.pool
+		
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
@@ -14713,16 +14748,16 @@ loc_642A:				@ ...
 @ End of function SPI_Open
 
 @ ---------------------------------------------------------------------------
-			.balign 4,0
-			.pool
+		.balign 4,0
+		.pool
 
-			.endif
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
 		.ifne	keeporgcode
 
-SSD1327_WriteBytes:
+orgSSD1327_WriteBytes:
 
 @ FUNCTION CHUNK AT 00000FCC SIZE 0000001C BYTES
 
@@ -14813,7 +14848,7 @@ loc_64AE:				@ ...
 
 		.ifne	keeporgcode
 
-SSD1306_WriteBytes:
+orgSSD1306_WriteBytes:
 		PUSH	{R4,LR}
 		LDR	R3, =0x40004928
 		CMP	R0, #0x40
@@ -15187,22 +15222,25 @@ locret_6750:				@ ...
 
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
-fbSetBirdColumn:
+orgfbSetBirdColumn:
 		LDR	R1, =fbBirdColumn
 		STRB	R0, [R1]
 		BX	LR
 @ End of function fbSetBirdColumn
 
 @ ---------------------------------------------------------------------------
-			.balign 4,0
-			.pool
+		.balign 4,0
+		.pool
+
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
 		.ifne	keeporgcode
 
-ShowBatCharging:
+orgShowBatCharging:
 
 var_8		= -8
 
@@ -15340,10 +15378,10 @@ locret_6830:				@ ...
 @ End of function ShowBattery
 
 @ ---------------------------------------------------------------------------
-			.balign 4,0
-			.pool
+		.balign 4,0
+		.pool
 
-			.endif
+		.endif
 			
 @ =============== S U B	R O U T	I N E =======================================
 
@@ -15372,10 +15410,10 @@ orgShowBattVolts:
 @ End of function ShowBattVolts
 
 @ ---------------------------------------------------------------------------
-			.balign 4,0
-			.pool
-			
-			.endif
+		.balign 4,0
+		.pool
+		
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
@@ -15399,10 +15437,10 @@ orgShowBoardTemp:
 @ End of function ShowBoardTemp
 
 @ ---------------------------------------------------------------------------
-			.balign 4,0
-			.pool
-			
-			.endif
+		.balign 4,0
+		.pool
+		
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
@@ -16597,10 +16635,10 @@ locret_7170:				@ ...
 @ End of function ShowMainView
 
 @ ---------------------------------------------------------------------------
-			.balign 4,0
-			.pool
+		.balign 4,0
+		.pool
 
-			.endif
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
@@ -18028,12 +18066,13 @@ locret_7B88:				@ ...
 
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
-fbCallTimeouts:
+orgfbCallTimeouts:
 		PUSH	{R4-R6,LR}
 		LDR	R4, =fbTimeoutMask
 		MOVS	R0, #1
-		LDR	R5, =TimeoutsTable
+		LDR	R5, =fbTimeoutsTable
 		STRB	R0, [R4]
 		MOVS	R0, #0
 		STRB	R0, [R4,#(fbCurrentTimeout - fbTimeoutMask)]
@@ -18066,6 +18105,8 @@ loc_7BC2:				@ ...
 @ ---------------------------------------------------------------------------
 		.balign 4,0
 		.pool
+		
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
@@ -18580,8 +18621,9 @@ locret_7F8E:				@ ...
 		.endif
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
-fbDrawChar:
+orgfbDrawChar:
 
 var_8		= -8
 
@@ -18601,10 +18643,13 @@ var_8		= -8
 		.balign 4,0
 		.pool
 
+		.endif
+
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
-fbDrawNumber:
+orgfbDrawNumber:
 		PUSH.W	{R4-R11,LR}
 		MOV	R4, R3
 		MOV	R5, R2
@@ -18688,11 +18733,14 @@ loc_8036:				@ ...
 		B	loc_7FFE
 @ End of function fbDrawNumber
 
+		.endif
+
 
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
-fbDrawText:
+orgfbDrawText:
 		PUSH	{R4-R6,LR}
 		MOV	R4, R2
 		MOV	R6, R1
@@ -18715,11 +18763,13 @@ loc_8056:				@ ...
 		POP	{R4-R6,PC}
 @ End of function fbDrawText
 
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
-fbDrawSprite:
+orgfbDrawSprite:
 
 var_28		= -0x28
 arg_0		=  0
@@ -18776,11 +18826,13 @@ loc_80AC:				@ ...
 		POP.W	{R3-R11,PC}
 @ End of function fbDrawSprite
 
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
-fbDrawRect:
+orgfbDrawRect:
 
 anonymous_0	=  0
 
@@ -18924,11 +18976,13 @@ loc_8180:				@ ...
 		B	locret_810C
 @ End of function fbDrawRect
 
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
-fbPlot:
+orgfbPlot:
 		PUSH	{R4,R5,LR}
 		LDR	R4, =ScreenBuffer
 		CMP	R0, #0x7F
@@ -18987,6 +19041,8 @@ loc_81E0:				@ ...
 @ ---------------------------------------------------------------------------
 		.balign 4,0
 		.pool
+
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 
@@ -20028,7 +20084,7 @@ loc_8868:				@ ...
 		STRB	R0, [R4,#(fbBirdDisp - fbBirdLine)]
 		POP.W	{R4,LR}
 		MOVS	R0, #0xA
-		B.W	fbSetTimeoutValue
+		B.W	fbSetTimeoutDelay
 @ ---------------------------------------------------------------------------
 
 loc_8874:				@ ...
@@ -20062,9 +20118,10 @@ j_DisplayRefresh:
 
 @ =============== S U B	R O U T	I N E =======================================
 
+		.ifne	keeporgcode
 
 fbTickTimeouts:
-		LDR	R2, =TimeoutsTable
+		LDR	R2, =fbTimeoutsTable
 		MOVS	R0, #0
 
 loc_8898:				@ ...
@@ -20084,6 +20141,8 @@ loc_88A4:				@ ...
 @ ---------------------------------------------------------------------------
 		.balign 4,0
 		.pool
+		
+		.endif
 
 @ =============== S U B	R O U T	I N E =======================================
 

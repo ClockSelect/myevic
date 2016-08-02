@@ -130,9 +130,9 @@ __myevic__ void ResetDataFlash()
 	dfRezLockedSS = 0;
 	dfRezTCR = 0;
 	dfRezLockedTCR = 0;
-	dfTCRM1 = 120;
-	dfTCRM2 = 120;
-	dfTCRM3 = 120;
+	dfTCRM[0] = 120;
+	dfTCRM[1] = 120;
+	dfTCRM[2] = 120;
 	dfbyte_2000033D = 0;
 	dfFBBest = 0;
 	dfFBSpeed = 0;
@@ -198,7 +198,6 @@ __myevic__ void DFCheckValuesValidity()
 			dfTemp = 450;
 	}
 
-
 	if ( dfRezTI > 150 )
 		dfRezTI = 0;
 
@@ -229,45 +228,35 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfRezLockedTCR > 1 )
 		dfRezLockedTCR = 0;
 
-	i = 0;
-	do
+	for ( i = 0 ; i < 21 ; ++i )
 	{
 		if ( dfTempCoefsNI[i] > 200 )
 			break;
-		++i;
 	}
-	while ( i < 21 );
 	if ( i != 21 )
 		CpyTmpCoefsNI();
 
-	i = 0;
-	do
+	for ( i = 0 ; i < 21 ; ++i )
 	{
 		if ( dfTempCoefsTI[i] > 100 )
 			break;
-		++i;
 	}
-	while ( i < 21 );
 	if ( i != 21 )
 		CpyTmpCoefsTI();
 
-	i = 0;
-	do
+	for ( i = 0 ; i < 3 ; ++i )
 	{
-		if ( (&dfTCRM1)[i] > 999 )
-			(&dfTCRM1)[i] = 120;
-		++i;
+		if ( dfTCRM[i] > 999 )
+			dfTCRM[i] = 120;
 	}
-	while ( i < 3 );
 
-	if ( dfbyte_2000033D >= 2 )
+	if ( dfbyte_2000033D > 1 )
 		dfbyte_2000033D = 0;
 
 	if ( dfFBSpeed > 2 )
 		dfFBSpeed = 0;
 
-	i = 0;
-	while ( i < 10 )
+	for ( i = 0 ; i < 10 ; ++i )
 	{
 		v = dfSavedCfgRez[i];
 		if ( v > 350 || ( v < 5 && v ) )
@@ -275,7 +264,6 @@ __myevic__ void DFCheckValuesValidity()
 		v = dfSavedCfgPwr[i];
 		if ( v > MaxPower || ( v < 10 && v ) )
 			break;
-		++i;
 	}
 	if ( i < 10 )
 	{

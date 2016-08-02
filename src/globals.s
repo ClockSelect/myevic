@@ -4,7 +4,8 @@
 .global MemCpy2
 .global MemClear
 .global MemClear2
-.global GotoMain
+.global MemSet
+
 .global PutTextf
 
 .global sqrtul
@@ -12,33 +13,52 @@
 .global DrawHexDigit
 .global DrawHexLong
 
-.global fbInitTimeouts
-.global fbCreateTimeout
-.global fbDeleteTimeout
-.global fbSetTimeoutValue
-.global fbTickTimeouts
-.global fbCallTimeouts
-.global fbStartScreen
-.global fbBirdAnim
-.global fbFillScreen
-.global fbCLSBuf
-.global fbDrawDeadBird
-.global fbDrawColumn
-.global fbDrawRect
-.global fbDrawText
-.global fbNumDigits
-.global fbDrawNumber
-.global fbNumDigits
+.global orgfbStartScreen
 
-.global fbAnimStep
-.global fbAnimTimer
+.global orgfbInitTimeouts
+.global orgfbCreateTimeout
+.global orgfbDeleteTimeout
+.global orgfbSetTimeoutDelay
+.global orgfbTickTimeouts
+.global orgfbCallTimeouts
+.global orgfbCLSBuf
+.global orgfbDrawDeadBird
+.global orgfbFillScreen
+.global orgfbNumDigits
+.global orgfbBirdAnim
+.global orgfbDrawColumn
+.global orgfbDrawChar
+.global orgfbDrawNumber
+.global orgfbNumDigits
+.global orgfbDrawText
+.global orgfbDrawSprite
+.global orgfbDrawRect
+.global orgfbPlot
+
+.ifne 0
+.global fbBirdColumn
+.global fbBirdCycle
 .global fbBirdLine
 .global fbBirdDisp
-.global fbScore
 .global fbDead
+.global fbAnimStep
+.global fbAnimTimer
+.global fbScore
 .global fbColumn1
 .global fbColumn2
 .global fbColumn3
+.global fbTimeoutMask
+.global fbCurrentTimeout
+.global fbUsedTimeouts
+.endif
+.global fbColumnBody
+.global fbColumnBottom
+.global fbColumnTop
+.global fbBird0
+.global fbBird1
+.global fbBird2
+.global fbBirdDead
+.global fbFont
 
 .global UpdateDFTimer
 .global BatRefreshTmr

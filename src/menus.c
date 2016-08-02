@@ -4,7 +4,7 @@
 #include "myrtc.h"
 #include "dataflash.h"
 #include "miscs.h"
-#include "M451Series.h"
+#include "flappy.h"
 
 //=============================================================================
 // Menus
@@ -441,7 +441,7 @@ const menu_t Anim3dMenu =
 	2,
 	{
 		{ String_Cube, &Anim3dMenu, -1, 0 },
-		{ String_Exit, 0, 1, 30 }
+		{ String_None, 0, 1, 30 }
 	}
 };
 

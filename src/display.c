@@ -3,9 +3,17 @@
 #include "dataflash.h"
 
 
-const uint8_t SSD_MaskRight[] = { 0x00, 0x01, 0x03,	0x07, 0x0F, 0x1F, 0x3F,	0x7F };
-const uint8_t SSD_MaskLeft[]  = { 0xFF, 0xFE, 0xFC,	0xF8, 0xF0, 0xE0, 0xC0,	0x80 };
+//=========================================================================
 
+uint8_t ScreenBuffer[SCREEN_BUFFER_SIZE] __attribute__((aligned(8)));
+
+const uint8_t ByteMaskRight[] = { 0x00, 0x01, 0x03,	0x07, 0x0F, 0x1F, 0x3F,	0x7F };
+const uint8_t ByteMaskLeft[]  = { 0xFF, 0xFE, 0xFC,	0xF8, 0xF0, 0xE0, 0xC0,	0x80 };
+
+
+//=========================================================================
+
+typedef void (PLOT_FUNC(int,int,int));
 
 PLOT_FUNC *DrawPoint;
 

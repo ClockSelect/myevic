@@ -180,7 +180,7 @@ LowBatVolts:		.ds.b	2
 					.ds.b	1
 AtoVoltsADC:		.ds.b	4
 AtoVolts:			.ds.b	4	@ Voltage atomiseur
-TMR0Counter2:		.ds.b	4	@ 1000Hz (1kHz)	counter, cap at	#2000
+TMR0Counter2:		.ds.b	4	@ 100kHz counter, cap at #2000
 PowerScale:			.ds.b	4	@ 100 *	600 / pwr
 TargetVolts:		.ds.b	4
 
@@ -258,6 +258,7 @@ usbdSetupLenH:					.ds.b	1
 
 			.endif
 
+			.ifne	keeporgcode
 
 fbBirdColumn:		.byte	16
 fbBirdCycle:		.ds.b	1
@@ -275,6 +276,8 @@ fbTimeoutMask:		.ds.b	1
 fbCurrentTimeout:	.ds.b	1
 fbUsedTimeouts:		.ds.b	1
 
+			.endif
+
 					.ifne	keeporgcode
 RNGSeed:			.ds.b	4
 					.endif
@@ -289,10 +292,14 @@ dword_20000168:		.ds.b	4
 
 @ ---------------------------------------------------------------------------
 
+					.ifne	keeporgcode
+
 TMR0Counter:		.ds.b	4
 TMR1Counter:		.ds.b	4
 TMR2Counter:		.ds.b	4
 TMR3Counter:		.ds.b	4
+
+					.endif
 
 @ ===========================================================================
 @ DataFlash Area
@@ -360,7 +367,7 @@ dfFBSpeed:			.ds.b	1	@ Flappy Bird Speed
 								@ 0 Easy    62.5Hz 0.016s
 								@ 1 Normal  76.9Hz 0.013s
 								@ 2 Hard   100.0Hz 0.010s
-dfbyte_2000033D:		.ds.b	1
+dfbyte_2000033D:	.ds.b	1
 
 dfContrast:			.ds.b	1	@ Screen contrast
 dfModesSel:			.ds.b	1	@ Mode selector mask
@@ -423,18 +430,26 @@ hidRQchk:			.ds.b	4
 
 @ ===========================================================================
 
+					.ifne	keeporgcode
+
 ScreenBuffer:		.ds.b	0x400
 
+					.endif
+
 @ ===========================================================================
+
+					.ifne	keeporgcode
 
 					.balign	4,0
-TimeoutsTable:		.ds.b	0x18
+fbTimeoutsTable:	.ds.b	24
+
+					.endif
 
 @ ===========================================================================
 
-					.balign 4,0
 					.section .stack
 
+					.balign 8,0
 Stack_Bottom:		.ds.b	0x400	@ Stack	space
 Stack_Top:
 

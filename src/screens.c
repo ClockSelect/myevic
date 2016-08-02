@@ -14,7 +14,7 @@ void ShowRTCSpeed();
 
 __myevic__ void DrawScreen()
 {
-	if ( Screen == 2 && CurrentFD != FireDuration && FireDuration )
+	if ( Screen == 2 && FireDuration && FireDuration != CurrentFD )
 	{
 		CurrentFD = FireDuration;
 		ScreenDuration = 1;
@@ -150,12 +150,11 @@ __myevic__ void DrawScreen()
 		DisplayRefresh();
 	}
 
-	if (( Flags64 & 0x100 )
-	&&	( dfMode < 4 ))
+	if (( Flags64 & 0x100 ) && ISMODETC(dfMode))
 	{
 		ShowFDTimer += 5;
 	}
-	  else
+	else
 	{
 		ShowFDTimer += 1;
 	}
@@ -567,11 +566,11 @@ __myevic__ void ShowTCRSet()
 			if ( EditTCRIndex == i )
 			{
 				DrawFillRect( 28, 25 * i + 30, 62, 25 * i + 52, 1 );
-				DrawValueInv(30, 25 * i + 36, (&dfTCRM1)[i], 0, 0x1F, 4);
+				DrawValueInv(30, 25 * i + 36, dfTCRM[i], 0, 0x1F, 4);
 			}
 			else
 			{
-				DrawValue( 30, 25 * i + 36, (&dfTCRM1)[i], 0, 0x1F, 4 );
+				DrawValue( 30, 25 * i + 36, dfTCRM[i], 0, 0x1F, 4 );
 			}
 			line = 25 * i + 33;
 			DrawImage(  0, line, 0xED );
@@ -595,7 +594,7 @@ __myevic__ void ShowTCRSet()
 				DrawImage(  0, line, 0xED );
 				DrawImage( 15, line, 0xEE + i );
 			}
-			DrawValue( 30, 25 * i + 36, (&dfTCRM1)[i], 0, 0x1F, 4 );
+			DrawValue( 30, 25 * i + 36, dfTCRM[i], 0, 0x1F, 4 );
 		}
 	}
 }

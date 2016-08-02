@@ -15,7 +15,6 @@ extern void DrawClock();
 //==============================================================================
 
 extern void DrawScreen();
-extern void DrawBFLine( int y );
 extern void ShowMainView();
 extern void ShowMainFiring();
 extern void ShowBattery();
@@ -43,31 +42,9 @@ extern void ShowWeakBat();
 //==============================================================================
 
 extern void MainView();
-extern void orgDrawScreen();
 
-extern void orgShowKeyLock();
-extern void orgShowVersion();
-extern void orgShowTCRSet();
-extern void orgShowLOGOMenu();
-extern void orgShowGameMenu();
-extern void orgShowNewCoil();
-extern void orgShowBattVolts();
-extern void orgShowBoardTemp();
-extern void orgShowStealthMode();
-extern void orgShowTiOnOff();
-extern void orgShowDevTooHot();
-extern void orgShowKeyUnLock();
-extern void orgShowNoAtoFound();
-extern void orgShowAtoShort();
-extern void orgShowAtoLow();
-extern void orgShow10sProtec();
-extern void orgShowBatLow();
-extern void orgShowBatLowLock();
-extern void orgShowMainView();
-extern void orgShowMainFiring();
-extern void orgShowBatCharging();
-extern void orgShowWeakBat();
-extern void orgShowBattery();
+//==============================================================================
+// Strings
 
 extern const uint16_t String_ON[];
 extern const uint16_t String_No[];
@@ -121,7 +98,7 @@ extern const uint16_t String_TIME_s[];
 extern const uint16_t String_PUFF_s[];
 extern const uint16_t String_START[];
 
-//==============================================================================
+//-------------------------------------------------------------------------
 
 // from mainview.c
 extern const uint16_t String_BATT_s[];
@@ -153,6 +130,7 @@ extern const uint16_t String_Save[];
 extern const uint16_t String_Clock[];
 extern const uint16_t String_3D[];
 extern const uint16_t String_Cube[];
+extern const uint16_t String_None[];
 
 //==============================================================================
 

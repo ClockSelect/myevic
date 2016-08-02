@@ -2,8 +2,14 @@
 #include "dataflash.h"
 #include "screens.h"
 #include "myrtc.h"
-#include "M451Series.h"
+#include "flappy.h"
 
+//==============================================================================
+
+volatile uint32_t	TMR0Counter;
+volatile uint32_t	TMR1Counter;
+volatile uint32_t	TMR2Counter;
+volatile uint32_t	TMR3Counter;
 
 //==============================================================================
 //----- (00007CD4) --------------------------------------------------------

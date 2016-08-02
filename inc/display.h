@@ -4,34 +4,32 @@
 #include "M451Series.h"
 
 
+#define SCREEN_BUFFER_SIZE 0x400
+
 typedef struct {
 	uint8_t	width;
 	uint8_t	height;
 	uint8_t	bitmap[];
 } image_t;
 
-
-typedef void (PLOT_FUNC(int,int,int));
-
-extern PLOT_FUNC *DrawPoint;
-
-extern const uint8_t SSD_MaskRight[];
-extern const uint8_t SSD_MaskLeft[];
+extern const uint8_t ByteMaskRight[];
+extern const uint8_t ByteMaskLeft[];
 
 extern uint8_t DisplayModel;
 extern uint8_t ScreenBuffer[];
+
 extern const image_t *font1[];
 extern const image_t *font2[];
 
 
 extern void InitSPI0();
+extern void InitDisplay();
 extern void DisplaySendCommand( const uint8_t );
 extern void DisplaySendData( const uint8_t*, const uint32_t );
-extern void InitDisplay();
 extern void ScreenOff();
 extern void DisplaySetContrast( const uint8_t c );
-extern void DisplayRefresh();
 extern void ClearScreenBuffer();
+extern void DisplayRefresh();
 
 extern int GetImageWidth( const uint16_t imgnum );
 extern int GetStrCenteredX( const uint16_t str[] );
