@@ -2,6 +2,7 @@
 #include "dataflash.h"
 #include "myrtc.h"
 
+#include <stdio.h>
 
 //=============================================================================
 // DataFlash parameters global structure

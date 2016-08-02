@@ -115,7 +115,7 @@ extern uint8_t	Screen;							// .ds.b 1
 extern uint8_t	BatAnimTimer;					// .ds.b 1
 extern uint8_t	ShowWeakBatFlag;				// .ds.b 1
 
-extern uint32_t	StdOut;							// .ds.b 4
+extern uint32_t	__stdout;							// .ds.b 4
 extern uint32_t	dword_20000168;					// .ds.b 4
 
 //=============================================================================

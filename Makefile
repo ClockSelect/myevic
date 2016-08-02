@@ -155,6 +155,7 @@ LIBDIRS :=	-L$(ARMGCC)/arm-none-eabi/lib \
 #LIBS := -lgcc
 
 CFLAGS += -Wall -mcpu=$(CPU) -mfpu=$(FPU) -mthumb -Os -fdata-sections -ffunction-sections
+CFLAGS += -fno-builtin-printf
 CFLAGS += $(INCDIRS)
 
 ASFLAGS := -mcpu=$(CPU) -mfpu=$(FPU)

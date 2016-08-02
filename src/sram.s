@@ -7,24 +7,6 @@
 @ SRAM_Start:
 @ ===========================================================================
 
-					.ifne 	0	@keeporglibs_sys
-
-SystemCoreClock:	.ds.b	4
-CyclesPerUs:		.ds.b	4
-PllClock:			.ds.b	4
-
-gau32ClkSrcTbl:
-					.ds.b	4
-					.ds.b	4
-					.ds.b	4
-					.ds.b	4
-					.ds.b	4
-					.ds.b	4
-					.ds.b	4
-					.ds.b	4
-
-					.endif
-
 ADC00_IRQ_Flag:		.ds.b	4
 UpdateDFTimer:		.ds.b	1
 UpdatePTTimer:		.ds.b	1
@@ -184,14 +166,6 @@ TMR0Counter2:		.ds.b	4	@ 100kHz counter, cap at #2000
 PowerScale:			.ds.b	4	@ 100 *	600 / pwr
 TargetVolts:		.ds.b	4
 
-					.ifne	keeporgcode_usbd
-usbdStrings:		.long	usbdStr0
-					.long	usbdStr1
-					.long	usbdStr2
-					.long	usbdStr3
-hidDataIndex:		.ds.b	4
-					.endif
-
 DisplayCmdByte:		.ds.b	1
 ScreenDuration:		.ds.b	1
 Screen:				.ds.b	1	@ Screen (200000F6)
@@ -224,64 +198,8 @@ ShowWeakBatFlag:	.ds.b	1
 					.ds.b	1
 					.ds.b	1
 					.ds.b	1
-StdOut:				.ds.b	4
 
-
-			.ifne	keeporglibs_usbd
-
-g_usbd_RemoteWakeupEn:			.ds.b	1
-								.ds.b	1
-								.ds.b	1
-								.ds.b	1
-g_usbd_CtrlInPointer:			.ds.b	4
-g_usbd_CtrlInSize:				.ds.b	4
-g_usbd_CtrlOutPointer:			.ds.b	4
-g_usbd_CtrlOutSize:				.ds.b	4
-g_usbd_CtrlOutSizeLimit:		.ds.b	4
-g_usbd_UsbAddr:					.ds.b	4
-g_usbd_UsbConfig:				.ds.b	4
-g_usbd_CtrlMaxPktSize:			.long	8
-g_usbd_UsbAltInterface:			.ds.b	4
-g_usbd_pfnVendorRequest:		.ds.b	4
-g_usbd_pfnClassRequest:			.ds.b	4
-g_usbd_pfnSetInterface:			.ds.b	4
-g_usbd_pfnSetConfigCallback:	.ds.b	4
-g_u32EpStallLock:				.ds.b	4
-g_usbd_sInfo:					.ds.b	4
-g_usbd_SetupPacket:				.ds.b	1
-usbdSetupRq:					.ds.b	1
-usbdSetupVal:					.ds.b	1
-usbdSetupValH:					.ds.b	1
-usbdSetupIdx:					.ds.b	2
-usbdSetupLen:					.ds.b	1
-usbdSetupLenH:					.ds.b	1
-
-			.endif
-
-			.ifne	keeporgcode
-
-fbBirdColumn:		.byte	16
-fbBirdCycle:		.ds.b	1
-fbBirdLine:			.byte	24
-fbBirdDisp:			.ds.b	1
-fbDead:				.ds.b	1
-fbAnimStep:			.ds.b	1
-fbAnimTimer:		.ds.b	1
-					.ds.b	1
-fbScore:			.ds.b	2
-fbColumn1:			.ds.b	5
-fbColumn2:			.ds.b	5
-fbColumn3:			.ds.b	5
-fbTimeoutMask:		.ds.b	1
-fbCurrentTimeout:	.ds.b	1
-fbUsedTimeouts:		.ds.b	1
-
-			.endif
-
-					.ifne	keeporgcode
-RNGSeed:			.ds.b	4
-					.endif
-
+__stdout:				.ds.b	4
 dword_20000168:		.ds.b	4
 
 @ ---------------------------------------------------------------------------
@@ -290,168 +208,6 @@ dword_20000168:		.ds.b	4
 
 					.section .sramz
 
-@ ---------------------------------------------------------------------------
-
-					.ifne	keeporgcode
-
-TMR0Counter:		.ds.b	4
-TMR1Counter:		.ds.b	4
-TMR2Counter:		.ds.b	4
-TMR3Counter:		.ds.b	4
-
-					.endif
-
-@ ===========================================================================
-@ DataFlash Area
-@ ---------------------------------------------------------------------------
-
-					.ifne keeporgcode
-
-SavedDF:			.ds.b	0x100
-
-dfData:				.ds.b	4	@ 0x2000027C
-dfCRC:				.ds.b	4
-dfHWVersion:		.ds.b	4
-dfMagic:			.ds.b	1	@ = 0x36
-dfBootFlag:			.ds.b	1
-dfMode:				.ds.b	2	@ 0 TEMP NI
-								@ 1 TEMP TI
-								@ 2 TEMP SS316
-								@ 3 TEMP TCR
-								@ 4 POWER
-								@ 5 BYPASS
-								@ 6 START
-dfPower:			.ds.b	2
-dfTemp:				.ds.b	2
-dfTCPower:			.ds.b	2
-dfVWVolts:			.ds.b	2
-dfAPT:				.ds.b	1
-dfRezType:			.ds.b	1
-dfTempAlgo:			.ds.b	1
-dfIsCelsius:		.ds.b	1
-dfResistance:		.ds.b	2
-dfRezTI:			.ds.b	2
-dfRezNI:			.ds.b	2
-dfRezLockedTI:		.ds.b	1
-dfRezLockedNI:		.ds.b	1
-dfTiOn:				.ds.b	1
-dfStealthOn:		.ds.b	1
-dfTempCoefsNI:		.ds.b	0x2A
-dfTempCoefsTI:		.ds.b	0x2A
-					.ds.b	1
-					.ds.b	1
-dfStatus:			.ds.b	4	@ Status bits
-								@ 0  0x01  Switched off
-								@ 1  0x02  Key locked
-								@ 2  0x04  Flipped display
-								@ 3  0x08  LOGO	Off
-dfAtoRez:			.ds.b	2
-dfAtoStatus:		.ds.b	1	@ 0,1,2,3,4 = Open,Short,Low,Large,Ok
-					.ds.b	1
-dfRezSS:			.ds.b	2
-dfRezLockedSS:		.ds.b	1
-dfUIVersion:		.ds.b	1
-dfTCRIndex:			.ds.b	1
-					.ds.b	1
-dfTCRM1:			.ds.b	2
-dfTCRM2:			.ds.b	2
-dfTCRM3:			.ds.b	2
-dfRezTCR:			.ds.b	2
-dfRezLockedTCR:		.ds.b	1
-					.ds.b	1
-dfLastTCMode:		.ds.b	2
-dfSavedCfgRez:		.ds.b	0x14
-dfSavedCfgPwr:		.ds.b	0x14
-dfFBBest:			.ds.b	2
-dfFBSpeed:			.ds.b	1	@ Flappy Bird Speed
-								@ 0 Easy    62.5Hz 0.016s
-								@ 1 Normal  76.9Hz 0.013s
-								@ 2 Hard   100.0Hz 0.010s
-dfbyte_2000033D:	.ds.b	1
-
-dfContrast:			.ds.b	1	@ Screen contrast
-dfModesSel:			.ds.b	1	@ Mode selector mask
-dfClkRatio:			.ds.b	2	@ RTC LIRC/X32 ratio constant
-
-
-					.ds.b ( 0x100 - ( . - dfData ))
-
-					.if (( . - dfData ) != 0x100 )
-					.error "Invalid Dataflash page size!"
-					.endif
-
-@ ---------------------------------------------------------------------------
-@ End of real DataFlash Area
-@ ---------------------------------------------------------------------------
-
-dfPage2:			.ds.b	4
-dfFWVersion:		.ds.b	4
-					.ds.b	4
-dffmcCID:			.ds.b	4
-dffmcDID:			.ds.b	4
-dffmcPID:			.ds.b	4
-dffmcUID:			.ds.b	4*3
-dffmcUCID:			.ds.b	4*4
-dfPuffCount:		.ds.b	4
-dfTimeCount:		.ds.b	4
-dfProductID:		.ds.b	4
-dfMaxHWVersion:		.ds.b	4
-
-					.ds.b	( 0x100 - ( . - dfPage2 ))
-
-					.ds.b	4
-gPlayfield:
-					.ds.b ( 0x800 - ( . - dfData ))
-
-					.if (( . - dfData ) != 0x800 )
-					.error "Invalid Dataflash full size!"
-					.endif
-					
-					.endif
-
-@ ---------------------------------------------------------------------------
-@ End of DataFlash Area
-@ ===========================================================================
-
-					.ifne	keeporgcode_usbd
-
-hidData:			.ds.b	0x800
-hidDFData:			.ds.b	0x800
-
-hidCmd:
-hidRequest:			.ds.b	1
-hidRQLen:			.ds.b	1
-hidRQvalue1:		.ds.b	4
-hidRQvalue2:		.ds.b	4
-hidRQhidc:			.ds.b	4
-hidRQchk:			.ds.b	4
-
-					.endif
-
-@ ===========================================================================
-
-					.ifne	keeporgcode
-
-ScreenBuffer:		.ds.b	0x400
-
-					.endif
-
-@ ===========================================================================
-
-					.ifne	keeporgcode
-
-					.balign	4,0
-fbTimeoutsTable:	.ds.b	24
-
-					.endif
-
-@ ===========================================================================
-
-					.section .stack
-
-					.balign 8,0
-Stack_Bottom:		.ds.b	0x400	@ Stack	space
-Stack_Top:
 
 @ ===========================================================================
 @ SRAM_End:
