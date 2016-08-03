@@ -23,6 +23,7 @@ extern void RTCEpochToTime( S_RTC_TIME_DATA_T *d, const time_t *t );
 
 extern void RTCSetClockSpeed( const unsigned int cs );
 extern unsigned int RTCGetClockSpeed();
+extern void RTCAdjustClock( int seconds );
 
 //==============================================================================
 

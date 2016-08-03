@@ -487,10 +487,11 @@ const menu_t ClockMenu =
 	0,
 	0,
 	0,
-	3,
+	4,
 	{
 		{ String_DateTime, &TimeMenu, -1, 0 },
 		{ String_ClkSpeed, 0, 103, 30 },
+		{ String_ClkAdjust, 0, 104, 30 },
 		{ String_Exit, 0, 1, 30 }
 	}
 };

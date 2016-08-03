@@ -329,7 +329,7 @@ __myevic__ void CheckMode()
 
 	UpdateDFTimer = 50;
 
-	Flags64 &= ~0x800000u;
+	Flags64 &= ~0x800000;
 	CheckModeCounter = 0;
 }
 
@@ -475,14 +475,16 @@ __myevic__ void RegulateBuckBoost()
 				{
 					PC2 = 1;
 					BBC_Configure( BBC_PWMCH_BOOST, 0 );
-
 					PC3 = 1;
+
 					BBC_Configure( BBC_PWMCH_BUCK, 1 );
+
 					BuckDuty = ( BBCMode == 0 ) ? 10 : 479;
 					PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, BuckDuty );
+
 					PC1 = 1;
 
-					BBCMode = BBCNextMode;
+					BBCMode = 2;
 				}
 
 				if ( AtoVolts < TargetVolts )
@@ -523,12 +525,14 @@ __myevic__ void RegulateBuckBoost()
 
 					PC0 = 1;
 					BBC_Configure( BBC_PWMCH_BUCK, 0 );
-
 					PC1 = 1;
+
 					BBC_Configure( BBC_PWMCH_BOOST, 1 );
+
 					BoostDuty = 479;
-				//	PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, BuckDuty );
+				//	PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, BuckDuty );	// bug?
 					PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, BoostDuty );
+
 					PC3 = 1;
 				}
 
@@ -578,7 +582,7 @@ __myevic__ void ReachTargetVoltage()
 			break;
 
 		if ((AtoStatus == 0 || AtoStatus == 1 || (!(Flags64 & 0x100) && AtoProbeCount >= 12))
-			&& BuckDuty >= 45u )
+			&& BuckDuty >= 45 )
 		{
 			break;
 		}
@@ -878,7 +882,7 @@ __myevic__ void ProbeAtomizer()
 	{
 		if ( Flags64 & 0x100 )
 		{
-			Flags64 |= 0x4000000u;
+			Flags64 |= 0x4000000;
 		}
 		TargetVolts = GetVoltsForPower( 50 );
 		if ( !TargetVolts ) TargetVolts = 100;
@@ -898,11 +902,11 @@ __myevic__ void ProbeAtomizer()
 
 	if ( TargetVolts > 600 ) TargetVolts = 600;
 
-	Flags64 |= 0x2000u;
+	Flags64 |= 0x2000;
 	ReachTargetVoltage();
 	WaitOnTMR2(2);
 	ReadAtoTemp();
-	Flags64 &= ~0x2000u;
+	Flags64 &= ~0x2000;
 
 	if ( !(Flags64 & 0x100) )
 	{
@@ -934,7 +938,7 @@ __myevic__ void ProbeAtomizer()
 			break;
 	}
 
-	if ( AtoProbeCount < 12u )
+	if ( AtoProbeCount < 12 )
 	{
 		++AtoProbeCount;
 	}
@@ -943,7 +947,7 @@ __myevic__ void ProbeAtomizer()
 	{
 		if ( AtoProbeCount != 11 )
 			return;
-		AtoRez = AtoRezMilli / 10u;
+		AtoRez = AtoRezMilli / 10;
 	}
 	else
 	{
@@ -952,8 +956,8 @@ __myevic__ void ProbeAtomizer()
 	}
 
 	if ( AtoError == byte_20000082
-			&& ( AtoRez + AtoRez / 20u ) >= word_200000B6
-			&& ( AtoRez - AtoRez / 20u ) <= word_200000B6 )
+			&& ( AtoRez + AtoRez / 20 ) >= word_200000B6
+			&& ( AtoRez - AtoRez / 20 ) <= word_200000B6 )
 	{
 		AtoRez = word_200000B6;
 	}
@@ -968,7 +972,7 @@ __myevic__ void ProbeAtomizer()
 		word_200000B6 = AtoRez;
 		byte_20000082 = AtoError;
 		SetAtoLimits();
-		Flags64 |= 0x20000u;
+		Flags64 |= 0x20000;
 		ScreenDuration = 30;
 	}
 
@@ -987,7 +991,7 @@ __myevic__ void ProbeAtomizer()
 			}
 		}
 		Flags64 |= 0x98800000;
-		Flags68 |= 2u;
+		Flags68 |= 2;
 	}
 }
 

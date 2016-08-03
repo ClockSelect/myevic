@@ -97,7 +97,7 @@ __myevic__ void SetADCState( int module, int onoff )
 __myevic__ uint32_t ADC_Read( uint32_t module )
 {
 	EADC_Open( EADC, EADC_CTL_DIFFEN_SINGLE_END );
-	EADC_SetInternalSampleTime( EADC, 6 );
+	EADC_SetInternalSampleTime( EADC, 6 );	// 0.67 us
 	EADC_ConfigSampleModule( EADC, module, EADC_SOFTWARE_TRIGGER, module );
 
 	EADC_CLR_INT_FLAG( EADC, 1 << 0 );

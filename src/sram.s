@@ -33,13 +33,13 @@ Event:				.ds.b	1	@ Events (20000043)
 								@  2 Edit (+ button)
 								@  3 Edit (- button)
 								@  4 Key Lock/UnLock
-								@  5 (fire+ buttons)
+								@  5 Menus (fire+ buttons)
 								@  6 Stealth ON/OFF
 								@ 10 USB cable attach
 								@ 11 USB cable detach
 								@ 12 Battery inserted
 								@ 13 Battery removed
-								@ 15 (unused?) Single fire click
+								@ 15 Single fire click
 								@ 16 Enter edit	mode
 								@ 17 Switch On/Off
 								@ 18 Flip display
@@ -56,9 +56,9 @@ Event:				.ds.b	1	@ Events (20000043)
 								@ 30 Key lock violation
 								@ 31 Board temp	screen select
 								@ 32 New coil detected
-								@ 33 (unused?) Ti ON/OFF select
+								@ 33 (unused) Ti ON/OFF select
 								@ 34 Battery voltage screen select
-								@ 38 (unused?) Change interface	version
+								@ 38 (unused) Change interface	version
 								@ 39 TCR Set menu select
 								@ 40 LOGO menu select
 								@ 41 Game menu select
@@ -195,20 +195,15 @@ Screen:				.ds.b	1	@ Screen (200000F6)
 								@ 83 Game Menu
 BatAnimTimer:		.ds.b	1
 ShowWeakBatFlag:	.ds.b	1
-					.ds.b	1
-					.ds.b	1
-					.ds.b	1
 
-__stdout:				.ds.b	4
-dword_20000168:		.ds.b	4
 
 @ ---------------------------------------------------------------------------
-@ End of initialized RAM data
+@ End of pre-initialized SRAM data
 @ ---------------------------------------------------------------------------
 
 					.section .sramz
 
 
 @ ===========================================================================
-@ SRAM_End:
+@ End of SRAM
 @ ===========================================================================

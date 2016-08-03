@@ -90,6 +90,7 @@ __myevic__ void KeyRepeat()
 
 //=============================================================================
 //----- (00004B34) ------------------------------------------------------------
+// Called at 100Hz
 __myevic__ void GetUserInput()
 {
 	UserInputs = 14;
@@ -412,6 +413,13 @@ __myevic__ int EvtFire()
 			vret = 1;
 		}
 		break;
+
+		case 104:
+		{
+			RTCAdjustClock( 0 );
+			MainView();
+			vret = 1;
+		}
 	}
 
 	return vret;
@@ -433,6 +441,8 @@ __myevic__ int EvtSingleFire()
 		break;
 
 		case 101:
+		case 103:
+		case 104:
 		{
 			vret = 1;
 		}
@@ -441,12 +451,6 @@ __myevic__ int EvtSingleFire()
 		case 102:
 		{
 			vret = MenuEvent( LastEvent );
-		}
-		break;
-
-		case 103:
-		{
-			vret = 1;
 		}
 		break;
 	}
@@ -547,6 +551,15 @@ __myevic__ int EvtPlusButton()
 			vret = 1;
 		}
 		break;
+		
+		case 104:
+		{
+			RTCAdjustClock( 1 );
+			Flags64 |= 0x20000;
+			ScreenDuration = 120;
+			vret = 1;
+		}
+		break;
 	}
 
 	return vret;
@@ -585,6 +598,15 @@ __myevic__ int EvtMinusButton()
 			unsigned int cs = RTCGetClockSpeed();
 			if ( cs > 10000 ) --cs;
 			RTCSetClockSpeed( cs );
+			Flags64 |= 0x20000;
+			ScreenDuration = 120;
+			vret = 1;
+		}
+		break;
+
+		case 104:
+		{
+			RTCAdjustClock( -1 );
 			Flags64 |= 0x20000;
 			ScreenDuration = 120;
 			vret = 1;

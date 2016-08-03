@@ -137,6 +137,10 @@ __myevic__ void DrawScreen()
 				ShowRTCSpeed();
 				break;
 
+			case 104:
+				ShowRTCAdjust();
+				break;
+
 			default:
 				break;
 		}
@@ -250,6 +254,7 @@ __myevic__ void DrawScreen()
 			break;
 
 		case  51: // New Coil
+		case 104: // Adjust Clock
 			MainView();
 			break;
 
@@ -366,7 +371,10 @@ __myevic__ void ShowRTCSpeed()
 
 __myevic__ int IsClockOnScreen()
 {
-	return ( Screen == 103 || ( dfAPT == 6 && ( Screen == 1 || Screen == 2 )));
+	return (	Screen == 103
+			||	Screen == 104
+			|| ( dfAPT == 6 && ( Screen == 1 || Screen == 2 ))
+			);
 }
 
 
@@ -709,3 +717,14 @@ __myevic__ void ShowWeakBat()
 }
 
 
+//=========================================================================
+__myevic__ void ShowRTCAdjust()
+{
+	S_RTC_TIME_DATA_T rtd;
+
+	DrawString( String_ClkAdjust, 4, 6 );
+	DrawHLine( 0, 16, 63, 1 );
+
+	GetRTC( &rtd );
+	DrawTime( 5, 40, &rtd, 0x1F );
+}

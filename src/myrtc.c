@@ -14,6 +14,7 @@ volatile unsigned short ClockCorrection = 0;
 #define IS_RTC_OPENED() ((RTC->INIT&RTC_INIT_ACTIVE_Msk)!=0)
 
 static time_t ref_date = 0;
+static int adjustment = 0;
 
 //=============================================================================
 
@@ -241,6 +242,7 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 }
 
 
+//=============================================================================
 
 __myevic__ void SetRTC( S_RTC_TIME_DATA_T *rtd )
 {
@@ -249,8 +251,11 @@ __myevic__ void SetRTC( S_RTC_TIME_DATA_T *rtd )
 
 	RTC_SetDateAndTime( rtd );
 	RTCSetReferenceDate( &t );
+	adjustment = 0;
 }
 
+
+//=============================================================================
 
 __myevic__ void GetRTC( S_RTC_TIME_DATA_T *rtd )
 {
@@ -272,11 +277,28 @@ __myevic__ void GetRTC( S_RTC_TIME_DATA_T *rtd )
 
 	d = (( (unsigned long long)t - ref ) * cs ) / 10000u;
 	t += d;
-
-//	gPlayfield.ul[8] = ( ClockCorrection ) / 1000u;
-//	gPlayfield.ul[9] = (unsigned int)( d );
+	t += adjustment;
 
 	t += ClockCorrection / 1000u;
 
 	RTCEpochToTime( rtd, &t );
 }
+
+
+//=============================================================================
+
+__myevic__ void RTCAdjustClock( int seconds )
+{
+	if ( seconds )
+	{
+		adjustment += seconds;
+	}
+	else if ( adjustment )
+	{
+		S_RTC_TIME_DATA_T rtd;
+
+		GetRTC( &rtd );
+		SetRTC( &rtd );
+	}
+}
+

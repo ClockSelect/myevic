@@ -1,13 +1,4 @@
 
-.global fbColumnBody
-.global fbColumnBottom
-.global fbColumnTop
-.global fbBird0
-.global fbBird1
-.global fbBird2
-.global fbBirdDead
-.global fbFont
-
 .global font1
 .global font2
 

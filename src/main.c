@@ -214,10 +214,10 @@ __myevic__ void Main()
 	InitHardware();
 	InitVariables();
 
-	Flags64 |= 0x8000u;
+	Flags64 |= 0x8000;
 	ReadBatteryVoltage();
 
-	Flags64 |= 0x10000u;
+	Flags64 |= 0x10000;
 	ReadBoardTemp();
 
 	InitDisplay();
@@ -236,7 +236,7 @@ __myevic__ void Main()
 			if ( Flags64 & 8 )
 			{
 				// 100Hz
-				Flags64 &= ~8u;
+				Flags64 &= ~8;
 				ResetWatchDog();
 				TimedItems();
 				SleepIfIdle();
@@ -247,7 +247,7 @@ __myevic__ void Main()
 			if ( Flags64 & 0x10 )
 			{
 				// 10Hz
-				Flags64 &= ~0x10u;
+				Flags64 &= ~0x10;
 				DataFlashUpdateTick();
 			}
 		}
@@ -260,7 +260,7 @@ __myevic__ void Main()
 		if ( Flags64 & 1 )
 		{
 			// 5000Hz
-			Flags64 &= ~1u;
+			Flags64 &= ~1;
 
 			if ( Flags64 & 0x100 )
 			{
@@ -271,7 +271,7 @@ __myevic__ void Main()
 		if ( Flags64 & 2 )
 		{
 			// 1000Hz
-			Flags64 &= ~2u;
+			Flags64 &= ~2;
 
 			if ( Flags64 & 0x100 )
 			{

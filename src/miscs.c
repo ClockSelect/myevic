@@ -256,11 +256,11 @@ __myevic__ void anim3d( int refresh )
 {
 	static uint8_t tscaler = 0;
 
-	if ( ++tscaler < 4 ) return;
-	tscaler = 0;
-
 	if ( !refresh )
 	{
+		if ( ++tscaler < 4 ) return;
+		tscaler = 0;
+
 		next_angle();
 
 		compute_matrix( rot_matrix, &angles );
@@ -272,9 +272,9 @@ __myevic__ void anim3d( int refresh )
 			points[i].x = f * points[i].x / ( f + points[i].z );
 			points[i].y = f * points[i].y / ( f + points[i].z );
 		}
-
-		DrawFillRect( 0, 44, 63, 106, 0 );
 	}
+
+	DrawFillRect( 0, 44, 63, 106, 0 );
 
 	for ( int i = 0 ; i < cube.nlines ; ++i )
 	{

@@ -46,6 +46,7 @@ MYEVIC_OBJS :=	src/myevic.o \
 				src/strings.o \
 				src/meusbd.o \
 				src/flappy.o \
+				src/fbdata.o \
 				src/main.o
 
 AEABI_OBJS := src/aeabi/aeabi_memset-thumb2.o \

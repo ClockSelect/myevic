@@ -10,7 +10,7 @@
 //----- (000022EC) --------------------------------------------------------
 __myevic__ void GPD_IRQHandler()
 {
-	if ( PD->INTSRC & GPIO_INTSRC_INTSRC7_Msk )
+	if ( GPIO_GET_INT_FLAG( PD, GPIO_PIN_PIN7_Msk ) )
 	{
 		GPIO_CLR_INT_FLAG( PD, GPIO_PIN_PIN7_Msk );
 
@@ -24,7 +24,7 @@ __myevic__ void GPD_IRQHandler()
 			}
 		}
 	}
-	else if ( PD->INTSRC & GPIO_INTSRC_INTSRC0_Msk )
+	else if ( GPIO_GET_INT_FLAG( PD, GPIO_PIN_PIN0_Msk ) )
 	{
 		GPIO_CLR_INT_FLAG( PD, GPIO_PIN_PIN0_Msk );
 	}
@@ -47,7 +47,7 @@ __myevic__ void GPF_IRQHandler()
 //----- (00005CC0) --------------------------------------------------------
 __myevic__ void BBC_Configure( uint32_t chan, uint32_t mode )
 {
-	if ( chan == 0 )
+	if ( chan == BBC_PWMCH_BUCK )
 	{
 		SYS->GPC_MFPL &= ~SYS_GPC_MFPL_PC0MFP_Msk;
 
@@ -60,7 +60,7 @@ __myevic__ void BBC_Configure( uint32_t chan, uint32_t mode )
 			GPIO_SetMode( PC, GPIO_PIN_PIN0_Msk, GPIO_MODE_OUTPUT );
 		}
 	}
-	else if ( chan == 2 )
+	else if ( chan == BBC_PWMCH_BOOST )
 	{
 		SYS->GPC_MFPL &= ~SYS_GPC_MFPL_PC2MFP_Msk;
 
@@ -84,16 +84,16 @@ __myevic__ void InitGPIO()
 	SYS->GPD_MFPL = SYS_GPD_MFPL_PD1MFP_UART0_TXD;
 
 	// PC0 = PWM0 CH0
-	BBC_Configure( 0, 1 );
+	BBC_Configure( BBC_PWMCH_BUCK, 1 );
 	// PC2 = PWM0 CH2
-	BBC_Configure( 2, 1 );
+	BBC_Configure( BBC_PWMCH_BOOST, 1 );
 
 	// BUTTONS
 	GPIO_SetMode( PE, GPIO_PIN_PIN0_Msk, GPIO_MODE_INPUT );
 	GPIO_SetMode( PD, GPIO_PIN_PIN2_Msk, GPIO_MODE_INPUT );
 	GPIO_SetMode( PD, GPIO_PIN_PIN3_Msk, GPIO_MODE_INPUT );
 
-	// BUCK/BOOST CONVERTER
+	// BUCK/BOOST CONVERTER CONTROL LINES
 	PC1 = 0;
 	GPIO_SetMode( PC, GPIO_PIN_PIN1_Msk, GPIO_MODE_OUTPUT );
 	PC3 = 0;
@@ -163,7 +163,7 @@ __myevic__ void InitUART0()
 	SYS_ResetModule( UART0_RST );
 	UART_Open( UART0, 115200 );
 
-	myputc = (PUTC_FUNC*)&UART0_Putc;
+	myputc = (FPUTC_FUNC*)&UART0_Putc;
 }
 
 

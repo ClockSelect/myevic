@@ -38,6 +38,7 @@ extern void ShowKeyUnLock();
 extern void ShowNoAtoFound();
 extern void Show10sProtec();
 extern void ShowWeakBat();
+extern void ShowRTCAdjust();
 
 //==============================================================================
 
@@ -110,6 +111,7 @@ extern const uint16_t String_Contrast[];
 extern const uint16_t String_Fireto[];
 extern const uint16_t String_Edit[];
 extern const uint16_t String_ClkSpeed[];
+extern const uint16_t String_ClkAdjust[];
 
 // from menus.c
 extern const uint16_t String_Menus[];

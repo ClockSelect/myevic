@@ -3,7 +3,16 @@
 
 #include "myprintf.h"
 
-PUTC_FUNC *myputc = 0;
+//=========================================================================
+
+FILE *stdout = 0;
+FPUTC_FUNC *myputc = 0;
+
+//=========================================================================
+// Supported formats:
+// %d, %u, %x, %X with optional sizing and padding (e.g. %08X, %5d)
+// Yes, this is minimalist - I warned you.
+//-------------------------------------------------------------------------
 
 #define FL_NULL		0
 #define	FL_FORMAT	0x01
@@ -192,6 +201,8 @@ int my_doprnt( const char *format, va_list ap, FILE *out )
 	return sent;
 }
 
+//=========================================================================
+
 int myprintf( const char *format, ... )
 {
 	va_list ap;
@@ -208,3 +219,4 @@ int myprintf( const char *format, ... )
 	return retval;
 }
 
+//=========================================================================

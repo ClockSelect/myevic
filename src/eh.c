@@ -152,7 +152,7 @@ __myevic__ void EventHandler()
 			while ( AtoStatus == 4 && AtoProbeCount < 12 )
 			{
 				ProbeAtomizer();
-				WaitOnTMR2(10);
+				WaitOnTMR2( 10 );
 			}
 
 			switch ( AtoStatus )
@@ -401,7 +401,7 @@ __myevic__ void EventHandler()
 
 //------------------------------------------------------------------------------
 
-			GPIO_SetMode( PD, 1<<7, 1 );
+			GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_OUTPUT );
 			PD7 = 0;
 
 			Flags64 |= 0x100u;
