@@ -1,5 +1,5 @@
 #include "myevic.h"
-#include "M451Series.h"
+#include "myprintf.h"
 
 /* DC/DC converters PWM channels */
 #define BBC_PWMCH_BUCK  0
@@ -134,15 +134,6 @@ __myevic__ void InitGPIO()
 
 
 //=========================================================================
-//----- (00007EF4) --------------------------------------------------------
-__myevic__ void InitUART0()
-{
-  SYS_ResetModule( UART0_RST );
-  UART_Open( UART0, 115200 );
-}
-
-
-//=========================================================================
 //----- (00006738) --------------------------------------------------------
 __myevic__ void UART0_Cout( uint8_t c )
 {
@@ -154,6 +145,25 @@ __myevic__ void UART0_Cout( uint8_t c )
 		UART_WAIT_TX_EMPTY( UART0 );
 		UART_WRITE( UART0, '\r' );
 	}
+}
+
+
+//=========================================================================
+__myevic__ char UART0_Putc( char c, FILE *out )
+{
+	UART0_Cout( (uint8_t)c );
+	return c;
+}
+
+
+//=========================================================================
+//----- (00007EF4) --------------------------------------------------------
+__myevic__ void InitUART0()
+{
+	SYS_ResetModule( UART0_RST );
+	UART_Open( UART0, 115200 );
+
+	myputc = (PUTC_FUNC*)&UART0_Putc;
 }
 
 

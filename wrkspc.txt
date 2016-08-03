@@ -41,5 +41,7 @@
         <File name="inc\meusbd.h" />
         <File name="src\flappy.c" />
         <File name="inc\flappy.h" />
+        <File name="inc\myprintf.h" />
+        <File name="src\myprintf.c" />
     </Project>
 </NotepadPlus>

@@ -26,6 +26,7 @@ OBJS := $(NUVOSDK)/Device/Nuvoton/M451Series/Source/system_M451Series.o \
 		$(NUVOSDK)/StdDriver/src/pwm.o
 
 MYEVIC_OBJS :=	src/myevic.o \
+				src/myprintf.o \
 				src/dataflash.o \
 				src/screens.o \
 				src/menus.o \

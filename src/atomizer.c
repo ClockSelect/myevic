@@ -1,4 +1,5 @@
 #include "myevic.h"
+#include "myprintf.h"
 #include "dataflash.h"
 #include "battery.h"
 #include "timers.h"
@@ -195,7 +196,7 @@ __myevic__ void GetAtoCurrent()
 
 		StopFire();
 
-		PutTextf(	"\n"
+		myprintf(	"\n"
 					" Short %d! u32ADValue_Res_temp(%d) u32ADValue_CurVol_temp(%d)"
 					" g_u16DetRes_I(%d.%d) u16Res(%d) g_u32Set_OutVol(%d).\n",
 					s,
@@ -368,7 +369,7 @@ __myevic__ void ReadAtoTemp()
 			if ( AtoRezMilli <= 20 )
 			{
 				AtoStatus = 1;
-				PutTextf( "RL_GND %d(%d,%d,%d)\n",
+				myprintf( "RL_GND %d(%d,%d,%d)\n",
 						  AtoRezMilli, ADCAtoSum, ADCShuntSum, dword_200000A4 );
 				if ( Flags64 & 0x100 )
 				{
@@ -379,7 +380,7 @@ __myevic__ void ReadAtoTemp()
 			}
 			if ( ( AtoProbeCount <= 10u && AtoRezMilli < 50 ) || AtoRezMilli < 40 )
 			{
-				PutTextf( "RL_LOW %d\n", AtoRezMilli );
+				myprintf( "RL_LOW %d\n", AtoRezMilli );
 				AtoStatus = 2;
 				if ( Flags64 & 0x100)
 				{
@@ -400,14 +401,14 @@ __myevic__ void ReadAtoTemp()
 			if ( AtoProbeCount <= 10u && AtoRezMilli > 3500 )
 			{
 				AtoStatus = 3;
-				PutTextf( "RL_LARGE %d\n", AtoRezMilli );
+				myprintf( "RL_LARGE %d\n", AtoRezMilli );
 				return;
 			}
 			if ( Flags64 & 0x100 && AtoRezMilli / 10u <= AtoRez >> 2 )
 			{
 				StopFire();
 				Event = 25;
-				PutTextf( "RL_GND2 %d\n", AtoRezMilli );
+				myprintf( "RL_GND2 %d\n", AtoRezMilli );
 				return;
 			}
 			if ( (AtoStatus == 4 || !AtoStatus || AtoStatus == 3)

@@ -1,8 +1,8 @@
 #include "myevic.h"
-#include "dataflash.h"
+#include "myprintf.h"
 #include "myrtc.h"
 
-#include <stdio.h>
+#include "dataflash.h"
 
 //=============================================================================
 // DataFlash parameters global structure
@@ -569,8 +569,8 @@ __myevic__ void InitDataFlash()
 	MaxPower	= 750;
 	MaxTCPower	= 750;
 
-	PutTextf( "  APROM Version ......................... [%d.%d%d]\n", 3, 0, 3 );
-	PutTextf( "  Hardware Version ...................... [%d.%d%d]\n",
+	myprintf( "  APROM Version ......................... [%d.%d%d]\n", 3, 0, 3 );
+	myprintf( "  Hardware Version ...................... [%d.%d%d]\n",
 				dfHWVersion / 100u,
 				dfHWVersion / 10u % 10,
 				dfHWVersion % 10u );
@@ -581,7 +581,7 @@ __myevic__ void InitDataFlash()
 	}
 	else
 	{
-		PutTextf( "Data Flash Re-Initialization\n" );
+		myprintf( "Data Flash Re-Initialization\n" );
 		ResetDataFlash();
 		dfMode = 0;
 		dfLastTCMode = 0;

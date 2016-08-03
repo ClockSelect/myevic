@@ -1,4 +1,5 @@
 #include "myevic.h"
+#include "myprintf.h"
 #include "atomizer.h"
 #include "display.h"
 #include "battery.h"
@@ -186,8 +187,8 @@ __myevic__ void InitHardware()
 	InitUSB();
 	InitRTC( 0 );
 
-	PutTextf( "\n\nJoyetech APROM\n" );
-	PutTextf( "CPU @ %dHz(PLL@ %dHz)\n", SystemCoreClock, PllClock );
+	myprintf( "\n\nJoyetech APROM\n" );
+	myprintf( "CPU @ %dHz(PLL@ %dHz)\n", SystemCoreClock, PllClock );
 }
 
 

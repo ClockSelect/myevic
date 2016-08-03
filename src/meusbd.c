@@ -1,6 +1,6 @@
 #include "myevic.h"
+#include "myprintf.h"
 #include "dataflash.h"
-#include "M451Series.h"
 
 
 void usbdEP2Handler();
@@ -607,7 +607,7 @@ __myevic__ void usbdEP2Handler()
 //----- (00002C00) --------------------------------------------------------
 __myevic__ uint32_t hidResetParamCmd( CMD_T *pCmd )
 {
-	PutTextf("Reset param\n");
+	myprintf("Reset param\n");
 	ResetDataFlash();
 	UpdateDataFlash();
 	Flags64 |= 0x20000u;
@@ -619,7 +619,7 @@ __myevic__ uint32_t hidResetParamCmd( CMD_T *pCmd )
 //----- (00002C38) --------------------------------------------------------
 __myevic__ uint32_t hidResetSysCmd( CMD_T *pCmd )
 {
-	PutTextf("Reset system command\n");
+	myprintf("Reset system command\n");
 	SYS_UnlockReg();
 	SYS_ResetChip();
 	while ( 1 )
@@ -636,7 +636,7 @@ __myevic__ uint32_t hidGetInfoCmd( CMD_T *pCmd )
 	u32StartAddr = pCmd->u32Arg1;
 	u32ParamLen = pCmd->u32Arg2;
 
-	PutTextf( "Get Info command - Start Addr: %d    Param Len: %d\n", pCmd->u32Arg1, pCmd->u32Arg2 );
+	myprintf( "Get Info command - Start Addr: %d    Param Len: %d\n", pCmd->u32Arg1, pCmd->u32Arg2 );
 
 	if ( u32ParamLen )
 	{
@@ -668,7 +668,7 @@ __myevic__ uint32_t hidGetInfoCmd( CMD_T *pCmd )
 //----- (00002678) --------------------------------------------------------
 __myevic__ uint32_t hidBootLogoCmd( CMD_T *pCmd )
 {
-	PutTextf( "Set Boot Logo command - Start page: %d\t\tLen: %d\n", pCmd->u32Arg1, pCmd->u32Arg2 );
+	myprintf( "Set Boot Logo command - Start page: %d\t\tLen: %d\n", pCmd->u32Arg1, pCmd->u32Arg2 );
 	MemClear( hidData, FMC_FLASH_PAGE_SIZE );
 	hidDataIndex = 0;
 	pCmd->u32Signature = 0;
@@ -679,7 +679,7 @@ __myevic__ uint32_t hidBootLogoCmd( CMD_T *pCmd )
 //----- (000026D8) --------------------------------------------------------
 __myevic__ uint32_t hidSetParamCmd( CMD_T *pCmd )
 {
-	PutTextf( "Set Param command - Start Addr: %d    Param Len: %d\n", pCmd->u32Arg1, pCmd->u32Arg2 );
+	myprintf( "Set Param command - Start Addr: %d    Param Len: %d\n", pCmd->u32Arg1, pCmd->u32Arg2 );
 	hidDataIndex = 0;
 	return 0;
 }
@@ -688,7 +688,7 @@ __myevic__ uint32_t hidSetParamCmd( CMD_T *pCmd )
 //----- (0000272C) --------------------------------------------------------
 __myevic__ uint32_t hidLDUpdateCmd( CMD_T *pCmd )
 {
-	PutTextf( "Update LDROM command - Start page: %d\t\tLen: %d\n", pCmd->u32Arg1, pCmd->u32Arg2 );
+	myprintf( "Update LDROM command - Start page: %d\t\tLen: %d\n", pCmd->u32Arg1, pCmd->u32Arg2 );
 	MemClear( hidData, FMC_FLASH_PAGE_SIZE );
 	hidDataIndex = 0;
 	pCmd->u32Signature = 0;
@@ -705,7 +705,7 @@ __myevic__ uint32_t hidFMCReadCmd( CMD_T *pCmd )
 	u32StartAddr = pCmd->u32Arg1;
 	u32ParamLen  = pCmd->u32Arg2;
 
-	PutTextf( "FMC Read command - Start Addr: %d    Param Len: %d\n", pCmd->u32Arg1, pCmd->u32Arg2 );
+	myprintf( "FMC Read command - Start Addr: %d    Param Len: %d\n", pCmd->u32Arg1, pCmd->u32Arg2 );
 	
 	if ( ! u32ParamLen % EP2_MAX_PKT_SIZE )
 	{
@@ -856,19 +856,19 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 
 				MemCpy( (uint8_t*)(&hidDFData) + u32StartAddr, hidData, sz );
 
-				PutTextf( "Set Sys Param complete.\n" );
+				myprintf( "Set Sys Param complete.\n" );
 
 				dfStruct_t * df = (dfStruct_t*)hidDFData;
 
 				if ( Checksum( (uint8_t*)df->params, FMC_FLASH_PAGE_SIZE - 4 ) == df->Checksum )
 				{
-					PutTextf( "\tCompany ID ............................ [0x%08x]\n",
+					myprintf( "\tCompany ID ............................ [0x%08x]\n",
 								df->i.fmcCID );
-					PutTextf( "\tDevice ID ............................. [0x%08x]\n",
+					myprintf( "\tDevice ID ............................. [0x%08x]\n",
 								df->i.fmcDID  );
-					PutTextf( "\tProduct ID ............................ [0x%08x]\n",
+					myprintf( "\tProduct ID ............................ [0x%08x]\n",
 								df->i.fmcPID );
-					PutTextf( "\tu8UpdateAPRom ......................... [0x%08x]\n",
+					myprintf( "\tu8UpdateAPRom ......................... [0x%08x]\n",
 								df->p.BootFlag );
 
 					MemCpy( DataFlash.params, df->params, DATAFLASH_PARAMS_SIZE );
@@ -880,7 +880,7 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 				}
 				else
 				{
-					PutTextf( "Sys Param Recive fail.\n" );
+					myprintf( "Sys Param Recive fail.\n" );
 				}
 
 				hidDataIndex = 0;
@@ -901,26 +901,26 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 
 			u32Page = u32StartAddr + u32ByteCount;
 
-			PutTextf( "Writing page %d\n", u32Page );
+			myprintf( "Writing page %d\n", u32Page );
 
 			SYS_UnlockReg();
 			FMC_ENABLE_ISP();
 
 			if ( FMCEraseWritePage( u32Page, (uint32_t*)hidData ) )
 			{
-				PutTextf( "Data Flash Erase error!\n" );
+				myprintf( "Data Flash Erase error!\n" );
 			}
 
 			veo = FMCVerifyPage( u32Page, (uint32_t*)hidData );
 			if ( veo )
 			{
-				PutTextf( "Data Flash Verify error! 0x%x\n", 4 * veo - 4 );
+				myprintf( "Data Flash Verify error! 0x%x\n", 4 * veo - 4 );
 			}
 
 			MemClear( hidData, FMC_FLASH_PAGE_SIZE );
 			u32ByteCount += hidDataIndex;
 
-			PutTextf( "g_u32BytesInPageBuf %d, u32LenCnt 0x%x\n", hidDataIndex, u32ByteCount );
+			myprintf( "g_u32BytesInPageBuf %d, u32LenCnt 0x%x\n", hidDataIndex, u32ByteCount );
 
 			FMC_DISABLE_ISP();
 			SYS_LockReg();
@@ -932,7 +932,7 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 			else
 			{
 				u8Cmd = 0;
-				PutTextf( "set boot logo command complete.\n" );
+				myprintf( "set boot logo command complete.\n" );
 			}
 
 			break;
@@ -949,7 +949,7 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 			}
 
 			u32Page = u32StartAddr + u32ByteCount;
-			PutTextf( "Writing page 0x%08X\n", u32Page );
+			myprintf( "Writing page 0x%08X\n", u32Page );
 
 			SYS_UnlockReg();
 			FMC_ENABLE_ISP();
@@ -957,20 +957,20 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 
 			if ( FMCEraseWritePage( u32Page, (uint32_t*)hidData ) )
 			{
-				PutTextf( "Data Flash Erase error!\n" );
+				myprintf( "Data Flash Erase error!\n" );
 			}
 
 			veo = FMCVerifyPage( u32Page, (uint32_t*)hidData );
 			if ( veo )
 			{
-				PutTextf( "Data Flash Verify error! 0x%x\n", 4 * veo - 4 );
+				myprintf( "Data Flash Verify error! 0x%x\n", 4 * veo - 4 );
 			}
 
 			MemClear( hidData, FMC_FLASH_PAGE_SIZE );
 			u32ByteCount += hidDataIndex;
 			hidDataIndex = 0;
 
-			PutTextf( "g_u32BytesInPageBuf %d, u32LenCnt 0x%x\n", hidDataIndex, u32ByteCount );
+			myprintf( "g_u32BytesInPageBuf %d, u32LenCnt 0x%x\n", hidDataIndex, u32ByteCount );
 
 			FMC_DisableLDUpdate();
 			FMC_DISABLE_ISP();
@@ -979,7 +979,7 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 			if ( u32ByteCount >= u32DataSize )
 			{
 				u8Cmd = 0;
-				PutTextf( "Update LDROM command complete.\n" );
+				myprintf( "Update LDROM command complete.\n" );
 			}
 			
 			break;
@@ -989,7 +989,7 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 		{
 			if ( hidProcessCommand( pu8Buffer, u32BufferLen ) )
 			{
-				PutTextf( "Unknown HID command!\n" );
+				myprintf( "Unknown HID command!\n" );
 			}
 			return;
 		}
