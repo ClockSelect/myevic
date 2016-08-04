@@ -109,7 +109,7 @@ extern uint8_t	BatRefreshTmr;					// .ds.b 1
 extern uint8_t	EditTCRIndex;					// .ds.b 1
 extern uint8_t	BatReadTimer;					// .ds.b 1
 extern uint16_t	EditModeTimer;					// .ds.b 2
-extern uint16_t	word_20000054;					// .ds.b 2
+extern uint16_t	KeyTicks;					// .ds.b 2
 extern uint16_t	HideLogo;						// .ds.b 2
 extern uint16_t	FireDuration;					// .ds.b 2
 extern uint16_t	KeyPressTime;					// .ds.b 2
@@ -122,7 +122,7 @@ extern uint32_t	AtoMaxPower;					// .ds.b 4
 extern uint32_t	MaxTCPower;						// .ds.b 4
 extern uint32_t	BTempSampleSum;					// .ds.b 4
 extern uint32_t	VbatSampleSum;					// .ds.b 4
-extern uint8_t	byte_20000080;					// .ds.b 1
+extern uint8_t	KRDelay;					// .ds.b 1
 extern uint8_t	ShowFDTimer;					// .ds.b 1
 extern uint8_t	byte_20000082;					// .ds.b 1
 extern uint32_t	AtoMinVolts;					// .ds.b 4

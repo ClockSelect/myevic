@@ -187,7 +187,7 @@ __myevic__ void TimedItems()
         {
             gFlags.draw_battery_charging ^= 1;
 
-            if ( Screen == 1 || Screen == 3 || Screen == 5 )
+            if ( Screen == 1 || Screen == 5 )
             {
                 if ( BatAnimLevel < 10 )
                     ++BatAnimLevel;
@@ -214,7 +214,7 @@ __myevic__ void TimedItems()
 			gFlags.draw_battery = 1;
 			gFlags.draw_battery_charging = 1;
 
-            if ( Screen == 1 || Screen == 3 )
+            if ( Screen == 1 )
             {
                 gFlags.refresh_display = 1;
             }

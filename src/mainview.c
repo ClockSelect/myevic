@@ -88,12 +88,6 @@ __myevic__ void DrawPwrLine( int pwr, int line )
 	if ( BLINKITEM(2) && PD2 && PD3 )
 		return;
 
-	if ( Anim3d || AnalogClock )
-	{
-		if ( Screen == 1 && !EditModeTimer )
-			return;
-	}
-
     DrawString( String_PWR_s, 0, line+2 );
 
 	if ( pwr < 100 )
@@ -122,15 +116,19 @@ __myevic__ void DrawPwrLine( int pwr, int line )
 
 //=============================================================================
 
+__myevic__ void DrawVoltsLine( int volts, int line )
+{
+	DrawString( String_VOLT_s, 0, line+2 );
+	DrawValue( 27, line, volts, 2, 0x1F, 3 );
+	DrawImage( 57, line+2, 0x97 );
+}
+
+
+//=============================================================================
+
 __myevic__ void DrawCoilLine( int line )
 {
 	unsigned int rez;
-
-	if ( Anim3d || AnalogClock )
-	{
-		if ( Screen == 1 && !EditModeTimer )
-			return;
-	}
 
 	if ( myDbgFlag & 1 )
 	{
@@ -189,12 +187,6 @@ __myevic__ void DrawAPTLine( int line )
 {
 	if ( BLINKITEM(4) )
 		return;
-
-	if ( Anim3d || AnalogClock )
-	{
-		if ( Screen == 1 && !EditModeTimer )
-			return;
-	}
 
 	switch ( dfAPT )
 	{
@@ -271,62 +263,55 @@ __myevic__ void DrawAPTLine( int line )
 	}
 }
 
+
 //=============================================================================
-
-__myevic__ void ShowMainFiring()
+__myevic__ void DrawInfoLines()
 {
-  int tempc;
-
-	DrawMode();
-
-	switch ( dfMode )
+	if ( Screen == 2 )
 	{
-		case 0:
-		case 1:
-		case 2:
-		case 3:
+		switch ( dfMode )
 		{
-			if ( dfIsCelsius )
-			{
-				tempc = FarenheitToC( AtoTemp );
-				if ( dfTemp <= tempc )
-				{
-					DrawString( String_Protec, 2, 20 );
-				}
-				else
-				{
-					DrawValue( 0, 13, tempc, 0, 72, 3 );
-					DrawImage( 48, 20, 0xE0 );
-				}
-			}
-			else
-			{
-				if ( dfTemp <= AtoTemp )
-				{
-					DrawString( String_Protec, 2, 20 );
-				}
-				else
-				{
-					DrawValue( 0, 13, AtoTemp, 0, 72, 3 );
-					DrawImage( 48, 20, 0xE1 );
-				}
-			}
-			DrawPwrLine( AtoPower( TargetVolts ), 52 );
-			break;
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+				DrawPwrLine( AtoPower( TargetVolts ), 52 );
+				break;
+			case 4:
+				DrawValue( 10, 49, FireDuration, 1, 0x29, 2 );
+				DrawImage( 40, 49, 0xB7 );
+				break;
+			case 5:
+				DrawValue( 10, 49, FireDuration, 1, 0x29, 2 );
+				DrawImage( 40, 49, 0xB7 );
+				break;
+			default:
+				break;
 		}
-
-		case 4:
-		case 5:
-		{
-			DrawValue( 10, 49, FireDuration, 1, 41, 2 );
-			DrawImage( 40, 49, 0xB7 );
-			break;
-		}
-
-		case 6:
-		default:
-			break;
 	}
+	else
+	{
+		switch ( dfMode )
+		{
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+				DrawPwrLine( dfTCPower, 52 );
+				break;
+			case 4:
+				DrawVoltsLine( dfVWVolts, 52 );
+				break;
+			case 5:
+				DrawVoltsLine( BatteryVoltage, 52 );
+				break;
+			default:
+				break;
+		}
+	}
+
+	DrawCoilLine( 71 );
+	DrawAPTLine( 90 );
 }
 
 
@@ -355,8 +340,6 @@ __myevic__ void ShowMainView()
 	unsigned int v26; // r2@168
 	int v27; // r3@169
 
-	if ( dfUIVersion != 2 )
-		return;
 
 	pwr = dfPower;
 
@@ -378,20 +361,41 @@ __myevic__ void ShowMainView()
 
 	DrawMode();
 
-	if ( dfMode < 4 )
+	if ( ISMODETC(dfMode) )
 	{
 		if ( Screen == 2 )
 		{
-			ShowMainFiring();
+			if ( dfIsCelsius )
+			{
+				int tempc = FarenheitToC( AtoTemp );
+
+				if ( dfTemp <= tempc )
+				{
+					DrawString( String_Protec, 2, 20 );
+				}
+				else
+				{
+					DrawValue( 0, 13, tempc, 0, 0x48, 3 );
+					DrawImage( 48, 20, 0xE0 );
+				}
+			}
+			else
+			{
+				if ( dfTemp <= AtoTemp )
+				{
+					DrawString( String_Protec, 2, 20 );
+				}
+				else
+				{
+					DrawValue( 0, 13, AtoTemp, 0, 0x48, 3 );
+					DrawImage( 48, 20, 0xE1 );
+				}
+			}
 		}
 		else
 		{
 			DrawValue( 0, 13, dfTemp, 0, 0x48, 3 );
 			DrawImage( 48, 20, dfIsCelsius ? 0xE0 : 0xE1 );
-
-			if ( !HideLogo ) DrawLOGO( 0, 0 );
-
-			DrawPwrLine( dfTCPower, 52 );
 		}
 	}
 
@@ -411,19 +415,6 @@ __myevic__ void ShowMainView()
 		{
 			DrawValue( 5, 13, pwr, 1, 0x48, 2 );
 			DrawImage( 45, 18, 0xB9 );
-		}
-
-		if ( !HideLogo ) DrawLOGO( 0, 0 );
-
-		if ( Screen != 2 )
-		{
-			DrawString( String_VOLT_s, 0, 54 );
-			DrawValue( 27, 52, dfVWVolts, 2, 0x1F, 3 );
-			DrawImage( 57, 54, 0x97 );
-		}
-		else
-		{
-			ShowMainFiring();
 		}
 	}
 
@@ -451,19 +442,6 @@ __myevic__ void ShowMainView()
 				DrawValue( 0, 18, pwr, 1, 0x29, 4 );
 				DrawImage( 54, 26, 0x98 );
 			}
-		}
-
-		if ( !HideLogo ) DrawLOGO( 0, 0 );
-
-		if ( Screen != 2 )
-		{
-			DrawString( String_VOLT_s, 0, 54 );
-			DrawValue( 27, 52, BatteryVoltage, 2, 0x1F, 3 );
-			DrawImage( 57, 54, 0x97 );
-		}
-		else
-		{
-			ShowMainFiring();
 		}
 	}
 
@@ -542,13 +520,16 @@ __myevic__ void ShowMainView()
 
 	if ( dfMode != 6 )
 	{
+		if ( !HideLogo ) DrawLOGO( 0, 0 );
+
 		DrawHLine( 0, 43, 63, 1 );
 		DrawHLine( 0, 107, 63, 1 );
 
-		DrawCoilLine( 71 );
-		DrawAPTLine( 90 );
-
-		if ( Screen == 1 && !EditModeTimer )
+		if ( Screen == 2 || EditModeTimer )
+		{
+			DrawInfoLines();
+		}
+		else
 		{
 			if ( Anim3d )
 			{
@@ -557,6 +538,10 @@ __myevic__ void ShowMainView()
 			else if ( AnalogClock )
 			{
 				DrawClock();
+			}
+			else
+			{
+				DrawInfoLines();
 			}
 		}
 

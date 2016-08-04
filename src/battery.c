@@ -64,7 +64,7 @@ __myevic__ void NewBatteryVoltage()
 		SavedBatVoltage = BatteryVoltage;
 		SavedBatPercent = BatteryPercent;
 
-		if ( ( BatteryVoltage > 300 ) && ( Screen == 1 || Screen == 3 ) )
+		if ( ( BatteryVoltage > 300 ) && ( Screen == 1 ) )
 		{
 			gFlags.refresh_display = 1;
 		}

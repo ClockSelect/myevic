@@ -78,7 +78,7 @@ BatRefreshTmr:		.ds.b	1
 EditTCRIndex:		.ds.b	1
 BatReadTimer:		.ds.b	1
 EditModeTimer:		.ds.b	2
-word_20000054:		.ds.b	2
+KeyTicks:		.ds.b	2
 HideLogo:			.ds.b	2
 FireDuration:		.ds.b	2
 KeyPressTime:		.ds.b	2
@@ -91,7 +91,7 @@ AtoMaxPower:		.ds.b	4
 MaxTCPower:			.ds.b	4
 BTempSampleSum:		.ds.b	4
 VbatSampleSum:		.ds.b	4
-byte_20000080:		.ds.b	1
+KRDelay:		.ds.b	1
 ShowFDTimer:		.ds.b	1
 byte_20000082:		.ds.b	1
 					.ds.b	1

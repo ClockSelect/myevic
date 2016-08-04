@@ -238,6 +238,7 @@ __myevic__ void DrawScreen()
 		case  41: // Ti ON/OFF
 		case  54: // Battery Voltage
 		case 100: // Ferox's page
+		case 104: // Adjust Clock
 			if ( !(gFlags.battery_charging) )
 			{
 				gFlags.refresh_display = 1;
@@ -254,7 +255,6 @@ __myevic__ void DrawScreen()
 			break;
 
 		case  51: // New Coil
-		case 104: // Adjust Clock
 			MainView();
 			break;
 

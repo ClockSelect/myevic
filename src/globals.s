@@ -15,8 +15,8 @@
 .global EditModeTimer
 .global HideLogo
 .global ShowWeakBatFlag
-.global byte_20000080
-.global word_20000054
+.global KRDelay
+.global KeyTicks
 .global byte_200000B3
 
 .global UserInputs

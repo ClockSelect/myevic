@@ -46,7 +46,7 @@ Flags1 (20000064)
  9    0x00000200  Battery Low (hysteresis 3.1-3.3)
 10    0x00000400  USB attached
 11    0000000800  Refresh battery value
-12    0x00001000  Battery+USB
+12    0x00001000  Battery+USB (charging)
 13    0x00002000  ? (probing atomizer?)
 14    0x00004000  ? (inactive user?)
 15    0x00008000  Sampling VBat
@@ -84,7 +84,7 @@ Events (20000043)
  6 Stealth ON/OFF
 10 USB cable attach
 11 USB cable detach
-12 Battery inserted
+12 Battery charging
 13 Battery removed
 15 Single fire click
 16 Enter edit mode
@@ -114,8 +114,8 @@ Screen (200000F6)
  0 Black
  1 Main view
  2 Firing
- 3 Main view (?)
- 4 (unused?)
+ 3 Main view (relic)
+ 4 (unused)
  5 Black w/ Battery
 20 No Atomizer Found
 21 Atomizer Short
@@ -128,7 +128,7 @@ Screen (200000F6)
 31 Key UnLock
 37 Board Temp
 40 Stealth ON/OFF
-41 Ti ON/OFF
+41 Ti ON/OFF (unused)
 50 FW Version
 51 New Coil
 54 Battery Voltage

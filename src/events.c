@@ -12,6 +12,8 @@
 
 //=============================================================================
 //----- (00003738) ------------------------------------------------------------
+// Called at 5Hz untill KeyTicks >= 5 (1s), then at 100Hz.
+
 __myevic__ void KeyRepeat()
 {
 	if ( !PE0 )
@@ -60,29 +62,27 @@ __myevic__ void KeyRepeat()
 			if ( !--KeyUpTimer && Screen == 1 && ( dfTCPower >= 1000 || dfMode == 6 ) )
 				MainView();
 		}
-		word_20000054 = 0;
-		byte_20000080 = 0;
+		KeyTicks = 0;
+		KRDelay = 0;
 	}
-	else if ( byte_20000080 >= 3 || ++byte_20000080 >= 3 )
+	else if ( KRDelay >= 3 || ++KRDelay >= 3 )
 	{
-		if ( word_20000054 >= 105 )
+		if ( KeyTicks >= 105 )
 		{
-			byte_20000080 = 0;
+			KRDelay = 0;
 		}
 		else
 		{
-			++word_20000054;
+			++KeyTicks;
 		}
 
-		if ( PD2 )
-		{
-			if ( PD3 )
-				return;
-			Event = 3;
-		}
-		else
+		if ( !PD2 )
 		{
 			Event = 2;
+		}
+		else if ( !PD3 )
+		{
+			Event = 3;
 		}
 	}
 }
@@ -241,7 +241,7 @@ __myevic__ void GetUserInput()
 		{
 			if ( dfStatus.keylock && !EditModeTimer
 				&& Screen != 51 && Screen != 59 && Screen != 82 && Screen != 83
-				&& Screen != 101 && Screen != 102 && Screen != 103 )
+				&& Screen < 100 )
 			{
 				Event = 30;	// key lock violation
 			}
@@ -254,7 +254,7 @@ __myevic__ void GetUserInput()
 		{
 			if ( dfStatus.keylock && !EditModeTimer
 				&& Screen != 51 && Screen != 59 && Screen != 82 && Screen != 83
-				&& Screen != 101 && Screen != 102 && Screen != 103 )
+				&& Screen < 100 )
 			{
 				Event = 30;	// key lock violation
 			}
@@ -682,10 +682,6 @@ __myevic__ int CustomEvents()
 		case  15:	//Single Fire
 			vret = EvtSingleFire();
 			break;
-
-	//	case 40:	// Enter menus
-	//		vret = EvtEnterMenus();
-	//		break;
 
 		case EVENT_DOUBLE_FIRE:	// Double Fire
 			vret = EvtDoubleFire();

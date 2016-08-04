@@ -734,7 +734,7 @@ __myevic__ void EventHandler()
 			return;
 
 		case 13:	// Battery removed
-			if ( Screen == 5 || Screen == 4 )
+			if ( Screen == 5 )
 			{
 				gFlags.refresh_display = 1;
 				Screen = 0;
@@ -746,18 +746,20 @@ __myevic__ void EventHandler()
 			gFlags.battery_charging = 0;
 			return;
 
-		case 12:	// Battery inserted
+		case 12:	// Battery charging
 			gFlags.battery_charging = 1;
 			gFlags.refresh_display = 1;
 			if ( dfStatus.off )
 			{
 				Screen = 5;
 				BatAnimLevel = BatteryTenth;
-				return;
 			}
-			if ( Screen != 5 )
-				Screen = 3;
-			ScreenDuration = 30;
+			else
+			{
+				if ( Screen != 5 )
+					Screen = 1; // old 3
+				ScreenDuration = 30;
+			}
 			return;
 
 		case 11:	// USB cable detach
@@ -769,13 +771,11 @@ __myevic__ void EventHandler()
 				{
 					gFlags.refresh_display = 1;
 					Screen = 0;
-					return;
 				}
-				MainView();
-			}
-			else if ( Screen == 3 )
-			{
-				MainView();
+				else
+				{
+					MainView();
+				}
 			}
 			return;
 
@@ -883,7 +883,7 @@ __myevic__ void EventHandler()
 						{
 							dfTCPower = MaxTCPower;
 						}
-						else if ( word_20000054 < 105 )
+						else if ( KeyTicks < 105 )
 						{
 							--dfTCPower;
 						}
@@ -977,7 +977,7 @@ __myevic__ void EventHandler()
 					}
 					else if ( dfMode == 4 )
 					{
-						if ( word_20000054 < 105 )
+						if ( KeyTicks < 105 )
 						{
 							if ( dfPower ) --dfPower;
 						}
@@ -997,7 +997,7 @@ __myevic__ void EventHandler()
 				}
 
 	            MainView();
-	            if ( word_20000054 >= 5 )
+	            if ( KeyTicks >= 5 )
 	            {
 					gFlags.draw_edited_item = 1;
 	                DrawScreen();
@@ -1113,7 +1113,7 @@ __myevic__ void EventHandler()
 							{
 								dfTCPower = 10;
 							}
-							else if ( word_20000054 < 105 )
+							else if ( KeyTicks < 105 )
 							{
 								++dfTCPower;
 							}
@@ -1171,7 +1171,7 @@ __myevic__ void EventHandler()
 							break;
 
 						case 4:
-							if ( word_20000054 < 105 )
+							if ( KeyTicks < 105 )
 							{
 								v43 = dfPower + 1;
 							}
@@ -1214,7 +1214,7 @@ __myevic__ void EventHandler()
 				}
 
 	            MainView();
-	            if ( word_20000054 >= 5 )
+	            if ( KeyTicks >= 5 )
 	            {
 					gFlags.draw_edited_item = 1;
 	                DrawScreen();

@@ -16,7 +16,6 @@ extern void DrawClock();
 
 extern void DrawScreen();
 extern void ShowMainView();
-extern void ShowMainFiring();
 extern void ShowBattery();
 extern void ShowBatCharging();
 extern void ShowBattVolts();

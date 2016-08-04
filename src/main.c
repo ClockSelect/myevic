@@ -114,7 +114,10 @@ void InitDevices()
 
 	//  32.768kHz external crystal
 	CLK_EnableXtalRC( CLK_PWRCTL_LXTEN_Msk );
-	CLK_WaitClockReady( CLK_STATUS_LXTSTB_Msk );
+	if ( CLK_WaitClockReady( CLK_STATUS_LXTSTB_Msk ) )
+	{
+		gFlags.unused3 = 1;
+	}
 
 	// FMC Frequency Optimisation mode <= 72MHz
 	FMC_EnableFreqOptimizeMode( FMC_FTCTL_OPTIMIZE_72MHZ );
@@ -329,10 +332,11 @@ __myevic__ void Main()
 				Overtemp();
 			}
 
-			if ( word_20000054 >= 5 )
+			if ( KeyTicks >= 5 )
 			{
 				KeyRepeat();
 			}
+
 			GetUserInput();
 		}
 
@@ -370,12 +374,12 @@ __myevic__ void Main()
 			else if
 			(	!( dfStatus.off )
 				&& Event == -1
-				&& ( Screen == 0 || Screen == 1 || Screen == 3 || Screen == 5 ) )
+				&& ( Screen == 0 || Screen == 1 || Screen == 5 ) )
 			{
 				ProbeAtomizer();
 			}
 
-			if ( word_20000054 < 5 )
+			if ( KeyTicks < 5 )
 			{
 				KeyRepeat();
 			}

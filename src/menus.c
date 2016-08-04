@@ -98,7 +98,7 @@ __myevic__ void GameIClick()
 		fbInitTimeouts();
 		ClearScreenBuffer();
 		DisplayRefresh();
-	//	fbBirdAnim( 24 );
+		fbBirdAnim( 24 );
 		fbCreateTimeout( fbStartScreen + 1 );
 	}
 }
@@ -354,7 +354,10 @@ __myevic__ int DTMenuOnEvent( int event )
 
 __myevic__ void MainIClick()
 {
-	if ( CurrentMenu->mitems[CurrentMenuItem].screen == 101 ) gFlags.edit_capture_evt = 1;
+	if ( CurrentMenu->mitems[CurrentMenuItem].screen == 101 )
+	{
+		gFlags.edit_capture_evt = 1;
+	}
 }
 
 //-----------------------------------------------------------------------------
