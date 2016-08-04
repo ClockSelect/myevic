@@ -104,7 +104,7 @@ __myevic__ void ResetDataFlash()
 	int hwv;
 
 	hwv = dfHWVersion;
-	if ( hwv < 100 || hwv > 111 ) hwv = 100;
+//	if ( hwv < 100 || hwv > 111 ) hwv = 100;
 	MemClear( DataFlash.params, DATAFLASH_PARAMS_SIZE );
 	dfHWVersion = hwv;
 	dfMagic = 0x36;
@@ -148,7 +148,7 @@ __myevic__ void ResetDataFlash()
 	FMCWriteCounters();
 	dfContrast = 45;
 	dfModesSel = 0;
-	dfClkRatio = DEF_RTC_CLK_RATIO;
+	dfClkRatio = RTC_DEF_CLK_RATIO;
 }
 
 
@@ -279,7 +279,7 @@ __myevic__ void DFCheckValuesValidity()
 		dfModesSel = 0;
 
 	if ( dfClkRatio < 10000 || dfClkRatio > 50000 )
-		dfClkRatio = DEF_RTC_CLK_RATIO;
+		dfClkRatio = RTC_DEF_CLK_RATIO;
 }
 
 

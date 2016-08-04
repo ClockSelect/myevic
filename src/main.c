@@ -113,10 +113,13 @@ void InitDevices()
 	CLK_WaitClockReady( CLK_STATUS_HXTSTB_Msk );
 
 	//  32.768kHz external crystal
+	SYS->GPF_MFPL &= ~(SYS_GPF_MFPL_PF0MFP_Msk|SYS_GPF_MFPL_PF1MFP_Msk);
+	SYS->GPF_MFPL |=  (SYS_GPF_MFPL_PF0MFP_X32_OUT|SYS_GPF_MFPL_PF1MFP_X32_IN);
+
 	CLK_EnableXtalRC( CLK_PWRCTL_LXTEN_Msk );
 	if ( CLK_WaitClockReady( CLK_STATUS_LXTSTB_Msk ) )
 	{
-		gFlags.unused3 = 1;
+		gFlags.has_x32 = 1;
 	}
 
 	// FMC Frequency Optimisation mode <= 72MHz

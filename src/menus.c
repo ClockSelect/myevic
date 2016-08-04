@@ -7,7 +7,8 @@
 #include "flappy.h"
 
 //=============================================================================
-// Menus
+// MENUS
+//-----------------------------------------------------------------------------
 
 typedef struct menu_s menu_t;
 typedef struct mitem_s mitem_t;
@@ -494,8 +495,8 @@ const menu_t ClockMenu =
 	4,
 	{
 		{ String_DateTime, &TimeMenu, -1, 0 },
-		{ String_ClkSpeed, 0, 103, 30 },
 		{ String_ClkAdjust, 0, 104, 30 },
+		{ String_ClkSpeed, 0, 103, 30 },
 		{ String_Exit, 0, 1, 30 }
 	}
 };

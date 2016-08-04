@@ -188,7 +188,7 @@ __myevic__ unsigned int RTCGetClockSpeed()
 {
 	if ( ! dfClkRatio )
 	{
-		dfClkRatio = DEF_RTC_CLK_RATIO;
+		dfClkRatio = RTC_DEF_CLK_RATIO;
 		UpdateDFTimer = 50;
 	}
 	return dfClkRatio;
@@ -202,26 +202,24 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 	{
 		SYS_UnlockReg();
 
-		//	// Enable LXT 32.768kHz clock
-		//	if ( !(CLK->STATUS&CLK_STATUS_LXTSTB_Msk) )
-		//	{
-		//		CLK_EnableXtalRC(CLK_PWRCTL_LXTEN_Msk);
-		//		CLK_WaitClockReady(CLK_STATUS_LXTSTB_Msk);
-		//	}
-		//	CLK_EnableModuleClock(RTC_MODULE);
-		//	CLK_SetModuleClock(RTC_MODULE,CLK_CLKSEL3_RTCSEL_LXT,0);
-		//
-		//	// Maximal X32 gain & backup
-		//	RTC->LXTCTL = ( 7 << 1 ) | 1;
+		CLK_EnableModuleClock( RTC_MODULE );
 
-		// Enable LIRC 10kHz clock
-		if ( !(CLK->STATUS&CLK_STATUS_LIRCSTB_Msk) )
+		if ( !gFlags.has_x32 )
 		{
-			CLK_EnableXtalRC(CLK_PWRCTL_LIRCEN_Msk);
-			CLK_WaitClockReady(CLK_STATUS_LIRCSTB_Msk);
+			// Enable LIRC 10kHz clock
+			if ( !( CLK->STATUS&CLK_STATUS_LIRCSTB_Msk ) )
+			{
+				CLK_EnableXtalRC( CLK_PWRCTL_LIRCEN_Msk );
+				CLK_WaitClockReady( CLK_STATUS_LIRCSTB_Msk );
+			}
+
+			CLK_SetModuleClock( RTC_MODULE, CLK_CLKSEL3_RTCSEL_LIRC, 0 );
 		}
-		CLK_EnableModuleClock(RTC_MODULE);
-		CLK_SetModuleClock(RTC_MODULE,CLK_CLKSEL3_RTCSEL_LIRC,0);
+		else
+		{
+			RTC->LXTCTL |= RTC_LXTCTL_LXTEN_Msk;
+			CLK_SetModuleClock( RTC_MODULE, CLK_CLKSEL3_RTCSEL_LXT, 0 );
+		}
 
 		SYS_LockReg();
 
@@ -250,8 +248,11 @@ __myevic__ void SetRTC( S_RTC_TIME_DATA_T *rtd )
 	RTCTimeToEpoch( &t, rtd );
 
 	RTC_SetDateAndTime( rtd );
-	RTCSetReferenceDate( &t );
+
+	ClockCorrection = 0;
 	adjustment = 0;
+
+	RTCSetReferenceDate( &t );
 }
 
 
@@ -270,18 +271,25 @@ __myevic__ void GetRTC( S_RTC_TIME_DATA_T *rtd )
 
 	RTC_GetDateAndTime( rtd );
 
-	RTCTimeToEpoch( &t, rtd );
+	if ( !gFlags.has_x32 || adjustment )
+	{
+		RTCTimeToEpoch( &t, rtd );
 
-	ref = RTCGetReferenceDate();
-	cs  = RTCGetClockSpeed();
+		if ( !gFlags.has_x32 )
+		{
+			ref = RTCGetReferenceDate();
+			cs  = RTCGetClockSpeed();
 
-	d = (( (unsigned long long)t - ref ) * cs ) / 10000;
-	t += d;
-	t += adjustment;
+			d = (( (unsigned long long)t - ref ) * cs ) / 10000;
+			t += d;
 
-	t += ClockCorrection / 1000;
+			t += ClockCorrection / 1000;
+		}
 
-	RTCEpochToTime( rtd, &t );
+		t += adjustment;
+
+		RTCEpochToTime( rtd, &t );
+	}
 }
 
 
@@ -295,10 +303,36 @@ __myevic__ void RTCAdjustClock( int seconds )
 	}
 	else if ( adjustment )
 	{
+		int adj;
+		time_t ref, t;
 		S_RTC_TIME_DATA_T rtd;
+
+		adj = adjustment;
+		ref = RTCGetReferenceDate();
 
 		GetRTC( &rtd );
 		SetRTC( &rtd );
+
+		if ( gFlags.has_x32 )
+		{
+			RTCTimeToEpoch( &t, &rtd );
+
+			int dt1 = t - ref;
+			int dt2 = t + adj - ref;
+			
+			if ( dt1 <= 0 || dt2 <= 0 ) return;
+
+			uint64_t f1 =
+				  (((( RTC->FREQADJ & RTC_FREQADJ_INTEGER_Msk )
+						>> RTC_FREQADJ_INTEGER_Pos )
+							+ RTC_FCR_REFERENCE ) * 100 )
+				+ ((( RTC->FREQADJ & RTC_FREQADJ_FRACTION_Msk )
+						>> RTC_FREQADJ_FRACTION_Pos ) * 100) / 60;
+
+			int32_t f2 = f1 * dt2 / dt1;
+			
+			RTC_32KCalibration( f2 );
+		}
 	}
 }
 

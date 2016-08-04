@@ -15,29 +15,29 @@ volatile uint32_t	TMR3Counter;
 //----- (00007CD4) --------------------------------------------------------
 __myevic__ void InitTimers()
 {
-  TIMER_Open( TIMER0, TIMER_PERIODIC_MODE, 100000 );
-  TIMER_EnableInt( TIMER0 );
-  TIMER_Open( TIMER1, TIMER_PERIODIC_MODE, 5000 );
-  TIMER_EnableInt( TIMER1 );
-  TIMER_Open( TIMER2, TIMER_PERIODIC_MODE, 1000 );
-  TIMER_EnableInt( TIMER2 );
-  TIMER_Open( TIMER3, TIMER_PERIODIC_MODE, 10 );
-  TIMER_EnableInt( TIMER3 );
+	TIMER_Open( TIMER0, TIMER_PERIODIC_MODE, 100000 );
+	TIMER_EnableInt( TIMER0 );
+	TIMER_Open( TIMER1, TIMER_PERIODIC_MODE, 5000 );
+	TIMER_EnableInt( TIMER1 );
+	TIMER_Open( TIMER2, TIMER_PERIODIC_MODE, 1000 );
+	TIMER_EnableInt( TIMER2 );
+	TIMER_Open( TIMER3, TIMER_PERIODIC_MODE, 10 );
+	TIMER_EnableInt( TIMER3 );
 
-  NVIC_EnableIRQ( TMR0_IRQn );
-  NVIC_EnableIRQ( TMR1_IRQn );
-  NVIC_EnableIRQ( TMR2_IRQn );
-  NVIC_EnableIRQ( TMR3_IRQn );
+	NVIC_EnableIRQ( TMR0_IRQn );
+	NVIC_EnableIRQ( TMR1_IRQn );
+	NVIC_EnableIRQ( TMR2_IRQn );
+	NVIC_EnableIRQ( TMR3_IRQn );
 
-  TMR3Counter = 0;
-  TMR2Counter = 0;
-  TMR1Counter = 0;
-  TMR0Counter = 0;
+	TMR3Counter = 0;
+	TMR2Counter = 0;
+	TMR1Counter = 0;
+	TMR0Counter = 0;
 
-  TIMER_Start( TIMER0 );
-  TIMER_Start( TIMER1 );
-  TIMER_Start( TIMER2 );
-  TIMER_Start( TIMER3 );
+	TIMER_Start( TIMER0 );
+	TIMER_Start( TIMER1 );
+	TIMER_Start( TIMER2 );
+	TIMER_Start( TIMER3 );
 }
 
 

@@ -70,6 +70,7 @@ typedef struct
 	int unused8:1;
 	int	tick_1hz:1;
 	int	playing_fb:1;
+	int has_x32:1;
 }
 gFlags_t;
 
