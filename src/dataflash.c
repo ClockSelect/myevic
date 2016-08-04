@@ -1,6 +1,7 @@
 #include "myevic.h"
 #include "myprintf.h"
 #include "myrtc.h"
+#include "screens.h"
 
 #include "dataflash.h"
 
@@ -131,6 +132,7 @@ __myevic__ void ResetDataFlash()
 	dfRezLockedSS = 0;
 	dfRezTCR = 0;
 	dfRezLockedTCR = 0;
+	dfScreenSave = 1;
 	dfTCRM[0] = 120;
 	dfTCRM[1] = 120;
 	dfTCRM[2] = 120;
@@ -232,6 +234,14 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfRezLockedTCR > 1 )
 		dfRezLockedTCR = 0;
 
+	for ( i = 0 ; i < 8 ; ++i )
+	{
+		if ( dfScreenSave == ScrSaveTimes[i] )
+			break;
+	}
+	if ( i == 8 )
+		dfScreenSave = 1;
+	
 	for ( i = 0 ; i < 21 ; ++i )
 	{
 		if ( dfTempCoefsNI[i] > 200 )

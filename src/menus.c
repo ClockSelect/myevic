@@ -36,6 +36,51 @@ struct menu_s
 struct menu_s const *CurrentMenu;
 unsigned char CurrentMenuItem;
 
+
+//-----------------------------------------------------------------------------
+
+__myevic__ void ScreenSaveMenuOnEnter()
+{
+	for ( int i = 0 ; i < 8 ; ++i )
+	{
+		if ( dfScreenSave == ScrSaveTimes[i] )
+		{
+			CurrentMenuItem = i;
+			return;
+		}
+	}
+	dfScreenSave = ScrSaveTimes[0];
+	UpdateDFTimer = 50;
+}
+
+
+__myevic__ void ScreenSaveMenuIDraw( int it, int line, int sel )
+{
+	if ( ScrSaveTimes[it] )
+	{
+		if ( sel )
+		{
+			DrawFillRect( 0, line, 63, line+12, 1 );
+			DrawValueInv( 4, line+2, ScrSaveTimes[it], 0, 0x0B, 0 );
+			DrawStringInv( String_Min, 32, line+2 );
+		}
+		else
+		{
+			DrawValue( 4, line+2, ScrSaveTimes[it], 0, 0x0B, 0 );
+			DrawString( String_Min, 32, line+2 );
+		}
+	}
+}
+
+
+__myevic__ void ScreenSaveMenuOnClick()
+{
+	dfScreenSave = ScrSaveTimes[CurrentMenuItem];
+	UpdateDataFlash();
+	MainView();
+}
+
+
 //-----------------------------------------------------------------------------
 
 __myevic__ void Anim3dOnEnter()
@@ -353,7 +398,7 @@ __myevic__ int DTMenuOnEvent( int event )
 
 //-----------------------------------------------------------------------------
 
-__myevic__ void MainIClick()
+__myevic__ void ScreenIClick()
 {
 	if ( CurrentMenu->mitems[CurrentMenuItem].screen == 101 )
 	{
@@ -373,8 +418,8 @@ const menu_t LOGOMenu =
 	0,
 	2,
 	{
-		{ String_On, 0, 1, 30 },
-		{ String_Off, 0, 1, 30 }
+		{ String_On, 0, 1, 0 },
+		{ String_Off, 0, 1, 0 }
 	}
 };
 
@@ -391,7 +436,7 @@ const menu_t GameMenu =
 		{ String_Easy, 0, 0, 0 },
 		{ String_Normal, 0, 0, 0 },
 		{ String_Hard, 0, 0, 0 },
-		{ String_Exit, 0, 1, 30 }
+		{ String_Exit, 0, 1, 0 }
 	}
 };
 
@@ -412,7 +457,7 @@ const menu_t ModesMenu =
 		{ String_POWER_s, 0, -1, 0 },
 		{ String_BYPASS_s, 0, -1, 0 },
 		{ String_START_s, 0, -1, 0 },
-		{ String_Exit, 0, 1, 30 }
+		{ String_Exit, 0, 1, 0 }
 	}
 };
 
@@ -431,7 +476,7 @@ const menu_t CoilsMenu =
 		{ String_SS, 0, -1, 0 },
 		{ String_TCR, 0, -1, 0 },
 		{ String_Zero_All, 0, -1, 0 },
-		{ String_Exit, 0, 1, 30 }
+		{ String_Exit, 0, 1, 0 }
 	}
 };
 
@@ -446,7 +491,7 @@ const menu_t Anim3dMenu =
 	2,
 	{
 		{ String_Cube, &Anim3dMenu, -1, 0 },
-		{ String_None, 0, 1, 30 }
+		{ String_None, 0, 1, 0 }
 	}
 };
 
@@ -463,7 +508,7 @@ const menu_t MiscsMenu =
 		{ String_LOGO, &LOGOMenu, -1, 0 },
 		{ String_Game, &GameMenu, -1, 0 },
 		{ String_3D, &Anim3dMenu, -1, 0 },
-		{ String_Exit, 0, 1, 30 }
+		{ String_Exit, 0, 1, 0 }
 	}
 };
 
@@ -479,8 +524,8 @@ const menu_t TimeMenu =
 	{
 		{ 0, 0, -1, 0 },
 		{ 0, 0, -1, 0 },
-		{ String_Cancel, 0, 1, 30 },
-		{ String_Save, 0, 1, 30 }
+		{ String_Cancel, 0, 1, 0 },
+		{ String_Save, 0, 1, 0 }
 	}
 };
 
@@ -495,9 +540,46 @@ const menu_t ClockMenu =
 	4,
 	{
 		{ String_DateTime, &TimeMenu, -1, 0 },
-		{ String_ClkAdjust, 0, 104, 30 },
-		{ String_ClkSpeed, 0, 103, 30 },
-		{ String_Exit, 0, 1, 30 }
+		{ String_ClkAdjust, 0, 104, 120 },
+		{ String_ClkSpeed, 0, 103, 120 },
+		{ String_Exit, 0, 1, 0 }
+	}
+};
+
+const menu_t ScreenSaveMenu =
+{
+	String_Screen,
+	ScreenSaveMenuOnEnter+1,
+	ScreenSaveMenuIDraw+1,
+	0,
+	ScreenSaveMenuOnClick+1,
+	0,
+	8,
+	{
+		{ 0, 0, -1, 0 },
+		{ 0, 0, -1, 0 },
+		{ 0, 0, -1, 0 },
+		{ 0, 0, -1, 0 },
+		{ 0, 0, -1, 0 },
+		{ 0, 0, -1, 0 },
+		{ 0, 0, -1, 0 },
+		{ String_Off, 0, 1, 0 }
+	}
+};
+
+const menu_t ScreenMenu =
+{
+	String_Screen,
+	0,
+	0,
+	0,
+	ScreenIClick+1,
+	0,
+	3,
+	{
+		{ String_Contrast, 0, 101, 10 },
+		{ String_Protec, &ScreenSaveMenu, -1, 0 },
+		{ String_Exit, 0, 1, 0 }
 	}
 };
 
@@ -507,16 +589,16 @@ const menu_t MainMenu =
 	0,
 	0,
 	0,
-	MainIClick+1,
+	0,
 	0,
 	6,
 	{
-		{ String_Contrast, 0, 101, 10 },
+		{ String_Screen, &ScreenMenu, -1, 0 },
 		{ String_Coils, &CoilsMenu, -1, 0 },
 		{ String_Clock, &ClockMenu, -1, 0 },
 		{ String_Modes, &ModesMenu, -1, 0 },
 		{ String_Miscs, &MiscsMenu, -1, 0 },
-		{ String_Exit, 0, 1, 30 }
+		{ String_Exit, 0, 1, 0 }
 	}
 };
 
@@ -622,13 +704,20 @@ __myevic__ int MenuEvent( int event )
 
 				gFlags.refresh_display = 1;
 			}
-			else if ( mi->sduration > 0 )
+			else if ( (signed char)mi->screen > 0 )
 			{
 				CurrentMenu = 0;
 				CurrentMenuItem = 0;
 
-				Screen = mi->screen;
-				ScreenDuration = mi->sduration;
+				if ( mi->screen == 1 )
+				{
+					MainView();
+				}
+				else
+				{
+					Screen = mi->screen;
+					ScreenDuration = mi->sduration;
+				}
 
 				gFlags.refresh_display = 1;
 			}

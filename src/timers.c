@@ -138,88 +138,87 @@ __myevic__ void TMR3_IRQHandler()
 
 __myevic__ void TimedItems()
 {
-    if ( !Screen && SleepTimer )
-        --SleepTimer;
+	if ( !Screen && SleepTimer )
+		--SleepTimer;
 
-    if ( !PD7 && ( byte_20000048 >= 2 ) && ( byte_20000048 < 50 ) )
-        ++byte_20000048;
+	if ( !PD7 && ( byte_20000048 >= 2 ) && ( byte_20000048 < 50 ) )
+		++byte_20000048;
 
-    if ( BatRefreshTmr )
-        --BatRefreshTmr;
+	if ( BatRefreshTmr )
+		--BatRefreshTmr;
 
-    if ( EditModeTimer )
-    {
-        if ( --EditModeTimer )
-        {
-            if ( !(EditModeTimer % 50) )
-            {
-                gFlags.draw_edited_item ^= 1;
-                MainView();
-            }
-        }
-        else
-        {
-            gFlags.edit_capture_evt = 0;
-			gFlags.refresh_display = 1;
+	if ( EditModeTimer )
+	{
+		if ( --EditModeTimer )
+		{
+			if ( !(EditModeTimer % 50) )
+			{
+				gFlags.draw_edited_item ^= 1;
+				MainView();
+			}
+		}
+		else
+		{
+			gFlags.edit_capture_evt = 0;
 			gFlags.draw_edited_item = 1;
-            ScreenDuration = 30;
-            UpdateDFTimer = 50;
-        }
-    }
+			UpdateDFTimer = 50;
+			MainView();
+		}
+	}
 
-    if ( BatReadTimer )
-    {
-        if ( !--BatReadTimer )
-            gFlags.refresh_battery = 1;
-    }
+	if ( BatReadTimer )
+	{
+		if ( !--BatReadTimer )
+			gFlags.refresh_battery = 1;
+	}
 
-    if ( FireClickTimer )
-    {
-        if ( !--FireClickTimer )
-            FireClickCount = 0;
-    }
+	if ( FireClickTimer )
+	{
+		if ( !--FireClickTimer )
+			FireClickCount = 0;
+	}
 
-    if ( ++BatAnimTimer >= 100 )
-    {
-        BatAnimTimer = 0;
+	if ( ++BatAnimTimer >= 100 )
+	{
+		BatAnimTimer = 0;
 
-        if ( gFlags.battery_charging )
-        {
-            gFlags.draw_battery_charging ^= 1;
+		if ( gFlags.battery_charging )
+		{
+			gFlags.draw_battery_charging ^= 1;
 
-            if ( Screen == 1 || Screen == 5 )
-            {
-                if ( BatAnimLevel < 10 )
-                    ++BatAnimLevel;
-                else
-                    BatAnimLevel = BatteryTenth;
+			if ( Screen == 1 || Screen == 5 )
+			{
+				if ( BatAnimLevel < 10 )
+					++BatAnimLevel;
+				else
+					BatAnimLevel = BatteryTenth;
 
-                if ( Screen != 3 && Screen != 1 )
-                    ScreenDuration = 30;
+				if ( Screen != 1 )
+					ScreenDuration = 60 * dfScreenSave;
 
-                gFlags.refresh_display = 1;
-            }
-        }
-        else if ( gFlags.battery_10pc )
-        {
-            gFlags.draw_battery ^= 1;
+				gFlags.refresh_display = 1;
+			}
+		}
+		else if ( gFlags.battery_10pc )
+		{
+			gFlags.draw_battery ^= 1;
 
-            if ( Screen == 1 )
-            {
-                gFlags.refresh_display = 1;
-            }
-        }
-        else if ( gFlags.draw_battery_charging || gFlags.draw_battery )
-        {
+			if ( Screen == 1 )
+			{
+				gFlags.refresh_display = 1;
+			}
+		}
+		else if ( gFlags.draw_battery_charging || gFlags.draw_battery )
+		{
 			gFlags.draw_battery = 1;
 			gFlags.draw_battery_charging = 1;
 
-            if ( Screen == 1 )
-            {
-                gFlags.refresh_display = 1;
-            }
-        }
-    }
+			if ( Screen == 1 )
+			{
+				gFlags.refresh_display = 1;
+			}
+		}
+	}
 }
 
 

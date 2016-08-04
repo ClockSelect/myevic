@@ -1,4 +1,5 @@
 #include "myevic.h"
+#include "screens.h"
 #include "myprintf.h"
 #include "dataflash.h"
 #include "battery.h"
@@ -973,7 +974,7 @@ __myevic__ void ProbeAtomizer()
 		byte_20000082 = AtoError;
 		SetAtoLimits();
 		gFlags.refresh_display = 1;
-		ScreenDuration = 30;
+		ScreenDuration = 60 * dfScreenSave;
 	}
 
 	if ( byte_200000B3 )

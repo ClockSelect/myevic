@@ -5,10 +5,13 @@
 #include "myrtc.h"
 #include "dataflash.h"
 
-void ShowFerox();
-void ShowContrast();
-void ShowMenus();
-void ShowRTCSpeed();
+
+//=========================================================================
+
+uint16_t	ScreenDuration;
+uint8_t		Screen;
+
+const uint8_t ScrSaveTimes[8] = { 1, 2, 5, 10, 15, 20, 30, 0 };
 
 //=========================================================================
 
@@ -122,7 +125,7 @@ __myevic__ void DrawScreen()
 				break;
 
 			case 100:
-				ShowFerox();
+				ShowInfos();
 				break;
 
 			case 101:
@@ -148,7 +151,8 @@ __myevic__ void DrawScreen()
 		if ( myDbgFlag & 1 )
 		{
 			int nd = (Screen<100?Screen<10?1:2:3);
-			DrawValue( 64-6*nd, 121, Screen, 0, 0x01, nd );
+			DrawValue( 64-6*nd, 120, Screen, 0, 0x01, nd );
+			DrawValue( 0, 120, ScreenDuration, 0, 0x01, 0 );
 		}
 		
 		DisplayRefresh();
@@ -229,8 +233,6 @@ __myevic__ void DrawScreen()
 			UpdateDataFlash();
 			// NOBREAK
 		case   1: // Main view
-		case   3: // Main view (?)
-		case   4: // (unused?)
 		case  28: // Key Lock
 		case  31: // Key UnLock
 		case  37: // Board Temp
@@ -239,6 +241,12 @@ __myevic__ void DrawScreen()
 		case  54: // Battery Voltage
 		case 100: // Ferox's page
 		case 104: // Adjust Clock
+			if ( !dfScreenSave )
+			{
+				if ( Screen != 1 )
+					MainView();
+				break;
+			}
 			if ( !(gFlags.battery_charging) )
 			{
 				gFlags.refresh_display = 1;
@@ -298,7 +306,7 @@ __myevic__ int convert_string1( uint16_t *strbuf, const char *s )
 
 //=========================================================================
 
-__myevic__ void ShowFerox()
+__myevic__ void ShowInfos()
 {
 	uint16_t strbuf[20];
 

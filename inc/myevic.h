@@ -161,8 +161,6 @@ extern uint32_t	PowerScale;						// .ds.b 4
 extern uint32_t	TargetVolts;					// .ds.b 4
 extern uint32_t	hidDataIndex;					// .ds.b 4
 extern uint8_t	DisplayCmdByte;					// .ds.b 1
-extern uint8_t	ScreenDuration;					// .ds.b 1
-extern uint8_t	Screen;							// .ds.b 1
 extern uint8_t	BatAnimTimer;					// .ds.b 1
 extern uint8_t	ShowWeakBatFlag;				// .ds.b 1
 

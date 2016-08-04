@@ -78,7 +78,7 @@ BatRefreshTmr:		.ds.b	1
 EditTCRIndex:		.ds.b	1
 BatReadTimer:		.ds.b	1
 EditModeTimer:		.ds.b	2
-KeyTicks:		.ds.b	2
+KeyTicks:			.ds.b	2
 HideLogo:			.ds.b	2
 FireDuration:		.ds.b	2
 KeyPressTime:		.ds.b	2
@@ -91,7 +91,7 @@ AtoMaxPower:		.ds.b	4
 MaxTCPower:			.ds.b	4
 BTempSampleSum:		.ds.b	4
 VbatSampleSum:		.ds.b	4
-KRDelay:		.ds.b	1
+KRDelay:			.ds.b	1
 ShowFDTimer:		.ds.b	1
 byte_20000082:		.ds.b	1
 					.ds.b	1
@@ -137,32 +137,6 @@ PowerScale:			.ds.b	4	@ 100 *	600 / pwr
 TargetVolts:		.ds.b	4
 
 DisplayCmdByte:		.ds.b	1
-ScreenDuration:		.ds.b	1
-Screen:				.ds.b	1	@ Screen (200000F6)
-								@  0 Black
-								@  1 Main view
-								@  2 Firing
-								@  3 Main view (?)
-								@  4 (unused?)
-								@  5 Black w/ Battery
-								@ 20 No	Atomizer Found
-								@ 21 Atomizer Short
-								@ 22 Atomizer Low
-								@ 23 10s Protection
-								@ 24 Battery Low
-								@ 25 Battery Low Lock
-								@ 28 Key Lock
-								@ 29 Device too	hot
-								@ 31 Key UnLock
-								@ 37 Board Temp
-								@ 40 Stealth ON/OFF
-								@ 41 Ti	ON/OFF
-								@ 50 FW	Version
-								@ 51 New Coil
-								@ 54 Battery Voltage
-								@ 59 TCR Set Menu
-								@ 82 LOGO Menu
-								@ 83 Game Menu
 BatAnimTimer:		.ds.b	1
 ShowWeakBatFlag:	.ds.b	1
 

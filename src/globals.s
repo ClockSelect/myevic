@@ -27,9 +27,6 @@
 .global FireClickCount
 .global MenuPage
 
-.global Screen
-.global ScreenDuration
-
 .global AtoCurrent
 .global AtoRez
 .global AtoRezMilli

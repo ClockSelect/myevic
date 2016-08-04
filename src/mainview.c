@@ -22,7 +22,7 @@ __myevic__ void MainView()
 	}
 	gFlags.refresh_display = 1;
 	Screen = 1;
-	ScreenDuration = 30;
+	ScreenDuration = 60 * dfScreenSave;
 }
 
 

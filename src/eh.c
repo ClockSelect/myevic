@@ -730,7 +730,6 @@ __myevic__ void EventHandler()
 				UpdateDFTimer = 50;
 			}
 			MainView();
-			ScreenDuration = 30;
 			return;
 
 		case 13:	// Battery removed
@@ -757,8 +756,7 @@ __myevic__ void EventHandler()
 			else
 			{
 				if ( Screen != 5 )
-					Screen = 1; // old 3
-				ScreenDuration = 30;
+					MainView();
 			}
 			return;
 

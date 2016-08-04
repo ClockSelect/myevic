@@ -7,8 +7,14 @@
 
 //==============================================================================
 
-extern unsigned char ShowDateFlag;
-extern unsigned char AnalogClock;
+extern uint16_t	ScreenDuration;
+extern uint8_t	Screen;
+
+extern uint8_t ShowDateFlag;
+extern uint8_t AnalogClock;
+
+extern const uint8_t ScrSaveTimes[8];
+
 extern int IsClockOnScreen();
 extern void DrawClock();
 
@@ -37,6 +43,10 @@ extern void ShowKeyUnLock();
 extern void ShowNoAtoFound();
 extern void Show10sProtec();
 extern void ShowWeakBat();
+extern void ShowInfos();
+extern void ShowContrast();
+extern void ShowMenus();
+extern void ShowRTCSpeed();
 extern void ShowRTCAdjust();
 
 //==============================================================================
@@ -132,6 +142,8 @@ extern const uint16_t String_Clock[];
 extern const uint16_t String_3D[];
 extern const uint16_t String_Cube[];
 extern const uint16_t String_None[];
+extern const uint16_t String_Screen[];
+extern const uint16_t String_Min[];
 
 //==============================================================================
 
