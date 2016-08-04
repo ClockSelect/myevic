@@ -27,24 +27,24 @@ PE.13: SPI0 CLK
 PF.3 : XT1_IN
 PF.4 : XT1_OUT
 
-Status bits
-0  0x01  Switched off
-1  0x02  Key locked
-2  0x04  Flipped display
-3  0x08  LOGO Off
+dfStatus bits
+ 0    0x00000001  Switched off
+ 1    0x00000002  Key locked
+ 2    0x00000004  Flipped display
+ 3    0x00000008  LOGO Off
 
 Flags1 (20000064)
-0     0x00000001  TMR1 5kHz
-1     0x00000002  TMR2 1kHz
-2     0x00000004  TMR2 1kHz
-3     0x00000008  TMR2 100Hz
-4     0x00000010  TMR3 10Hz
-5     0x00000020  TMR3 5Hz
-6     0x00000040  TMR3 2Hz
-7     0x00000080  ? (force new battery voltage?)
-8     0x00000100  Powering Atomizer
-9     0x00000200  Battery Low (hysteresis 3.1-3.3)
-10    0x00000400  USB plugged
+ 0    0x00000001  TMR1 5kHz
+ 1    0x00000002  TMR2 1kHz
+ 2    0x00000004  TMR2 1kHz
+ 3    0x00000008  TMR2 100Hz
+ 4    0x00000010  TMR3 10Hz
+ 5    0x00000020  TMR3 5Hz
+ 6    0x00000040  TMR3 2Hz
+ 7    0x00000080  ? (force new battery voltage?)
+ 8    0x00000100  Powering Atomizer
+ 9    0x00000200  Battery Low (hysteresis 3.1-3.3)
+10    0x00000400  USB attached
 11    0000000800  Refresh battery value
 12    0x00001000  Battery+USB
 13    0x00002000  ? (probing atomizer?)
@@ -58,10 +58,13 @@ Flags1 (20000064)
 21    0x00200000  1Hz bat charging blink
 22    0x00400000  Bat: decrease target volts
 23    0x00800000  Check mode flag
+24    0x01000000  ? (unused)
+25    0x02000000  ? (unused)
 26    0x04000000  Temp protec enabled
 27    0x08000000  Unchecked rez TI
 28    0x10000000  Unchecked rez NI
 29    0x20000000  Bat: power downscale
+30    0x40000000  ? (unused)
 31    0x80000000  Unchecked rez SS
 
 Flags2 (20000068)

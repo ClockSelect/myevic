@@ -25,6 +25,58 @@ typedef union
 
 //=============================================================================
 
+typedef struct
+{
+	int	tick_5khz:1;
+	int	tick_1khz:1;
+	int	tick_us:1;
+	int	tick_100hz:1;
+	int	tick_10hz:1;
+	int	tick_5hz:1;
+	int	tick_2hz:1;
+	int read_battery:1;
+	int firing:1;
+	int low_battery:1;
+	int usb_attached:1;
+	int refresh_battery:1;
+	int battery_charging:1;
+	int probing_ato:1;
+	int user_idle:1;
+	int sample_vbat:1;
+	int sample_btemp:1;
+	int refresh_display:1;
+	int draw_edited_item:1;
+	int battery_10pc:1;
+	int draw_battery:1;
+	int draw_battery_charging:1;
+	int decrease_voltage:1;
+	int check_mode:1;
+	int unused1:1;
+	int unused2:1;
+	int limit_ato_temp:1;
+	int check_rez_ti:1;
+	int check_rez_ni:1;
+	int limit_power:1;
+	int unused3:1;
+	int check_rez_ss:1;
+
+	int edit_tcr_value:1;
+	int check_rez_tcr:1;
+	int unused4:1;
+	int unused5:1;
+	int edit_capture_evt:1;
+	int unused6:1;
+	int unused7:1;
+	int unused8:1;
+	int	tick_1hz:1;
+	int	playing_fb:1;
+}
+gFlags_t;
+
+extern volatile gFlags_t gFlags;
+
+//=============================================================================
+
 extern volatile uint32_t	ADC00_IRQ_Flag;		// .ds.b 4
 extern uint8_t	UpdateDFTimer;					// .ds.b 1
 extern uint8_t	UpdatePTTimer;					// .ds.b 1
@@ -65,8 +117,6 @@ extern uint16_t	BatteryVoltage;					// .ds.b 2
 extern uint16_t	SavedBatVoltage;				// .ds.b 2
 extern uint16_t	BuckDuty;						// .ds.b 2
 extern uint16_t	BoostDuty;						// .ds.b 2
-extern volatile uint32_t	Flags64;			// .ds.b 4
-extern volatile uint32_t	Flags68;			// .ds.b 4
 extern uint32_t	AtoMinPower;					// .ds.b 4
 extern uint32_t	AtoMaxPower;					// .ds.b 4
 extern uint32_t	MaxTCPower;						// .ds.b 4

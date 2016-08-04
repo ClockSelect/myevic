@@ -101,7 +101,7 @@ __myevic__ void SSD1327_Init()
 		DisplaySendCommand( SSD1327_InitSeq[i] );
 	}
 
-	if ( dfStatus & 4 )
+	if ( dfStatus.flipped )
 	{
 		DisplaySendCommand( 0xA2 );
 		DisplaySendCommand( 0x80 );

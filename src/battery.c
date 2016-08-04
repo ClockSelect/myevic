@@ -52,13 +52,13 @@ __myevic__ void NewBatteryVoltage()
 {
 	BatteryPercent = BatteryVoltsToPercent( BatteryVoltage );
 
-	if ( !( Flags64 & 0x1000 ) && ( Flags64 & 0x400 ) )
+	if ( !( gFlags.battery_charging ) && ( gFlags.usb_attached ) )
 	{
 		BatteryPercent = 100;
 	}
 
-	if ( (( SavedBatPercent != BatteryPercent ) && ( ++BatPCCmpCnt >= 3u ))
-		 || Flags64 & 0x80 )
+	if ( (( SavedBatPercent != BatteryPercent ) && ( ++BatPCCmpCnt >= 3 ))
+		 || gFlags.read_battery )
 	{
 		BatPCCmpCnt = 0;
 		SavedBatVoltage = BatteryVoltage;
@@ -66,7 +66,7 @@ __myevic__ void NewBatteryVoltage()
 
 		if ( ( BatteryVoltage > 300 ) && ( Screen == 1 || Screen == 3 ) )
 		{
-			Flags64 |= 0x20000u;
+			gFlags.refresh_display = 1;
 		}
 	}
 	else
@@ -74,16 +74,16 @@ __myevic__ void NewBatteryVoltage()
 		BatteryPercent = SavedBatPercent;
 	}
 
-	if ( BatteryPercent >= 10u )
+	if ( BatteryPercent >= 10 )
 	{
-		Flags64 &= ~0x80000;
+		gFlags.battery_10pc = 0;
 	}
 	else
 	{
-		Flags64 |= 0x80000;
+		gFlags.battery_10pc = 1;
 	}
 
-	BatteryTenth = BatteryPercent / 10u;
+	BatteryTenth = BatteryPercent / 10;
 
 	return;
 }
@@ -95,18 +95,18 @@ __myevic__ void ReadBatteryVoltage()
 {
 	unsigned int newbv; // r0@5
 
-	if ( !(Flags64 & 0x100) )
+	if ( !(gFlags.firing) )
 	{
-		while ( VbatSampleCnt < 16u )
+		while ( VbatSampleCnt < 16 )
 		{
 			VbatSampleSum += ADC_Read( 18 );
 			++VbatSampleCnt;
 
-			if ( !(Flags64 & 0x8000) )
+			if ( !(gFlags.sample_vbat) )
 				return;
 		}
 
-		Flags64 &= ~0x8000;
+		gFlags.sample_vbat = 0;
 		newbv = VbatSampleSum >> 7;
 
 		VbatSampleSum = newbv;
@@ -165,10 +165,10 @@ __myevic__ int CheckBattery()
 
 	RTBatVolts = bv;
 
-	if ( !( Flags64 & 0x100 )
-		|| ( !ISMODEVW(dfMode) && ( !ISMODETC(dfMode) || Flags64 & 0x800000) ) )
+	if ( !( gFlags.firing )
+		|| ( !ISMODEVW(dfMode) && ( !ISMODETC(dfMode) || gFlags.check_mode) ) )
 	{
-		Flags64 &= ~0x400000;
+		gFlags.decrease_voltage = 0;
 		return 0;
 	}
 
@@ -182,17 +182,17 @@ __myevic__ int CheckBattery()
 		PowerScale = 60000 / pwr;
 	}
 
-	if ( v0 || Flags64 & 0x20000000 || bv < 290 )
+	if ( v0 || gFlags.limit_power || bv < 290 )
 	{
-		Flags64 |= 0x400000;
+		gFlags.decrease_voltage = 1;
 		ShowWeakBatFlag = 5;
 		if ( ISMODEVW(dfMode) && ( PowerScale > 5 ))
 			--PowerScale;
-		Flags64 &= ~0x20000000;
+		gFlags.limit_power = 0;
 	}
 	else
 	{
-		Flags64 &= ~0x400000;
+		gFlags.decrease_voltage = 0;
 	}
 	return 0;
 }

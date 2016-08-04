@@ -16,17 +16,22 @@
 
 
 //=============================================================================
+// Globals
+
+volatile gFlags_t gFlags;
+
+
+//=============================================================================
 // Forward declarations
 
 void SleepIfIdle();
 
-//=============================================================================
 
-__myevic__ void CustomStartup()
-{
+//=============================================================================
 // Useless function - testing purpose
 //------------------------------------------------------------------------------
-
+__myevic__ void CustomStartup()
+{
 	if ( 0 )
 	{
 		TIMER_Stop( TIMER3 );
@@ -197,12 +202,14 @@ __myevic__ void InitHardware()
 __myevic__ void InitVariables()
 {
 	InitDataFlash();
-	KeyPressTime |= 0x8000u;
-	LastInputs |= 0x80u;
+	KeyPressTime |= 0x8000;
+	LastInputs |= 0x80;
 	word_200000B6 = -1;
 	byte_200000B3 = 1;
 	BatRefreshTmr = -1;
-	Flags64 |= 0x40880u;
+	gFlags.draw_edited_item = 1;
+	gFlags.refresh_battery = 1;
+	gFlags.read_battery = 1;
 	EditItemIndex = 0;
 }
 
@@ -214,10 +221,10 @@ __myevic__ void Main()
 	InitHardware();
 	InitVariables();
 
-	Flags64 |= 0x8000;
+	gFlags.sample_vbat = 1;
 	ReadBatteryVoltage();
 
-	Flags64 |= 0x10000;
+	gFlags.sample_btemp = 1;
 	ReadBoardTemp();
 
 	InitDisplay();
@@ -229,14 +236,14 @@ __myevic__ void Main()
 
 	while ( 1 )
 	{
-		while ( Flags68 & 0x200 )
+		while ( gFlags.playing_fb )
 		{
 			// Flappy Bird game loop
 			fbCallTimeouts();
-			if ( Flags64 & 8 )
+			if ( gFlags.tick_100hz )
 			{
 				// 100Hz
-				Flags64 &= ~8;
+				gFlags.tick_100hz = 0;
 				ResetWatchDog();
 				TimedItems();
 				SleepIfIdle();
@@ -244,42 +251,42 @@ __myevic__ void Main()
 				if ( !PE0 )
 					SleepTimer = 3000;
 			}
-			if ( Flags64 & 0x10 )
+			if ( gFlags.tick_10hz )
 			{
 				// 10Hz
-				Flags64 &= ~0x10;
+				gFlags.tick_10hz = 0;
 				DataFlashUpdateTick();
 			}
 		}
 
-		if ( Flags64 & 0x100 )
+		if ( gFlags.firing )
 		{
 			GetAtoCurrent();
 		}
 
-		if ( Flags64 & 1 )
+		if ( gFlags.tick_5khz )
 		{
 			// 5000Hz
-			Flags64 &= ~1;
+			gFlags.tick_5khz = 0;
 
-			if ( Flags64 & 0x100 )
+			if ( gFlags.firing )
 			{
 				RegulateBuckBoost();
 			}
 		}
 
-		if ( Flags64 & 2 )
+		if ( gFlags.tick_1khz )
 		{
 			// 1000Hz
-			Flags64 &= ~2;
+			gFlags.tick_1khz = 0;
 
-			if ( Flags64 & 0x100 )
+			if ( gFlags.firing )
 			{
 				ReadAtoTemp();
 
 				if ( ISMODETC(dfMode) )
 				{
-					if ( Flags64 & 0x800000 )
+					if ( gFlags.check_mode )
 					{
 						CheckMode();
 					}
@@ -292,16 +299,16 @@ __myevic__ void Main()
 			}
 		}
 
-		if ( Flags64 & 8 )
+		if ( gFlags.tick_100hz )
 		{
 			// 100Hz
-			Flags64 &= ~8u;
+			gFlags.tick_100hz = 0;
 
 			ResetWatchDog();
 
-			if ( Flags64 & 0x80 )
+			if ( gFlags.read_battery )
 			{
-				Flags64 &= ~0x80u;
+				gFlags.read_battery = 0;
 			}
 
 			TimedItems();
@@ -317,43 +324,43 @@ __myevic__ void Main()
 				}
 			}
 
-			if ( Flags64 & 0x100 && BoardTemp >= 70u )
+			if ( gFlags.firing && BoardTemp >= 70 )
 			{
 				Overtemp();
 			}
 
-			if ( word_20000054 >= 5u )
+			if ( word_20000054 >= 5 )
 			{
 				KeyRepeat();
 			}
 			GetUserInput();
 		}
 
-		if ( Flags64 & 0x10 )
+		if ( gFlags.tick_10hz )
 		{
 			// 10Hz
-			Flags64 &= ~0x10u;
+			gFlags.tick_10hz = 0;
 
 			DataFlashUpdateTick();
 
-			if ( Flags64 & 0x100 )
+			if ( gFlags.firing )
 				++FireDuration;
 
 			if ( ShowWeakBatFlag )
 				--ShowWeakBatFlag;
 
-			if ( ! ((Flags64 & 0x100) && ISMODETC(dfMode)) )
+			if ( ! ((gFlags.firing) && ISMODETC(dfMode)) )
 			{
 				DrawScreen();
 			}
 		}
 
-		if ( Flags64 & 0x20 )
+		if ( gFlags.tick_5hz )
 		{
 			// 5Hz
-			Flags64 &= ~0x20u;
+			gFlags.tick_5hz = 0;
 
-			if ( Flags64 & 0x100 )
+			if ( gFlags.firing )
 			{
 				if ( !TargetVolts )
 				{
@@ -361,25 +368,25 @@ __myevic__ void Main()
 				}
 			}
 			else if
-			(	!( dfStatus & 1 )
+			(	!( dfStatus.off )
 				&& Event == -1
 				&& ( Screen == 0 || Screen == 1 || Screen == 3 || Screen == 5 ) )
 			{
 				ProbeAtomizer();
 			}
 
-			if ( word_20000054 < 5u )
+			if ( word_20000054 < 5 )
 			{
 				KeyRepeat();
 			}
 		}
 
-		if ( Flags64 & 0x40 )
+		if ( gFlags.tick_2hz )
 		{
 			// 2Hz
-			Flags64 &= ~0x40u;
+			gFlags.tick_2hz = 0;
 
-			if ( Flags64 & 0x100 )
+			if ( gFlags.firing )
 			{
 				if ( ISMODETC(dfMode) )
 				{
@@ -388,14 +395,14 @@ __myevic__ void Main()
 			}
 		}
 
-		if ( Flags68 & 0x100 )
+		if ( gFlags.tick_1hz )
 		{
 			// 1Hz
-			Flags68 &= ~0x100u;
+			gFlags.tick_1hz = 0;
 
 			if ( ShowDateFlag ) --ShowDateFlag;
 
-			if ( !(Flags64 & 0x100) && !(dfStatus << 31) && !EditModeTimer )
+			if ( !(gFlags.firing) && !(dfStatus.off) && !EditModeTimer )
 			{
 				if ( HideLogo )
 				{
@@ -403,7 +410,7 @@ __myevic__ void Main()
 					{
 						if ( --HideLogo )
 						{
-							Flags64 |= 0x20000u;
+							gFlags.refresh_display = 1;
 						}
 					}
 				}
@@ -411,7 +418,7 @@ __myevic__ void Main()
 
 			if ( IsClockOnScreen() )
 			{
-				Flags64 |= 0x20000u;
+				gFlags.refresh_display = 1;
 			}
 		}
 
@@ -585,13 +592,13 @@ __myevic__ void FlushAndSleep()
 void GoToSleep()
 {
 	ScreenOff();
-	Flags64 &= ~0x100u;
+	gFlags.firing = 0;
 	BatReadTimer = 50;
 	DevicesOnOff( 1 );
 	CLK_SysTickDelay( 250 );
 	CLK_SysTickDelay( 250 );
 	CLK_SysTickDelay( 250 );
-	if ( dfStatus & 1 || PE0 || KeyPressTime == 1100 )
+	if ( dfStatus.off || PE0 || KeyPressTime == 1100 )
 	{
 		SYS_UnlockReg();
 		WDT_Open( WDT_TIMEOUT_2POW14, WDT_RESET_DELAY_18CLK, FALSE, FALSE );
@@ -599,7 +606,7 @@ void GoToSleep()
 	}
 	WDT_Open( WDT_TIMEOUT_2POW14, WDT_RESET_DELAY_18CLK, TRUE, FALSE );
 	SYS_LockReg();
-	Flags64 |= 0x800u;
+	gFlags.refresh_battery = 1;
 	DevicesOnOff( 0 );
 	InitDisplay();
 }
@@ -609,23 +616,23 @@ void GoToSleep()
 //----- (0000782C) --------------------------------------------------------
 __myevic__ void SleepIfIdle()
 {
-	if ( !( Flags64 & 0x100 ) && !BatRefreshTmr )
+	if ( !( gFlags.firing ) && !BatRefreshTmr )
 	{
-		if ( ( Screen == 0 && SleepTimer == 0 ) && ( Flags64 & 0x4000 ) )
+		if ( ( Screen == 0 && SleepTimer == 0 ) && ( gFlags.user_idle ) )
 		{
 			GoToSleep();
 
 			byte_200000B3 = 2;
 			AtoProbeCount = 0;
 			AtoRezMilli = 0;
-			Flags64 |= 0x8000;
+			gFlags.sample_vbat = 1;
 			ReadBatteryVoltage();
-			if ( BatteryVoltage <= 300 && !(Flags64 & 0x400) )
+			if ( BatteryVoltage <= 300 && !(gFlags.usb_attached) )
 			{
-				dfStatus |= 1;
+				dfStatus.off = 1;
 				Screen = 0;
 			}
-			Flags64 |= 0x10000;
+			gFlags.sample_btemp = 1;
 		}
 		BatRefreshTmr = 200;
 	}

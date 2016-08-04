@@ -17,13 +17,13 @@ __myevic__ void KeyRepeat()
 	if ( !PE0 )
 		return;
 
-	if ( dfStatus & 2 && !EditModeTimer )
+	if ( dfStatus.keylock && !EditModeTimer )
 	{
 		if (( Screen != 59 ) && ( Screen != 101 ))
 			return;
 	}
 
-	if ( dfStatus << 31 )
+	if ( dfStatus.off )
 	{
 		if ( Screen != 59 )
 			return;
@@ -35,7 +35,7 @@ __myevic__ void KeyRepeat()
 
 		if ( ( dfTCPower == MaxTCPower && !PD2 ) || ( dfTCPower == 10 && !PD3 ) )
 		{
-			Flags64 |= 0x40000;
+			gFlags.draw_edited_item = 1;
 			return;
 		}
 	}
@@ -63,9 +63,9 @@ __myevic__ void KeyRepeat()
 		word_20000054 = 0;
 		byte_20000080 = 0;
 	}
-	else if ( byte_20000080 >= 3 || ++byte_20000080 >= 3u )
+	else if ( byte_20000080 >= 3 || ++byte_20000080 >= 3 )
 	{
-		if ( word_20000054 >= 105u )
+		if ( word_20000054 >= 105 )
 		{
 			byte_20000080 = 0;
 		}
@@ -101,11 +101,11 @@ __myevic__ void GetUserInput()
 	}
 	else
 	{
-		if ( Flags64 & 0x100 )
+		if ( gFlags.firing )
 		{
 			if ( LastInputs == 1 )
 				StopFire();
-			Flags64 |= 0x4000;
+			gFlags.user_idle = 1;
 			LastInputs = -1;
 			KeyPressTime = 0;
 			return;
@@ -117,7 +117,7 @@ __myevic__ void GetUserInput()
 			FireClicksEvent = 0;
 		}
 
-		if ( !(dfStatus << 31) || Screen == 59 )
+		if ( !(dfStatus.off) || Screen == 59 )
 		{
 			if ( !PD2 ) UserInputs = 2;
 			if ( !PD3 ) UserInputs = 3;
@@ -129,7 +129,7 @@ __myevic__ void GetUserInput()
 
 		if ( USBD_IS_ATTACHED() )
 		{
-			if ( !(Flags64 & 0x400) )
+			if ( !(gFlags.usb_attached) )
 			{
 				UserInputs = 10;
 				byte_20000048 = 0;
@@ -137,15 +137,15 @@ __myevic__ void GetUserInput()
 		}
 		else
 		{
-			if ( Flags64 & 0x400 )
+			if ( gFlags.usb_attached )
 			{
 				UserInputs = 11;
 			}
 		}
 
-		if ( Flags64 & 0x400 )
+		if ( gFlags.usb_attached )
 		{
-			if ( !PD7 && !(Flags64 & 0x1000) )
+			if ( !PD7 && !(gFlags.battery_charging) )
 			{
 				if ( !byte_20000048 || byte_20000048 >= 50 )
 				{
@@ -153,7 +153,7 @@ __myevic__ void GetUserInput()
 					byte_20000048 = 0;
 				}
 			}
-			else if ( PD7 && Flags64 & 0x1000 )
+			else if ( PD7 && gFlags.battery_charging )
 			{
 				UserInputs = 13;
 				byte_20000048 = 1;
@@ -161,11 +161,11 @@ __myevic__ void GetUserInput()
 		}
 	}
 
-	if ( UserInputs >= 14u )
+	if ( UserInputs >= 14 )
 	{
 		if ( LastInputs == 1 )
 			StopFire();
-		Flags64 |= 0x4000;
+		gFlags.user_idle = 1;
 		LastInputs = -1;
 		KeyPressTime = 0;
 		return;
@@ -175,7 +175,7 @@ __myevic__ void GetUserInput()
 	{
 		LastInputs = UserInputs;
 		KeyPressTime = 0;
-		Flags64 &= ~0x4000;
+		gFlags.user_idle = 0;
 		return;
 	}
 
@@ -183,7 +183,7 @@ __myevic__ void GetUserInput()
 
 	if ( KeyPressTime == 6 )
 	{
-		Flags64 &= ~0x4000u;
+		gFlags.user_idle = 0;
 
 		if (   UserInputs == 4
 			|| UserInputs == 5
@@ -239,7 +239,7 @@ __myevic__ void GetUserInput()
 		}
 		else if ( UserInputs == 2 )
 		{
-			if ( dfStatus & 2 && !EditModeTimer
+			if ( dfStatus.keylock && !EditModeTimer
 				&& Screen != 51 && Screen != 59 && Screen != 82 && Screen != 83
 				&& Screen != 101 && Screen != 102 && Screen != 103 )
 			{
@@ -252,7 +252,7 @@ __myevic__ void GetUserInput()
 		}
 		else if ( UserInputs == 3 )
 		{
-			if ( dfStatus & 2 && !EditModeTimer
+			if ( dfStatus.keylock && !EditModeTimer
 				&& Screen != 51 && Screen != 59 && Screen != 82 && Screen != 83
 				&& Screen != 101 && Screen != 102 && Screen != 103 )
 			{
@@ -278,7 +278,7 @@ __myevic__ void GetUserInput()
 			if ( Screen == 59 )
 			{
 				UpdateDataFlash();
-				Flags64 |= 0x20000u;
+				gFlags.refresh_display = 1;
 				Screen = 0;
 			}
 		}
@@ -286,7 +286,7 @@ __myevic__ void GetUserInput()
 		{
 			if ( !EditModeTimer )
 			{
-				if ( dfStatus << 31 )
+				if ( dfStatus.off )
 					Event = 18;	// flip display
 				else
 					Event = 4;	// key (un)lock
@@ -306,16 +306,16 @@ __myevic__ void GetUserInput()
 		else if ( UserInputs == 5 )
 		{
 			MenuPage = 1;
-			if ( !(dfStatus << 31) )
+			if ( !(dfStatus.off) )
 			{
-				if ( !(Flags68 & 0x200) )
+				if ( !(gFlags.playing_fb) )
 				{
 					Event = EVENT_ENTER_MENUS;	// new menus
 				//	Event =  40;	// old menus
 				}
 				else
 				{
-					Flags68 &= ~0x200u;
+					gFlags.playing_fb = 0;
 					Event = -1;
 					fbInitTimeouts();
 					MainView();
@@ -324,7 +324,7 @@ __myevic__ void GetUserInput()
 		}
 		else if ( UserInputs == 6 )
 		{
-			if ( !(dfStatus << 31) )
+			if ( !(dfStatus.off) )
 			{
 				Event = 6;	// stealth on/off
 			}
@@ -334,14 +334,14 @@ __myevic__ void GetUserInput()
 	{
 		if ( UserInputs == 5 )
 		{
-			if ( dfStatus << 31 )
+			if ( dfStatus.off )
 			{
 				Event = 39;	// tcr set menu
 			}
 		}
 		else if ( UserInputs == 6 )
 		{
-			if ( dfStatus << 31 )
+			if ( dfStatus.off )
 			{
 				Event = 34;	// battery voltage screen
 			}
@@ -354,7 +354,7 @@ __myevic__ void GetUserInput()
 			if ( KeyPressTime > 1100 )
 			{
 				KeyPressTime = 1100;
-				Flags64 |= 0x4000;
+				gFlags.user_idle = 1;
 			}
 			else if ( FireDuration > 99 )
 			{
@@ -385,10 +385,10 @@ __myevic__ int EvtFire()
 	{
 		case 101:
 		{
-			Flags68 ^= 0x10;
-			if ( Flags68 & 0x10 )
+			gFlags.edit_capture_evt ^= 1;
+			if ( gFlags.edit_capture_evt )
 			{
-				Flags64 |= 0x20000;
+				gFlags.refresh_display = 1;
 				ScreenDuration = 10;
 			}
 			else
@@ -486,7 +486,7 @@ __myevic__ int EvtPlusButton()
 						ModeChange();
 
 						UpdateDFTimer = 50;
-						Flags64 |= 0x20000;
+						gFlags.refresh_display = 1;
 						vret = 1;
 					}
 				}
@@ -498,7 +498,7 @@ __myevic__ int EvtPlusButton()
 					if ( ++dfAPT > 6 ) dfAPT = 0;
 					
 					UpdateDFTimer = 50;
-					Flags64 |= 0x20000;
+					gFlags.refresh_display = 1;
 					vret = 1;
 				}
 			}
@@ -510,21 +510,21 @@ __myevic__ int EvtPlusButton()
 			Event = EVENT_EDIT_CONTRAST;
 		//	Screen = 101;
 		//	ScreenDuration = 10;
-		//	Flags64 |= 0x20000;
+		//	gFlags.refresh_display = 1;
 			vret = 1;
 		}
 		break;
 
 		case 101:
 		{
-			if ( Flags68 &= 0x10 )
+			if ( gFlags.edit_capture_evt )
 			{
 				if ( dfContrast <= 240 ) dfContrast += 15;
 				else dfContrast = 255;
 				UpdateDFTimer = 50;
 				DisplaySendCommand( 0x81 );
 				DisplaySendCommand( dfContrast );
-				Flags64 |= 0x20000;
+				gFlags.refresh_display = 1;
 				ScreenDuration = 10;
 				vret = 1;
 			}
@@ -546,7 +546,7 @@ __myevic__ int EvtPlusButton()
 			unsigned int cs = RTCGetClockSpeed();
 			if ( cs < 50000 ) ++cs;
 			RTCSetClockSpeed( cs );
-			Flags64 |= 0x20000;
+			gFlags.refresh_display = 1;
 			ScreenDuration = 120;
 			vret = 1;
 		}
@@ -555,7 +555,7 @@ __myevic__ int EvtPlusButton()
 		case 104:
 		{
 			RTCAdjustClock( 1 );
-			Flags64 |= 0x20000;
+			gFlags.refresh_display = 1;
 			ScreenDuration = 120;
 			vret = 1;
 		}
@@ -575,13 +575,13 @@ __myevic__ int EvtMinusButton()
 	{
 		case 101:
 		{
-			Flags68 |= 0x10;
+			gFlags.edit_capture_evt = 1;
 			if ( dfContrast >= 15 ) dfContrast -= 15;
 			else dfContrast = 0;
 			UpdateDFTimer = 50;
 			DisplaySendCommand( 0x81 );
 			DisplaySendCommand( dfContrast );
-			Flags64 |= 0x20000;
+			gFlags.refresh_display = 1;
 			ScreenDuration = 10;
 			vret = 1;
 		}
@@ -598,7 +598,7 @@ __myevic__ int EvtMinusButton()
 			unsigned int cs = RTCGetClockSpeed();
 			if ( cs > 10000 ) --cs;
 			RTCSetClockSpeed( cs );
-			Flags64 |= 0x20000;
+			gFlags.refresh_display = 1;
 			ScreenDuration = 120;
 			vret = 1;
 		}
@@ -607,7 +607,7 @@ __myevic__ int EvtMinusButton()
 		case 104:
 		{
 			RTCAdjustClock( -1 );
-			Flags64 |= 0x20000;
+			gFlags.refresh_display = 1;
 			ScreenDuration = 120;
 			vret = 1;
 		}
@@ -622,7 +622,7 @@ __myevic__ int EvtMinusButton()
 __myevic__ int EvtDoubleFire()
 {
 	ShowDateFlag = 3;
-	Flags64 |= 0x20000;
+	gFlags.refresh_display = 1;
 	return 1;
 }
 
@@ -631,7 +631,7 @@ __myevic__ int EvtDoubleFire()
 __myevic__ int EvtQuadFire()
 {
 	myDbgFlag ^= 1;
-	Flags64 |= 0x20000;
+	gFlags.refresh_display = 1;
 	return 1;
 }
 
@@ -641,7 +641,7 @@ __myevic__ int EvtContrastMenu()
 {
 	Screen = 101;
 	ScreenDuration = 10;
-	Flags64 |= 0x20000;
+	gFlags.refresh_display = 1;
 	return 1;
 }
 
@@ -653,7 +653,7 @@ __myevic__ int EvtEnterMenus()
 	CurrentMenuItem = 0;
 	Screen = 102;
 	ScreenDuration = 10;
-	Flags64 |= 0x20000;
+	gFlags.refresh_display = 1;
 	return 1;
 }
 

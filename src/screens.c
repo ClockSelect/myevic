@@ -19,12 +19,12 @@ __myevic__ void DrawScreen()
 		CurrentFD = FireDuration;
 		ScreenDuration = 1;
 		ShowFDTimer = 0;
-		Flags64 |= 0x20000u;
+		gFlags.refresh_display = 1;
 	}
 
-	if ( Flags64 & 0x20000 )
+	if ( gFlags.refresh_display )
 	{
-		Flags64 &= 0xFFFDFFFF;
+		gFlags.refresh_display = 0;
 		ClearScreenBuffer();
 
 		switch ( Screen )
@@ -154,7 +154,7 @@ __myevic__ void DrawScreen()
 		DisplayRefresh();
 	}
 
-	if (( Flags64 & 0x100 ) && ISMODETC(dfMode))
+	if (( gFlags.firing ) && ISMODETC(dfMode))
 	{
 		ShowFDTimer += 5;
 	}
@@ -163,7 +163,7 @@ __myevic__ void DrawScreen()
 		ShowFDTimer += 1;
 	}
 
-	if ( ShowFDTimer < 10u )
+	if ( ShowFDTimer < 10 )
 		return;
 
 	ShowFDTimer = 0;
@@ -174,7 +174,7 @@ __myevic__ void DrawScreen()
 	switch ( Screen )
 	{
 		case   0: // Black
-			if ( dfStatus << 31 )
+			if ( dfStatus.off )
 			{
 				SleepTimer = 0;
 			}
@@ -183,8 +183,8 @@ __myevic__ void DrawScreen()
 		case   2: // Firing
 			if ( dfStealthOn )
 			{
-				Flags64 |= 0x20000;
-				if ( !(Flags64 & 0x1000) )
+				gFlags.refresh_display = 1;
+				if ( !(gFlags.battery_charging) )
 				{
 					Screen = 0;
 					SleepTimer = 18000;
@@ -221,7 +221,7 @@ __myevic__ void DrawScreen()
 		case 101: // Contrast Menu
 		case 102: // Menus
 		case 103: // RTC Speed
-			Flags68 &= ~0x10;
+			gFlags.edit_capture_evt = 0;
 			// NOBREAK
 		case  59: // TCR Set Menu
 		case  82: // LOGO Menu
@@ -238,9 +238,9 @@ __myevic__ void DrawScreen()
 		case  41: // Ti ON/OFF
 		case  54: // Battery Voltage
 		case 100: // Ferox's page
-			if ( !(Flags64 & 0x1000) )
+			if ( !(gFlags.battery_charging) )
 			{
-				Flags64 |= 0x20000u;
+				gFlags.refresh_display = 1;
 				Screen = 0;
 				SleepTimer = 18000;
 			}
@@ -335,9 +335,9 @@ __myevic__ void ShowContrast()
 	}
 
 	DrawStringCentered( String_Fireto, 57 );
-	DrawStringCentered( ( Flags68 & 0x10 ) ? String_Exit : String_Edit, 67 );
+	DrawStringCentered( ( gFlags.edit_capture_evt ) ? String_Exit : String_Edit, 67 );
 
-	if ( !(dfStatus & 8) ) DrawLOGO( 0, 88 );
+	if ( !(dfStatus.nologo) ) DrawLOGO( 0, 88 );
 }
 
 
@@ -382,14 +382,14 @@ __myevic__ int IsClockOnScreen()
 //----- (000067C8) --------------------------------------------------------
 __myevic__ void ShowBattery()
 {
-	if ( Flags64 & 0x80000 && !(Flags64 & 0x1000) )
+	if ( gFlags.battery_10pc && !(gFlags.battery_charging) )
 	{
-		if ( Flags64 & 0x100000 )
+		if ( gFlags.draw_battery )
 		{
 			DrawImage( 8, 115, 0xC4 );
 		}
 	}
-	else if ( Flags64 & 0x200000 && Flags64 & 0x1000 )
+	else if ( gFlags.draw_battery_charging && gFlags.battery_charging )
 	{
 		DrawImage( 8, 115, 0xC5 );
 	}
@@ -417,7 +417,7 @@ __myevic__ void ShowBatCharging()
 			DrawFillRect( 10, 118, (4 * BatAnimLevel + 9), 124, 1 );
 		}
 	}
-	else if ( Flags64 & 0x200000 )
+	else if ( gFlags.draw_battery_charging )
 	{
 		DrawFillRect( 10, 118, 49, 124, 1 );
 	}
@@ -499,7 +499,7 @@ __myevic__ void ShowLOGOMenu()
 	DrawString( String_LOGO, 4, 6 );
 	DrawHLine( 0, 16, 63, 1 );
 
-	l = ( dfStatus >> 3 ) & 1;
+	l = dfStatus.nologo;
 
 	DrawFillRect( 0, 14 * l + 18, 63, 14 * l + 30, 1 );
 
@@ -567,7 +567,7 @@ __myevic__ void ShowTCRSet()
 	DrawString( String_TCRSet, 7, 6 );
 	DrawHLine( 0, 22, 63, 1 );
 
-	if ( Flags68 & 1 )
+	if ( gFlags.edit_tcr_value )
 	{
 		for ( i = 0 ; i < 3 ; ++i )
 		{

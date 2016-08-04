@@ -14,7 +14,7 @@ __myevic__ void ModeChange()
 			dfTempAlgo = 1;
 			if ( dfRezNI )
 			{
-				if ( ( dfRezLockedNI ) || !( Flags64 & 0x10000000 ))
+				if ( ( dfRezLockedNI ) || !( gFlags.check_rez_ni ))
 				{
 					dfResistance = dfRezNI;
 				}
@@ -24,7 +24,7 @@ __myevic__ void ModeChange()
 			dfTempAlgo = 2;
 			if ( dfRezTI )
 			{
-				if (( dfRezLockedTI ) || !( Flags64 & 0x08000000 ))
+				if (( dfRezLockedTI ) || !( gFlags.check_rez_ti ))
 				{
 					dfResistance = dfRezTI;
 				}
@@ -34,7 +34,7 @@ __myevic__ void ModeChange()
 			dfTempAlgo = 3;
 			if ( dfRezSS )
 			{
-				if (( dfRezLockedSS ) || !( Flags64 & 0x80000000 ))
+				if (( dfRezLockedSS ) || !( gFlags.check_rez_ss ))
 				{
 					dfResistance = dfRezSS;
 				}
@@ -44,7 +44,7 @@ __myevic__ void ModeChange()
 			dfTempAlgo = 4;
 			if ( dfRezTCR )
 			{
-				if (( dfRezLockedTCR ) || !( Flags68 & 0x2 ))
+				if (( dfRezLockedTCR ) || !( gFlags.check_rez_tcr ))
 				{
 					dfResistance = dfRezTCR;
 				}

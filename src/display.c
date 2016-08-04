@@ -292,7 +292,7 @@ __myevic__ void DrawLOGO( const int x, const int y )
 	image_t *img;
 	uint32_t base_addr;
 
-	if ( dfStatus & 8 ) return;
+	if ( dfStatus.nologo ) return;
 
 	switch ( DisplayModel )
 	{
@@ -389,32 +389,32 @@ __myevic__ uint16_t* Value2Str( uint16_t *str, int v, int dp, uint16_t z, int nd
 
 		switch ( z )
 		{
-			case 0xBu:
+			case 0x0B:
 			default:
 				dot = 0xC1;
 				break;
-			case 0x15u:
+			case 0x15:
 				dot = 0xD8;
 				break;
-			case 0x1Fu:
+			case 0x1F:
 				dot = 0xDC;
 				break;
-			case 0x29u:
+			case 0x29:
 				dot = 0xDF;
 				break;
-			case 0x33u:
+			case 0x33:
 				dot = 0xF1;
 				break;
-			case 0x3Du:
+			case 0x3D:
 				dot = 0x47;
 				break;
-			case 0x48u:
+			case 0x48:
 				dot = 0xF7;
 				break;
-			case 0x52u:
+			case 0x52:
 				dot = 0xF9;
 				break;
-			case 0x5Cu:
+			case 0x5C:
 				dot = 0x66;
 				break;
 		}

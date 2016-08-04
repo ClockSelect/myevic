@@ -14,11 +14,11 @@ __myevic__ void GPD_IRQHandler()
 	{
 		GPIO_CLR_INT_FLAG( PD, GPIO_PIN_PIN7_Msk );
 
-		if ( Flags64 & 0x400 )
+		if ( gFlags.usb_attached )
 		{
 			byte_20000048 = 1;
 
-			if ( Flags64 & 0x1000 )
+			if ( gFlags.battery_charging )
 			{
 				Event = 13;
 			}

@@ -61,13 +61,13 @@ __myevic__ void Anim3dOnClick()
 
 __myevic__ void LogoMEnter()
 {
-	CurrentMenuItem = ( dfStatus >> 3 ) & 1;
+	CurrentMenuItem = dfStatus.nologo;
 }
 
 __myevic__ void LogoISelect()
 {
-	dfStatus &= ~0x8u;
-	dfStatus |= CurrentMenuItem << 3;
+	dfStatus.nologo = 0;
+	dfStatus.nologo = CurrentMenuItem & 1;
 	UpdateDFTimer = 50;
 }
 
@@ -89,9 +89,10 @@ __myevic__ void GameIClick()
 	UpdateDataFlash();
 	if ( dfFBSpeed <= 2 )
 	{
-		Flags68 |= 0x200u;
+		gFlags.playing_fb = 1;
 		Screen = 0;
-		Flags64 |= 0x24000u;
+		gFlags.user_idle = 1;
+		gFlags.refresh_display = 1;
 		BatRefreshTmr = 0;
 		SleepTimer = 3000;
 		fbInitTimeouts();
@@ -125,7 +126,7 @@ __myevic__ void ModesIClick()
 		dfModesSel ^= ( 1 << CurrentMenuItem );
 		if ( dfModesSel == 0x7f ) dfModesSel ^= ( 1 << 4 );
 		UpdateDFTimer = 50;
-		Flags64 |= 0x20000;
+		gFlags.refresh_display = 1;
 	}
 	else
 	{
@@ -184,7 +185,7 @@ __myevic__ void CoilsIClick()
 	else
 	{
 		UpdateDFTimer = 50;
-		Flags64 |= 0x20000;
+		gFlags.refresh_display = 1;
 	}
 }
 
@@ -239,7 +240,7 @@ __myevic__ int DTMenuOnEvent( int event )
 						dt_sel = 2;
 						++CurrentMenuItem;
 					}
-					Flags64 |= 0x20000;
+					gFlags.refresh_display = 1;
 					vret = 1;
 					break;
 
@@ -273,7 +274,7 @@ __myevic__ int DTMenuOnEvent( int event )
 							rtd.u32Hour %= 24;
 							break;
 					}
-					Flags64 |= 0x20000;
+					gFlags.refresh_display = 1;
 					vret = 1;
 					break;
 
@@ -290,7 +291,7 @@ __myevic__ int DTMenuOnEvent( int event )
 							rtd.u32Day = (rtd.u32Day+1) %31;
 							break;
 					}
-					Flags64 |= 0x20000;
+					gFlags.refresh_display = 1;
 					vret = 1;
 					break;
 
@@ -315,7 +316,7 @@ __myevic__ int DTMenuOnEvent( int event )
 							rtd.u32Hour = ( rtd.u32Hour + 23 ) % 24;
 							break;
 					}
-					Flags64 |= 0x20000;
+					gFlags.refresh_display = 1;
 					vret = 1;
 					break;
 
@@ -332,7 +333,7 @@ __myevic__ int DTMenuOnEvent( int event )
 							rtd.u32Day = ( rtd.u32Day + 30 ) %31;
 							break;
 					}
-					Flags64 |= 0x20000;
+					gFlags.refresh_display = 1;
 					vret = 1;
 					break;
 
@@ -353,7 +354,7 @@ __myevic__ int DTMenuOnEvent( int event )
 
 __myevic__ void MainIClick()
 {
-	if ( CurrentMenu->mitems[CurrentMenuItem].screen == 101 ) Flags68 |= 0x10;
+	if ( CurrentMenu->mitems[CurrentMenuItem].screen == 101 ) gFlags.edit_capture_evt = 1;
 }
 
 //-----------------------------------------------------------------------------
@@ -615,7 +616,7 @@ __myevic__ int MenuEvent( int event )
 
 				if ( CurrentMenu->on_enter ) CurrentMenu->on_enter();
 
-				Flags64 |= 0x20000;
+				gFlags.refresh_display = 1;
 			}
 			else if ( mi->sduration > 0 )
 			{
@@ -625,7 +626,7 @@ __myevic__ int MenuEvent( int event )
 				Screen = mi->screen;
 				ScreenDuration = mi->sduration;
 
-				Flags64 |= 0x20000;
+				gFlags.refresh_display = 1;
 			}
 
 			vret = 1;
@@ -644,7 +645,7 @@ __myevic__ int MenuEvent( int event )
 			}
 
 			ScreenDuration = 10;
-			Flags64 |= 0x20000;
+			gFlags.refresh_display = 1;
 
 			if ( CurrentMenu->on_selectitem ) CurrentMenu->on_selectitem();
 
@@ -664,7 +665,7 @@ __myevic__ int MenuEvent( int event )
 			}
 
 			ScreenDuration = 10;
-			Flags64 |= 0x20000;
+			gFlags.refresh_display = 1;
 
 			if ( CurrentMenu->on_selectitem ) CurrentMenu->on_selectitem();
 

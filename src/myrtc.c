@@ -275,11 +275,11 @@ __myevic__ void GetRTC( S_RTC_TIME_DATA_T *rtd )
 	ref = RTCGetReferenceDate();
 	cs  = RTCGetClockSpeed();
 
-	d = (( (unsigned long long)t - ref ) * cs ) / 10000u;
+	d = (( (unsigned long long)t - ref ) * cs ) / 10000;
 	t += d;
 	t += adjustment;
 
-	t += ClockCorrection / 1000u;
+	t += ClockCorrection / 1000;
 
 	RTCEpochToTime( rtd, &t );
 }

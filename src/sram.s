@@ -86,36 +86,6 @@ BatteryVoltage:		.ds.b	2
 SavedBatVoltage:	.ds.b	2
 BuckDuty:			.ds.b	2
 BoostDuty:			.ds.b	2
-
-Flags64:			.ds.b	4	@ Flags1 (20000064)
-								@ 0		0x00000001  TMR1 5kHz
-								@ 1:2	0x00000006  TMR2 1kHz
-								@ 3		0x00000008  TMR2 100Hz
-								@ 4		0x00000010  TMR3 10Hz
-								@ 5		0x00000020  TMR3 5Hz
-								@ 6		0x00000040  TMR3 2Hz
-								@ 8		0x00000100  Powering Atomizer
-								@ 9		0x00000200  Battery Low
-								@ 10	0x00000400  USB	plugged
-								@ 11	0000000800  Refresh battery value
-								@ 12	0x00001000  Battery in box
-								@ 15	0x00008000  Sampling VBat
-								@ 16	0x00010000  Sampling BoardTemp
-								@ 17	0x00020000  Display refresh needed
-								@ 18	0x00040000  2Hz	Blink edited item
-								@ 19	0x00080000  Batt < 10%
-								@ 21	0x00200000  1Hz	Oscillator
-								@ 23	0x00800000  ?
-								@ 27	0x08000000  Unchecked rez TI
-								@ 28	0x10000000  Unchecked rez NI
-								@ 31	0x80000000  Unchecked rez SS
-
-Flags68:			.ds.b	4	@ Flags2 (20000068)
-								@ 0		0x00000001  Edit TCR value
-								@ 1		0x00000002  nchecked rez TCR
-								@ 4     0x00000010  Editing TC pwr value
-								@ 8		0x00000100  TMR3 1Hz
-								@ 9		0x00000200  In Flappy Bird
 AtoMinPower:		.ds.b	4
 AtoMaxPower:		.ds.b	4
 MaxTCPower:			.ds.b	4

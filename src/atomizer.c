@@ -93,7 +93,7 @@ __myevic__ void StopFire()
 {
 	GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_INPUT );
 
-	if ( Flags64 & 0x100 ) Flags64 &= ~0x100;
+	if ( gFlags.firing ) gFlags.firing = 0;
 
 	if ( FireDuration > 5 )
 	{
@@ -164,7 +164,7 @@ __myevic__ void GetAtoCurrent()
 	unsigned int arez;
 	int s;
 
-	if ( Flags64 & 0x100 || Flags64 & 0x2000 )
+	if ( gFlags.firing || gFlags.probing_ato )
 	{
 		avolts = ADC_Read( 2 );
 		CLK_SysTickDelay( 10 );
@@ -174,7 +174,7 @@ __myevic__ void GetAtoCurrent()
 
 		arez = LowestRezMeasure();
 
-		if	(	Flags64 & 0x100
+		if	(	gFlags.firing
 			&&	2080 * AtoShuntValue / 100 * ashunt < 30 * avolts * arez
 			&& AtoCurrent > 50
 			&& TargetVolts >= 100	)
@@ -192,7 +192,7 @@ __myevic__ void GetAtoCurrent()
 
 		AtoStatus = 1;
 
-		if ( Flags64 & 0x100 ) Event = 25;
+		if ( gFlags.firing ) Event = 25;
 
 		StopFire();
 
@@ -259,7 +259,7 @@ __myevic__ void GetTempCoef( const uint16_t tc[] )
 	r = dfResistance / 5;
 	TCR = tc[r];
 
-	if ( dfResistance % 5u || r < 20 )
+	if ( dfResistance % 5 || r < 20 )
 	{
 		v = tc[r + 1];
 		if ( v <= TCR )
@@ -308,10 +308,10 @@ __myevic__ void CheckMode()
 			dfVWVolts = GetAtoVWVolts( 200 );
 		}
 
-		if ( !(Flags64 &  0x8000000) ) dfRezTI  = word_200000B8;
-		if ( !(Flags64 & 0x10000000) ) dfRezNI  = word_200000BA;
-		if ( !(Flags64 & 0x80000000) ) dfRezSS  = word_200000BC;
-		if ( !(Flags68 &          2) ) dfRezTCR = word_200000BE;
+		if ( !gFlags.check_rez_ti  ) dfRezTI  = word_200000B8;
+		if ( !gFlags.check_rez_ni  ) dfRezNI  = word_200000BA;
+		if ( !gFlags.check_rez_ss  ) dfRezSS  = word_200000BC;
+		if ( !gFlags.check_rez_tcr ) dfRezTCR = word_200000BE;
 
 		if ( AtoRez < 10 )
 		{
@@ -329,7 +329,7 @@ __myevic__ void CheckMode()
 
 	UpdateDFTimer = 50;
 
-	Flags64 &= ~0x800000;
+	gFlags.check_mode = 0;
 	CheckModeCounter = 0;
 }
 
@@ -340,7 +340,7 @@ __myevic__ void ReadAtoTemp()
 {
 	if ( TargetVolts )
 	{
-		if ( Flags64 & 0x100 || AtoProbeCount != 10 )
+		if ( gFlags.firing || AtoProbeCount != 10 )
 		{
 			byte_20000098 = 1;
 		}
@@ -371,18 +371,18 @@ __myevic__ void ReadAtoTemp()
 				AtoStatus = 1;
 				myprintf( "RL_GND %d(%d,%d,%d)\n",
 						  AtoRezMilli, ADCAtoSum, ADCShuntSum, dword_200000A4 );
-				if ( Flags64 & 0x100 )
+				if ( gFlags.firing )
 				{
 					StopFire();
 					Event = 25;
 				}
 				return;
 			}
-			if ( ( AtoProbeCount <= 10u && AtoRezMilli < 50 ) || AtoRezMilli < 40 )
+			if ( ( AtoProbeCount <= 10 && AtoRezMilli < 50 ) || AtoRezMilli < 40 )
 			{
 				myprintf( "RL_LOW %d\n", AtoRezMilli );
 				AtoStatus = 2;
-				if ( Flags64 & 0x100)
+				if ( gFlags.firing)
 				{
 					Event = 27;
 				}
@@ -392,19 +392,19 @@ __myevic__ void ReadAtoTemp()
 			{
 				AtoStatus = 0;
 				AtoRezMilli = 0;
-				if ( Flags64 & 0x100)
+				if ( gFlags.firing)
 				{
 					Event = 26;
 				}
 				return;
 			}
-			if ( AtoProbeCount <= 10u && AtoRezMilli > 3500 )
+			if ( AtoProbeCount <= 10 && AtoRezMilli > 3500 )
 			{
 				AtoStatus = 3;
 				myprintf( "RL_LARGE %d\n", AtoRezMilli );
 				return;
 			}
-			if ( Flags64 & 0x100 && AtoRezMilli / 10u <= AtoRez >> 2 )
+			if ( gFlags.firing && AtoRezMilli / 10 <= AtoRez >> 2 )
 			{
 				StopFire();
 				Event = 25;
@@ -414,10 +414,10 @@ __myevic__ void ReadAtoTemp()
 			if ( (AtoStatus == 4 || !AtoStatus || AtoStatus == 3)
 					&& AtoRezMilli >= 50
 					&& AtoRezMilli <= 3500
-					&& (Flags64 & 0x100 || AtoProbeCount <= 10u) )
+					&& (gFlags.firing || AtoProbeCount <= 10) )
 			{
 				AtoStatus = 4;
-				if ( Flags64 & 0x100 ) GetAtoTemp();
+				if ( gFlags.firing ) GetAtoTemp();
 			}
 		}
 	}
@@ -428,8 +428,8 @@ __myevic__ void ReadAtoTemp()
 //----- (00002CD8) --------------------------------------------------------
 __myevic__ void RegulateBuckBoost()
 {
-	if ( ( (Flags64 & 0x100) && CheckBattery() )
-		|| ( !(Flags64 & 0x2000) && !(Flags64 & 0x100) ) )
+	if ( ( (gFlags.firing) && CheckBattery() )
+		|| ( !(gFlags.probing_ato) && !(gFlags.firing) ) )
 	{
 		return;
 	}
@@ -508,7 +508,7 @@ __myevic__ void RegulateBuckBoost()
 				}
 
 				if (	( AtoStatus == 0 || AtoStatus == 1 )
-					||	( !(Flags64 & 0x100) && AtoProbeCount >= 12 ) )
+					||	( !(gFlags.firing) && AtoProbeCount >= 12 ) )
 				{
 					if ( BuckDuty >= 45 ) BuckDuty = 45;
 				}
@@ -572,7 +572,7 @@ __myevic__ void ReachTargetVoltage()
 
 	do
 	{
-		if ( !(Flags64 & 0x2000) && !(Flags64 & 0x100) )
+		if ( !(gFlags.probing_ato) && !(gFlags.firing) )
 			break;
 
 		RegulateBuckBoost();
@@ -581,7 +581,7 @@ __myevic__ void ReachTargetVoltage()
 		if ( AtoVolts == TargetVolts )
 			break;
 
-		if ((AtoStatus == 0 || AtoStatus == 1 || (!(Flags64 & 0x100) && AtoProbeCount >= 12))
+		if ((AtoStatus == 0 || AtoStatus == 1 || (!(gFlags.firing) && AtoProbeCount >= 12))
 			&& BuckDuty >= 45 )
 		{
 			break;
@@ -598,11 +598,11 @@ __myevic__ void ReachTargetVoltage()
 //----- (000031DC) --------------------------------------------------------
 __myevic__ uint16_t AtoPower( uint16_t volts )
 {
-	unsigned long result; // r0@1
+	uint32_t pwr;
 
-	result = volts * volts / AtoRezMilli;
-	if ( !result ) result = 1;
-	return (uint16_t)result;
+	pwr = volts * volts / AtoRezMilli;
+	if ( !pwr ) pwr = 1;
+	return (uint16_t)pwr;
 }
 
 
@@ -653,9 +653,9 @@ __myevic__ void TweakTargetVoltsTC()
 	{
 		pwr = dfTCPower;
 
-		if ( pwr < 10u ) pwr = 10;
+		if ( pwr < 10 ) pwr = 10;
 
-		if ( Flags64 & 0x800000 )
+		if ( gFlags.check_mode )
 		{
 			if ( pwr > 400 ) pwr = 400;
 			if ( pwr < 300 ) pwr = 300;
@@ -667,7 +667,7 @@ __myevic__ void TweakTargetVoltsTC()
 
 		volts = GetVoltsForPower( pwr );
 
-		if ( Flags64 & 0x800000 )
+		if ( gFlags.check_mode )
 		{
 			TargetVolts = volts;
 			return;
@@ -675,20 +675,20 @@ __myevic__ void TweakTargetVoltsTC()
 
 		temp = ( dfIsCelsius == 1 ) ? CelsiusToF( dfTemp ) : dfTemp;
 
-		if ( Flags64 & 0x400000 )
+		if ( gFlags.decrease_voltage )
 		{
 			if ( TargetVolts ) --TargetVolts;
 		}
 		else if ( AtoTemp < temp )
 		{
 			++TargetVolts;
-			Flags64 &= ~0x4000000;
+			gFlags.limit_ato_temp = 0;
 		}
 		else if ( AtoTemp > temp )
 		{
-			if ( Flags64 & 0x4000000 )
+			if ( gFlags.limit_ato_temp )
 			{
-				Flags64 &= ~0x4000000;
+				gFlags.limit_ato_temp = 0;
 				TargetVolts = 0;
 				PC3 = 0;
 				PC1 = 0;
@@ -723,8 +723,8 @@ __myevic__ void SetMinMaxPower()
 	{
 		u = 25 * AtoRez;
 		if ( u > MaxVWVolts ) u = MaxVWVolts;
-		AtoMaxPower = (( u * u ) / AtoRez + 5 ) / 10u;
-		AtoMinPower = 2500u / AtoRez / 10;
+		AtoMaxPower = (( u * u ) / AtoRez + 5 ) / 10;
+		AtoMinPower = 2500 / AtoRez / 10;
 		ClampPowers();
 	}
 }
@@ -878,11 +878,11 @@ __myevic__ void ProbeAtomizer()
 	SetADCState( 2, 1 );
 	WaitOnTMR2( 2 );
 
-	if (( AtoProbeCount == 8 ) || ( Flags64 & 0x100 ))
+	if (( AtoProbeCount == 8 ) || ( gFlags.firing ))
 	{
-		if ( Flags64 & 0x100 )
+		if ( gFlags.firing )
 		{
-			Flags64 |= 0x4000000;
+			gFlags.limit_ato_temp = 1;
 		}
 		TargetVolts = GetVoltsForPower( 50 );
 		if ( !TargetVolts ) TargetVolts = 100;
@@ -902,13 +902,13 @@ __myevic__ void ProbeAtomizer()
 
 	if ( TargetVolts > 600 ) TargetVolts = 600;
 
-	Flags64 |= 0x2000;
+	gFlags.probing_ato = 1;
 	ReachTargetVoltage();
 	WaitOnTMR2(2);
 	ReadAtoTemp();
-	Flags64 &= ~0x2000;
+	gFlags.probing_ato = 0;
 
-	if ( !(Flags64 & 0x100) )
+	if ( !(gFlags.firing) )
 	{
 		PC1 = 0;
 		PC3 = 0;
@@ -972,7 +972,7 @@ __myevic__ void ProbeAtomizer()
 		word_200000B6 = AtoRez;
 		byte_20000082 = AtoError;
 		SetAtoLimits();
-		Flags64 |= 0x20000;
+		gFlags.refresh_display = 1;
 		ScreenDuration = 30;
 	}
 
@@ -990,8 +990,11 @@ __myevic__ void ProbeAtomizer()
 				UpdateDFTimer = 50;
 			}
 		}
-		Flags64 |= 0x98800000;
-		Flags68 |= 2;
+		gFlags.check_rez_ss = 1;
+		gFlags.check_rez_ni = 1;
+		gFlags.check_rez_ti = 1;
+		gFlags.check_mode = 1;
+		gFlags.check_rez_tcr = 1;
 	}
 }
 
@@ -1061,10 +1064,10 @@ __myevic__ void ReadBoardTemp()
 	{
 		BTempSampleSum += ADC_Read( 14 );
 		++BTempSampleCnt;
-		if ( !(Flags64 & 0x10000) )
+		if ( !(gFlags.sample_btemp) )
 		return;
 	}
-	Flags64 &= ~0x10000u;
+	gFlags.sample_btemp = 0;
 
 	sample = BTempSampleSum >> 4;
 
@@ -1111,7 +1114,7 @@ __myevic__ void ReadBoardTemp()
 __myevic__ void Overtemp()
 {
 	StopFire();
-	Flags64 |= 0x20000;
+	gFlags.refresh_display = 1;
 	Screen = 29;
 	ScreenDuration = 2;
 	KeyPressTime |= 0x8000;

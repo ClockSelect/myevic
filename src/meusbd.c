@@ -610,7 +610,7 @@ __myevic__ uint32_t hidResetParamCmd( CMD_T *pCmd )
 	myprintf("Reset param\n");
 	ResetDataFlash();
 	UpdateDataFlash();
-	Flags64 |= 0x20000u;
+	gFlags.refresh_display = 1;
 	pCmd->u8Cmd = 0;
 	return 0;
 }
@@ -876,7 +876,7 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 					DFCheckValuesValidity();
 					UpdateDataFlash();
 
-					Flags64 |= 0x20000u;
+					gFlags.refresh_display = 1;
 				}
 				else
 				{

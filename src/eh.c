@@ -53,17 +53,17 @@ __myevic__ void EventHandler()
 
 		case 20:	// ?
 		case 21:	// ?
-			Flags64 |= 0x20000;
+			gFlags.refresh_display = 1;
 			return;
 
 		case 1:		// Fire
 		{
-			if ( dfStatus & 1 )
+			if ( dfStatus.off )
 			{
 				if ( Screen == 59 )
 				{
-					Flags68 ^= 1;
-					Flags64 |= 0x20000u;
+					gFlags.edit_tcr_value ^= 1;
+					gFlags.refresh_display = 1;
 					ScreenDuration = 10;
 				}
 				return;
@@ -82,14 +82,14 @@ __myevic__ void EventHandler()
 			{
 				UpdateDataFlash();
 
-				if ( dfFBSpeed > 2u )
+				if ( dfFBSpeed > 2 )
 					return;
 
-				if ( !( Flags68 & 0x200 ) )
+				if ( !( gFlags.playing_fb ) )
 				{
-					Flags68 |= 0x200;
+					gFlags.playing_fb = 1;
 					Screen = 0;
-					Flags64 |= 0x4000;
+					gFlags.user_idle = 1;
 					BatRefreshTmr = 0;
 					SleepTimer = 3000;
 					fbInitTimeouts();
@@ -108,42 +108,42 @@ __myevic__ void EventHandler()
 			if ( EditModeTimer )
 			{
 				EditModeTimer = 0;
-				Flags64 |= 0x40000u;
+				gFlags.draw_edited_item = 1;
 				UpdateDFTimer = 50;
 			}
 
-			Flags68 &= ~0x10u;
+			gFlags.edit_capture_evt = 0;
 
-			if ( Flags64 & 0x100 )
+			if ( gFlags.firing )
 			{
-				KeyPressTime |= 0x8000u;
+				KeyPressTime |= 0x8000;
 				return;
 			}
 
-			if ( Flags64 & 0x200 )
+			if ( gFlags.low_battery )
 			{
-				if ( BatteryVoltage < 330u )
+				if ( BatteryVoltage < 330 )
 				{
-					Flags64 |= 0x20000u;
+					gFlags.refresh_display = 1;
 					Screen = 25;
 					ScreenDuration = 2;
-					KeyPressTime |= 0x8000u;
+					KeyPressTime |= 0x8000;
 					return;
 				}
 				else
 				{
-					Flags64 &= ~0x200u;
+					gFlags.low_battery = 0;
 				}
 			}
 
-			if ( BatteryVoltage <= 310u )
+			if ( BatteryVoltage <= 310 )
 			{
 				Event = 28;
-				Flags64 |= 0x200;
+				gFlags.low_battery = 1;
 				return;
 			}
 
-			if ( BoardTemp >= 70u )
+			if ( BoardTemp >= 70 )
 			{
 				Overtemp();
 				return;
@@ -195,9 +195,9 @@ __myevic__ void EventHandler()
 
 //------------------------------------------------------------------------------
 
-			if ( (Flags64 & 0x10000000) && dfMode == 0 )
+			if ( (gFlags.check_rez_ni) && dfMode == 0 )
 			{
-				Flags64 &= ~0x10000000;
+				gFlags.check_rez_ni = 0;
 
 				if ( !dfRezNI )
 				{
@@ -213,7 +213,7 @@ __myevic__ void EventHandler()
 							&&	dfRezNI + 1 < word_200000C0
 							&&	!dfRezLockedNI )
 						{
-							Flags64 |= 0x10000000;
+							gFlags.check_rez_ni = 1;
 							Event = 32;
 							return;
 						}
@@ -246,9 +246,9 @@ __myevic__ void EventHandler()
 				}
 			}
 
-			if ( (Flags64 & 0x8000000) && dfMode == 1 )
+			if ( (gFlags.check_rez_ti) && dfMode == 1 )
 			{
-				Flags64 &= ~0x8000000;
+				gFlags.check_rez_ti = 0;
 
 				if ( !dfRezTI )
 				{
@@ -264,7 +264,7 @@ __myevic__ void EventHandler()
 							&&	dfRezTI + 1 < word_200000C0
 							&&	!dfRezLockedTI )
 						{
-							Flags64 |= 0x8000000;
+							gFlags.check_rez_ti = 1;
 							Event = 32;
 							return;
 						}
@@ -297,9 +297,9 @@ __myevic__ void EventHandler()
 				}
 			}
 
-			if ( (Flags64 & 0x80000000u) && dfMode == 2 )
+			if ( (gFlags.check_rez_ss) && dfMode == 2 )
 			{
-				Flags64 &= ~0x80000000u;
+				gFlags.check_rez_ss = 0;
 
 				if ( !dfRezSS )
 				{
@@ -315,7 +315,7 @@ __myevic__ void EventHandler()
 							&&	dfRezSS + 1 < word_200000C0
 							&&	!dfRezLockedSS )
 						{
-							Flags64 |= 0x80000000u;
+							gFlags.check_rez_ss = 1;
 							Event = 32;
 							return;
 						}
@@ -347,9 +347,9 @@ __myevic__ void EventHandler()
 				}
 			}
 
-			if ( (Flags68 & 2) && dfMode == 3 )
+			if ( (gFlags.check_rez_tcr) && dfMode == 3 )
 			{
-				Flags68 &= ~2u;
+				gFlags.check_rez_tcr = 0;
 
 				if ( !dfRezTCR )
 				{
@@ -365,7 +365,7 @@ __myevic__ void EventHandler()
 							&&	dfRezTCR + 1 < word_200000C0
 							&&	!dfRezLockedTCR )
 						{
-							Flags68 |= 2;
+							gFlags.check_rez_tcr = 1;
 							Event = 32;
 							return;
 						}
@@ -404,7 +404,7 @@ __myevic__ void EventHandler()
 			GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_OUTPUT );
 			PD7 = 0;
 
-			Flags64 |= 0x100u;
+			gFlags.firing = 1;
 
 			if ( byte_20000048 == 1 ) byte_20000048 = 2;
 
@@ -433,7 +433,7 @@ __myevic__ void EventHandler()
 			{
 				if ( dfResistance <= 150 )
 				{
-					if ( !(Flags64 & 0x800000) )
+					if ( !(gFlags.check_mode) )
 					{
 						if ( dfRezType != 1 )
 						{
@@ -485,10 +485,10 @@ __myevic__ void EventHandler()
 				else
 					TargetVolts = GetVoltsForPower( 300 );
 
-				Flags64 &= ~0x20000000;
+				gFlags.limit_power = 0;
 				if ( pwr > 600 && BatteryVoltage <= 340 )
 				{
-					Flags64 |= 0x20000000;
+					gFlags.limit_power = 1;
 					PowerScale = 60000 / pwr;
 				}
 
@@ -505,9 +505,9 @@ __myevic__ void EventHandler()
 			SetADCState( 1, 1 );
 			SetADCState( 2, 1 );
 			ReachTargetVoltage();
-			if ( !(Flags64 & 0x100) || LastInputs != 1 )
+			if ( !(gFlags.firing) || LastInputs != 1 )
 				StopFire();
-			Flags64 |= 0x20000;
+			gFlags.refresh_display = 1;
 			Screen = 2;
 			ScreenDuration = 1;
 			return;
@@ -521,54 +521,54 @@ __myevic__ void EventHandler()
 //------------------------------------------------------------------------------
 
 		case 41:	// Game menu select
-			if ( dfStatus & 1 )
+			if ( dfStatus.off )
 				return;
-			Flags64 |= 0x20000u;
+			gFlags.refresh_display = 1;
 			Screen = 83;
 			ScreenDuration = 10;
 			return;
 
 		case 40:	// LOGO menu select
-			if ( dfStatus & 1 )
+			if ( dfStatus.off )
 				return;
-			Flags64 |= 0x20000u;
+			gFlags.refresh_display = 1;
 			Screen = 82;
 			ScreenDuration = 10;
 			return;
 
 		case 39:	// TCR Set menu select
-			if ( !(dfStatus & 1) )
+			if ( !(dfStatus.off) )
 				return;
-			Flags68 &= ~1u;
+			gFlags.edit_tcr_value = 0;
 			EditTCRIndex = 0;
-			Flags64 |= 0x20000u;
+			gFlags.refresh_display = 1;
 			Screen = 59;
 			ScreenDuration = 10;
 			return;
 
 		case 38:	// Change interface version (unused)
-			if ( !(dfStatus & 1) )
+			if ( !(dfStatus.off) )
 				return;
 			if ( ++dfUIVersion > 2 ) dfUIVersion = 0;
 			UpdateDataFlash();
-			Flags64 |= 0x20000u;
+			gFlags.refresh_display = 1;
 			Screen = 1;
 			ScreenDuration = 3;
 			return;
 
 		case 34:	// Show battery voltage
-			if ( !(dfStatus & 1) )
+			if ( !(dfStatus.off) )
 				return;
-			Flags64 |= 0x20000u;
+			gFlags.refresh_display = 1;
 			Screen = 54;
 			ScreenDuration = 5;
 			return;
 
 		case 33:	// Ti ON/OFF (unused)
-			if ( !(dfStatus & 1) )
+			if ( !(dfStatus.off) )
 				return;
 			dfTiOn = ( dfTiOn == 0 );
-			Flags64 |= 0x20000u;
+			gFlags.refresh_display = 1;
 			Screen = 41;
 			ScreenDuration = 3;
 			UpdateDFTimer = 50;
@@ -576,60 +576,60 @@ __myevic__ void EventHandler()
 
 		case 32:	// New coil
 			StopFire();
-			Flags64 |= 0x20000u;
+			gFlags.refresh_display = 1;
 			Screen = 51;
 			ScreenDuration = 10;
 			return;
 
 		case 31:	// Show board temperature
-			if ( dfStatus & 1 )
+			if ( dfStatus.off )
 				return;
-			Flags64 |= 0x20000u;
+			gFlags.refresh_display = 1;
 			Screen = 37;
 			ScreenDuration = 5;
 			return;
 
 		case 30:	// Key lock violation
-			if ( dfStatus & 1 )
+			if ( dfStatus.off )
 				return;
-			Flags64 |= 0x20000u;
+			gFlags.refresh_display = 1;
 			Screen = 28;
 			ScreenDuration = 2;
 			return;
 
 		case 29:	// FW Version screen
-			if ( dfStatus & 1 )
+			if ( dfStatus.off )
 				return;
-			Flags64 |= 0x20000u;
+			gFlags.refresh_display = 1;
 			Screen = 50;
 			ScreenDuration = 5;
 			return;
 
 		case 28:	// Battery < 3.1V idle or < 2.8V firing
 			StopFire();
-			KeyPressTime |= 0x8000u;
-			Flags64 |= 0x20000u;
+			KeyPressTime |= 0x8000;
+			gFlags.refresh_display = 1;
 			Screen = 24;
 			ScreenDuration = 2;
 			return;
 
 		case 27:	// Atomizer Low
 			StopFire();
-			Flags64 |= 0x20000u;
+			gFlags.refresh_display = 1;
 			Screen = 22;
 			ScreenDuration = 1;
-			KeyPressTime |= 0x8000u;
+			KeyPressTime |= 0x8000;
 			return;
 
 		case 26:	// No Atomizer Found
 			StopFire();
-			Flags64 |= 0x20000u;
+			gFlags.refresh_display = 1;
 			Screen = 20;
 			ScreenDuration = 1;
 			return;
 
 		case 25:	// Atomizer short
-			Flags64 |= 0x20000u;
+			gFlags.refresh_display = 1;
 			Screen = 21;
 			ScreenDuration = 1;
 			return;
@@ -638,7 +638,7 @@ __myevic__ void EventHandler()
 			StopFire();
 			if ( AtoError )
 				return;
-			Flags64 |= 0x20000u;
+			gFlags.refresh_display = 1;
 			Screen = 23;
 			ScreenDuration = 2;
 			return;
@@ -647,45 +647,47 @@ __myevic__ void EventHandler()
 			dfTimeCount = 0;
 			UpdatePTTimer = 80;
 			EditModeTimer = 0;
-			Flags64 |= 0x60000u;
+			gFlags.refresh_display = 1;
+			gFlags.draw_edited_item = 1;
 			return;
 
 		case 22:	// Reset Puff counter
 			dfPuffCount = 0;
 			UpdatePTTimer = 80;
 			EditModeTimer = 0;
-			Flags64 |= 0x60000u;
+			gFlags.refresh_display = 1;
+			gFlags.draw_edited_item = 1;
 			return;
 
 		case 18:	// Flip display
-			if ( !(dfStatus & 1) )
+			if ( !(dfStatus.off) )
 				return;
-			dfStatus ^= 4;
+			dfStatus.flipped ^= 1;
 			InitDisplay();
-			Flags64 |= 0x20000u;
+			gFlags.refresh_display = 1;
 			Screen = 1;
 			ScreenDuration = 2;
 			UpdateDataFlash();
 			return;
 
 		case 17:	// Switch On/Off
-			if ( Flags64 & 0x100 )
+			if ( gFlags.firing )
 				return;
-			if ( dfStatus & 1 )
+			if ( dfStatus.off )
 			{
-				Flags64 |= 0x8000u;
+				gFlags.sample_vbat = 1;
 				ReadBatteryVoltage();
-				if ( BatteryVoltage > 300u || Flags64 & 0x400 )
+				if ( BatteryVoltage > 300 || gFlags.usb_attached )
 				{
-					dfStatus &= ~1u;
+					dfStatus.off = 0;
 					MainView();
 				}
 			}
 			else
 			{
-				dfStatus |= 1u;
-				Flags64 |= 0x20000u;
-				if ( Flags64 & 0x1000 )
+				dfStatus.off = 1;
+				gFlags.refresh_display = 1;
+				if ( gFlags.battery_charging )
 				{
 					Screen = 5;
 					BatAnimLevel = BatteryTenth;
@@ -699,32 +701,32 @@ __myevic__ void EventHandler()
 			return;
 
 		case 16:	// Edit mode
-			if ( dfStatus & 1 )
+			if ( dfStatus.off )
 				return;
-			Flags64 |= 0x40000u;
+			gFlags.draw_edited_item = 1;
 			EditItemIndex = 0;
 			EditModeTimer = 1000;
 			MainView();
 			return;
 
 		case 15:	// Single Fire click
-			if ( dfStatus & 1 || Flags64 & 0x100 )
+			if ( dfStatus.off || gFlags.firing )
 				return;
 			if ( Screen == 82 )
 				UpdateDataFlash();
 			if ( Screen == 83 )
 				UpdateDataFlash();
-			if ( Flags64 & 0x800 )
+			if ( gFlags.refresh_battery )
 			{
-				Flags64 &= ~0x800;
-				Flags64 |= 0x8000;
+				gFlags.refresh_battery = 0;
+				gFlags.sample_vbat = 1;
 				ReadBatteryVoltage();
 			}
 			if ( EditModeTimer )
 			{
 				EditModeTimer = 0;
-				Flags68 &= ~0x10;
-				Flags64 |= 0x40000;
+				gFlags.edit_capture_evt = 0;
+				gFlags.draw_edited_item = 1;
 				UpdateDFTimer = 50;
 			}
 			MainView();
@@ -734,19 +736,20 @@ __myevic__ void EventHandler()
 		case 13:	// Battery removed
 			if ( Screen == 5 || Screen == 4 )
 			{
-				Flags64 |= 0x20000u;
+				gFlags.refresh_display = 1;
 				Screen = 0;
-				if ( dfStatus & 1 )
+				if ( dfStatus.off )
 					SleepTimer = 0;
 				else
 					SleepTimer = 18000;
 			}
-			Flags64 &= ~0x1000;
+			gFlags.battery_charging = 0;
 			return;
 
 		case 12:	// Battery inserted
-			Flags64 |= 0x21000u;
-			if ( dfStatus & 1 )
+			gFlags.battery_charging = 1;
+			gFlags.refresh_display = 1;
+			if ( dfStatus.off )
 			{
 				Screen = 5;
 				BatAnimLevel = BatteryTenth;
@@ -758,12 +761,13 @@ __myevic__ void EventHandler()
 			return;
 
 		case 11:	// USB cable detach
-			Flags64 &= ~0x1400;
+			gFlags.usb_attached = 0;
+			gFlags.battery_charging = 0;
 			if ( Screen == 5 )
 			{
-				if ( dfStatus & 1 )
+				if ( dfStatus.off )
 				{
-					Flags64 |= 0x20000;
+					gFlags.refresh_display = 1;
 					Screen = 0;
 					return;
 				}
@@ -777,31 +781,31 @@ __myevic__ void EventHandler()
 
 
 		case 10:	// USB cable attach
-			Flags64 &= ~0x200;
-			Flags64 |= 0x400;
-			if ( !(dfStatus & 1) )
+			gFlags.low_battery = 0;
+			gFlags.usb_attached = 1;
+			if ( !(dfStatus.off) )
 				MainView();
 			return;
 
 		case 6:		// Stealth On/Off
-			if ( dfStatus & 1 )
+			if ( dfStatus.off )
 				return;
 			dfStealthOn = ( dfStealthOn == 0 );
-			Flags64 |= 0x20000u;
+			gFlags.refresh_display = 1;
 			Screen = 40;
 			ScreenDuration = 3;
 			return;
 
 		case 4:		// Key (Un)Lock
-			if ( dfStatus & 1 )
+			if ( dfStatus.off )
 				return;
-			dfStatus ^= 2;
-			if ( dfStatus & 2 )
+			dfStatus.keylock ^= 1;
+			if ( dfStatus.keylock )
 				Screen = 28;
 			else
 				Screen = 31;
 			ScreenDuration = 2;
-			Flags64 |= 0x20000u;
+			gFlags.refresh_display = 1;
 			UpdateDFTimer = 50;
 			return;
 
@@ -809,11 +813,11 @@ __myevic__ void EventHandler()
 
 		case 3:		// - (minus or left) button
 		{
-			if ( dfStatus & 1 )
+			if ( dfStatus.off )
 			{
 				if ( Screen == 59 )
 				{
-					if ( Flags68 & 1 )
+					if ( gFlags.edit_tcr_value )
 					{
 						if ( EditTCRIndex >= 3 ) EditTCRIndex = 0;
 
@@ -833,11 +837,11 @@ __myevic__ void EventHandler()
 			}
 			else if ( Screen == 82 )
 			{
-				dfStatus ^= 8;
+				dfStatus.nologo ^= 1;
 			}
 			else if ( Screen == 83 )
 			{
-				if ( ++dfFBSpeed > 3u ) dfFBSpeed = 0;
+				if ( ++dfFBSpeed > 3 ) dfFBSpeed = 0;
 			}
 			else if ( Screen == 51 )
 			{
@@ -845,19 +849,19 @@ __myevic__ void EventHandler()
 				{
 					case 0:
 						dfResistance = dfRezNI;
-						Flags64 &= ~0x10000000;
+						gFlags.check_rez_ni = 0;
 						break;
 					case 1:
 						dfResistance = dfRezTI;
-						Flags64 &= ~0x8000000;
+						gFlags.check_rez_ti = 0;
 						break;
 					case 2:
 						dfResistance = dfRezSS;
-						Flags64 &= ~0x80000000;
+						gFlags.check_rez_ss = 0;
 						break;
 					case 3:
 						dfResistance = dfRezTCR;
-						Flags68 &= ~0x2;
+						gFlags.check_rez_tcr = 0;
 						break;
 					default:
 						break;
@@ -873,21 +877,21 @@ __myevic__ void EventHandler()
 				{
 					EditModeTimer = 1000;
 
-					if ( EditItemIndex == 2 && Flags68 & 0x10 )
+					if ( EditItemIndex == 2 && gFlags.edit_capture_evt )
 					{
-						if ( dfTCPower <= 10u )
+						if ( dfTCPower <= 10 )
 						{
 							dfTCPower = MaxTCPower;
 						}
-						else if ( word_20000054 < 105u )
+						else if ( word_20000054 < 105 )
 						{
 							--dfTCPower;
 						}
 						else
 						{
-							if ( dfTCPower % 10u )
+							if ( dfTCPower % 10 )
 							{
-								dfTCPower -= dfTCPower % 10u;
+								dfTCPower -= dfTCPower % 10;
 							}
 							else
 							{
@@ -915,7 +919,7 @@ __myevic__ void EventHandler()
 					}
 					else
 					{
-						if ( ++EditItemIndex > 4u )
+						if ( ++EditItemIndex > 4 )
 							EditItemIndex = 0;
 					}
 				}
@@ -973,14 +977,14 @@ __myevic__ void EventHandler()
 					}
 					else if ( dfMode == 4 )
 					{
-						if ( word_20000054 < 105u )
+						if ( word_20000054 < 105 )
 						{
 							if ( dfPower ) --dfPower;
 						}
 						else
 						{
-							if ( dfPower % 10u )
-								dfPower -= dfPower % 10u;
+							if ( dfPower % 10 )
+								dfPower -= dfPower % 10;
 							else
 								if ( dfPower >= 10 ) dfPower -= 10;
 						}
@@ -995,14 +999,14 @@ __myevic__ void EventHandler()
 	            MainView();
 	            if ( word_20000054 >= 5 )
 	            {
-					Flags64 |= 0x40000u;
+					gFlags.draw_edited_item = 1;
 	                DrawScreen();
 	            }
 	            UpdateDFTimer = 50;
 	            return;
 			}
 
-			Flags64 |= 0x20000u;
+			gFlags.refresh_display = 1;
 			ScreenDuration = 10;
 			return;
 		}
@@ -1011,13 +1015,13 @@ __myevic__ void EventHandler()
 
 		case 2:		// + (plus or right) button
 		{
-			if ( dfStatus & 1 )
+			if ( dfStatus.off )
 			{
 				if ( Screen == 59 )
 				{
-					if ( Flags68 & 0x1 )
+					if ( gFlags.edit_tcr_value )
 					{
-						if ( EditTCRIndex > 2u ) EditTCRIndex = 0;
+						if ( EditTCRIndex > 2 ) EditTCRIndex = 0;
 
 						if ( dfTCRM[EditTCRIndex] < 999 )
 						{
@@ -1027,13 +1031,13 @@ __myevic__ void EventHandler()
 					else
 					{
 						++EditTCRIndex;
-						if ( ( EditTCRIndex ) > 2u ) EditTCRIndex = 0;
+						if ( ( EditTCRIndex ) > 2 ) EditTCRIndex = 0;
 					}
-					Flags64 |= 0x20000u;
+					gFlags.refresh_display = 1;
 					ScreenDuration = 10;
 				}
 			}
-			else if (( Screen >= 80 ) && ( Screen < 100u ))
+			else if (( Screen >= 80 ) && ( Screen < 100 ))
 			{
 				if ( ++MenuPage > 2 )
 				{
@@ -1055,19 +1059,19 @@ __myevic__ void EventHandler()
 				{
 					case 0:
 						dfRezNI = word_200000C0;
-						Flags64 &= ~0x10000000;
+						gFlags.check_rez_ni = 0;
 						break;
 					case 1:
 						dfRezTI = word_200000C0;
-						Flags64 &= ~0x8000000;
+						gFlags.check_rez_ti = 0;
 						break;
 					case 2:
 						dfRezSS = word_200000C0;
-						Flags64 &= ~0x80000000;
+						gFlags.check_rez_ss = 0;
 						break;
 					case 3:
 						dfRezTCR = word_200000C0;
-						Flags68 &= ~0x2;
+						gFlags.check_rez_tcr = 0;
 						break;
 					default:
 						break;
@@ -1091,13 +1095,13 @@ __myevic__ void EventHandler()
 						case 1:
 							if ( dfMode == 3 )
 							{
-								if ( ++dfTCRIndex >= 3u )
+								if ( ++dfTCRIndex >= 3 )
 									dfTCRIndex = 0;
 							}
 							else if ( dfMode == 0 || dfMode == 1 || dfMode == 2 )
 							{
 								++dfLastTCMode;
-								if ( dfLastTCMode > 2u )
+								if ( dfLastTCMode > 2 )
 									dfLastTCMode = 0;
 								dfMode = dfLastTCMode;
 								ModeChange();
@@ -1109,19 +1113,19 @@ __myevic__ void EventHandler()
 							{
 								dfTCPower = 10;
 							}
-							else if ( word_20000054 < 105u )
+							else if ( word_20000054 < 105 )
 							{
 								++dfTCPower;
 							}
 							else
 							{
-								if ( dfTCPower % 10u )
+								if ( dfTCPower % 10 )
 								{
-									dfTCPower -= dfTCPower % 10u;
+									dfTCPower -= dfTCPower % 10;
 								}
 								dfTCPower += 10;
 							}
-							Flags68 |= 0x10u;
+							gFlags.edit_capture_evt = 1;
 							break;
 
 						case 3:
@@ -1167,14 +1171,14 @@ __myevic__ void EventHandler()
 							break;
 
 						case 4:
-							if ( word_20000054 < 105u )
+							if ( word_20000054 < 105 )
 							{
 								v43 = dfPower + 1;
 							}
 							else
 							{
-								if ( dfPower % 10u )
-									dfPower = 10 * (dfPower / 10u);
+								if ( dfPower % 10 )
+									dfPower = 10 * (dfPower / 10);
 								v43 = dfPower + 10;
 							}
 							dfPower = v43;
@@ -1184,7 +1188,7 @@ __myevic__ void EventHandler()
 							break;
 
 						case 6:
-							if ( ConfigIndex < 10u && !AtoError && AtoRez )
+							if ( ConfigIndex < 10 && !AtoError && AtoRez )
 							{
 								v45 = dfSavedCfgPwr[ConfigIndex];
 								if ( v45 % 10 )
@@ -1212,7 +1216,7 @@ __myevic__ void EventHandler()
 	            MainView();
 	            if ( word_20000054 >= 5 )
 	            {
-					Flags64 |= 0x40000u;
+					gFlags.draw_edited_item = 1;
 	                DrawScreen();
 	            }
 	            UpdateDFTimer = 50;

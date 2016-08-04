@@ -16,7 +16,7 @@ __myevic__ void SSD1306_Refresh()
 	{
 		DisplaySendCommand( 0xB0 + l );
 		DisplaySendCommand( 0 );
-		DisplaySendCommand( ( dfStatus & 4 ) ? 0x12 : 0x10 );
+		DisplaySendCommand( ( dfStatus.flipped ) ? 0x12 : 0x10 );
 		DisplaySendData( sb, 0x40 );
 		sb += 0x40;
 	}
@@ -107,7 +107,7 @@ __myevic__ void SSD1306_Init()
 		DisplaySendCommand( SSD1306_InitSeq[i] );
 	}
 
-	if ( dfStatus & 4 )
+	if ( dfStatus.flipped )
 	{
 		DisplaySendCommand( 0xC0 );
 		DisplaySendCommand( 0xD3 );

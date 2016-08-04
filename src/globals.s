@@ -7,8 +7,6 @@
 .global BatReadTimer
 .global BatAnimTimer
 
-.global Flags64
-.global Flags68
 .global SleepTimer
 
 .global ADC00_IRQ_Flag

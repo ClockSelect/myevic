@@ -20,7 +20,7 @@ __myevic__ void MainView()
 	{
 		HideLogo = 3;
 	}
-	Flags64 |= 0x20000;
+	gFlags.refresh_display = 1;
 	Screen = 1;
 	ScreenDuration = 30;
 }
@@ -136,7 +136,9 @@ __myevic__ void DrawCoilLine( int line )
 	{
 		if ( !EditModeTimer || EditItemIndex != 3 )
 		{
-			DrawHexLong( 0, line, Flags64, 1 );
+			uint32_t flags;
+			MemCpy( &flags, (void*)&gFlags, sizeof( uint32_t ) );
+			DrawHexLong( 0, line, flags, 1 );
 			return;
 		}
 	}
@@ -146,9 +148,9 @@ __myevic__ void DrawCoilLine( int line )
 
 	DrawString( String_COIL_s, 0, line+2 );
 
-	if ( Flags64 & 0x100 )
+	if ( gFlags.firing )
 	{
-		rez = AtoRezMilli / 10u;
+		rez = AtoRezMilli / 10;
 	}
 	else if ( ISMODETC(dfMode) )
 	{
@@ -200,7 +202,7 @@ __myevic__ void DrawAPTLine( int line )
 		default:
 		{
 			DrawString( String_AMP_s, 0, line+2 );
-			DrawValue( 27, line, ( Flags64 & 0x100 ) ? AtoCurrent : 0, 1, 0x1F, 3 );
+			DrawValue( 27, line, ( gFlags.firing ) ? AtoCurrent : 0, 1, 0x1F, 3 );
 			DrawImage( 56, line+2, 0x9C );
 			break;
 		}
@@ -222,7 +224,7 @@ __myevic__ void DrawAPTLine( int line )
 		case 3:
 		{
 			DrawString( String_BATT_s, 0, line+2 );
-			DrawValue( 27, line, ((Flags64&0x100)&&RTBatVolts)?RTBatVolts:BatteryVoltage, 2, 0x1F, 3 );
+			DrawValue( 27, line, ((gFlags.firing)&&RTBatVolts)?RTBatVolts:BatteryVoltage, 2, 0x1F, 3 );
 			DrawImage( 57, line+2, 0x97 );
 			break;
 		}
@@ -230,7 +232,7 @@ __myevic__ void DrawAPTLine( int line )
 		case 4:
 		{
 			DrawString( String_VOUT_s, 0, line+2 );
-			DrawValue( 27, line, (Flags64&0x100)?AtoVolts:0, 2, 0x1F, 3 );
+			DrawValue( 27, line, (gFlags.firing)?AtoVolts:0, 2, 0x1F, 3 );
 			DrawImage( 57, line+2, 0x97 );
 			break;
 		}
@@ -360,7 +362,7 @@ __myevic__ void ShowMainView()
 
 	if ( dfMode == 5 )
 	{
-		if ( Flags64 & 0x100 )
+		if ( gFlags.firing )
 		{
 			pwr = AtoPower( AtoVolts );
 		}
@@ -427,7 +429,7 @@ __myevic__ void ShowMainView()
 
 	if ( dfMode == 5 )
 	{
-		if ( Flags64 & 0x100 )
+		if ( gFlags.firing )
 		{
 			DrawValue( 0, 13, AtoVolts, 2, 0x48, 3 );
 			DrawImage( 54, 26, 0x97 );
@@ -487,11 +489,11 @@ __myevic__ void ShowMainView()
 		}
 		else
 		{
-			v20 = STARTPowers[ 2 * v15 + 1 ] / (MaxPower / 15u);
+			v20 = STARTPowers[ 2 * v15 + 1 ] / (MaxPower / 15);
 			v17 = 99 - 5 * v20;
 			for ( j = 0; ; ++j )
 			{
-				v19 = dfSavedCfgPwr[(int)ConfigIndex] / (MaxPower / 15u);
+				v19 = dfSavedCfgPwr[(int)ConfigIndex] / (MaxPower / 15);
 				if ( v19 <= j )
 					break;
 				if ( v19 >= v20 && v20 - 1 <= j )
@@ -508,14 +510,14 @@ __myevic__ void ShowMainView()
 
 		if ( !ShowWeakBatFlag )
 		{
-			if ( !( Flags64 & 0x100 ) )
+			if ( !( gFlags.firing ) )
 			{
 				if ( !PD2 || !PD3 )
 				{
 					v26 = dfSavedCfgPwr[(int)ConfigIndex];
 					if ( v26 >= 1000 )
 					{
-						v26 /= 10u;
+						v26 /= 10;
 						v27 = 0;
 					}
 					else

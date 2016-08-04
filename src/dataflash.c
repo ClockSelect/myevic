@@ -139,7 +139,10 @@ __myevic__ void ResetDataFlash()
 	dfFBSpeed = 0;
 	CpyTmpCoefsNI();
 	CpyTmpCoefsTI();
-	dfStatus = 0;
+	dfStatus.off = 0;
+	dfStatus.keylock = 0;
+	dfStatus.flipped = 0;
+	dfStatus.nologo = 0;
 	MemClear( dfSavedCfgRez, sizeof(dfSavedCfgRez) );
 	MemClear( dfSavedCfgPwr, sizeof(dfSavedCfgPwr) );
 	FMCWriteCounters();
@@ -571,9 +574,9 @@ __myevic__ void InitDataFlash()
 
 	myprintf( "  APROM Version ......................... [%d.%d%d]\n", 3, 0, 3 );
 	myprintf( "  Hardware Version ...................... [%d.%d%d]\n",
-				dfHWVersion / 100u,
-				dfHWVersion / 10u % 10,
-				dfHWVersion % 10u );
+				dfHWVersion / 100,
+				dfHWVersion / 10 % 10,
+				dfHWVersion % 10 );
 
 	if ( dfMagic == 0x36 && CalcPageCRC( DataFlash.params ) == dfCRC )
 	{
@@ -591,7 +594,7 @@ __myevic__ void InitDataFlash()
 		UpdateDataFlash();
 	}
 
-	dfStatus &=  ~1;
+	dfStatus.off = 0;
 	dfUIVersion = 2;
 
 	MemCpy( ParamsBackup, DataFlash.params, DATAFLASH_PARAMS_SIZE );

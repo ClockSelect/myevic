@@ -35,6 +35,15 @@
 // Useless fields may also be recycled.
 //-------------------------------------------------------------------------
 
+typedef struct
+{
+	int	off:1;
+	int	keylock:1;
+	int	flipped:1;
+	int	nologo:1;
+}
+dfStatus_t;
+
 typedef struct dfParams
 {
 	uint32_t	PCRC;
@@ -60,7 +69,7 @@ typedef struct dfParams
 	uint16_t	TempCoefsNI[21];
 	uint16_t	TempCoefsTI[21];
 //	2-bytes pad
-	uint32_t	Status;
+	dfStatus_t	Status;
 	uint16_t	AtoRez;
 	uint8_t		AtoStatus;
 //	1-byte pad
@@ -112,7 +121,7 @@ typedef struct
 dfInfos_t;
 
 
-#define ALIGN256(x) (((x)&0xffu)?((x)-((x)&0xffu)+0x100u):(x))
+#define ALIGN256(x) (((x)&0xff)?((x)-((x)&0xff)+0x100):(x))
 
 #define DATAFLASH_PARAMS_SIZE	ALIGN256(sizeof(dfParams_t))
 #define DATAFLASH_INFOS_SIZE	ALIGN256(sizeof(dfInfos_t))

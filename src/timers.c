@@ -15,19 +15,19 @@ volatile uint32_t	TMR3Counter;
 //----- (00007CD4) --------------------------------------------------------
 __myevic__ void InitTimers()
 {
-  TIMER_Open( TIMER0, TIMER_PERIODIC_MODE, 100000u );
+  TIMER_Open( TIMER0, TIMER_PERIODIC_MODE, 100000 );
   TIMER_EnableInt( TIMER0 );
-  TIMER_Open( TIMER1, TIMER_PERIODIC_MODE, 5000u );
+  TIMER_Open( TIMER1, TIMER_PERIODIC_MODE, 5000 );
   TIMER_EnableInt( TIMER1 );
-  TIMER_Open( TIMER2, TIMER_PERIODIC_MODE, 1000u );
+  TIMER_Open( TIMER2, TIMER_PERIODIC_MODE, 1000 );
   TIMER_EnableInt( TIMER2 );
-  TIMER_Open( TIMER3, TIMER_PERIODIC_MODE, 10u );
+  TIMER_Open( TIMER3, TIMER_PERIODIC_MODE, 10 );
   TIMER_EnableInt( TIMER3 );
 
-  NVIC_EnableIRQ(0x20u);
-  NVIC_EnableIRQ(0x21u);
-  NVIC_EnableIRQ(0x22u);
-  NVIC_EnableIRQ(0x23u);
+  NVIC_EnableIRQ( TMR0_IRQn );
+  NVIC_EnableIRQ( TMR1_IRQn );
+  NVIC_EnableIRQ( TMR2_IRQn );
+  NVIC_EnableIRQ( TMR3_IRQn );
 
   TMR3Counter = 0;
   TMR2Counter = 0;
@@ -69,7 +69,7 @@ __myevic__ void TMR1_IRQHandler()
 	{
 		TIMER_ClearIntFlag( TIMER1 );
 
-		Flags64 |= 1;
+		gFlags.tick_5khz = 1;
 		++TMR1Counter;
 	}
 }
@@ -87,18 +87,19 @@ __myevic__ void TMR2_IRQHandler()
 
 		++ClockCorrection;
 
-		Flags64 |= 6;
+		gFlags.tick_1khz = 1;
+		gFlags.tick_us = 1;
 
-		if ( !(++TMR2Counter % 10u) )
+		if ( !(++TMR2Counter % 10) )
 		{
-			Flags64 |= 8;
+			gFlags.tick_100hz = 1;
 		}
 
-		if ( Flags68 & 0x200 )
+		if ( gFlags.playing_fb )
 		{
-			if ( (!(TMR2Counter % 16u) && dfFBSpeed == 0)
-			  || (!(TMR2Counter % 13u) && dfFBSpeed == 1)
-			  || (!(TMR2Counter % 10u) && dfFBSpeed == 2) )
+			if ( (!(TMR2Counter % 16) && dfFBSpeed == 0)
+			  || (!(TMR2Counter % 13) && dfFBSpeed == 1)
+			  || (!(TMR2Counter % 10) && dfFBSpeed == 2) )
 			{
 				fbTickTimeouts();
 			}
@@ -117,16 +118,16 @@ __myevic__ void TMR3_IRQHandler()
 	{
 		TIMER_ClearIntFlag( TIMER3 );
 
-		Flags64 |= 0x10u;
+		gFlags.tick_10hz = 1;
 
 		if ( !(++TMR3Counter & 1) )
-			Flags64 |=  0x20;
+			gFlags.tick_5hz = 1;
 
-		if ( !(TMR3Counter % 5u) )
-			Flags64 |= 0x40u;
+		if ( !(TMR3Counter % 5) )
+			gFlags.tick_2hz = 1;
 
-		if ( !(TMR3Counter % 10u) )
-			Flags68 |= 0x100u;
+		if ( !(TMR3Counter % 10) )
+			gFlags.tick_1hz = 1;
 	}
 }
 
@@ -152,14 +153,15 @@ __myevic__ void TimedItems()
         {
             if ( !(EditModeTimer % 50) )
             {
-                Flags64 ^= 0x40000u;
+                gFlags.draw_edited_item ^= 1;
                 MainView();
             }
         }
         else
         {
-            Flags68 &= ~0x10u;
-            Flags64 |= 0x60000u;
+            gFlags.edit_capture_evt = 0;
+			gFlags.refresh_display = 1;
+			gFlags.draw_edited_item = 1;
             ScreenDuration = 30;
             UpdateDFTimer = 50;
         }
@@ -168,7 +170,7 @@ __myevic__ void TimedItems()
     if ( BatReadTimer )
     {
         if ( !--BatReadTimer )
-            Flags64 |= 0x800u;
+            gFlags.refresh_battery = 1;
     }
 
     if ( FireClickTimer )
@@ -177,13 +179,13 @@ __myevic__ void TimedItems()
             FireClickCount = 0;
     }
 
-    if ( ++BatAnimTimer >= 100u )
+    if ( ++BatAnimTimer >= 100 )
     {
         BatAnimTimer = 0;
 
-        if ( Flags64 & 0x1000 )
+        if ( gFlags.battery_charging )
         {
-            Flags64 ^= 0x200000;
+            gFlags.draw_battery_charging ^= 1;
 
             if ( Screen == 1 || Screen == 3 || Screen == 5 )
             {
@@ -195,25 +197,26 @@ __myevic__ void TimedItems()
                 if ( Screen != 3 && Screen != 1 )
                     ScreenDuration = 30;
 
-                Flags64 |= 0x20000;
+                gFlags.refresh_display = 1;
             }
         }
-        else if ( Flags64 & 0x80000 )
+        else if ( gFlags.battery_10pc )
         {
-            Flags64 ^= 0x100000;
+            gFlags.draw_battery ^= 1;
 
             if ( Screen == 1 )
             {
-                Flags64 |= 0x20000;
+                gFlags.refresh_display = 1;
             }
         }
-        else if ( Flags64 & 0x200000 || Flags64 & 0x100000 )
+        else if ( gFlags.draw_battery_charging || gFlags.draw_battery )
         {
-            Flags64 &= ~0x300000u;
+			gFlags.draw_battery = 1;
+			gFlags.draw_battery_charging = 1;
 
             if ( Screen == 1 || Screen == 3 )
             {
-                Flags64 |= 0x20000;
+                gFlags.refresh_display = 1;
             }
         }
     }
@@ -235,13 +238,13 @@ __myevic__ void ResetWatchDog()
 // Waits R0 ms
 __myevic__ void WaitOnTMR2( int ms )
 {
-	Flags64 &= ~4;
+	gFlags.tick_us = 0;
 	while ( ms )
 	{
-		if ( Flags64 & 4 )
+		if ( gFlags.tick_us )
 		{
 			--ms;
-			Flags64 &= ~4;
+			gFlags.tick_us = 0;
 		}
 		ResetWatchDog();
 	}
