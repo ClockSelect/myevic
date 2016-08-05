@@ -224,16 +224,23 @@ __myevic__ int GetStrCenteredX( const uint16_t str[] )
 //----- (000051F8) --------------------------------------------------------
 __myevic__ void DrawHLine( const int x1, const int y, const int x2, const int color )
 {
-	for ( int i = 0; i <= ( x2 - x1 ); ++i )
+	int inc = ( x1 < x2 ) * 2 - 1;
+
+	for ( int x = x1 ; x != x2 + inc ; x += inc )
 	{
-		if ( DisplayModel == 1 )
-		{
-			SSD1327_Plot( x1 + i, y, color );
-		}
-		else if ( DisplayModel == 0 )
-		{
-			SSD1306_Plot( x1 + i, y, color );
-		}
+		DrawPoint( x, y, color );
+	}
+}
+
+
+//=========================================================================
+__myevic__ void DrawVLine( const int x, const int y1, const int y2, const int color )
+{
+	int inc = ( y1 < y2 ) * 2 - 1;
+
+	for ( int y = y1 ; y != y2 + inc ; y += inc )
+	{
+		DrawPoint( x, y, color );
 	}
 }
 
@@ -517,15 +524,8 @@ __myevic__ void DrawLine( int x1, int y1, int x2, int y2, int color, int thick )
 		e = dx >> 1;
 		while ( x1 != x2 )
 		{
-			DrawPoint( x1, y1, color );
-			if ( h1 )
-			{
-				DrawPoint( x1, y1 - 1, color );
-				if ( h2 )
-				{
-					DrawPoint( x1, y1 + 1, color );
-				}
-			}
+			DrawVLine( x1, y1 - h1, y1 + h2, color );
+
 			x1 += xinc;
 			if (( e -= dy ) <= 0 )
 			{
@@ -533,21 +533,16 @@ __myevic__ void DrawLine( int x1, int y1, int x2, int y2, int color, int thick )
 				e += dx;
 			}
 		}
+
+		DrawVLine( x2, y2 - h1, y2 + h2, color );
 	}
 	else
 	{
 		e = dy >> 1;
 		while ( y1 != y2 )
 		{
-			DrawPoint( x1, y1, color );
-			if ( h1 )
-			{
-				DrawPoint( x1 - 1, y1, color );
-				if ( h2 )
-				{
-					DrawPoint( x1 + 1, y1, color );
-				}
-			}
+			DrawHLine( x1 - h1, y1, x1 + h2, color );
+
 			y1 += yinc;
 			if (( e -= dx ) <= 0 )
 			{
@@ -555,9 +550,9 @@ __myevic__ void DrawLine( int x1, int y1, int x2, int y2, int color, int thick )
 				e += dy;
 			}
 		}
-	}
 
-	DrawPoint( x2, y2, color );
+		DrawHLine( x2 - h1, y2, x2 + h2, color );
+	}
 }
 
 
