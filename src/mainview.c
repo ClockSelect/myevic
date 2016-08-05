@@ -557,6 +557,8 @@ __myevic__ void ShowMainView()
 
 
 //=========================================================================
+// Analog clock
+//-------------------------------------------------------------------------
 __myevic__ void DrawClock( int line )
 {
 	S_RTC_TIME_DATA_T rtd;
@@ -571,7 +573,7 @@ __myevic__ void DrawClock( int line )
 	int32_t m = ( rtd.u32Minute ) * 6;
 	int32_t s = ( rtd.u32Second ) * 6;
 
-	DrawLine( 32, c, 32 + (( sine( h ) * 15 ) >> 16 ), c - (( cosine( h ) * 12 ) >> 16 ), 1, 3 );
-	DrawLine( 32, c, 32 + (( sine( m ) * 21 ) >> 16 ), c - (( cosine( m ) * 20 ) >> 16 ), 1, 2 );
-	DrawLine( 32, c, 32 + (( sine( s ) * 23 ) >> 16 ), c - (( cosine( s ) * 16 ) >> 16 ), 1, 1 );
+	DrawLine( 32, c, 32 + (( sine( h ) * 15 ) >> 16 ), c - (( cosine( h ) * 15 ) >> 16 ), 1, 3 );
+	DrawLine( 32, c, 32 + (( sine( m ) * 21 ) >> 16 ), c - (( cosine( m ) * 21 ) >> 16 ), 1, 2 );
+	DrawLine( 32, c, 32 + (( sine( s ) * 23 ) >> 16 ), c - (( cosine( s ) * 23 ) >> 16 ), 1, 1 );
 }
