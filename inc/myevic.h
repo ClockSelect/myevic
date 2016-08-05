@@ -13,18 +13,6 @@
 
 //=============================================================================
 
-typedef union
-{
-	int8_t c[0x100];
-	uint8_t uc[0x100];
-	int16_t s[0x100/sizeof(int16_t)];
-	uint16_t us[0x100/sizeof(uint16_t)];
-	int32_t l[0x100/sizeof(int32_t)];
-	uint32_t ul[0x100/sizeof(uint32_t)];
-} Playfield_t;
-
-//=============================================================================
-
 typedef struct
 {
 	int	tick_5khz:1;

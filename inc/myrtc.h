@@ -17,7 +17,7 @@
 // "Clk Speed" configuration menu.
 // This value is unused if a X32 is soldered on the board.
 
-#define RTC_DEF_CLK_RATIO 23600
+#define RTC_DEF_CLK_RATIO 23541
 
 //=========================================================================
 // When the RTC is driven by the LIRC, a "second" of the RTC is approx

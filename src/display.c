@@ -478,10 +478,16 @@ __myevic__ void DrawStringCentered( const uint16_t s[], int y )
 
 
 //=========================================================================
-__myevic__ void DrawLine( int x1, int y1, int x2, int y2, int color )
+__myevic__ void DrawLine( int x1, int y1, int x2, int y2, int color, int thick )
 {
 	int dx, dy, e;
 	int xinc, yinc;
+	int h1, h2;
+
+	if ( !thick ) return;
+
+	h1 = thick >> 1;
+	h2 = thick - h1 - 1;
 
 	dx = ( x2 - x1 ) << 1;
 	dy = ( y2 - y1 ) << 1;
@@ -512,6 +518,14 @@ __myevic__ void DrawLine( int x1, int y1, int x2, int y2, int color )
 		while ( x1 != x2 )
 		{
 			DrawPoint( x1, y1, color );
+			if ( h1 )
+			{
+				DrawPoint( x1, y1 - 1, color );
+				if ( h2 )
+				{
+					DrawPoint( x1, y1 + 1, color );
+				}
+			}
 			x1 += xinc;
 			if (( e -= dy ) <= 0 )
 			{
@@ -526,6 +540,14 @@ __myevic__ void DrawLine( int x1, int y1, int x2, int y2, int color )
 		while ( y1 != y2 )
 		{
 			DrawPoint( x1, y1, color );
+			if ( h1 )
+			{
+				DrawPoint( x1 - 1, y1, color );
+				if ( h2 )
+				{
+					DrawPoint( x1 + 1, y1, color );
+				}
+			}
 			y1 += yinc;
 			if (( e -= dx ) <= 0 )
 			{
@@ -543,7 +565,7 @@ __myevic__ void DrawLine( int x1, int y1, int x2, int y2, int color )
 //
 // Algorithme de tracé de cercle d'Andres
 //
-__myevic__ void DrawCircle( int x_centre, int y_centre, int r, int color )
+__myevic__ void DrawCircle( int x_centre, int y_centre, int r, int color, int fill )
 {
 	int x = 0;
 	int y = r;
@@ -551,14 +573,24 @@ __myevic__ void DrawCircle( int x_centre, int y_centre, int r, int color )
 
 	while( y >= x )
 	{
-		DrawPoint( x_centre + x, y_centre + y, color );
-		DrawPoint( x_centre + y, y_centre + x, color );
-		DrawPoint( x_centre - x, y_centre + y, color );
-		DrawPoint( x_centre - y, y_centre + x, color );
-		DrawPoint( x_centre + x, y_centre - y, color );
-		DrawPoint( x_centre + y, y_centre - x, color );
-		DrawPoint( x_centre - x, y_centre - y, color );
-		DrawPoint( x_centre - y, y_centre - x, color );
+		if ( fill )
+		{
+			DrawHLine( x_centre - x, y_centre - y, x_centre + x, color );
+			DrawHLine( x_centre - x, y_centre + y, x_centre + x, color );
+			DrawHLine( x_centre - y, y_centre - x, x_centre + y, color );
+			DrawHLine( x_centre - y, y_centre + x, x_centre + y, color );
+		}
+		else
+		{
+			DrawPoint( x_centre - x, y_centre - y, color );
+			DrawPoint( x_centre + x, y_centre - y, color );
+			DrawPoint( x_centre - x, y_centre + y, color );
+			DrawPoint( x_centre + x, y_centre + y, color );
+			DrawPoint( x_centre - y, y_centre + x, color );
+			DrawPoint( x_centre + y, y_centre + x, color );
+			DrawPoint( x_centre - y, y_centre - x, color );
+			DrawPoint( x_centre + y, y_centre - x, color );
+		}
 
 		if (d >= 2*x)
 		{

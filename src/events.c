@@ -181,6 +181,9 @@ __myevic__ void GetUserInput()
 
 	++KeyPressTime;
 
+	// A keypress must be stable during at least
+	// 60 milliseconds before an event is emitted.
+
 	if ( KeyPressTime == 6 )
 	{
 		gFlags.user_idle = 0;
@@ -621,7 +624,9 @@ __myevic__ int EvtMinusButton()
 
 __myevic__ int EvtDoubleFire()
 {
-	ShowDateFlag = 3;
+//	ShowDateFlag = 3;
+	dfStatus.anaclk ^= 1;
+	UpdateDFTimer = 50;
 	gFlags.refresh_display = 1;
 	return 1;
 }

@@ -48,8 +48,8 @@ extern void DrawValueInv( int x, int y, int v, int dp, uint16_t z, int nd );
 extern void DrawString( const uint16_t s[], int x, int y );
 extern void DrawStringInv( const uint16_t s[], int x, int y );
 extern void DrawStringCentered( const uint16_t s[], int y );
-extern void DrawLine( int x1, int y1, int x2, int y2, int color );
-extern void DrawCircle( int xc, int yc, int r, int color );
+extern void DrawLine( int x1, int y1, int x2, int y2, int color, int thick );
+extern void DrawCircle( int xc, int yc, int r, int color, int fill );
 
 
 extern void SSD1306_Init();

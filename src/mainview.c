@@ -10,7 +10,6 @@
 //=============================================================================
 
 unsigned char	ShowDateFlag = 0;
-unsigned char	AnalogClock = 0;
 
 //=============================================================================
 //----- (00001654) --------------------------------------------------------
@@ -525,6 +524,8 @@ __myevic__ void ShowMainView()
 		DrawHLine( 0, 43, 63, 1 );
 		DrawHLine( 0, 107, 63, 1 );
 
+		ShowBattery();
+
 		if ( Screen == 2 || EditModeTimer )
 		{
 			DrawInfoLines();
@@ -535,17 +536,16 @@ __myevic__ void ShowMainView()
 			{
 				anim3d( 1 );
 			}
-			else if ( AnalogClock )
+			else if ( dfStatus.anaclk )
 			{
-				DrawClock();
+				DrawFillRect( 0, 44, 63, 127, 0 );
+				DrawClock( 54 );
 			}
 			else
 			{
 				DrawInfoLines();
 			}
 		}
-
-		ShowBattery();
 	}
 
 	if ( ShowWeakBatFlag )
@@ -557,19 +557,21 @@ __myevic__ void ShowMainView()
 
 
 //=========================================================================
-__myevic__ void DrawClock()
+__myevic__ void DrawClock( int line )
 {
 	S_RTC_TIME_DATA_T rtd;
 	GetRTC( &rtd );
+	
+	int c = line + 32;
 
-	DrawFillRect( 0, 44, 63, 106, 0 );
-	DrawCircle( 32, 75, 25, 1 );
+	DrawImage( 0, line, 0x104 );
+	DrawCircle( 32, c, 3, 1, 1 );
 
-	int32_t h = ( rtd.u32Hour % 12 ) * 30;
+	int32_t h = ( rtd.u32Hour % 12 ) * 30 + ( rtd.u32Minute >> 1 );
 	int32_t m = ( rtd.u32Minute ) * 6;
 	int32_t s = ( rtd.u32Second ) * 6;
 
-	DrawLine( 32, 75, 32 + (( sine( h ) * 12 ) >> 16 ), 75 - (( cosine( h ) * 12 ) >> 16 ), 1 );
-	DrawLine( 32, 75, 32 + (( sine( m ) * 20 ) >> 16 ), 75 - (( cosine( m ) * 20 ) >> 16 ), 1 );
-	DrawLine( 32, 75, 32 + (( sine( s ) * 16 ) >> 16 ), 75 - (( cosine( s ) * 16 ) >> 16 ), 1 );
+	DrawLine( 32, c, 32 + (( sine( h ) * 15 ) >> 16 ), c - (( cosine( h ) * 12 ) >> 16 ), 1, 3 );
+	DrawLine( 32, c, 32 + (( sine( m ) * 21 ) >> 16 ), c - (( cosine( m ) * 20 ) >> 16 ), 1, 2 );
+	DrawLine( 32, c, 32 + (( sine( s ) * 23 ) >> 16 ), c - (( cosine( s ) * 16 ) >> 16 ), 1, 1 );
 }

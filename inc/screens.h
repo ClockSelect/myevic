@@ -11,7 +11,6 @@ extern uint16_t	ScreenDuration;
 extern uint8_t	Screen;
 
 extern uint8_t ShowDateFlag;
-extern uint8_t AnalogClock;
 
 extern const uint8_t ScrSaveTimes[8];
 

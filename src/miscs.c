@@ -283,6 +283,7 @@ __myevic__ void anim3d( int refresh )
 			points[cube.lines[i].pt1].y + 75,
 			points[cube.lines[i].pt2].x + 32,
 			points[cube.lines[i].pt2].y + 75,
+			1,
 			1
 		);
 	}

@@ -41,6 +41,7 @@ typedef struct
 	int	keylock:1;
 	int	flipped:1;
 	int	nologo:1;
+	int anaclk:1;
 }
 dfStatus_t;
 
@@ -136,6 +137,19 @@ dfInfos_t;
 //	exceed 0x200 bytes. Just be aware.
 // In any case, parameters size should never exceed 0x600 bytes.
 //-------------------------------------------------------------------------
+
+
+//=============================================================================
+
+typedef union
+{
+	int8_t c[0x100];
+	uint8_t uc[0x100];
+	int16_t s[0x100/sizeof(int16_t)];
+	uint16_t us[0x100/sizeof(uint16_t)];
+	int32_t l[0x100/sizeof(int32_t)];
+	uint32_t ul[0x100/sizeof(uint32_t)];
+} Playfield_t;
 
 
 typedef struct dfStruct
