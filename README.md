@@ -1,7 +1,9 @@
 # myevic
+````
 This is My eVic VTC Mini.
 
 Upgraded 3.03 firmware
+
 
 Main Features:
 My custom firmware is more or less identical to the official firmware - Just added some missing features
@@ -62,4 +64,4 @@ Menus:
     Cool 3D spinning cube.
     Come back to this menu and set it to "None" to cancel animation.
     Or reset the box.
-
+```
