@@ -382,6 +382,7 @@ __myevic__ int IsClockOnScreen()
 	return (	Screen == 103
 			||	Screen == 104
 			|| ( dfAPT == 6 && ( Screen == 1 || Screen == 2 ))
+			|| ( Screen == 1 && dfStatus.anaclk )
 			);
 }
 
