@@ -4,6 +4,9 @@ This is My eVic VTC Mini.
 
 Upgraded 3.03 firmware
 
+Usage:
+Unencoded firmware in the bin/ directory
+Use evic-usb to upload it to you box
 
 Main Features:
 My custom firmware is more or less identical to the official firmware - Just added some missing features
