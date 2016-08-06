@@ -17,25 +17,25 @@ Double-click:
 
 Menus:
 
->Screen
-  >Contrast
+-Screen
+  -Contrast
     Self-explanatory
-  >Protection
+  -Protection
     Configure screen saver timing
 
->Coils
+-Coils
   See and/or reset saved coil resistances for each TC mode.
   Click on a resistance to unlock and reset it.
 
->Clock
-  >Date/Time
+-Clock
+  -Date/Time
     Setup date and time.
     Fire change edited field, + and - set value.
-  >Clk Adjust
+   -Clk Adjust
     Adjust clock: for small adjustments to clock time
     + and - adjust clock by seconds. Fire to save. For VTwo owners,
     this option also adjusts the X32 frequency accordingly.
-  >Clk Speed
+  -Clk Speed
     For owners of VTC mini (useless for VTwo owners)
     The VTC mini does not have the needed 32kHz crystal soldered on
     the pcb to regulate the clock speed; so, another internal clock
@@ -47,18 +47,18 @@ Menus:
     internal processor clock speed. Accuracy of a few seconds per
     day can be achieved this way.
 
->Modes
+-Modes
   Configure used/useless modes.
   Click on each menu item to set 'Y' or 'N' if you want to see any
   given mode proposed while cycling between modes in menu mode.
   Typically, you'll set "START" mode to 'N'. Typically.
 
->Miscs
-  >LOGO
+-Miscs
+  -LOGO
     Guenuine menu
-  >Game
+  -Game
     Flappy bird. Guenuine menu.
-  >3D
+  -3D
     Cool 3D spinning cube.
     Come back to this menu and set it to "None" to cancel animation.
     Or reset the box.
