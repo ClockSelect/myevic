@@ -20,6 +20,14 @@ Double-click:
   The clock screen is close to the one viewed on the VTwo box; just better.
   See below to know how to configure clock.
 
+Third info line:
+ The third info line of the main screen, used to display amps, puffs or time counters
+ now have a few more options:
+ - Battery voltage
+ - Atomizer voltage
+ - Board temperature
+ - Real-time clock
+  
 Menus:
 
 -Screen
@@ -39,7 +47,8 @@ Menus:
    -Clk Adjust
     Adjust clock: for small adjustments to clock time
     + and - adjust clock by seconds. Fire to save. For VTwo owners,
-    this option also adjusts the X32 frequency accordingly.
+    this option also adjusts the X32 frequency accordingly if done
+	properly.
   -Clk Speed
     For owners of VTC mini (useless for VTwo owners)
     The VTC mini does not have the needed 32kHz crystal soldered on
