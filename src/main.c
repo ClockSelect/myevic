@@ -393,6 +393,8 @@ __myevic__ void Main()
 			// 2Hz
 			gFlags.tick_2hz = 0;
 
+			gFlags.osc_1hz ^= 1;
+
 			if ( gFlags.firing )
 			{
 				if ( ISMODETC(dfMode) )

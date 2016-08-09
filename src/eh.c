@@ -62,7 +62,7 @@ __myevic__ void EventHandler()
 			{
 				if ( Screen == 59 )
 				{
-					gFlags.edit_tcr_value ^= 1;
+					gFlags.edit_value ^= 1;
 					gFlags.refresh_display = 1;
 					ScreenDuration = 10;
 				}
@@ -80,23 +80,7 @@ __myevic__ void EventHandler()
 
 			if ( Screen == 83 )
 			{
-				UpdateDataFlash();
-
-				if ( dfFBSpeed > 2 )
-					return;
-
-				if ( !( gFlags.playing_fb ) )
-				{
-					gFlags.playing_fb = 1;
-					Screen = 0;
-					gFlags.user_idle = 1;
-					BatRefreshTmr = 0;
-					SleepTimer = 3000;
-					fbInitTimeouts();
-					DisplayRefresh();
-					fbBirdAnim( 24 );
-					fbCreateTimeout( fbStartScreen + 1 );
-				}
+				fbStartGame();
 				return;
 			}
 
@@ -539,7 +523,7 @@ __myevic__ void EventHandler()
 		case 39:	// TCR Set menu select
 			if ( !(dfStatus.off) )
 				return;
-			gFlags.edit_tcr_value = 0;
+			gFlags.edit_value = 0;
 			EditTCRIndex = 0;
 			gFlags.refresh_display = 1;
 			Screen = 59;
@@ -815,7 +799,7 @@ __myevic__ void EventHandler()
 			{
 				if ( Screen == 59 )
 				{
-					if ( gFlags.edit_tcr_value )
+					if ( gFlags.edit_value )
 					{
 						if ( EditTCRIndex >= 3 ) EditTCRIndex = 0;
 
@@ -1017,7 +1001,7 @@ __myevic__ void EventHandler()
 			{
 				if ( Screen == 59 )
 				{
-					if ( gFlags.edit_tcr_value )
+					if ( gFlags.edit_value )
 					{
 						if ( EditTCRIndex > 2 ) EditTCRIndex = 0;
 

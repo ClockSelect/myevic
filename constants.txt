@@ -133,6 +133,8 @@ Screen (200000F6)
 51 New Coil
 54 Battery Voltage
 59 TCR Set Menu
+60 Big Clock
+81 Screen Protec Menu
 82 LOGO Menu
 83 Game Menu
 

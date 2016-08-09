@@ -974,7 +974,7 @@ __myevic__ void ProbeAtomizer()
 		byte_20000082 = AtoError;
 		SetAtoLimits();
 		gFlags.refresh_display = 1;
-		ScreenDuration = 60 * dfScreenSave;
+		ScreenDuration = 30;
 	}
 
 	if ( byte_200000B3 )

@@ -193,8 +193,8 @@ __myevic__ void TimedItems()
 				else
 					BatAnimLevel = BatteryTenth;
 
-				if ( Screen != 1 )
-					ScreenDuration = 60 * dfScreenSave;
+				if ( Screen == 5 )
+					ScreenDuration = 30;
 
 				gFlags.refresh_display = 1;
 			}

@@ -47,6 +47,9 @@ extern void ShowContrast();
 extern void ShowMenus();
 extern void ShowRTCSpeed();
 extern void ShowRTCAdjust();
+extern void ShowScreenSaver();
+
+extern uint16_t GetScreenProtection();
 
 //==============================================================================
 

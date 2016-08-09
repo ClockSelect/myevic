@@ -48,12 +48,12 @@ typedef struct
 	int unused3:1;
 	int check_rez_ss:1;
 
-	int edit_tcr_value:1;
+	int edit_value:1;
 	int check_rez_tcr:1;
 	int unused4:1;
 	int unused5:1;
 	int edit_capture_evt:1;
-	int unused6:1;
+	int osc_1hz:1;
 	int unused7:1;
 	int unused8:1;
 	int	tick_1hz:1;

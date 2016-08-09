@@ -1,5 +1,6 @@
 #include "myevic.h"
 #include "myprintf.h"
+#include "myrtc.h"
 #include "dataflash.h"
 
 
@@ -876,6 +877,20 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 					DFCheckValuesValidity();
 					UpdateDataFlash();
 
+					if ( df->i.Year >= 2000 && df->i.Year <= 2099 )
+					{
+						S_RTC_TIME_DATA_T rtd;
+						rtd.u32Year = df->i.Year;
+						rtd.u32Month = df->i.Month;
+						rtd.u32Day = df->i.Day;
+						rtd.u32DayOfWeek = 0;
+						rtd.u32Hour = df->i.Hour;
+						rtd.u32Minute = df->i.Minute;
+						rtd.u32Second = df->i.Second;
+						rtd.u32TimeScale = RTC_CLOCK_24;
+						SetRTC( &rtd );
+					}
+					
 					gFlags.refresh_display = 1;
 				}
 				else

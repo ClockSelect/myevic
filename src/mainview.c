@@ -21,7 +21,7 @@ __myevic__ void MainView()
 	}
 	gFlags.refresh_display = 1;
 	Screen = 1;
-	ScreenDuration = 60 * dfScreenSave;
+	ScreenDuration = 30;
 }
 
 
@@ -563,7 +563,7 @@ __myevic__ void DrawClock( int line )
 {
 	S_RTC_TIME_DATA_T rtd;
 	GetRTC( &rtd );
-	
+
 	int c = line + 32;
 
 	DrawImage( 0, line, 0x104 );

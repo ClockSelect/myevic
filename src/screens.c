@@ -116,6 +116,10 @@ __myevic__ void DrawScreen()
 				ShowTCRSet();
 				break;
 
+			case 60: // Screen Saver
+				ShowScreenSaver();
+				break;
+				
 			case 82: // LOGO Menu
 				ShowLOGOMenu();
 				break;
@@ -182,6 +186,18 @@ __myevic__ void DrawScreen()
 			{
 				SleepTimer = 0;
 			}
+			else
+			{
+				if (( !gFlags.firing )
+				&&	( !dfStealthOn )
+				&&	( SleepTimer > 0 )
+				&&	( GetScreenProtection() > 0 ))
+				{
+					Screen = 60;
+					ScreenDuration = GetScreenProtection();
+					gFlags.refresh_display = 1;
+				}
+			}
 			break;
 
 		case   2: // Firing
@@ -205,20 +221,17 @@ __myevic__ void DrawScreen()
 			break;
 
 		case   5: // Black w/ Battery
-			break;
-
-		case  20: // No Atomizer Found
-		case  21: // Atomizer Short
-			MainView();
-			break;
-
 		case  22: // Atomizer Low
 		case  23: // 10s Protection
 		case  24: // Battery Low
 		case  25: // Battery Low Lock
+		case  50: // FW Version
 			break;
 
+		case  20: // No Atomizer Found
+		case  21: // Atomizer Short
 		case  29: // Device too hot
+		case  51: // New Coil
 			MainView();
 			break;
 
@@ -239,17 +252,10 @@ __myevic__ void DrawScreen()
 		case  40: // Stealth ON/OFF
 		case  41: // Ti ON/OFF
 		case  54: // Battery Voltage
-		case 100: // Ferox's page
+		case 100: // Infos page
 		case 104: // Adjust Clock
-			if ( !dfScreenSave )
-			{
-				if ( Screen != 1 )
-					MainView();
-				break;
-			}
 			if ( !(gFlags.battery_charging) )
 			{
-				gFlags.refresh_display = 1;
 				Screen = 0;
 				SleepTimer = 18000;
 			}
@@ -257,13 +263,14 @@ __myevic__ void DrawScreen()
 			{
 				Screen = 5;
 			}
+			gFlags.refresh_display = 1;
 			break;
 
-		case  50: // FW Version
-			break;
-
-		case  51: // New Coil
-			MainView();
+		case  60: // Screen Saver
+			Screen = 0;
+			ScreenDuration = 0;
+			SleepTimer = 0;
+			gFlags.refresh_display = 1;
 			break;
 
 		default:
@@ -272,6 +279,14 @@ __myevic__ void DrawScreen()
 
 	return;
 }
+
+//=========================================================================
+
+__myevic__ uint16_t GetScreenProtection()
+{
+	return ( 60 * ScrSaveTimes[dfScreenSave] );
+}
+
 
 //=========================================================================
 
@@ -310,6 +325,7 @@ __myevic__ void ShowInfos()
 {
 	uint16_t strbuf[20];
 
+	// TODO : infos page
 	convert_string1( strbuf, "Ferox" );
 	DrawStringCentered( strbuf, 82 );
 	convert_string1( strbuf, "was" );
@@ -383,6 +399,7 @@ __myevic__ int IsClockOnScreen()
 			||	Screen == 104
 			|| ( dfAPT == 6 && ( Screen == 1 || Screen == 2 ))
 			|| ( Screen == 1 && dfStatus.anaclk )
+			|| ( Screen == 60 )
 			);
 }
 
@@ -576,7 +593,7 @@ __myevic__ void ShowTCRSet()
 	DrawString( String_TCRSet, 7, 6 );
 	DrawHLine( 0, 22, 63, 1 );
 
-	if ( gFlags.edit_tcr_value )
+	if ( gFlags.edit_value )
 	{
 		for ( i = 0 ; i < 3 ; ++i )
 		{
@@ -737,3 +754,11 @@ __myevic__ void ShowRTCAdjust()
 	GetRTC( &rtd );
 	DrawTime( 5, 40, &rtd, 0x1F );
 }
+
+
+//=========================================================================
+__myevic__ void ShowScreenSaver()
+{
+	DrawClock( 54 );
+}
+

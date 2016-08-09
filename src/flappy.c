@@ -1,6 +1,7 @@
 #include "myevic.h"
 #include "dataflash.h"
 #include "display.h"
+#include "screens.h"
 #include "miscs.h"
 #include "timers.h"
 
@@ -679,3 +680,23 @@ __myevic__ void fbStartScreen()
 	}
 }
 
+
+//=========================================================================
+__myevic__ void fbStartGame()
+{
+	UpdateDataFlash();
+	if ( dfFBSpeed <= 2 )
+	{
+		gFlags.playing_fb = 1;
+		Screen = 0;
+		gFlags.user_idle = 1;
+		gFlags.refresh_display = 1;
+		BatRefreshTmr = 0;
+		SleepTimer = 3000;
+		fbInitTimeouts();
+		ClearScreenBuffer();
+		DisplayRefresh();
+		fbBirdAnim( 24 );
+		fbCreateTimeout( fbStartScreen + 1 );
+	}
+}

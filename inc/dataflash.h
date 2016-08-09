@@ -51,7 +51,8 @@ typedef struct dfParams
 	uint32_t	HWVersion;
 	uint8_t		Magic;
 	uint8_t		BootFlag;
-	uint16_t	Mode;
+	uint8_t		Mode;
+//	1-byte pad
 	uint16_t	Power;
 	uint16_t	Temp;
 	uint16_t	TCPower;
@@ -82,8 +83,9 @@ typedef struct dfParams
 	uint16_t	TCRM[3];
 	uint16_t	RezTCR;
 	uint8_t		RezLockedTCR;
+//	1-byte pad
+	uint8_t		LastTCMode;
 	uint8_t		ScreenSave;		//	1-byte pad
-	uint16_t	LastTCMode;
 	uint16_t	SavedCfgRez[10];
 	uint16_t	SavedCfgPwr[10];
 	uint16_t	FBBest;
@@ -108,7 +110,7 @@ dfParams_t;
 typedef struct
 {
 	uint32_t	FWVersion;
-	uint32_t	unk;
+	uint32_t	LDVersion;
 	uint32_t	fmcCID;
 	uint32_t	fmcDID;
 	uint32_t	fmcPID;
@@ -118,6 +120,12 @@ typedef struct
 	uint32_t	TimeCount;
 	uint32_t	ProductID;
 	uint32_t	MaxHWVersion;
+	uint16_t	Year;
+	uint8_t		Month;
+	uint8_t		Day;
+	uint8_t		Hour;
+	uint8_t		Minute;
+	uint8_t		Second;
 }
 dfInfos_t;
 
@@ -241,6 +249,12 @@ extern dfStruct_t DataFlash;
 #define dfTimeCount     DFI(TimeCount)
 #define dfProductID     DFI(ProductID)
 #define dfMaxHWVersion  DFI(MaxHWVersion)
+#define dfYear			DFI(Year)
+#define dfMonth			DFI(Month)
+#define dfDay			DFI(Day)
+#define dfHour			DFI(Hour)
+#define dfMinute		DFI(Minute)
+#define dfSecond		DFI(Second)
 
 #define gPlayfield		DataFlash.playfield
 

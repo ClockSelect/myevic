@@ -41,16 +41,7 @@ unsigned char CurrentMenuItem;
 
 __myevic__ void ScreenSaveMenuOnEnter()
 {
-	for ( int i = 0 ; i < 8 ; ++i )
-	{
-		if ( dfScreenSave == ScrSaveTimes[i] )
-		{
-			CurrentMenuItem = i;
-			return;
-		}
-	}
-	dfScreenSave = ScrSaveTimes[0];
-	UpdateDFTimer = 50;
+	CurrentMenuItem = dfScreenSave;
 }
 
 
@@ -75,7 +66,7 @@ __myevic__ void ScreenSaveMenuIDraw( int it, int line, int sel )
 
 __myevic__ void ScreenSaveMenuOnClick()
 {
-	dfScreenSave = ScrSaveTimes[CurrentMenuItem];
+	dfScreenSave = CurrentMenuItem;
 	UpdateDataFlash();
 	MainView();
 }
@@ -132,21 +123,7 @@ __myevic__ void GameISelect()
 
 __myevic__ void GameIClick()
 {
-	UpdateDataFlash();
-	if ( dfFBSpeed <= 2 )
-	{
-		gFlags.playing_fb = 1;
-		Screen = 0;
-		gFlags.user_idle = 1;
-		gFlags.refresh_display = 1;
-		BatRefreshTmr = 0;
-		SleepTimer = 3000;
-		fbInitTimeouts();
-		ClearScreenBuffer();
-		DisplayRefresh();
-		fbBirdAnim( 24 );
-		fbCreateTimeout( fbStartScreen + 1 );
-	}
+	fbStartGame();
 }
 
 //-----------------------------------------------------------------------------

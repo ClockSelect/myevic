@@ -12,6 +12,7 @@ extern void fbCallTimeouts();
 
 extern void fbStartScreen();
 extern void fbBirdAnim( int );
+extern void fbStartGame();
 
 //=========================================================================
 
