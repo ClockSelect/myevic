@@ -98,7 +98,7 @@ extern uint8_t	BatRefreshTmr;					// .ds.b 1
 extern uint8_t	EditTCRIndex;					// .ds.b 1
 extern uint8_t	BatReadTimer;					// .ds.b 1
 extern uint16_t	EditModeTimer;					// .ds.b 2
-extern uint16_t	KeyTicks;					// .ds.b 2
+extern uint16_t	KeyTicks;						// .ds.b 2
 extern uint16_t	HideLogo;						// .ds.b 2
 extern uint16_t	FireDuration;					// .ds.b 2
 extern uint16_t	KeyPressTime;					// .ds.b 2
@@ -111,7 +111,7 @@ extern uint32_t	AtoMaxPower;					// .ds.b 4
 extern uint32_t	MaxTCPower;						// .ds.b 4
 extern uint32_t	BTempSampleSum;					// .ds.b 4
 extern uint32_t	VbatSampleSum;					// .ds.b 4
-extern uint8_t	KRDelay;					// .ds.b 1
+extern uint8_t	KRDelay;						// .ds.b 1
 extern uint8_t	ShowFDTimer;					// .ds.b 1
 extern uint8_t	byte_20000082;					// .ds.b 1
 extern uint32_t	AtoMinVolts;					// .ds.b 4
@@ -163,8 +163,6 @@ extern void MemSet( void*, const uint32_t, const char );
 
 extern void DrawHexDigit( int x, int y, int v );
 extern void DrawHexLong( int x, int y, int v, int font );
-
-extern uint32_t PutTextf( char *s, ... );
 
 //=============================================================================
 

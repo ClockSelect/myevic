@@ -75,6 +75,18 @@ __myevic__ void NextMode()
 		else
 		{
 			dfMode = dfLastTCMode;
+
+			if ( dfModesSel & ( 1 << dfMode ) )
+			{
+				if (( dfModesSel & 0x07 ) != 0x07 )
+				{
+					do
+					{
+						if ( ++dfMode > 2 ) dfMode = 0;
+					}
+					while ( dfModesSel & ( 1 << dfMode ) );
+				}
+			}
 		}
 	}
 	while ( dfModesSel & ( 1 << dfMode ) );
