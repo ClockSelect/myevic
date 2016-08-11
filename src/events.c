@@ -21,7 +21,7 @@ __myevic__ void KeyRepeat()
 
 	if ( dfStatus.keylock && !EditModeTimer )
 	{
-		if (( Screen != 59 ) && ( Screen != 101 ))
+		if (( Screen != 59 ) && ( Screen < 101 ))
 			return;
 	}
 
@@ -244,7 +244,7 @@ __myevic__ void GetUserInput()
 		{
 			if ( dfStatus.keylock && !EditModeTimer
 				&& Screen != 51 && Screen != 59 && Screen != 82 && Screen != 83
-				&& Screen < 100 )
+				&& Screen < 101 )
 			{
 				Event = 30;	// key lock violation
 			}
@@ -257,7 +257,7 @@ __myevic__ void GetUserInput()
 		{
 			if ( dfStatus.keylock && !EditModeTimer
 				&& Screen != 51 && Screen != 59 && Screen != 82 && Screen != 83
-				&& Screen < 100 )
+				&& Screen < 101 )
 			{
 				Event = 30;	// key lock violation
 			}

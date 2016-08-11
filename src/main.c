@@ -125,6 +125,9 @@ void InitDevices()
 	// FMC Frequency Optimisation mode <= 72MHz
 	FMC_EnableFreqOptimizeMode( FMC_FTCTL_OPTIMIZE_72MHZ );
 
+	// CRC CLK = HCLK/1
+	CLK_EnableModuleClock( CRC_MODULE );
+
 	// Setup PLL to 144MHz and HCLK source to PLL/2
 	CLK_SetCoreClock( 72000000 );
 	CLK_WaitClockReady( CLK_STATUS_PLLSTB_Msk );

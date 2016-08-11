@@ -3,7 +3,7 @@
 
 //==============================================================================
 
-#define BLINKITEM(i) (!(gFlags.draw_edited_item)&&(EditItemIndex==(i)))
+#define BLINKITEM(i) ((EditModeTimer)&&(!gFlags.draw_edited_item)&&(EditItemIndex==(i)))
 
 //==============================================================================
 
