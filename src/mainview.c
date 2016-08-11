@@ -231,17 +231,11 @@ __myevic__ void DrawAPTLine( int line )
 		case 5:
 		{
 			DrawString( String_TEMP_s, 0, line+2 );
-			if ( dfIsCelsius )
-			{
-				DrawValue( 39, line, BoardTemp, 0, 0x1F, 2 );
-				DrawImage( 57, line-1, 0x6A );
-			}
-			else
-			{
-				int t = CelsiusToF( BoardTemp );
-				DrawValue( t>99?31:39, line, CelsiusToF( BoardTemp ), 0, 0x1F, 3 );
-				DrawImage( 57, line-1, 0x6D );
-			}
+
+			int t = dfIsCelsius ? BoardTemp : CelsiusToF( BoardTemp );
+
+			DrawValue( t>99?31:39, line, t, 0, 0x1F, t>99?3:2 );
+			DrawImage( 57, line-1, dfIsCelsius ? 0x6A : 0x6D );
 			break;
 		}
 
