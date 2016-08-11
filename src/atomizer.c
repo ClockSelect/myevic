@@ -19,14 +19,18 @@ __myevic__ void ClampPowers()
 
 //=============================================================================
 //----- (0000121C) --------------------------------------------------------
-__myevic__ uint16_t ClampPower( uint16_t pwr, int clampmax )
+__myevic__ uint16_t ClampPower( uint16_t volts, int clampmax )
 {
+	uint16_t pwr;
+
 	if ( AtoError || !AtoRez )
 	{
 		pwr = MaxPower;
 	}
 	else
 	{
+		pwr = volts * volts / ( 10 * AtoRez );
+
 		ClampPowers();
 
 		if ( pwr < AtoMinPower )
