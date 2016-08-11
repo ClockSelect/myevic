@@ -920,6 +920,7 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 
 			SYS_UnlockReg();
 			FMC_ENABLE_ISP();
+			FMC_ENABLE_AP_UPDATE();
 
 			if ( FMCEraseWritePage( u32Page, (uint32_t*)hidData ) )
 			{
@@ -937,6 +938,7 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 
 			myprintf( "g_u32BytesInPageBuf %d, u32LenCnt 0x%x\n", hidDataIndex, u32ByteCount );
 
+			FMC_DISABLE_AP_UPDATE();
 			FMC_DISABLE_ISP();
 			SYS_LockReg();
 
