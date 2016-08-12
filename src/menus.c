@@ -277,12 +277,9 @@ __myevic__ int CoilsMEvent( int event )
 					++*CoilSelectedRez;
 				}
 				*CoilSelectedLock = 1;
+				UpdateDFTimer = 50;
 				gFlags.refresh_display = 1;
 				vret = 1;
-			}
-			else
-			{
-				vret = 0;
 			}
 			break;
 
@@ -298,18 +295,16 @@ __myevic__ int CoilsMEvent( int event )
 				{
 					--*CoilSelectedRez;
 				}
+				UpdateDFTimer = 50;
 				gFlags.refresh_display = 1;
 				vret = 1;
-			}
-			else
-			{
-				vret = 0;
 			}
 			break;
 
 		case EVENT_LONG_FIRE:
 			*CoilSelectedRez = 0;
 			*CoilSelectedLock = 0;
+			UpdateDFTimer = 50;
 			gFlags.edit_value = 0;
 			gFlags.refresh_display = 1;
 			vret = 1;

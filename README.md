@@ -37,8 +37,16 @@ Menus:
     Configure screen saver timing
 
 -Coils
-  See and/or reset saved coil resistances for each TC mode.
-  Click on a resistance to unlock and reset it.
+	Coil management menu.
+	On each line of the four TC modes:
+		Click fire to switch to edit mode on the resistance.
+		While the resistance value is highlighted, click + and - to edit its value.
+		Bring the resistance to zero with - to unlock and reset it.
+		You may also fire two seconds to zero the resistance.
+	Other lines:
+	Zero All:
+		Also zeroes all "START" mode resistances.
+	Exit: Self explanatory.
 
 -Clock
   -Date/Time
