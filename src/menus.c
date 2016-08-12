@@ -1,4 +1,5 @@
 #include "myevic.h"
+#include "events.h"
 #include "screens.h"
 #include "display.h"
 #include "myrtc.h"
@@ -159,16 +160,38 @@ __myevic__ void ModesIClick()
 
 //-----------------------------------------------------------------------------
 
+static uint8_t *CoilSelectedLock;
+static uint16_t *CoilSelectedRez;
+
 __myevic__ void CoilsMEnter()
 {
 	if ( dfMode < 4 ) CurrentMenuItem = dfMode;
 	else CurrentMenuItem = 4;
 }
 
+
+__myevic__ void CoilsISelect()
+{
+	if ( CurrentMenuItem > 3 )
+	{
+		gFlags.edit_value = 0;
+		return;
+	}
+	switch ( CurrentMenuItem )
+	{
+		case 0 : CoilSelectedRez = &dfRezNI ; CoilSelectedLock = &dfRezLockedNI ; break;
+		case 1 : CoilSelectedRez = &dfRezTI ; CoilSelectedLock = &dfRezLockedTI ; break;
+		case 2 : CoilSelectedRez = &dfRezSS ; CoilSelectedLock = &dfRezLockedSS ; break;
+		case 3 : CoilSelectedRez = &dfRezTCR; CoilSelectedLock = &dfRezLockedTCR; break;
+		default:
+			break;
+	}
+}
+
+
 __myevic__ void CoilsIDraw( int it, int line, int sel )
 {
 	if ( it > 3 ) return;
-	DrawFillRect( 32, line, 63, line+12, 0 );
 	int rez = 0;
 	short img = 0xC0;
 	switch ( it )
@@ -178,18 +201,34 @@ __myevic__ void CoilsIDraw( int it, int line, int sel )
 		case 2 : rez = dfRezSS; if (dfRezLockedSS) img = 0xC3; break;
 		case 3 : rez = dfRezTCR; if (dfRezLockedTCR) img = 0xC3; break;
 	}
-	DrawValue( 34, line+2, rez, 2, 0x0B, 3 );
-	DrawImage( 56, line+2, img );
+	if ( gFlags.edit_value && sel )
+	{
+		DrawFillRect( 0, line, 31, line+12, 0 );
+		DrawString( CurrentMenu->mitems[CurrentMenuItem].caption, 4, line +2 );
+		DrawFillRect( 32, line, 63, line+12, 1 );
+		DrawValueInv( 34, line+2, rez, 2, 0x0B, 3 );
+		DrawImageInv( 56, line+2, img );
+	}
+	else
+	{
+		DrawFillRect( 32, line, 63, line+12, 0 );
+		DrawValue( 34, line+2, rez, 2, 0x0B, 3 );
+		DrawImage( 56, line+2, img );
+	}
+	CoilsISelect( it );
 }
 
 __myevic__ void CoilsIClick()
 {
 	switch ( CurrentMenuItem )
 	{
-		case 0 : dfRezNI  = 0; dfRezLockedNI  = 0; break;
-		case 1 : dfRezTI  = 0; dfRezLockedTI  = 0; break;
-		case 2 : dfRezSS  = 0; dfRezLockedSS  = 0; break;
-		case 3 : dfRezTCR = 0; dfRezLockedTCR = 0; break;
+		case 0 :
+		case 1 :
+		case 2 :
+		case 3 :
+			*CoilSelectedRez = 0;
+			*CoilSelectedLock = 0;
+			break;
 		case 4 :
 			dfRezNI  = 0; dfRezLockedNI  = 0;
 			dfRezTI  = 0; dfRezLockedTI  = 0;
@@ -211,6 +250,75 @@ __myevic__ void CoilsIClick()
 		gFlags.refresh_display = 1;
 	}
 }
+
+__myevic__ int CoilsMEvent( int event )
+{
+	int vret = 0;
+	if ( CurrentMenuItem > 3 )
+		return vret;
+
+	switch ( event )
+	{
+		case 1:
+			gFlags.edit_value ^= 1;
+			gFlags.refresh_display = 1;
+			vret = 1;
+			break;
+
+		case 2:
+			if ( gFlags.edit_value )
+			{
+				if ( *CoilSelectedRez == 0 )
+				{
+					*CoilSelectedRez = 5;
+				}
+				else if ( *CoilSelectedRez < 150 )
+				{
+					++*CoilSelectedRez;
+				}
+				*CoilSelectedLock = 1;
+				gFlags.refresh_display = 1;
+				vret = 1;
+			}
+			else
+			{
+				vret = 0;
+			}
+			break;
+
+		case 3:
+			if ( gFlags.edit_value )
+			{
+				if ( *CoilSelectedRez == 5 )
+				{
+					*CoilSelectedRez = 0;
+					*CoilSelectedLock = 0;
+				}
+				else if ( *CoilSelectedRez > 5 )
+				{
+					--*CoilSelectedRez;
+				}
+				gFlags.refresh_display = 1;
+				vret = 1;
+			}
+			else
+			{
+				vret = 0;
+			}
+			break;
+
+		case EVENT_LONG_FIRE:
+			*CoilSelectedRez = 0;
+			*CoilSelectedLock = 0;
+			gFlags.edit_value = 0;
+			gFlags.refresh_display = 1;
+			vret = 1;
+			break;
+
+	}
+	return vret;
+}
+
 
 //-----------------------------------------------------------------------------
 
@@ -443,9 +551,9 @@ const menu_t CoilsMenu =
 	String_Coils,
 	CoilsMEnter+1,
 	CoilsIDraw+1,
-	0,
+	CoilsISelect+1,
 	CoilsIClick+1,
-	0,
+	CoilsMEvent+1,
 	6,
 	{
 		{ String_NI, 0, -1, 0 },

@@ -284,6 +284,10 @@ __myevic__ void GetUserInput()
 				gFlags.refresh_display = 1;
 				Screen = 0;
 			}
+			else if ( Screen == 102 )
+			{
+				Event = EVENT_LONG_FIRE;
+			}
 		}
 		else if ( UserInputs == 4 )
 		{
@@ -642,6 +646,22 @@ __myevic__ int EvtQuadFire()
 
 //-----------------------------------------------------------------------------
 
+__myevic__ int EvtLongFire()
+{
+	int vret = 0;
+
+	switch ( Screen )
+	{
+		case 102:
+			vret = MenuEvent( LastEvent );
+			break;
+	}
+
+	return vret;
+}
+
+//-----------------------------------------------------------------------------
+
 __myevic__ int EvtContrastMenu()
 {
 	Screen = 101;
@@ -702,6 +722,10 @@ __myevic__ int CustomEvents()
 
 		case EVENT_QUAD_FIRE:
 			vret = EvtQuadFire();
+			break;
+
+		case EVENT_LONG_FIRE:
+			vret = EvtLongFire();
 			break;
 
 		default:

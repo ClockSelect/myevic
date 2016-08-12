@@ -8,6 +8,7 @@
 #define EVENT_EDIT_CONTRAST	101
 #define EVENT_ENTER_MENUS	102
 #define EVENT_QUAD_FIRE		103
+#define EVENT_LONG_FIRE		104
 
 
 //==============================================================================
