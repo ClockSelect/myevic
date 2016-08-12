@@ -163,13 +163,6 @@ __myevic__ void ModesIClick()
 static uint8_t *CoilSelectedLock;
 static uint16_t *CoilSelectedRez;
 
-__myevic__ void CoilsMEnter()
-{
-	if ( dfMode < 4 ) CurrentMenuItem = dfMode;
-	else CurrentMenuItem = 4;
-}
-
-
 __myevic__ void CoilsISelect()
 {
 	if ( CurrentMenuItem > 3 )
@@ -186,6 +179,14 @@ __myevic__ void CoilsISelect()
 		default:
 			break;
 	}
+}
+
+
+__myevic__ void CoilsMEnter()
+{
+	if ( dfMode < 4 ) CurrentMenuItem = dfMode;
+	else CurrentMenuItem = 4;
+	CoilsISelect( CurrentMenuItem );
 }
 
 
