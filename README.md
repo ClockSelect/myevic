@@ -76,6 +76,9 @@ Menus:
   Typically, you'll set "START" mode to 'N'. Typically.
 
 -Miscs
+  -VCOM
+    Enable USB Virtual COM port
+    (used for debugging purpose)
   -LOGO
     Guenuine menu
   -Game
