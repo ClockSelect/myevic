@@ -1,0 +1,71 @@
+;
+; Windows USB CDC Driver Setup File for Nuvoton-CDC (XP/2000)
+;
+;	(c) Copyright 2008 Recursion Co., Ltd.
+;
+
+[Version] 
+Signature	= "$Windows NT$"
+Provider	= %COMPANY%
+DriverVer	= 10/02/2014,1.0.0.1
+CatalogFile	= NuvotonCDC.cat
+Class		= Ports
+ClassGuid	= {4D36E978-E325-11CE-BFC1-08002BE10318}
+
+[Manufacturer] 
+%MFGNAME%	= Devices,NT,NTamd64
+
+;--------------------------------------------------------------------------
+; Files
+;--------------------------------------------------------------------------
+
+[DestinationDirs]
+DefaultDestDir	= 12
+
+;--------------------------------------------------------------------------
+; Device driver
+;--------------------------------------------------------------------------
+
+[NuvotonCDC_DEV.NT]
+Include	= mdmcpq.inf
+CopyFiles	= FakeModemCopyFileSection
+AddReg		= NuvotonCDC_DEV.NT.AddReg
+
+[NuvotonCDC_DEV.NT.AddReg]
+HKR,,DevLoader,,*ntkern
+HKR,,NTMPDriver,,usbser.sys
+HKR,,EnumPropPages32,,"MsPorts.dll,SerialPortPropPageProvider"
+
+[NuvotonCDC_DEV.NT.Services]
+AddService=usbser, 0x00000002, DriverService
+
+;--------------------------------------------------------------------------
+; Services
+;--------------------------------------------------------------------------
+
+[DriverService]
+DisplayName	= %SERVICE%
+ServiceType	= 1
+StartType	= 3
+ErrorControl	= 1
+ServiceBinary	= %12%\usbser.sys 
+
+;--------------------------------------------------------------------------
+; Devices
+;--------------------------------------------------------------------------
+
+[Devices.NT]
+%DESCRIPTION%	= NuvotonCDC_DEV, USB\VID_0416&PID_5020&MI_01
+
+[Devices.NTamd64]
+%DESCRIPTION%	= NuvotonCDC_DEV, USB\VID_0416&PID_5020&MI_01
+
+;--------------------------------------------------------------------------
+; Strings
+;--------------------------------------------------------------------------
+
+[Strings] 
+COMPANY	= "Nuvoton Co., Ltd."
+MFGNAME	= "www.nuvoton.com"
+DESCRIPTION	= "Nuvoton Virtual Com Port"
+SERVICE	= "USB RS-232 Emulation Driver"

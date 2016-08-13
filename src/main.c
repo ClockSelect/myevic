@@ -198,11 +198,7 @@ __myevic__ void InitHardware()
 
 	InitTimers();
 
-	InitUSB();
 	InitRTC( 0 );
-
-	myprintf( "\n\nJoyetech APROM\n" );
-	myprintf( "CPU @ %dHz(PLL@ %dHz)\n", SystemCoreClock, PllClock );
 }
 
 
@@ -230,6 +226,11 @@ __myevic__ void Main()
 	InitHardware();
 	InitVariables();
 
+	InitUSB();
+
+	myprintf( "\n\nJoyetech APROM\n" );
+	myprintf( "CPU @ %dHz(PLL@ %dHz)\n", SystemCoreClock, PllClock );
+
 	gFlags.sample_vbat = 1;
 	ReadBatteryVoltage();
 
@@ -240,8 +241,6 @@ __myevic__ void Main()
 	MainView();
 
 	CustomStartup();
-
-	InitUSB();
 
 	while ( 1 )
 	{
@@ -305,6 +304,11 @@ __myevic__ void Main()
 				{
 					TweakTargetVoltsVW();
 				}
+			}
+
+			if ( dfStatus.vcom )
+			{
+				VCOM_Poll();
 			}
 		}
 

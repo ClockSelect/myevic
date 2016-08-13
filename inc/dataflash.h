@@ -42,6 +42,7 @@ typedef struct
 	int	flipped:1;
 	int	nologo:1;
 	int anaclk:1;
+	int vcom:1;
 }
 dfStatus_t;
 

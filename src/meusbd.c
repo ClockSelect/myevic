@@ -6,6 +6,10 @@
 
 void usbdEP2Handler();
 void usbdEP3Handler();
+void usbdEP5Handler();
+void usbdEP6Handler();
+
+char VCOM_Putc( char c, FILE *out );
 
 
 //=========================================================================
@@ -15,6 +19,8 @@ void usbdEP3Handler();
 #define USBD_VID        0x0416
 #define USBD_PID        0x5020
 
+#define VCOM_INTERFACE	1
+
 /*!<Define HID Class Specific Request */
 #define GET_REPORT          0x01
 #define GET_IDLE            0x02
@@ -22,6 +28,15 @@ void usbdEP3Handler();
 #define SET_REPORT          0x09
 #define SET_IDLE            0x0A
 #define SET_PROTOCOL        0x0B
+
+/*!<Define CDC class specific requests */
+#define CDC_SET_LINE_CODE          0x20
+#define CDC_GET_LINE_CODE          0x21
+#define CDC_SET_CONTROL_LINE_STATE 0x22
+
+/*!<Mask for DTR bit in line state */
+#define VCOM_LINESTATE_MASK_DTR (1 << 0)
+#define VCOM_DEFAULT_INT_INTERVAL 0
 
 /*!<USB HID Interface Class protocol */
 #define HID_NONE            0x00
@@ -39,6 +54,9 @@ void usbdEP3Handler();
 #define EP1_MAX_PKT_SIZE    EP0_MAX_PKT_SIZE
 #define EP2_MAX_PKT_SIZE    64
 #define EP3_MAX_PKT_SIZE    64
+#define EP4_MAX_PKT_SIZE    8
+#define EP5_MAX_PKT_SIZE    64
+#define EP6_MAX_PKT_SIZE    64
 
 #define SETUP_BUF_BASE  0
 #define SETUP_BUF_LEN   8
@@ -50,10 +68,19 @@ void usbdEP3Handler();
 #define EP2_BUF_LEN     EP2_MAX_PKT_SIZE
 #define EP3_BUF_BASE    (EP2_BUF_BASE + EP2_BUF_LEN)
 #define EP3_BUF_LEN     EP3_MAX_PKT_SIZE
+#define EP4_BUF_BASE    (EP3_BUF_BASE + EP3_BUF_LEN)
+#define EP4_BUF_LEN     EP4_MAX_PKT_SIZE
+#define EP5_BUF_BASE    (EP4_BUF_BASE + EP4_BUF_LEN)
+#define EP5_BUF_LEN     EP5_MAX_PKT_SIZE
+#define EP6_BUF_BASE    (EP5_BUF_BASE + EP5_BUF_LEN)
+#define EP6_BUF_LEN     EP6_MAX_PKT_SIZE
 
 /* Define the EP number */
 #define INT_IN_EP_NUM       0x01
 #define INT_OUT_EP_NUM      0x02
+#define VCOM_INT_IN_EP_NUM	0x03
+#define BULK_IN_EP_NUM		0x04
+#define BULK_OUT_EP_NUM		0x05
 
 /* Define Descriptor information */
 #define HID_DEFAULT_INT_IN_INTERVAL     1
@@ -89,9 +116,9 @@ const uint8_t usbdDevice[] =
 	LEN_DEVICE,     /* bLength */
 	DESC_DEVICE,    /* bDescriptorType */
 	0x10, 0x01,     /* bcdUSB */
-	0x00,           /* bDeviceClass */
-	0x00,           /* bDeviceSubClass */
-	0x00,           /* bDeviceProtocol */
+	0xEF,           /* bDeviceClass */
+	0x02,           /* bDeviceSubClass */
+	0x01,           /* bDeviceProtocol */
 	EP0_MAX_PKT_SIZE,   /* bMaxPacketSize0 */
 	/* idVendor */
 	USBD_VID & 0x00FF,
@@ -106,20 +133,23 @@ const uint8_t usbdDevice[] =
 	0x01            /* bNumConfigurations */
 };
 
+#define DESC_LEN_WITHOUT_VCOM \
+	(LEN_CONFIG + LEN_INTERFACE + LEN_HID + LEN_ENDPOINT * 2)
+
 const uint8_t usbdDescSet[] =
 {
 	LEN_CONFIG,     /* bLength */
 	DESC_CONFIG,    /* bDescriptorType */
 	/* wTotalLength */
-	(LEN_CONFIG + LEN_INTERFACE + LEN_HID + LEN_ENDPOINT * 2) & 0x00FF,
-	((LEN_CONFIG + LEN_INTERFACE + LEN_HID + LEN_ENDPOINT * 2) & 0xFF00) >> 8,
+	DESC_LEN_WITHOUT_VCOM & 0x00FF,
+	(DESC_LEN_WITHOUT_VCOM & 0xFF00) >> 8,
 	0x01,           /* bNumInterfaces */
 	0x01,           /* bConfigurationValue */
 	0x00,           /* iConfiguration */
 	0x80 | (USBD_SELF_POWERED << 6) | (USBD_REMOTE_WAKEUP << 5),/* bmAttributes */
 	USBD_MAX_POWER,         /* MaxPower */
 
-	/* I/F descr: HID */
+/* I/F descr: HID */
 	LEN_INTERFACE,  /* bLength */
 	DESC_INTERFACE, /* bDescriptorType */
 	0x00,           /* bInterfaceNumber */
@@ -159,7 +189,154 @@ const uint8_t usbdDescSet[] =
 	/* wMaxPacketSize */
 	EP3_MAX_PKT_SIZE & 0x00FF,
 	(EP3_MAX_PKT_SIZE & 0xFF00) >> 8,
-	HID_DEFAULT_INT_IN_INTERVAL     /* bInterval */
+	HID_DEFAULT_INT_IN_INTERVAL,    /* bInterval */
+};
+
+
+#define DESC_LEN_WITH_VCOM \
+	(LEN_CONFIG + LEN_INTERFACE * 3 + LEN_HID + LEN_ENDPOINT * 5 + 8 + 19)
+
+const uint8_t usbdDescSetVCOM[] =
+{
+	LEN_CONFIG,     /* bLength */
+	DESC_CONFIG,    /* bDescriptorType */
+	/* wTotalLength */
+	DESC_LEN_WITH_VCOM & 0x00FF,
+	(DESC_LEN_WITH_VCOM & 0xFF00) >> 8,
+	0x03,           /* bNumInterfaces */
+	0x01,           /* bConfigurationValue */
+	0x00,           /* iConfiguration */
+	0x80 | (USBD_SELF_POWERED << 6) | (USBD_REMOTE_WAKEUP << 5),/* bmAttributes */
+	USBD_MAX_POWER,         /* MaxPower */
+
+/* I/F descr: HID */
+	LEN_INTERFACE,  /* bLength */
+	DESC_INTERFACE, /* bDescriptorType */
+	0x00,           /* bInterfaceNumber */
+	0x00,           /* bAlternateSetting */
+	0x02,           /* bNumEndpoints */
+	0x03,           /* bInterfaceClass */
+	0x00,           /* bInterfaceSubClass */
+	0x00,           /* bInterfaceProtocol */
+	0x00,           /* iInterface */
+
+	/* HID Descriptor */
+	LEN_HID,        /* Size of this descriptor in UINT8s. */
+	DESC_HID,       /* HID descriptor type. */
+	0x10, 0x01,     /* HID Class Spec. release number. */
+	0x00,           /* H/W target country. */
+	0x01,           /* Number of HID class descriptors to follow. */
+	DESC_HID_RPT,   /* Descriptor type. */
+	/* Total length of report descriptor. */
+	sizeof(usbdHIDReport) & 0x00FF,
+	(sizeof(usbdHIDReport) & 0xFF00) >> 8,
+
+	/* EP Descriptor: interrupt in. */
+	LEN_ENDPOINT,   /* bLength */
+	DESC_ENDPOINT,  /* bDescriptorType */
+	(INT_IN_EP_NUM | EP_INPUT), /* bEndpointAddress */
+	EP_INT,         /* bmAttributes */
+	/* wMaxPacketSize */
+	EP2_MAX_PKT_SIZE & 0x00FF,
+	(EP2_MAX_PKT_SIZE & 0xFF00) >> 8,
+	HID_DEFAULT_INT_IN_INTERVAL,        /* bInterval */
+
+	/* EP Descriptor: interrupt out. */
+	LEN_ENDPOINT,   /* bLength */
+	DESC_ENDPOINT,  /* bDescriptorType */
+	(INT_OUT_EP_NUM | EP_OUTPUT),   /* bEndpointAddress */
+	EP_INT,         /* bmAttributes */
+	/* wMaxPacketSize */
+	EP3_MAX_PKT_SIZE & 0x00FF,
+	(EP3_MAX_PKT_SIZE & 0xFF00) >> 8,
+	HID_DEFAULT_INT_IN_INTERVAL,    /* bInterval */
+
+/* I/F descr: VCOM */
+    // IAD
+    0x08,               // bLength: Interface Descriptor size
+    0x0B,               // bDescriptorType: IAD
+    0x01,               // bFirstInterface
+    0x02,               // bInterfaceCount
+    0x02,               // bFunctionClass: CDC
+    0x02,               // bFunctionSubClass
+    0x01,               // bFunctionProtocol 
+    0x00, /*0x02 */     // iFunction
+
+    /* INTERFACE descriptor */
+    LEN_INTERFACE,  /* bLength              */
+    DESC_INTERFACE, /* bDescriptorType      */
+    0x01,           /* bInterfaceNumber     */
+    0x00,           /* bAlternateSetting    */
+    0x01,           /* bNumEndpoints        */
+    0x02,           /* bInterfaceClass      */
+    0x02,           /* bInterfaceSubClass   */
+    0x01,           /* bInterfaceProtocol   */
+    0x00,           /* iInterface           */
+
+    /* Communication Class Specified INTERFACE descriptor */
+    0x05,           /* Size of the descriptor, in bytes */
+    0x24,           /* CS_INTERFACE descriptor type */
+    0x00,           /* Header functional descriptor subtype */
+    0x10, 0x01,     /* Communication device compliant to the communication spec. ver. 1.10 */
+    
+    /* Communication Class Specified INTERFACE descriptor */
+    0x05,           /* Size of the descriptor, in bytes */
+    0x24,           /* CS_INTERFACE descriptor type */
+    0x01,           /* Call management functional descriptor */
+    0x00,           /* BIT0: Whether device handle call management itself. */
+                    /* BIT1: Whether device can send/receive call management information over a Data Class Interface 0 */
+    0x01,           /* Interface number of data class interface optionally used for call management */
+
+    /* Communication Class Specified INTERFACE descriptor */
+    0x04,           /* Size of the descriptor, in bytes */
+    0x24,           /* CS_INTERFACE descriptor type */
+    0x02,           /* Abstract control management functional descriptor subtype */
+    0x00,           /* bmCapabilities       */
+    
+    /* Communication Class Specified INTERFACE descriptor */
+    0x05,           /* bLength              */
+    0x24,           /* bDescriptorType: CS_INTERFACE descriptor type */
+    0x06,           /* bDescriptorSubType   */
+    0x00,           /* bMasterInterface     */
+    0x01,           /* bSlaveInterface0     */
+
+    /* ENDPOINT descriptor */
+    LEN_ENDPOINT,                   /* bLength          */
+    DESC_ENDPOINT,                  /* bDescriptorType  */
+    (EP_INPUT | VCOM_INT_IN_EP_NUM),/* bEndpointAddress */
+    EP_INT,                         /* bmAttributes     */
+    EP4_MAX_PKT_SIZE,               /* wMaxPacketSize   */
+	(EP4_MAX_PKT_SIZE & 0xFF00) >> 8,
+    0x01,                           /* bInterval        */
+
+    /* INTERFACE descriptor */
+    LEN_INTERFACE,                  /* bLength              */
+    DESC_INTERFACE,                 /* bDescriptorType      */
+    0x02,                           /* bInterfaceNumber     */
+    0x00,                           /* bAlternateSetting    */
+    0x02,                           /* bNumEndpoints        */
+    0x0A,                           /* bInterfaceClass      */
+    0x00,                           /* bInterfaceSubClass   */
+    0x00,                           /* bInterfaceProtocol   */
+    0x00,                           /* iInterface           */
+
+    /* ENDPOINT descriptor */
+    LEN_ENDPOINT,                   /* bLength          */
+    DESC_ENDPOINT,                  /* bDescriptorType  */
+    (EP_INPUT | BULK_IN_EP_NUM),    /* bEndpointAddress */
+    EP_BULK,                        /* bmAttributes     */
+    EP5_MAX_PKT_SIZE,               /* wMaxPacketSize   */
+	(EP5_MAX_PKT_SIZE & 0xFF00) >> 8,
+    0x00,                           /* bInterval        */
+
+    /* ENDPOINT descriptor */
+    LEN_ENDPOINT,                   /* bLength          */
+    DESC_ENDPOINT,                  /* bDescriptorType  */
+    (EP_OUTPUT | BULK_OUT_EP_NUM),  /* bEndpointAddress */
+    EP_BULK,                        /* bmAttributes     */
+    EP6_MAX_PKT_SIZE,               /* wMaxPacketSize   */
+	(EP6_MAX_PKT_SIZE & 0xFF00) >> 8,
+    0x00,                           /* bInterval        */
 };
 
 /*!<USB Language String Descriptor */
@@ -230,6 +407,29 @@ const S_USBD_INFO_T usbdDescriptors =
 	usbdConfigHidDescIdx
 };
 
+const S_USBD_INFO_T usbdDescriptorsVCOM =
+{
+	usbdDevice,
+	usbdDescSetVCOM,
+	usbdStrings,
+	usbdHIDReportDesc,
+	usbdHIDReportSize,
+	usbdConfigHidDescIdx
+};
+
+//-------------------------------------------------------------------------
+
+typedef struct {
+    uint32_t  u32DTERate;     /* Baud rate    */
+    uint8_t   u8CharFormat;   /* stop bit     */
+    uint8_t   u8ParityType;   /* parity       */
+    uint8_t   u8DataBits;     /* data bits    */
+} STR_VCOM_LINE_CODING;
+
+//-------------------------------------------------------------------------
+
+static STR_VCOM_LINE_CODING gLineCoding = {115200, 0, 0, 8};
+static uint16_t gCtrlSignal = 0;
 
 //=========================================================================
 //-------------------------------------------------------------------------
@@ -254,6 +454,8 @@ __myevic__ void USBD_IRQHandler(void)
 			/* USB Un-plug */
 			USBD_DISABLE_USB();
 		}
+		
+		gCtrlSignal = 0;
 	}
 
 	//------------------------------------------------------------------
@@ -278,6 +480,8 @@ __myevic__ void USBD_IRQHandler(void)
 			/* Enable USB and enable PHY */
 			USBD_ENABLE_USB();
 		}
+
+		gCtrlSignal = 0;
 	}
 
 	//------------------------------------------------------------------
@@ -341,12 +545,16 @@ __myevic__ void USBD_IRQHandler(void)
 		{
 			/* Clear event flag */
 			USBD_CLR_INT_FLAG(USBD_INTSTS_EP5);
+			// Interrupt IN
+			usbdEP5Handler();
 		}
 
 		if(u32IntSts & USBD_INTSTS_EP6)
 		{
 			/* Clear event flag */
 			USBD_CLR_INT_FLAG(USBD_INTSTS_EP6);
+			// Interrupt OUT
+			usbdEP6Handler();
 		}
 
 		if(u32IntSts & USBD_INTSTS_EP7)
@@ -371,24 +579,31 @@ __myevic__ void hidClassRequest()
 	if(buf[0] & 0x80)    /* request data transfer direction */
 	{
 		// Device to host
-		switch(buf[1])
+		switch ( buf[1] )
 		{
-		case GET_REPORT:
-//             {
-//                 break;
-//             }
-		case GET_IDLE:
-//             {
-//                 break;
-//             }
-		case GET_PROTOCOL:
-//            {
-//                break;
-//            }
-		default:
+			case CDC_GET_LINE_CODE:
+			{
+				if ( buf[4] == VCOM_INTERFACE )
+				{ /* VCOM-1 */
+					USBD_MemCopy(	(uint8_t*)(USBD_BUF_BASE + USBD_GET_EP_BUF_ADDR( EP0 )),
+									(uint8_t*)&gLineCoding, 7 );
+				}
+				/* Data stage */
+				USBD_SET_DATA1( EP0 );
+				USBD_SET_PAYLOAD_LEN( EP0, 7 );
+				/* Status stage */
+				USBD_PrepareCtrlOut( 0, 0 );
+				break;
+			}
+
+			case GET_REPORT:
+			case GET_IDLE:
+			case GET_PROTOCOL:
+			default:
 			{
 				/* Setup error, stall the device */
-				USBD_SetStall(0);
+				USBD_SetStall( EP0 );
+				USBD_SetStall( EP1 );
 				break;
 			}
 		}
@@ -396,34 +611,64 @@ __myevic__ void hidClassRequest()
 	else
 	{
 		// Host to device
-		switch(buf[1])
+		switch ( buf[1] )
 		{
-		case SET_REPORT:
+			case CDC_SET_CONTROL_LINE_STATE:
 			{
-				if(buf[3] == 3)
+				if ( buf[4] == VCOM_INTERFACE )
+				{ /* VCOM-1 */
+					gCtrlSignal = buf[3];
+					gCtrlSignal = ( gCtrlSignal << 8 ) | buf[2];
+					myprintf( "RTS=%d  DTR=%d\n", (gCtrlSignal >> 1) & 1, gCtrlSignal & 1 );
+				}
+
+				/* Status stage */
+				USBD_SET_DATA1( EP0 );
+				USBD_SET_PAYLOAD_LEN( EP0, 0 );
+				break;
+			}
+			case CDC_SET_LINE_CODE:
+			{
+				//g_usbd_UsbConfig = 0100;
+				if ( buf[4] == VCOM_INTERFACE ) /* VCOM-1 */
+					USBD_PrepareCtrlOut( (uint8_t *)&gLineCoding, 7 );
+
+				/* Status stage */
+				USBD_SET_DATA1( EP0 );
+				USBD_SET_PAYLOAD_LEN( EP0, 0 );
+
+			//	/* UART setting */
+			//	if ( buf[4] == VCOM_INTERFACE ) /* VCOM-1 */
+			//		VCOM_LineCoding( 0 );
+				break;
+			}
+
+			case SET_REPORT:
+			{
+				if( buf[3] == 3 )
 				{
 					/* Request Type = Feature */
-					USBD_SET_DATA1(EP1);
-					USBD_SET_PAYLOAD_LEN(EP1, 0);
+					USBD_SET_DATA1( EP1 );
+					USBD_SET_PAYLOAD_LEN( EP1, 0 );
 				}
 				break;
 			}
-		case SET_IDLE:
+
+			case SET_IDLE:
 			{
 				/* Status stage */
-				USBD_SET_DATA1(EP0);
-				USBD_SET_PAYLOAD_LEN(EP0, 0);
+				USBD_SET_DATA1( EP0 );
+				USBD_SET_PAYLOAD_LEN( EP0, 0 );
 				break;
 			}
-		case SET_PROTOCOL:
-//             {
-//                 break;
-//             }
-		default:
+
+			case SET_PROTOCOL:
+			default:
 			{
 				// Stall
 				/* Setup error, stall the device */
-				USBD_SetStall(0);
+				USBD_SetStall( EP0 );
+				USBD_SetStall( EP1 );
 				break;
 			}
 		}
@@ -462,6 +707,27 @@ __myevic__ void hidInit()
 	USBD_SET_EP_BUF_ADDR(EP3, EP3_BUF_BASE);
 	/* trigger to receive OUT data */
 	USBD_SET_PAYLOAD_LEN(EP3, EP3_MAX_PKT_SIZE);
+
+	/*****************************************************/
+	if ( dfStatus.vcom )
+	{
+		/* EP4 ==> Interrupt IN endpoint, address 3 */
+		USBD_CONFIG_EP(EP4, USBD_CFG_EPMODE_IN | VCOM_INT_IN_EP_NUM);
+		/* Buffer offset for EP4 ->  */
+		USBD_SET_EP_BUF_ADDR(EP4, EP4_BUF_BASE);
+
+		/* EP5 ==> Bulk IN endpoint, address 1 */
+		USBD_CONFIG_EP(EP5, USBD_CFG_EPMODE_IN | BULK_IN_EP_NUM);
+		/* Buffer offset for EP5 */
+		USBD_SET_EP_BUF_ADDR(EP5, EP5_BUF_BASE);
+
+		/* EP6 ==> Bulk Out endpoint, address 2 */
+		USBD_CONFIG_EP(EP6, USBD_CFG_EPMODE_OUT | BULK_OUT_EP_NUM);
+		/* Buffer offset for EP6 */
+		USBD_SET_EP_BUF_ADDR(EP6, EP6_BUF_BASE);
+		/* trigger receive OUT data */
+		USBD_SET_PAYLOAD_LEN(EP6, EP6_MAX_PKT_SIZE);
+	}
 }
 
 
@@ -469,10 +735,24 @@ __myevic__ void hidInit()
 //-------------------------------------------------------------------------
 __myevic__ void InitUSB()
 {
-	USBD_Open( &usbdDescriptors, hidClassRequest+1, 0 );
+	if ( dfStatus.vcom )
+	{
+		USBD_Open( &usbdDescriptorsVCOM, hidClassRequest+1, 0 );
+	}
+	else
+	{
+		USBD_Open( &usbdDescriptors, hidClassRequest+1, 0 );
+	}
+
 	hidInit();
 	USBD_Start();
 	NVIC_EnableIRQ( USBD_IRQn );
+
+	if ( dfStatus.vcom )
+	{
+		myputc = VCOM_Putc;
+	}
+
 }
 
 
@@ -516,7 +796,7 @@ uint8_t hidData[FMC_FLASH_PAGE_SIZE];
 uint32_t hidDFData[FMC_FLASH_PAGE_SIZE/4];
 uint32_t hidDataIndex;
 
-//=============================================================================
+//=========================================================================
 //----- (00001204) --------------------------------------------------------
 // R0 = Sum of the R1 bytes at R0
 __myevic__ uint32_t Checksum( const uint8_t *p, const uint32_t l )
@@ -528,7 +808,7 @@ __myevic__ uint32_t Checksum( const uint8_t *p, const uint32_t l )
 
 
 //----- (00002C60) --------------------------------------------------------
-__myevic__ void usbdEP2Handler()
+__myevic__ void hidSetInReport()
 {
 	uint8_t cmd = hidCmd.u8Cmd;
 
@@ -548,7 +828,7 @@ __myevic__ void usbdEP2Handler()
 			}
 			else
 			{
-				cmd = 0;
+				cmd = HID_CMD_NONE;
 			}
 			break;
 		}
@@ -591,17 +871,24 @@ __myevic__ void usbdEP2Handler()
 			}
 			else
 			{
-				cmd = 0;
+				cmd = HID_CMD_NONE;
 			}
 			break;
 		}
 
 		default:
-			cmd = 0;
+			cmd = HID_CMD_NONE;
 			break;
 	}
 
 	hidCmd.u8Cmd = cmd;
+}
+
+
+//-------------------------------------------------------------------------
+__myevic__ void usbdEP2Handler()
+{
+	hidSetInReport();
 }
 
 
@@ -612,7 +899,7 @@ __myevic__ uint32_t hidResetParamCmd( CMD_T *pCmd )
 	ResetDataFlash();
 	UpdateDataFlash();
 	gFlags.refresh_display = 1;
-	pCmd->u8Cmd = 0;
+	pCmd->u8Cmd = HID_CMD_NONE;
 	return 0;
 }
 
@@ -844,7 +1131,7 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 
 			if ( hidDataIndex >= u32DataSize )
 			{
-				u8Cmd = 0;
+				u8Cmd = HID_CMD_NONE;
 
 				if ( u32StartAddr + u32DataSize > FMC_FLASH_PAGE_SIZE )
 				{
@@ -895,7 +1182,7 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 				}
 				else
 				{
-					myprintf( "Sys Param Recive fail.\n" );
+					myprintf( "Sys Param Receive fail.\n" );
 				}
 
 				hidDataIndex = 0;
@@ -948,7 +1235,7 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 			}
 			else
 			{
-				u8Cmd = 0;
+				u8Cmd = HID_CMD_NONE;
 				myprintf( "set boot logo command complete.\n" );
 			}
 
@@ -995,7 +1282,7 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 
 			if ( u32ByteCount >= u32DataSize )
 			{
-				u8Cmd = 0;
+				u8Cmd = HID_CMD_NONE;
 				myprintf( "Update LDROM command complete.\n" );
 			}
 			
@@ -1027,4 +1314,141 @@ __myevic__ void usbdEP3Handler()
     USBD_SET_PAYLOAD_LEN( EP3, EP3_MAX_PKT_SIZE );
 }
 
+
+//=========================================================================
+// VCOM
+//-------------------------------------------------------------------------
+#define RXBUFSIZE	512 /* RX buffer size */
+
+volatile uint8_t comRbuf[RXBUFSIZE];
+volatile uint16_t comRbytes = 0;
+volatile uint16_t comRhead = 0;
+volatile uint16_t comRtail = 0;
+
+uint8_t gTxBuf[64] = {0};
+volatile uint8_t *gpu8RxBuf = 0;
+volatile uint32_t gu32RxSize = 0;
+volatile uint32_t gu32TxSize = 0;
+
+volatile uint8_t VCOM_TxReady = 1;
+
+//-------------------------------------------------------------------------
+__myevic__ void VCOM_Poll()
+{
+    int32_t i, i32Len;
+
+	if ( VCOM_TxReady )
+	{
+		/* Check whether we have new COM Rx data to send to USB or not */
+		if ( comRbytes )
+		{
+			i32Len = comRbytes;
+			if( i32Len > EP5_MAX_PKT_SIZE )
+				i32Len = EP5_MAX_PKT_SIZE;
+
+			for ( i = 0; i < i32Len; i++ )
+			{
+				gTxBuf[i] = comRbuf[comRhead++];
+				if ( comRhead >= RXBUFSIZE )
+					comRhead = 0;
+			}
+
+			__set_PRIMASK(1);
+			comRbytes -= i32Len;
+			__set_PRIMASK(0);
+
+			VCOM_TxReady = 0;
+			USBD_MemCopy( (uint8_t*)(USBD_BUF_BASE + USBD_GET_EP_BUF_ADDR(EP5)),
+						  (uint8_t *)gTxBuf, i32Len );
+			USBD_SET_PAYLOAD_LEN( EP5, i32Len );
+		}
+		else
+		{
+			/* Prepare a zero packet if previous packet size is EP2_MAX_PKT_SIZE and 
+			   no more data to send at this moment to note Host the transfer has been done */
+			i32Len = USBD_GET_PAYLOAD_LEN( EP5 );
+			if( i32Len == EP5_MAX_PKT_SIZE )
+			{
+				USBD_SET_PAYLOAD_LEN( EP5, 0 );
+			}
+		}
+	}
+}
+
+//-------------------------------------------------------------------------
+__myevic__ void usbdEP5Handler()
+{
+    /* Bulk IN */
+	VCOM_TxReady = 1;
+
+//	VCOM_Poll();
+}
+
+__myevic__ void usbdEP6Handler()
+{
+    /* Bulk OUT */
+//	int32_t i, i32Len;
+//
+//	i32Len = USBD_GET_PAYLOAD_LEN( EP6 );
+//	if ( i32Len )
+//	{
+//		USBD_MemCopy( (uint8_t *)gRxBuf, (uint8_t*)(USBD_BUF_BASE + USBD_GET_EP_BUF_ADDR(EP6)), i32Len );
+//
+//		if ( VCOM_TxReady )
+//		{
+//			USBD_MemCopy( (uint8_t*)(USBD_BUF_BASE + USBD_GET_EP_BUF_ADDR(EP5)),
+//						  (uint8_t *)gRxBuf, i32Len );
+//			USBD_SET_PAYLOAD_LEN( EP5, i32Len );
+//			VCOM_TxReady = 0;
+//		}
+//		else
+//		{
+//			for ( i = 0; i < i32Len; i++ )
+//			{
+//				comRbuf[comRtail++] = gRxBuf[i];
+//				if ( comRtail >= RXBUFSIZE )
+//					comRtail = 0;
+//			}
+//
+//			comRbytes += i32Len;
+//		}
+//	}
+
+    USBD_SET_PAYLOAD_LEN( EP6, EP6_MAX_PKT_SIZE );
+}
+
+
+//-------------------------------------------------------------------------
+__myevic__ void VCOM_Cout( uint8_t c )
+{
+	__set_PRIMASK(1);
+
+	comRbuf[comRtail++] = c;
+
+	if ( comRtail >= RXBUFSIZE )
+		comRtail = 0;
+
+	++comRbytes;
+
+	__set_PRIMASK(0);
+}
+
+__myevic__ char VCOM_Putc( char c, FILE *out )
+{
+	if ( !USBD_IS_ATTACHED()
+	||	 !( gCtrlSignal & VCOM_LINESTATE_MASK_DTR ))
+	{
+		// Don't send if no one is listening
+		return c;
+	}
+
+	VCOM_Cout( (uint8_t)c );
+
+	if ( c == '\n' )
+	{
+		VCOM_Cout( (uint8_t)'\r' );
+	}
+
+	return c;
+}
 

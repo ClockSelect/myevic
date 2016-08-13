@@ -146,6 +146,7 @@ extern const uint16_t String_Cube[];
 extern const uint16_t String_None[];
 extern const uint16_t String_Screen[];
 extern const uint16_t String_Min[];
+extern const uint16_t String_VCOM[];
 
 //==============================================================================
 

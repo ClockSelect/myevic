@@ -1,4 +1,5 @@
 #include "myevic.h"
+#include "myprintf.h"
 #include "events.h"
 #include "screens.h"
 #include "display.h"
@@ -6,6 +7,7 @@
 #include "dataflash.h"
 #include "miscs.h"
 #include "flappy.h"
+#include "meusbd.h"
 
 //=============================================================================
 // MENUS
@@ -104,9 +106,22 @@ __myevic__ void LogoMEnter()
 
 __myevic__ void LogoISelect()
 {
-	dfStatus.nologo = 0;
 	dfStatus.nologo = CurrentMenuItem & 1;
 	UpdateDFTimer = 50;
+}
+
+//-----------------------------------------------------------------------------
+
+__myevic__ void VCOMMEnter()
+{
+	CurrentMenuItem = dfStatus.vcom ^ 1;
+}
+
+__myevic__ void VCOMIClick()
+{
+	dfStatus.vcom = ( CurrentMenuItem & 1 ) ^ 1;
+	UpdateDataFlash();
+	InitUSB();
 }
 
 //-----------------------------------------------------------------------------
@@ -489,6 +504,21 @@ __myevic__ void ScreenIClick()
 
 //-----------------------------------------------------------------------------
 
+const menu_t VCOMMenu =
+{
+	String_VCOM,
+	VCOMMEnter+1,
+	0,
+	0,
+	VCOMIClick+1,
+	0,
+	2,
+	{
+		{ String_On, 0, 1, 0 },
+		{ String_Off, 0, 1, 0 }
+	}
+};
+
 const menu_t LOGOMenu =
 {
 	String_LOGO,
@@ -584,8 +614,9 @@ const menu_t MiscsMenu =
 	0,
 	0,
 	0,
-	4,
+	5,
 	{
+		{ String_VCOM, &VCOMMenu, -1, 0 },
 		{ String_LOGO, &LOGOMenu, -1, 0 },
 		{ String_Game, &GameMenu, -1, 0 },
 		{ String_3D, &Anim3dMenu, -1, 0 },
