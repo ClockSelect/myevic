@@ -258,8 +258,8 @@ const uint8_t usbdDescSetVCOM[] =
     0x01,               // bFirstInterface
     0x02,               // bInterfaceCount
     0x02,               // bFunctionClass: CDC
-    0x02,               // bFunctionSubClass
-    0x01,               // bFunctionProtocol 
+    0x02,               // bFunctionSubClass: Abstract Control Model
+    0x01,               // bFunctionProtocol: AT Commands [V250] etc.
     0x00, /*0x02 */     // iFunction
 
     /* INTERFACE descriptor */
@@ -285,7 +285,7 @@ const uint8_t usbdDescSetVCOM[] =
     0x01,           /* Call management functional descriptor */
     0x00,           /* BIT0: Whether device handle call management itself. */
                     /* BIT1: Whether device can send/receive call management information over a Data Class Interface 0 */
-    0x01,           /* Interface number of data class interface optionally used for call management */
+    0x02,           /* Interface number of data class interface optionally used for call management */
 
     /* Communication Class Specified INTERFACE descriptor */
     0x04,           /* Size of the descriptor, in bytes */
@@ -297,8 +297,8 @@ const uint8_t usbdDescSetVCOM[] =
     0x05,           /* bLength              */
     0x24,           /* bDescriptorType: CS_INTERFACE descriptor type */
     0x06,           /* bDescriptorSubType   */
-    0x00,           /* bMasterInterface     */
-    0x01,           /* bSlaveInterface0     */
+    0x01,           /* bMasterInterface     */
+    0x02,           /* bSlaveInterface0     */
 
     /* ENDPOINT descriptor */
     LEN_ENDPOINT,                   /* bLength          */
@@ -576,7 +576,7 @@ __myevic__ void hidClassRequest()
 
 	USBD_GetSetupPacket(buf);
 
-	if(buf[0] & 0x80)    /* request data transfer direction */
+	if( buf[0] & 0x80 )    /* request data transfer direction */
 	{
 		// Device to host
 		switch ( buf[1] )
@@ -601,6 +601,7 @@ __myevic__ void hidClassRequest()
 			case GET_PROTOCOL:
 			default:
 			{
+				myprintf( "CLASS GET RQ 0x%02X IF %d\n", buf[1], buf[4] );
 				/* Setup error, stall the device */
 				USBD_SetStall( EP0 );
 				USBD_SetStall( EP1 );
@@ -665,6 +666,7 @@ __myevic__ void hidClassRequest()
 			case SET_PROTOCOL:
 			default:
 			{
+				myprintf( "CLASS SET RQ 0x%02X IF %d\n", buf[1], buf[4] );
 				// Stall
 				/* Setup error, stall the device */
 				USBD_SetStall( EP0 );

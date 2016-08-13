@@ -166,7 +166,7 @@ int my_doprnt( const char *format, va_list ap, FILE *out )
 					{
 						--nd;
 						char d = n >> ( nd * 4 ) & 0xf;
-						if ( put || zp || d || !nd )
+						if ( put || ( zp && ( size > nd )) || d || !nd )
 						{
 							if ( ! put )
 							{
