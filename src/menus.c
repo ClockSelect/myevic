@@ -41,6 +41,55 @@ unsigned char CurrentMenuItem;
 
 
 //-----------------------------------------------------------------------------
+__myevic__ void ExpertMenuIDraw( int it, int line, int sel )
+{
+	switch ( it )
+	{
+		case 0:
+			DrawFillRect( 32, line, 63, line+12, 0 );
+			if ( dfStatus.vcom )
+				DrawString( String_COM, 36, line+2 );
+			else if ( dfStatus.storage )
+				DrawString( String_DSK, 36, line+2 );
+			else
+				DrawString( String_HID, 36, line+2 );
+			break;
+
+		default:
+			break;
+	}
+}
+
+__myevic__ void ExpertMenuOnClick()
+{
+	switch ( CurrentMenuItem )
+	{
+		case 0:
+			if ( dfStatus.vcom )
+			{
+				dfStatus.vcom = 0;
+				dfStatus.storage = 1;
+			}
+			else if ( dfStatus.storage )
+			{
+				dfStatus.storage = 0;
+			}
+			else
+			{
+				dfStatus.vcom = 1;
+			}
+			gFlags.refresh_display = 1;
+			break;
+
+		case 1:
+			UpdateDataFlash();
+			InitUSB();
+			MainView();
+			break;
+	}
+}
+
+//-----------------------------------------------------------------------------
 
 __myevic__ void ScreenSaveMenuOnEnter()
 {
@@ -108,20 +157,6 @@ __myevic__ void LogoISelect()
 {
 	dfStatus.nologo = CurrentMenuItem & 1;
 	UpdateDFTimer = 50;
-}
-
-//-----------------------------------------------------------------------------
-
-__myevic__ void VCOMMEnter()
-{
-	CurrentMenuItem = dfStatus.vcom ^ 1;
-}
-
-__myevic__ void VCOMIClick()
-{
-	dfStatus.vcom = ( CurrentMenuItem & 1 ) ^ 1;
-	UpdateDataFlash();
-	InitUSB();
 }
 
 //-----------------------------------------------------------------------------
@@ -504,21 +539,6 @@ __myevic__ void ScreenIClick()
 
 //-----------------------------------------------------------------------------
 
-const menu_t VCOMMenu =
-{
-	String_VCOM,
-	VCOMMEnter+1,
-	0,
-	0,
-	VCOMIClick+1,
-	0,
-	2,
-	{
-		{ String_On, 0, 1, 0 },
-		{ String_Off, 0, 1, 0 }
-	}
-};
-
 const menu_t LOGOMenu =
 {
 	String_LOGO,
@@ -614,9 +634,8 @@ const menu_t MiscsMenu =
 	0,
 	0,
 	0,
-	5,
+	4,
 	{
-		{ String_VCOM, &VCOMMenu, -1, 0 },
 		{ String_LOGO, &LOGOMenu, -1, 0 },
 		{ String_Game, &GameMenu, -1, 0 },
 		{ String_3D, &Anim3dMenu, -1, 0 },
@@ -679,6 +698,21 @@ const menu_t ScreenSaveMenu =
 	}
 };
 
+const menu_t ExpertMenu =
+{
+	String_Expert,
+	0,
+	ExpertMenuIDraw+1,
+	0,
+	ExpertMenuOnClick+1,
+	0,
+	2,
+	{
+		{ String_USB, 0, -1, 0 },
+		{ String_Exit, 0, 1, 30 }
+	}
+};
+
 const menu_t ScreenMenu =
 {
 	String_Screen,
@@ -703,12 +737,13 @@ const menu_t MainMenu =
 	0,
 	0,
 	0,
-	6,
+	7,
 	{
 		{ String_Screen, &ScreenMenu, -1, 0 },
 		{ String_Coils, &CoilsMenu, -1, 0 },
 		{ String_Clock, &ClockMenu, -1, 0 },
 		{ String_Modes, &ModesMenu, -1, 0 },
+		{ String_Expert, &ExpertMenu, -1, 0 },
 		{ String_Miscs, &MiscsMenu, -1, 0 },
 		{ String_Exit, 0, 1, 0 }
 	}

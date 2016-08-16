@@ -145,6 +145,9 @@ __myevic__ void ResetDataFlash()
 	dfStatus.keylock = 0;
 	dfStatus.flipped = 0;
 	dfStatus.nologo = 0;
+	dfStatus.anaclk = 0;
+	dfStatus.vcom = 0;
+	dfStatus.storage = 0;
 	MemClear( dfSavedCfgRez, sizeof(dfSavedCfgRez) );
 	MemClear( dfSavedCfgPwr, sizeof(dfSavedCfgPwr) );
 	FMCWriteCounters();

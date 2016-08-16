@@ -43,6 +43,7 @@ typedef struct
 	int	nologo:1;
 	int anaclk:1;
 	int vcom:1;
+	int storage:1;
 }
 dfStatus_t;
 

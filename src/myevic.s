@@ -426,6 +426,19 @@ sqrtul:
 		bx		lr
 
 @ ---------------------------------------------------------------------------
+@
+		.global	GetFirmwareSize
 
+GetFirmwareSize:
+		ldr		r2, =RAMInitTable
+		ldr		r0, [r2]
+		ldr		r1, [r2, #8]
+		add		r0, r1
+		bx		lr
+		
+		.balign	4,0
+		.pool
+
+@ ---------------------------------------------------------------------------
 		.end
 
