@@ -37,16 +37,16 @@ Menus:
     Configure screen saver timing
 
 -Coils
-	Coil management menu.
-	On each line of the four TC modes:
-		Click fire to switch to edit mode on the resistance.
-		While the resistance value is highlighted, click + and - to edit its value.
-		Bring the resistance to zero with - to unlock and reset it.
-		You may also fire two seconds to zero the resistance.
-	Other lines:
-	Zero All:
-		Also zeroes all "START" mode resistances.
-	Exit: Self explanatory.
+    Coil management menu.
+    On each line of the four TC modes:
+        Click fire to switch to edit mode on the resistance.
+        While the resistance value is highlighted, click + and - to edit its value.
+        Bring the resistance to zero with - to unlock and reset it.
+        You may also fire two seconds to zero the resistance.
+    Other lines:
+    Zero All:
+        Also zeroes all "START" mode resistances.
+    Exit: Self explanatory.
 
 -Clock
   -Date/Time
@@ -56,7 +56,7 @@ Menus:
     Adjust clock: for small adjustments to clock time
     + and - adjust clock by seconds. Fire to save. For VTwo owners,
     this option also adjusts the X32 frequency accordingly if done
-	properly.
+    properly.
   -Clk Speed
     For owners of VTC mini (useless for VTwo owners)
     The VTC mini does not have the needed 32kHz crystal soldered on
@@ -75,10 +75,20 @@ Menus:
   given mode proposed while cycling between modes in menu mode.
   Typically, you'll set "START" mode to 'N'. Typically.
 
+-Expert
+  Some advanced options:
+  -USB:
+    Choose between several USB modes:
+    -HID: Normal operation mode - factory setting
+          HID is always active, even in the two others modes of
+          operation.
+    -COM: A virtual COM interface; mainly used for debugging
+          with a COM terminal such as putty.
+    -DSK: A virtual drive to download the firmware file.
+          Connect the box to a PC, and a disk device will appear with
+          a "FIRMWARE.BIN" file. This can be read and copied.
+ 
 -Miscs
-  -VCOM
-    Enable USB Virtual COM port
-    (used for debugging purpose)
   -LOGO
     Guenuine menu
   -Game
