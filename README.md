@@ -1,82 +1,92 @@
-# myevic
-````
+## **myevic**
 This is My eVic VTC Mini.
+####*Upgraded 3.03 firmware*
 
-Upgraded 3.03 firmware
 
-Usage:
- Use official firmware updater to upload bin/myevc_enc.bin OR
+###Main Features:
+My custom firmware is more or less identical to the official firmware - Just added some missing features.
+
+###Usage:
+Use official firmware updater to upload bin/myevc_enc.bin
+
+*OR*
+
  Use evic-usb to upload bin/myevic.bin to your box.
 
-Main Features:
-My custom firmware is more or less identical to the official firmware - Just added some missing features
+###Main Screen
+* Double-click:
 
-Menus:
-  Holding fire and right button a few seconds enters menus.
-  There's many more to LOGO and Game menus now. See below.
-
-Double-click:
   A double fire click switches between standard view and clock screen.
   The clock screen is close to the one viewed on the VTwo box; just better.
   See below to know how to configure clock.
 
-Third info line:
- The third info line of the main screen, used to display amps, puffs or time counters
- now have a few more options:
+* Third info line:
+
+ The third info line of the main screen, used to display amps,  puffs or time counters now have a few more options:
  - Battery voltage
  - Atomizer voltage
  - Board temperature
  - Real-time clock
   
-Menus:
+###Menus:
+Holding fire and right button a few seconds enters menus.
+There's many more to LOGO and Game menus now. See below.
 
--Screen
-  -Contrast
+* Screen
+  * Contrast:
+
     Self-explanatory
-  -Protection
-    Configure screen saver timing
+   * Protection:
 
--Coils
+     Configure screen saver timing
+
+* Coils
+ 
     Coil management menu.
-    On each line of the four TC modes:
+    * On each line of the four TC modes:
+
         Click fire to switch to edit mode on the resistance.
         While the resistance value is highlighted, click + and - to edit its value.
         Bring the resistance to zero with - to unlock and reset it.
         You may also fire two seconds to zero the resistance.
-    Other lines:
-    Zero All:
+    * Other lines:
+       * Zero All:
         Also zeroes all "START" mode resistances.
-    Exit: Self explanatory.
+      * Exit: Self explanatory.
 
--Clock
-  -Date/Time
+* Clock
+  * Date/Time
+
     Setup date and time.
     Fire change edited field, + and - set value.
+<<<<<<< HEAD
   -Clk Adjust
     Adjust clock: for small adjustments to clock time
     + and - adjust clock by seconds. Fire to save. For VTwo owners,
     this option also adjusts the X32 frequency accordingly if done
     properly.
   -Clk Speed
+=======
+  * Clk Adjust
+
+    Adjust clock: for small adjustments to clock time + and - adjust clock by seconds. Fire to save. For VTwo owners, this option also adjusts the X32 frequency accordingly if done properly.
+  * Clk Speed
+
+>>>>>>> 7c704cec71ceb9f894dea27e50005554e855bb55
     For owners of VTC mini (useless for VTwo owners)
-    The VTC mini does not have the needed 32kHz crystal soldered on
-    the pcb to regulate the clock speed; so, another internal clock
-    source is used to drive the clock. Since its frequency is quite
-    different, a clock speed ratio is needed to regulate the clock.
-    Usage: First setup date & time. Wait a few hours to let the
-    clock drift; then use this menu to adjust time to the real time.
-    This will compute the box-specific ratio between real time and
-    internal processor clock speed. Accuracy of a few seconds per
-    day can be achieved this way.
+    The VTC mini does not have the needed 32kHz crystal soldered on the pcb to regulate the clock speed; so, another internal clock source is used to drive the clock. Since its frequency is quite different, a clock speed ratio is needed to regulate the clock.
+Usage: First setup date & time. Wait a few hours to let the clock drift; then use this menu to adjust time to the real time. This will compute the box-specific ratio between real time and internal processor clock speed. Accuracy of a few seconds per day can be achieved this way.
 
--Modes
+* Modes
+
   Configure used/useless modes.
-  Click on each menu item to set 'Y' or 'N' if you want to see any
-  given mode proposed while cycling between modes in menu mode.
-  Typically, you'll set "START" mode to 'N'. Typically.
+  Click on each menu item to set 'Y' or 'N' if you want to see any given mode proposed while cycling between modes in menu mode.
+Typically, you'll set "START" mode to 'N'. Typically.
 
--Expert
+* Expert
+
   Some advanced options:
+<<<<<<< HEAD
   -USB:
     Choose between several USB modes:
     -HID: Normal operation mode - factory setting. Disables any
@@ -88,14 +98,28 @@ Menus:
     -DSK: A virtual drive to download the firmware file.
           Connect the box to a PC, and a disk device will appear with
           a "FIRMWARE.BIN" file. This can be read and copied.
+=======
+ * USB:
+   Choose between several USB modes:
+     * HID: Normal operation mode - factory setting. Disables anyother USB device than HID.
+HID is always active, even in the two others modes of operation.
+
+     * COM: A virtual COM interface; mainly used for debugging with a COM terminal such as putty.
+  
+     * DSK: A virtual drive to download the firmware file.
+     Connect the box to a PC, and a disk device will appear with a "FIRMWARE.BIN" file. This can be read and copied.
+>>>>>>> 7c704cec71ceb9f894dea27e50005554e855bb55
  
--Miscs
-  -LOGO
+* Miscs
+  * LOGO
+
     Guenuine menu
-  -Game
+  * Game
+
     Flappy bird. Guenuine menu.
-  -3D
+ * 3D
+
     Cool 3D spinning cube.
     Come back to this menu and set it to "None" to cancel animation.
     Or reset the box.
-```
+
