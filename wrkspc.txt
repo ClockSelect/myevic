@@ -10,6 +10,7 @@
         <File name="src\dataflash.c" />
         <File name="inc\display.h" />
         <File name="src\display.c" />
+        <File name="inc\dtmacros.h" />
         <File name="src\eh.c" />
         <File name="inc\events.h" />
         <File name="src\events.c" />

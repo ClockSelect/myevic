@@ -195,15 +195,9 @@ const S_USBD_INFO_T usbdMSCDescriptors =
 	usbdDevice,
 	usbdMSCConfigDesc,
 	usbdStrings,
-#ifdef MSC_WITH_HID
 	usbdHIDReportDesc,
 	usbdHIDReportSize,
 	usbdConfigHidDescIdx
-#else
-	0,
-	0,
-	0
-#endif
 };
 
 

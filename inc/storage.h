@@ -6,8 +6,6 @@
 
 //=========================================================================
 
-#define MSC_WITH_HID 1
-
 #define MSC_INTERFACE	2
 
 /*!<Define Mass Storage class specific requests */

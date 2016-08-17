@@ -10,14 +10,11 @@
 #define MSC_BULK_OUT_BUF	((uint8_t*)(USBD_BUF_BASE+USBD_GET_EP_BUF_ADDR(EP6)))
 
 //-------------------------------------------------------------------------
+// USB Descriptors
+//-------------------------------------------------------------------------
 
-#ifdef MSC_WITH_HID
 #define DESC_LEN_WITH_MSC \
 	(LEN_CONFIG + LEN_INTERFACE * 2 + LEN_HID + LEN_ENDPOINT * 4)
-#else
-#define DESC_LEN_WITH_MSC \
-	(LEN_CONFIG + LEN_INTERFACE + LEN_ENDPOINT * 2)
-#endif
 
 const uint8_t usbdMSCConfigDesc[] =
 {
@@ -26,17 +23,12 @@ const uint8_t usbdMSCConfigDesc[] =
 	/* wTotalLength */
 	DESC_LEN_WITH_MSC & 0x00FF,
 	(DESC_LEN_WITH_MSC & 0xFF00) >> 8,
-#ifdef MSC_WITH_HID
 	0x02,           /* bNumInterfaces */
-#else
-	0x01,           /* bNumInterfaces */
-#endif
 	0x01,           /* bConfigurationValue */
 	0x00,           /* iConfiguration */
 	0x80 | (USBD_SELF_POWERED << 6) | (USBD_REMOTE_WAKEUP << 5),/* bmAttributes */
 	USBD_MAX_POWER,         /* MaxPower */
 
-#ifdef MSC_WITH_HID
 /* I/F descr: HID */
 	LEN_INTERFACE,  /* bLength */
 	DESC_INTERFACE, /* bDescriptorType */
@@ -78,16 +70,11 @@ const uint8_t usbdMSCConfigDesc[] =
 	EP3_MAX_PKT_SIZE & 0x00FF,
 	(EP3_MAX_PKT_SIZE & 0xFF00) >> 8,
 	HID_DEFAULT_INT_IN_INTERVAL,    /* bInterval */
-#endif
 
 /* I/F descr: Mass Storage */
 	LEN_INTERFACE,  // bLength
 	DESC_INTERFACE, // bDescriptorType
-#ifdef MSC_WITH_HID
 	0x02,     // bInterfaceNumber
-#else
-	0x00,     // bInterfaceNumber
-#endif
 	0x00,     // bAlternateSetting
 	0x02,     // bNumEndpoints
 	0x08,     // bInterfaceClass:		Mass Storage
@@ -113,6 +100,29 @@ const uint8_t usbdMSCConfigDesc[] =
 };
 
 
+//-------------------------------------------------------------------------
+// Device size in blocks (sectors).
+// This value should be set accordingly with the FAT cluster size
+// so that the number of data clusters is between 4085 and 65524.
+// A value of 32768 w/ a cluster size of 4 blocks yields to approx
+// 8000 data clusters, which is a not-so-bad value.
+// The goal is to be in the domain of FAT16, which is the simplest
+// and easy-to-code file system.
+//-------------------------------------------------------------------------
+#define MSC_DEVICE_BLOCKS		0x8000
+#define MSC_LAST_BLOCK			(MSC_DEVICE_BLOCKS-1)
+//-------------------------------------------------------------------------
+// Block Size in bytes.
+// 512 is an arbitrary but consensual value.
+// This is also the minimal value. Code will malfunction below, and many
+// other codes will, too. This value must also be a power of two.
+//-------------------------------------------------------------------------
+#define MSC_BLOCK_SIZE			0x200
+//-------------------------------------------------------------------------
+
+
+//-------------------------------------------------------------------------
+// SCSI/UFI Requests and responses structures
 //-------------------------------------------------------------------------
 
 typedef struct
@@ -193,9 +203,6 @@ CSW_t;
 #define CSW_STATUS_FAILED		0x01
 #define CSW_STATUS_PHASE_ERROR	0x02
 
-#define MSC_DEVICE_BLOCKS		0x8080
-#define MSC_LAST_BLOCK			(MSC_DEVICE_BLOCKS-1)
-#define MSC_BLOCK_SIZE			0x200
 
 typedef struct
 {
@@ -222,7 +229,7 @@ const UFI_InquiryResponse_t MSC_InquiryResp =
 	0x00, // additional fields, none set
 	0x00, // additional fields, none set
 	0x00, // additional fields, none set
-	"Joyetech", // 8 -byte T10-assigned Vendor ID
+	"Joyetech", // 8-byte T10-assigned Vendor ID
 	"eVic VTC mini   ", // 16-byte product identification
 	"0001" // 4-byte product revision level
 };
@@ -258,8 +265,8 @@ const uint8_t UFI_RFCResponse[12] =
 		(MSC_DEVICE_BLOCKS >> 16) & 0xFF,
 		(MSC_DEVICE_BLOCKS >> 8 ) & 0xFF,
 		(MSC_DEVICE_BLOCKS      ) & 0xFF,
-		2,			// formatted media
-	// bytes per block
+	2,	// formatted media
+		// bytes per block
 		(MSC_BLOCK_SIZE >> 16) & 0xFF,
 		(MSC_BLOCK_SIZE >>  8) & 0xFF,
 		(MSC_BLOCK_SIZE      ) & 0xFF
@@ -267,10 +274,12 @@ const uint8_t UFI_RFCResponse[12] =
 
 const uint8_t UFI_RCResponse[8] =
 {
+	// Last addressable block
 	(MSC_LAST_BLOCK >> 24) & 0xFF,
 	(MSC_LAST_BLOCK >> 16) & 0xFF,
 	(MSC_LAST_BLOCK >>  8) & 0xFF,
 	(MSC_LAST_BLOCK      ) & 0xFF,
+	// Block size
 	(MSC_BLOCK_SIZE >> 24) & 0xFF,
 	(MSC_BLOCK_SIZE >> 16) & 0xFF,
 	(MSC_BLOCK_SIZE >>  8) & 0xFF,
@@ -307,6 +316,8 @@ UFI_RQSenseData_t UFI_RQSenseData =
 
 
 //-------------------------------------------------------------------------
+// Globals
+//-------------------------------------------------------------------------
 
 static volatile CBW_t gCBW;
 static volatile CSW_t gCSW;
@@ -341,47 +352,107 @@ static uint8_t gTxDataBlock[MSC_BLOCK_SIZE];
 // FAT16
 //-------------------------------------------------------------------------
 // 32768 sectors
-// -32 reserved = 32736
-//  /4 = 8184 clusters
-//   *2 = 16368 bytes in FAT
+// -1 reserved = 32767
+//  /4 = 8191 clusters
+//   *2 = 16382 bytes in FAT
 //    /512 = 32 sectors per FAT
 //         = 16 clusters for 2 FATs
-//  -16 = 8168 data clusters
+//  -16 = 8175 data clusters
 // => FAT type 16
+//-------------------------------------------------------------------------
 
+// MBR block address.
+// Must be 0 or -1.
+// A value of -1 disables the MBR. If MBR is disabled, the FAT16 partition
+// starting block should be set to zero.
+#define MBR_BLOCK			-1
 
-#define MBR_BLOCK			0
+// FAT16 partition starting block.
+// If MBR address is set to -1, this value should be set to zero.
+// Else, it should be set to any non-zero arbitrary value (e.g., 1).
+#define FAT16_PART0_START	0
+#define FAT16_PART0_SIZE	(MSC_DEVICE_BLOCKS-FAT16_PART0_START)
 
+// Cluster size in blocks and bytes.
+// Should be set accordingly with MSC_DEVICE_BLOCKS so that the number of
+// data clusters is in the FAT16 domain (See above).
+// 4 * 0x200 is the size of a dataflash page, which is irrelevant but cool.
 #define FAT16_CLUSTER_SIZE	4
 #define FAT16_CLUSTER_BYTES	(FAT16_CLUSTER_SIZE*MSC_BLOCK_SIZE)
 
-#define FAT16_PART0_START	128
-#define FAT16_PART0_SIZE	(MSC_DEVICE_BLOCKS-FAT16_PART0_START)
-
+// Number of blocks before the FAT16 partition.
+// Since there's only one partition, the number of hidden blocks is equal
+// to the partition starting block.
 #define FAT16_HIDDEN		FAT16_PART0_START
+// FAT16 partition boot block #
+// Must be the first block of the partition.
 #define FAT16_BOOT_BLOCK	FAT16_PART0_START
+// Reserved blocks zone starts at boot block
 #define FAT16_RESERVED		FAT16_BOOT_BLOCK
-#define FAT16_RESERVED_SIZE	8
+// Reserved blocks
+// This can be set to any arbitrary value (min 1 for the boot block);
+// but we don't need any reserved space for this device, so we reserve
+// only the boot block.
+#define FAT16_RESERVED_SIZE	1
+
+// Max number of entries in the root directory.
+// This value * 32 must be an integer multiple of the block size.
+// Set to 512 for maximum compatibility.
 #define FAT16_ROOT_ENTRIES	512
+// Size of the root directory, in blocks
 #define FAT16_ROOT_SIZE		((32*FAT16_ROOT_ENTRIES)/MSC_BLOCK_SIZE)
 
+// Size of the FAT
+// The FAT size depends on the number of data clusters, which depends on
+// the size of the FAT. We don't want to spend memory in mathematics, so
+// we compute an over-estimated value, which is fine since our virtual
+// disk space costs absolutly nothing.
 #define FAT16_FAT_SIZE		(((((FAT16_PART0_SIZE-(FAT16_RESERVED_SIZE+FAT16_ROOT_SIZE))/FAT16_CLUSTER_SIZE)*2)+(MSC_BLOCK_SIZE-1))/MSC_BLOCK_SIZE)
 
+// Start of the file data zone (data clusters) in blocks
+// Offset from start of partition and absolute block value
 #define FAT16_DATA_OFFSET	(FAT16_RESERVED_SIZE+(2*FAT16_FAT_SIZE)+FAT16_ROOT_SIZE)
 #define FAT16_DATA_START	(FAT16_RESERVED+FAT16_DATA_OFFSET)
 
+// Total number of data clusters on the partition
+// Since we estimated the FAT size up, and the division rounds down, we are
+// sure that all clusters fit into the FAT.
 #define FAT16_NUM_CLUSTERS	((FAT16_PART0_SIZE-FAT16_DATA_OFFSET)/FAT16_CLUSTER_SIZE)
 
+// Start addresses (blocks) of the two FATs
 #define FAT16_FAT1			(FAT16_RESERVED+FAT16_RESERVED_SIZE)
 #define FAT16_FAT2			(FAT16_FAT1+FAT16_FAT_SIZE)
+
+// Start address (block) of the root directory
 #define FAT16_ROOT_BLOCK	(FAT16_FAT2+FAT16_FAT_SIZE)
 
+// Data cluster # to block #
+// The first data cluster is numbered 2 (FAT convention).
 #define FAT16_CLUSTER_TO_BLOCK(c) \
 	(FAT16_DATA_START+(((c)-2)*FAT16_CLUSTER_SIZE))
 
+// Start addresses (cluster and block) of the firmware file
+// If the first cluster is above 16, one *may* have to modify the FAT block
+// generation in the MSC_NextBlock() function.
 #define FIRMWARE_CLUSTER_START	2
 #define FIRMWARE_BLOCK_START	FAT16_CLUSTER_TO_BLOCK(FIRMWARE_CLUSTER_START)
 
+
+//=========================================================================
+// Disk image structures
+//-------------------------------------------------------------------------
+// We can't afford a full disk image - lack of memory space.
+// So we use minimalist file system structures and use them to construct
+// the file system image on the fly on the block read requests.
+//-------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------
+// MBR
+//-------------------------------------------------------------------------
+// Conditionaly compiled depending of the MBR_BLOCK parameter to save space
+//-------------------------------------------------------------------------
+
+#if ( MBR_BLOCK >= 0 )
 
 typedef struct __attribute__((packed))
 {
@@ -398,16 +469,22 @@ MBR_Entry_t;
 
 const MBR_Entry_t MBR_Entry0 =
 {
-	0x80,
-	0x00,
-	0x0000,
-	0x0B,	// FAT32
-	0x00,
-	0x0000,
+	0x00,	// non-bootable - maybe one day
+	0x00,	// CHS data - useless
+	0x0000,	// idem
+	0x04,	// FAT16
+	0x00,	// idem
+	0x0000,	// idem
 	FAT16_PART0_START,	
 	FAT16_PART0_SIZE
 };
 
+#endif
+
+
+//-------------------------------------------------------------------------
+// BIOS Parameter block (Boot sector)
+//-------------------------------------------------------------------------
 
 typedef struct __attribute__((packed))
 {
@@ -459,6 +536,10 @@ const FAT16_Block0_t FAT16_Block0 =
 };
 
 
+//-------------------------------------------------------------------------
+// File entries
+//-------------------------------------------------------------------------
+
 typedef struct __attribute__((packed))
 {
 	char		FileName[8];
@@ -477,6 +558,8 @@ typedef struct __attribute__((packed))
 }
 FAT16_FileEntry_t;
 
+// Volume name file entry
+
 const FAT16_FileEntry_t VNFileEntry =
 {
 	"VCTMINI ",
@@ -494,6 +577,14 @@ const FAT16_FileEntry_t VNFileEntry =
 	0
 };
 
+// Firmware file entry
+// This is not const since it must be populated at run-time,
+// for two reasons:
+// - Firmware size is only known after linkage, and there is
+//   no simple way to set the value in the structure.
+// - __TIME__ and __DATE__ macros are *not* constant strings,
+//   ans thus cannot initialize const struct members. (why???!)
+
 FAT16_FileEntry_t FWFileEntry =
 {
 	"FIRMWARE",
@@ -507,7 +598,7 @@ FAT16_FileEntry_t FWFileEntry =
 	0,
 	0,
 	0,
-	2,
+	FIRMWARE_CLUSTER_START,
 	0
 };
 
@@ -534,6 +625,7 @@ __myevic__ void MSC_Init()
 
 	gTxNumBlocks = 0;
 	gTxDataLength = 0;
+	gTxDataIndex = 0;
 }
 
 
@@ -643,27 +735,39 @@ __myevic__ void MSC_NextBlock()
 
 		MemClear( gTxDataBlock, gTxDataLength );
 
+		#if ( MBR_BLOCK >= 0 )
 		if ( gTxLBA == MBR_BLOCK )
 		{
+			// MBR Block
 			USBD_MemCopy( &gTxDataBlock[446], (uint8_t*)&MBR_Entry0, sizeof(MBR_Entry0) );
 			gTxDataBlock[510] = 0x55;
 			gTxDataBlock[511] = 0xAA;
 		}
-		else if ( gTxLBA == FAT16_BOOT_BLOCK )
+		else
+		#endif
+		if ( gTxLBA == FAT16_BOOT_BLOCK )
 		{
+			// Boot Block
 			USBD_MemCopy( gTxDataBlock, (uint8_t*)&FAT16_Block0, sizeof(FAT16_Block0) );
 			gTxDataBlock[510] = 0x55;
 			gTxDataBlock[511] = 0xAA;
 		}
 		else if (( gTxLBA == FAT16_FAT1 ) || ( gTxLBA == FAT16_FAT2 ))
 		{
+			// FAT
+			// In the worst case scenario, firmware is 0x1E000 bytes long
+			// and uses 240 clusters (0x200 block size, 1 block per cluster).
+			// With the clusters 0 & 1, this uses 488 bytes of FAT and
+			// holds on the first FAT sector.
+			// Thus, we handle only the first FAT sector and ignore the others.
+
 			gTxDataBlock[0] = 0xF8;
 			gTxDataBlock[1] = 0xFF;
 
 			gTxDataBlock[2] = 0xFF;
 			gTxDataBlock[3] = 0xFF;
 
-			uint16_t CurrentCluster = 2;
+			uint16_t CurrentCluster = FIRMWARE_CLUSTER_START;
 			uint32_t AllocSize = GetFirmwareSize();
 			while ( 1 )
 			{
@@ -684,13 +788,17 @@ __myevic__ void MSC_NextBlock()
 		}
 		else if ( gTxLBA == FAT16_ROOT_BLOCK )
 		{
+			// Root directory
+			// Volume name entry
 			USBD_MemCopy( &gTxDataBlock[0], (uint8_t*)&VNFileEntry, sizeof(VNFileEntry) );
+			// Firmware file entry
 			SetFileEntryDates( &FWFileEntry );
 			FWFileEntry.FileSize = GetFirmwareSize();
 			USBD_MemCopy( &gTxDataBlock[32], (uint8_t*)&FWFileEntry, sizeof(FWFileEntry) );
 		}
 		else if ( gTxLBA >= FIRMWARE_BLOCK_START )
 		{
+			// Firmware file data
 			uint32_t fwSize   = GetFirmwareSize();
 			uint32_t fwOffset = ( gTxLBA - FIRMWARE_BLOCK_START ) * MSC_BLOCK_SIZE;
 			if ( fwOffset < fwSize )
@@ -707,6 +815,7 @@ __myevic__ void MSC_NextBlock()
 				FMC_DISABLE_ISP();
 				SYS_LockReg();
 				
+				// Encrypt firmware
 				for ( int i = 0 ; i < MSC_BLOCK_SIZE ; ++i )
 				{
 					uint8_t gun = fwSize + 408376 + fwOffset + i - fwSize / 408376;

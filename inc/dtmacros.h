@@ -1,6 +1,12 @@
 #ifndef __DTMACROS_H__
 #define __DTMACROS_H__
 
+//-------------------------------------------------------------------------
+// Those macros are quite impressive, but they are all compiled
+// to a simple numeral constant. They lead to no run-time computation
+// nor memory space.
+//-------------------------------------------------------------------------
+
 // Example of __DATE__ string: "Jul 27 2012"
 //                              01234567890
 
