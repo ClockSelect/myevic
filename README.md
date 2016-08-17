@@ -52,7 +52,7 @@ Menus:
   -Date/Time
     Setup date and time.
     Fire change edited field, + and - set value.
-   -Clk Adjust
+  -Clk Adjust
     Adjust clock: for small adjustments to clock time
     + and - adjust clock by seconds. Fire to save. For VTwo owners,
     this option also adjusts the X32 frequency accordingly if done
@@ -79,7 +79,8 @@ Menus:
   Some advanced options:
   -USB:
     Choose between several USB modes:
-    -HID: Normal operation mode - factory setting
+    -HID: Normal operation mode - factory setting. Disables any
+          other USB device than HID.
           HID is always active, even in the two others modes of
           operation.
     -COM: A virtual COM interface; mainly used for debugging
