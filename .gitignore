@@ -47,6 +47,7 @@ Temporary Items
 .apdisk
 bin/
 !bin/myevic.bin
+!bin/myevic_enc.bin
 *.sh
 disasm/
 obj/

@@ -198,6 +198,7 @@ $(TARGET).bin: $(OBJS_FIXPATH) $(MYEVIC_OBJS)
 	test -d $(OUTDIR) || mkdir $(OUTDIR)
 	$(LD) $(LDFLAGS) -o $(OUTDIR)/$(TARGET).elf --start-group $(LIBS) $(OBJS_FIXPATH) $(MYEVIC_OBJS) --end-group
 	$(OBJCOPY) -O binary -j .text -j .data $(OUTDIR)/$(TARGET).elf $(OUTDIR)/$(TARGET).bin
+	evic convert $(OUTDIR)/$(TARGET).bin -o $(OUTDIR)/$(TARGET)_enc.bin
 
 docs:
 	doxygen
