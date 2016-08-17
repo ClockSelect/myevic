@@ -5,8 +5,8 @@ This is My eVic VTC Mini.
 Upgraded 3.03 firmware
 
 Usage:
-Unencoded firmware in the bin/ directory
-Use evic-usb to upload it to you box
+ Use official firmware updater to upload bin/myevc_enc.bin OR
+ Use evic-usb to upload bin/myevic.bin to your box.
 
 Main Features:
 My custom firmware is more or less identical to the official firmware - Just added some missing features
