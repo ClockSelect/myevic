@@ -1,19 +1,14 @@
 ## **myevic**
 This is My eVic VTC Mini.
-####*Upgraded 3.03 firmware*
+#### *Upgraded 3.03 firmware*
 
-
-###Main Features:
+### Main Features:
 My custom firmware is more or less identical to the official firmware - Just added some missing features.
+### Usage:
+- Use official firmware updater to upload bin/myevic_enc.bin, or:
+- Use evic-usb to upload bin/myevic.bin to your box.
 
-###Usage:
-Use official firmware updater to upload bin/myevc_enc.bin
-
-*OR*
-
- Use evic-usb to upload bin/myevic.bin to your box.
-
-###Main Screen
+### Main Screen
 * Double-click:
 
   A double fire click switches between standard view and clock screen.
@@ -35,10 +30,10 @@ There's many more to LOGO and Game menus now. See below.
 * Screen
   * Contrast:
 
-    Self-explanatory
-   * Protection:
+     Self-explanatory
+  * Protection:
 
-     Configure screen saver timing
+    Configure screen saver timing
 
 * Coils
  
@@ -51,28 +46,24 @@ There's many more to LOGO and Game menus now. See below.
         You may also fire two seconds to zero the resistance.
     * Other lines:
        * Zero All:
-        Also zeroes all "START" mode resistances.
-      * Exit: Self explanatory.
+       
+         Also zeroes all "START" mode resistances.
+      * Exit:
+
+        Self explanatory.
 
 * Clock
   * Date/Time
 
     Setup date and time.
     Fire change edited field, + and - set value.
-<<<<<<< HEAD
-  -Clk Adjust
-    Adjust clock: for small adjustments to clock time
-    + and - adjust clock by seconds. Fire to save. For VTwo owners,
-    this option also adjusts the X32 frequency accordingly if done
-    properly.
-  -Clk Speed
-=======
+
   * Clk Adjust
 
     Adjust clock: for small adjustments to clock time + and - adjust clock by seconds. Fire to save. For VTwo owners, this option also adjusts the X32 frequency accordingly if done properly.
+
   * Clk Speed
 
->>>>>>> 7c704cec71ceb9f894dea27e50005554e855bb55
     For owners of VTC mini (useless for VTwo owners)
     The VTC mini does not have the needed 32kHz crystal soldered on the pcb to regulate the clock speed; so, another internal clock source is used to drive the clock. Since its frequency is quite different, a clock speed ratio is needed to regulate the clock.
 Usage: First setup date & time. Wait a few hours to let the clock drift; then use this menu to adjust time to the real time. This will compute the box-specific ratio between real time and internal processor clock speed. Accuracy of a few seconds per day can be achieved this way.
@@ -86,29 +77,16 @@ Typically, you'll set "START" mode to 'N'. Typically.
 * Expert
 
   Some advanced options:
-<<<<<<< HEAD
-  -USB:
+
+  * USB:
     Choose between several USB modes:
-    -HID: Normal operation mode - factory setting. Disables any
-          other USB device than HID.
-          HID is always active, even in the two others modes of
-          operation.
-    -COM: A virtual COM interface; mainly used for debugging
-          with a COM terminal such as putty.
-    -DSK: A virtual drive to download the firmware file.
-          Connect the box to a PC, and a disk device will appear with
-          a "FIRMWARE.BIN" file. This can be read and copied.
-=======
- * USB:
-   Choose between several USB modes:
      * HID: Normal operation mode - factory setting. Disables anyother USB device than HID.
-HID is always active, even in the two others modes of operation.
+       HID is always active, even in the two others modes of operation.
 
      * COM: A virtual COM interface; mainly used for debugging with a COM terminal such as putty.
   
      * DSK: A virtual drive to download the firmware file.
      Connect the box to a PC, and a disk device will appear with a "FIRMWARE.BIN" file. This can be read and copied.
->>>>>>> 7c704cec71ceb9f894dea27e50005554e855bb55
  
 * Miscs
   * LOGO
