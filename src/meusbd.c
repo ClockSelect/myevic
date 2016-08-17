@@ -340,7 +340,7 @@ __myevic__ void USBD_IRQHandler(void)
 
 //=========================================================================
 //----- (00002564) --------------------------------------------------------
-__myevic__ void hidClassRequest()
+__myevic__ void usbdClassRequest()
 {
 	uint8_t token[8];
 
@@ -417,7 +417,7 @@ __myevic__ void hidClassRequest()
 
 //=========================================================================
 //-------------------------------------------------------------------------
-__myevic__ void hidInit()
+__myevic__ void SetupEndpoints()
 {
 	/* Init setup packet buffer */
 	/* Buffer range for setup packet -> [0 ~ 0x7] */
@@ -492,20 +492,20 @@ __myevic__ void InitUSB()
 
 	if ( dfStatus.vcom )
 	{
-		USBD_Open( &usbdVCOMDescriptors, hidClassRequest+1, 0 );
+		USBD_Open( &usbdVCOMDescriptors, usbdClassRequest+1, 0 );
 	}
 	else if ( dfStatus.storage )
 	{
-		USBD_Open( &usbdMSCDescriptors, hidClassRequest+1, 0 );
+		USBD_Open( &usbdMSCDescriptors, usbdClassRequest+1, 0 );
 		USBD_SetConfigCallback( MSC_SetConfig );
 		MSC_Init();
 	}
 	else
 	{
-		USBD_Open( &usbdDescriptors, hidClassRequest+1, 0 );
+		USBD_Open( &usbdDescriptors, usbdClassRequest+1, 0 );
 	}
 
-	hidInit();
+	SetupEndpoints();
 	USBD_Start();
 	NVIC_EnableIRQ( USBD_IRQn );
 

@@ -345,6 +345,7 @@ __myevic__ int CoilsMEvent( int event )
 				else if ( *CoilSelectedRez > 5 )
 				{
 					--*CoilSelectedRez;
+					*CoilSelectedLock = 1;
 				}
 				UpdateDFTimer = 50;
 				gFlags.refresh_display = 1;
