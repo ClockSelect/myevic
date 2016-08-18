@@ -295,3 +295,12 @@ __myevic__ void SSD1327_WriteBytes( const int isData, const uint8_t data[], cons
 	}
 }
 
+
+//=========================================================================
+// Advantage: SSD1327!
+//-------------------------------------------------------------------------
+__myevic__ void SSD1327_Screen2Bitmap( uint8_t *pu8Bitmap )
+{
+	MemCpy( pu8Bitmap, ScreenBuffer, SCREEN_BUFFER_SIZE );
+}
+

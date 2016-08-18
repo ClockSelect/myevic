@@ -244,3 +244,26 @@ __myevic__ void SSD1306_WriteBytes( const int isData, const uint8_t data[], cons
 }
 
 
+//=========================================================================
+__myevic__ void SSD1306_Screen2Bitmap( uint8_t *pu8Bitmap )
+{
+	MemClear( pu8Bitmap, SCREEN_BUFFER_SIZE );
+
+	for ( int line = 0 ; line < 16 ; ++line )
+	{
+		for ( int bit = 0 ; bit < 8 ; ++bit )
+		{
+			int y = line * 8 + bit;
+			int mask = 1 << bit;
+			for ( int x = 0 ; x < 64 ; ++x )
+			{
+				if ( ScreenBuffer[ line * 64 + x ] & mask )
+				{
+					pu8Bitmap[ y * 8 + ( x >> 3 ) ] |= ( 0x80 >> ( x & 7 ) );
+				}
+			}
+		}
+	}
+}
+
+

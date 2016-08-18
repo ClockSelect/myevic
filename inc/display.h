@@ -30,6 +30,7 @@ extern void ScreenOff();
 extern void DisplaySetContrast( const uint8_t c );
 extern void ClearScreenBuffer();
 extern void DisplayRefresh();
+extern void Screen2Bitmap( uint8_t *pu8Bitmap );
 
 extern int GetImageWidth( const uint16_t imgnum );
 extern int GetStrCenteredX( const uint16_t str[] );
@@ -62,6 +63,7 @@ extern void SSD1306_SetContrast( const uint8_t c );
 extern void SSD1306_Plot( int x, int y, int color );
 extern uint32_t SSD1306_Image( int x, int y, uint16_t img, int color );
 extern uint32_t SSD1306_Bitmap( int x, int y, const image_t *image, int color );
+extern void SSD1306_Screen2Bitmap( uint8_t *pu8Bitmap );
 
 extern void SSD1327_Init();
 extern void SSD1327_WriteBytes( const int isData, const uint8_t data[], const int len );
@@ -72,6 +74,7 @@ extern void SSD1327_SetContrast( const uint8_t c );
 extern void SSD1327_Plot( int x, int y, int color );
 extern uint32_t SSD1327_Image( int x, int y, uint16_t img, int color );
 extern uint32_t SSD1327_Bitmap( int x, int y, const image_t *image, int color );
+extern void SSD1327_Screen2Bitmap( uint8_t *pu8Bitmap );
 
 
 #endif /* __DISPLAY_H__ */

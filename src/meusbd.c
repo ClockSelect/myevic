@@ -2,6 +2,7 @@
 #include "myprintf.h"
 #include "myrtc.h"
 #include "dataflash.h"
+#include "display.h"
 #include "meusbd.h"
 
 void usbdEP2Handler();
@@ -531,6 +532,7 @@ __myevic__ void InitUSB()
 #define HID_CMD_SETLOGO		0xA5
 #define HID_CMD_RESET		0xB4
 #define HID_CMD_FMCREAD		0xC0
+#define HID_CMD_SCREENSHOT	0xC1
 
 
 typedef struct __attribute__((packed))
@@ -545,6 +547,7 @@ typedef struct __attribute__((packed))
 
 CMD_T hidCmd;
 
+uint8_t *hidInDataPtr;
 uint8_t hidData[FMC_FLASH_PAGE_SIZE];
 uint32_t hidDFData[FMC_FLASH_PAGE_SIZE/4];
 uint32_t hidDataIndex;
@@ -559,6 +562,21 @@ __myevic__ uint32_t Checksum( const uint8_t *p, const uint32_t l )
 	return sum;
 }
 
+//-------------------------------------------------------------------------
+__myevic__ void hidStartInReport( uint32_t u32ParamLen )
+{
+	hidDataIndex = u32ParamLen;
+	hidCmd.u32Signature = u32ParamLen;
+
+	USBD_MemCopy(
+		(uint8_t *)(USBD_BUF_BASE + USBD_GET_EP_BUF_ADDR(EP2)),
+		hidInDataPtr,
+		EP2_MAX_PKT_SIZE
+	);
+	USBD_SET_PAYLOAD_LEN( EP2, EP2_MAX_PKT_SIZE );
+	hidDataIndex -= EP2_MAX_PKT_SIZE;
+}
+
 
 //----- (00002C60) --------------------------------------------------------
 __myevic__ void hidSetInReport()
@@ -568,12 +586,13 @@ __myevic__ void hidSetInReport()
 	switch ( cmd )
 	{
 		case HID_CMD_GETINFO:
+		case HID_CMD_SCREENSHOT:
 		{
 			if ( hidDataIndex )
 			{
 				USBD_MemCopy(
 					(uint8_t *)(USBD_BUF_BASE + USBD_GET_EP_BUF_ADDR(EP2)),
-					&hidData[hidCmd.u32Signature - hidDataIndex],
+					&hidInDataPtr[hidCmd.u32Signature - hidDataIndex],
 					EP2_MAX_PKT_SIZE
 				);
 				USBD_SET_PAYLOAD_LEN( EP2, EP2_MAX_PKT_SIZE );
@@ -690,16 +709,8 @@ __myevic__ uint32_t hidGetInfoCmd( CMD_T *pCmd )
 
 		MemCpy( hidData, ((uint8_t *)&DataFlash) + u32StartAddr, u32ParamLen );
 
-		hidDataIndex = u32ParamLen;
-		pCmd->u32Signature = u32ParamLen;
-
-		USBD_MemCopy(
-			(uint8_t *)(USBD_BUF_BASE + USBD_GET_EP_BUF_ADDR(EP2)),
-			hidData,
-			EP2_MAX_PKT_SIZE
-		);
-		USBD_SET_PAYLOAD_LEN( EP2, EP2_MAX_PKT_SIZE );
-		hidDataIndex -= EP2_MAX_PKT_SIZE;
+		hidInDataPtr = hidData;
+		hidStartInReport( u32ParamLen );
 	}
 
 	return 0;
@@ -773,16 +784,36 @@ __myevic__ uint32_t hidFMCReadCmd( CMD_T *pCmd )
 		FMC_DISABLE_ISP();
 		SYS_LockReg();
 
-		hidDataIndex = u32ParamLen;
-		pCmd->u32Signature = u32ParamLen;
+		hidInDataPtr = hidData;
+		hidStartInReport( u32ParamLen );
+	}
 
-		USBD_MemCopy(
-			(uint8_t *)(USBD_BUF_BASE + USBD_GET_EP_BUF_ADDR(EP2)),
-			hidData,
-			EP2_MAX_PKT_SIZE
-		);
-		USBD_SET_PAYLOAD_LEN( EP2, EP2_MAX_PKT_SIZE );
-		hidDataIndex -= EP2_MAX_PKT_SIZE;
+	return 0;
+}
+
+
+//-------------------------------------------------------------------------
+__myevic__ uint32_t hidScreenshot( CMD_T *pCmd )
+{
+	uint32_t u32StartAddr;
+	uint32_t u32ParamLen;
+
+	u32StartAddr = pCmd->u32Arg1;
+	u32ParamLen = pCmd->u32Arg2;
+
+	myprintf( "Screenshot command - Start Addr: %d    Param Len: %d\n", pCmd->u32Arg1, pCmd->u32Arg2 );
+
+	if ( u32ParamLen )
+	{
+		if ( u32StartAddr + u32ParamLen > SCREEN_BUFFER_SIZE )
+		{
+			u32ParamLen = SCREEN_BUFFER_SIZE - u32StartAddr;
+		}
+
+		Screen2Bitmap( hidData );
+
+		hidInDataPtr = hidData;
+		hidStartInReport( u32ParamLen );
 	}
 
 	return 0;
@@ -844,6 +875,11 @@ int32_t hidProcessCommand( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 		case HID_CMD_FMCREAD :
 		{
 			hidFMCReadCmd( &hidCmd );
+			break;
+		}
+		case HID_CMD_SCREENSHOT:
+		{
+			hidScreenshot( &hidCmd );
 			break;
 		}
 		default:

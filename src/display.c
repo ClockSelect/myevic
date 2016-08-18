@@ -606,3 +606,21 @@ __myevic__ void DrawCircle( int x_centre, int y_centre, int r, int color, int fi
 	}
 }
 
+
+//=========================================================================
+// Converts screen buffer in something readable
+//-------------------------------------------------------------------------
+__myevic__ void Screen2Bitmap( uint8_t *pu8Bitmap )
+{
+	switch ( DisplayModel )
+	{
+		case 0:
+			SSD1306_Screen2Bitmap( pu8Bitmap );
+			break;
+
+		case 1:
+			SSD1327_Screen2Bitmap( pu8Bitmap );
+			break;
+	}
+}
+
