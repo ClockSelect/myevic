@@ -11,18 +11,22 @@ My custom firmware is more or less identical to the official firmware - Just add
 ### Main Screen
 * Double-click:
 
-  A double fire click switches between standard view and clock screen.
-  The clock screen is close to the one viewed on the VTwo box; just better.
-  See below to know how to configure clock.
+    A double fire click switches between standard view and clock screen.
+    The clock screen is close to the one viewed on the VTwo box; just better.
+    See below to know how to configure clock.
+
+    ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/mainscreen_zpsvjfqgoub.png)
 
 * Third info line:
 
- The third info line of the main screen, used to display amps,  puffs or time counters now have a few more options:
- - Battery voltage
- - Atomizer voltage
- - Board temperature
- - Real-time clock
-  
+    The third info line of the main screen, used to display amps,  puffs or time counters now have a few more options:
+    - Battery voltage
+    - Atomizer voltage
+    - Board temperature
+    - Real-time clock
+
+    ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/mainscreen2_zpsclbvvdah.png)
+
 ###Menus:
 Holding fire and right button a few seconds enters menus.
 There's many more to LOGO and Game menus now. See below.
@@ -30,18 +34,25 @@ There's many more to LOGO and Game menus now. See below.
 * Screen
   * Contrast:
 
-     Self-explanatory
+        ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/contrast_zpsjuouc0v4.png)
+
+         Default VTC contrast is around 17%. This screen gives you access to the full contrast range of the display.
   * Protection:
 
-    Configure screen saver timing
+         ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/protec_zpsniaf7bl8.png)
+
+         Configure screen saver timing. After 30 seconds of inactivity, the main screen switches to an analog clock screen for the duration configured in this menu, after what the box shuts down. Scroll down the menu to the "Off" option to disable box shutdown.
 
 * Coils
  
     Coil management menu.
+
+    ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/coils_zpsn29ef1h5.png)
     * On each line of the four TC modes:
 
         Click fire to switch to edit mode on the resistance.
         While the resistance value is highlighted, click + and - to edit its value.
+        Setting the resistance to any non-zero value automaticaly locks it.
         Bring the resistance to zero with - to unlock and reset it.
         You may also fire two seconds to zero the resistance.
     * Other lines:
@@ -70,9 +81,11 @@ Usage: First setup date & time. Wait a few hours to let the clock drift; then us
 
 * Modes
 
-  Configure used/useless modes.
-  Click on each menu item to set 'Y' or 'N' if you want to see any given mode proposed while cycling between modes in menu mode.
-Typically, you'll set "START" mode to 'N'. Typically.
+    ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/modes_zpslphwvqhh.png)
+
+    Configure used/useless modes.
+    Click on each menu item to set 'Y' or 'N' if you want to see any given mode proposed while cycling between modes in menu mode.
+    Typically, you'll set "START" mode to 'N'. Typically.
 
 * Expert
 
@@ -96,6 +109,8 @@ Typically, you'll set "START" mode to 'N'. Typically.
 
     Flappy bird. Guenuine menu.
  * 3D
+ 
+    ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/cube_zpsf9apfiun.png)
 
     Cool 3D spinning cube.
     Come back to this menu and set it to "None" to cancel animation.
