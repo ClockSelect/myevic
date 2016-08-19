@@ -42,7 +42,6 @@ SECTIONS {
 		Data_Start_RAM = .;
 		*(vtable)
 		*(.data*)
-		*(.srami*)
 
 		. = ALIGN(4);
 		Data_End_RAM = .;
@@ -53,11 +52,9 @@ SECTIONS {
 	.sram : {
 		SRAMZ_Start = .;
 
-		*(.sramz*)
-
 		. = ALIGN(4);
-		*(.bss*)
 		*(COMMON)
+		*(.bss*)
 
 		end = .;
 

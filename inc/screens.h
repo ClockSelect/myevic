@@ -10,7 +10,14 @@
 extern uint16_t	ScreenDuration;
 extern uint8_t	Screen;
 
-extern uint8_t ShowDateFlag;
+extern uint8_t	ShowDateFlag;
+extern uint16_t	HideLogo;
+extern uint8_t	ShowWeakBatFlag;
+extern uint8_t	BatAnimLevel;
+
+extern uint8_t	EditItemIndex;
+extern uint16_t	EditModeTimer;
+extern uint8_t	EditTCRIndex;
 
 extern const uint8_t ScrSaveTimes[8];
 

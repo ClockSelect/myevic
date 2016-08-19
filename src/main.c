@@ -383,7 +383,7 @@ __myevic__ void Main()
 			}
 			else if
 			(	!( dfStatus.off )
-				&& Event == -1
+				&& Event == 0
 				&& ( Screen == 0 || Screen == 1 || Screen == 5 ) )
 			{
 				ProbeAtomizer();

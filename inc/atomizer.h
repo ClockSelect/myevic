@@ -2,6 +2,55 @@
 #define __ATOMIZER_H__
 
 
+//=============================================================================
+
+/* DC/DC converters PWM channels */
+#define BBC_PWMCH_BUCK  0
+#define BBC_PWMCH_BOOST 2
+
+//-------------------------------------------------------------------------
+
+extern uint32_t	AtoVolts;
+extern uint32_t	TargetVolts;
+extern uint32_t	AtoRezMilli;
+extern uint32_t	ADCShuntSum;
+extern uint32_t	ADCAtoSum;
+extern uint32_t	AtoMinVolts;
+extern uint32_t	AtoMaxVolts;
+extern uint32_t	AtoMinPower;
+extern uint32_t	AtoMaxPower;
+extern uint32_t	MaxTCPower;
+extern uint32_t	MaxVWVolts;
+extern uint32_t	MaxPower;
+extern uint16_t	TCR;
+extern uint16_t	FireDuration;
+extern uint16_t	AtoTemp;
+extern uint16_t	AtoCurrent;
+extern uint16_t	AtoRez;
+extern uint8_t	AtoProbeCount;
+extern uint8_t	AtoShuntValue;
+extern uint8_t	BBCNextMode;
+extern uint8_t	BBCMode;
+extern uint8_t	AtoError;
+extern uint8_t	AtoStatus;
+extern uint8_t	BoardTemp;
+extern uint8_t	ConfigIndex;
+extern uint8_t	LastAtoError;
+
+extern uint8_t	byte_200000B3;
+extern uint16_t	word_200000B6;
+extern uint16_t	word_200000B8;
+extern uint16_t	word_200000BA;
+extern uint16_t	word_200000BC;
+extern uint16_t	word_200000BE;
+extern uint16_t	word_200000C0;
+
+
+//-------------------------------------------------------------------------
+
+extern void InitPWM();
+extern void BBC_Configure( uint32_t chan, uint32_t mode );
+
 extern void StopFire();
 
 extern uint16_t LowestRezMeasure();
@@ -39,5 +88,6 @@ extern uint16_t FarenheitToC( uint16_t tf );
 extern const uint16_t STARTRezValues[];
 extern const uint16_t STARTPowers[];
 
+//=============================================================================
 
 #endif /* __ATOMIZER_H__ */

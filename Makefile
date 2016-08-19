@@ -27,16 +27,13 @@ OBJS := $(NUVOSDK)/Device/Nuvoton/M451Series/Source/system_M451Series.o \
 
 MYEVIC_OBJS :=	src/myevic.o \
 				src/myprintf.o \
+				src/atomizer.o \
 				src/dataflash.o \
 				src/screens.o \
 				src/menus.o \
 				src/mainview.o \
 				src/battery.o \
 				src/events.o \
-				src/display.o \
-				src/SSD1306.o \
-				src/SSD1327.o \
-				src/atomizer.o \
 				src/myrtc.o \
 				src/miscs.o \
 				src/eh.o \
@@ -49,6 +46,9 @@ MYEVIC_OBJS :=	src/myevic.o \
 				src/storage.o \
 				src/flappy.o \
 				src/fbdata.o \
+				src/display.o \
+				src/SSD1306.o \
+				src/SSD1327.o \
 				src/main.o
 
 AEABI_OBJS := src/aeabi/aeabi_memset-thumb2.o \
@@ -170,6 +170,7 @@ LINKSCRIPT := linker.ld
 LDFLAGS += -u __aeabi_uldivmod
 LDFLAGS += $(LIBDIRS)
 LDFLAGS += -gc-sections -nostdlib -nostartfiles -T$(LINKSCRIPT)
+#LDFLAGS += --verbose --cref -Map=blah.map
 
 SRCDIR   = src
 INCDIR   = inc

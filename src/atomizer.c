@@ -1,11 +1,114 @@
 #include "myevic.h"
 #include "screens.h"
+#include "events.h"
 #include "myprintf.h"
 #include "dataflash.h"
 #include "battery.h"
 #include "timers.h"
 #include "meadc.h"
 #include "megpio.h"
+
+
+//=============================================================================
+
+uint32_t	AtoVoltsADC;
+uint32_t	AtoVolts;
+uint32_t	TargetVolts;
+uint32_t	AtoRezMilli;
+uint32_t	ADCShuntSum;
+uint32_t	ADCAtoSum;
+uint32_t	AtoMinVolts;
+uint32_t	AtoMaxVolts;
+uint32_t	AtoMinPower;
+uint32_t	AtoMaxPower;
+uint32_t	MaxTCPower;
+uint32_t	MaxVWVolts;
+uint32_t	MaxPower;
+uint16_t	FireDuration;
+uint16_t	AtoTemp;
+uint16_t	AtoCurrent;
+uint16_t	AtoRez;
+uint16_t	TCR;
+uint8_t		AtoProbeCount;
+uint8_t		AtoShuntValue;
+uint8_t		BBCNextMode;
+uint8_t		BBCMode;
+uint8_t		AtoError;		// 0,1,2,3 = Ok,Open/Large,Short,Low
+uint8_t		AtoStatus;		// 0,1,2,3,4 = Open,Short,Low,Large,Ok
+uint8_t		BoardTemp;
+uint8_t		ConfigIndex;
+uint8_t		LastAtoError;
+
+uint8_t		byte_200000B3;
+uint16_t	word_200000B6;
+uint16_t	word_200000B8;
+uint16_t	word_200000BA;
+uint16_t	word_200000BC;
+uint16_t	word_200000BE;
+uint16_t	word_200000C0;
+
+
+//-------------------------------------------------------------------------
+
+uint16_t	BuckDuty;
+uint16_t	BoostDuty;
+
+
+//=========================================================================
+//----- (00005C4C) --------------------------------------------------------
+__myevic__ void InitPWM()
+{
+	PWM_ConfigOutputChannel( PWM0, BBC_PWMCH_BUCK, 150000, 0 );
+	PWM_ConfigOutputChannel( PWM0, BBC_PWMCH_BOOST, 150000, 0 );
+
+	PWM_EnableOutput( PWM0, 1 << BBC_PWMCH_BUCK );
+	PWM_EnablePeriodInt( PWM0, BBC_PWMCH_BUCK, 0 );
+
+	PWM_EnableOutput( PWM0, 1 << BBC_PWMCH_BOOST );
+	PWM_EnablePeriodInt( PWM0, BBC_PWMCH_BOOST, 0 );
+
+	PWM_Start( PWM0, 1 << BBC_PWMCH_BUCK );
+	PWM_Start( PWM0, 1 << BBC_PWMCH_BOOST );
+
+	BoostDuty = 0;
+	PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, 0 );
+
+	BuckDuty = 0;
+	PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, 0 );
+}
+
+
+//=========================================================================
+//----- (00005CC0) --------------------------------------------------------
+__myevic__ void BBC_Configure( uint32_t chan, uint32_t mode )
+{
+	if ( chan == BBC_PWMCH_BUCK )
+	{
+		SYS->GPC_MFPL &= ~SYS_GPC_MFPL_PC0MFP_Msk;
+
+		if ( mode )
+		{
+			SYS->GPC_MFPL |= SYS_GPC_MFPL_PC0MFP_PWM0_CH0;
+		}
+		else
+		{
+			GPIO_SetMode( PC, GPIO_PIN_PIN0_Msk, GPIO_MODE_OUTPUT );
+		}
+	}
+	else if ( chan == BBC_PWMCH_BOOST )
+	{
+		SYS->GPC_MFPL &= ~SYS_GPC_MFPL_PC2MFP_Msk;
+
+		if ( mode )
+		{
+			SYS->GPC_MFPL |= SYS_GPC_MFPL_PC2MFP_PWM0_CH2;
+		}
+		else
+		{
+			GPIO_SetMode( PC, GPIO_PIN_PIN2_Msk, GPIO_MODE_OUTPUT );
+		}
+	}
+}
 
 
 //=============================================================================
@@ -288,6 +391,8 @@ __myevic__ void CheckMode()
 	unsigned int v0; // r0@2
 	unsigned int v1; // r1@4
 
+	static uint8_t CheckModeCounter;
+	
 	if ( AtoRezMilli / 10 <= AtoRez )
 		v0 = 0;
 	else
@@ -343,20 +448,22 @@ __myevic__ void CheckMode()
 //----- (00003250) --------------------------------------------------------
 __myevic__ void ReadAtoTemp()
 {
+	int NumShuntSamples;
+
 	if ( TargetVolts )
 	{
 		if ( gFlags.firing || AtoProbeCount != 10 )
 		{
-			byte_20000098 = 1;
+			NumShuntSamples = 1;
 		}
 		else
 		{
-			byte_20000098 = 50;
+			NumShuntSamples = 50;
 		}
 
 		ADCAtoSum = 0;
 		ADCShuntSum = 0;
-		for ( int count = 0 ; count < byte_20000098 ; ++count )
+		for ( int count = 0 ; count < NumShuntSamples ; ++count )
 		{
 			CLK_SysTickDelay( 10 );
 			ADCShuntSum += ADC_Read( 2 );
@@ -375,7 +482,7 @@ __myevic__ void ReadAtoTemp()
 			{
 				AtoStatus = 1;
 				myprintf( "RL_GND %d(%d,%d,%d)\n",
-						  AtoRezMilli, ADCAtoSum, ADCShuntSum, dword_200000A4 );
+						  AtoRezMilli, ADCAtoSum, ADCShuntSum, 0 );
 				if ( gFlags.firing )
 				{
 					StopFire();
@@ -433,6 +540,8 @@ __myevic__ void ReadAtoTemp()
 //----- (00002CD8) --------------------------------------------------------
 __myevic__ void RegulateBuckBoost()
 {
+	static uint8_t BBCNumCmps;
+
 	if ( ( (gFlags.firing) && CheckBattery() )
 		|| ( !(gFlags.probing_ato) && !(gFlags.firing) ) )
 	{
@@ -960,7 +1069,7 @@ __myevic__ void ProbeAtomizer()
 		if ( !AtoStatus ) AtoProbeCount = 0;
 	}
 
-	if ( AtoError == byte_20000082
+	if ( AtoError == LastAtoError
 			&& ( AtoRez + AtoRez / 20 ) >= word_200000B6
 			&& ( AtoRez - AtoRez / 20 ) <= word_200000B6 )
 	{
@@ -968,14 +1077,14 @@ __myevic__ void ProbeAtomizer()
 	}
 
 	if ( AtoRez != word_200000B6
-			|| AtoError != byte_20000082 )
+			|| AtoError != LastAtoError )
 	{
 		if ( !word_200000B6 )
 		{
 			byte_200000B3 = 1;
 		}
 		word_200000B6 = AtoRez;
-		byte_20000082 = AtoError;
+		LastAtoError = AtoError;
 		SetAtoLimits();
 		gFlags.refresh_display = 1;
 		ScreenDuration = 30;
@@ -1064,6 +1173,10 @@ __myevic__ void ReadBoardTemp()
 	int v4;
 	int v6;
 	int v7;
+
+	static uint32_t BTempSampleSum;
+	static uint8_t	BTempSampleCnt;
+
 
 	while ( BTempSampleCnt < 16 )
 	{

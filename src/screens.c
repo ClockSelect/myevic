@@ -4,6 +4,9 @@
 #include "menus.h"
 #include "myrtc.h"
 #include "dataflash.h"
+#include "atomizer.h"
+#include "timers.h"
+#include "battery.h"
 
 
 //=========================================================================
@@ -13,10 +16,21 @@ uint8_t		Screen;
 
 const uint8_t ScrSaveTimes[8] = { 1, 2, 5, 10, 15, 20, 30, 0 };
 
+uint8_t		EditItemIndex;
+uint16_t	EditModeTimer;
+uint8_t		EditTCRIndex;
+
+uint8_t		ShowWeakBatFlag;
+uint8_t		BatAnimLevel;
+
+
 //=========================================================================
 
 __myevic__ void DrawScreen()
 {
+	static uint8_t	ShowFDTimer = 0;
+	static uint16_t	CurrentFD = 0;
+
 	if ( Screen == 2 && FireDuration && FireDuration != CurrentFD )
 	{
 		CurrentFD = FireDuration;

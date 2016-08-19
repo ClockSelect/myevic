@@ -6,9 +6,26 @@
 #include "myrtc.h"
 #include "dataflash.h"
 #include "atomizer.h"
+#include "battery.h"
 #include "flappy.h"
 
 #include "events.h"
+
+//=============================================================================
+
+uint8_t		FireClickCount;
+uint8_t		FireClickTimer;
+int8_t		UserInputs;
+int8_t		LastInputs;
+uint8_t		FireClicksEvent;
+
+uint8_t		KeyUpTimer;
+uint16_t	KeyTicks;
+uint16_t	KeyPressTime;
+
+//-------------------------------------------------------------------------
+
+
 
 //=============================================================================
 //----- (00003738) ------------------------------------------------------------
@@ -16,6 +33,9 @@
 
 __myevic__ void KeyRepeat()
 {
+	static uint8_t KRDelay = 0;
+
+	
 	if ( !PE0 )
 		return;
 
@@ -323,7 +343,7 @@ __myevic__ void GetUserInput()
 				else
 				{
 					gFlags.playing_fb = 0;
-					Event = -1;
+					Event = 0;
 					fbInitTimeouts();
 					MainView();
 				}

@@ -1,9 +1,8 @@
 #include "myevic.h"
 #include "myprintf.h"
-
-/* DC/DC converters PWM channels */
-#define BBC_PWMCH_BUCK  0
-#define BBC_PWMCH_BOOST 2
+#include "events.h"
+#include "atomizer.h"
+#include "battery.h"
 
 
 //=========================================================================
@@ -40,39 +39,6 @@ __myevic__ void GPE_IRQHandler()
 __myevic__ void GPF_IRQHandler()
 {
 	PF->INTSRC = PF->INTSRC;
-}
-
-
-//=========================================================================
-//----- (00005CC0) --------------------------------------------------------
-__myevic__ void BBC_Configure( uint32_t chan, uint32_t mode )
-{
-	if ( chan == BBC_PWMCH_BUCK )
-	{
-		SYS->GPC_MFPL &= ~SYS_GPC_MFPL_PC0MFP_Msk;
-
-		if ( mode )
-		{
-			SYS->GPC_MFPL |= SYS_GPC_MFPL_PC0MFP_PWM0_CH0;
-		}
-		else
-		{
-			GPIO_SetMode( PC, GPIO_PIN_PIN0_Msk, GPIO_MODE_OUTPUT );
-		}
-	}
-	else if ( chan == BBC_PWMCH_BOOST )
-	{
-		SYS->GPC_MFPL &= ~SYS_GPC_MFPL_PC2MFP_Msk;
-
-		if ( mode )
-		{
-			SYS->GPC_MFPL |= SYS_GPC_MFPL_PC2MFP_PWM0_CH2;
-		}
-		else
-		{
-			GPIO_SetMode( PC, GPIO_PIN_PIN2_Msk, GPIO_MODE_OUTPUT );
-		}
-	}
 }
 
 
@@ -166,27 +132,4 @@ __myevic__ void InitUART0()
 	myputc = (FPUTC_FUNC*)&UART0_Putc;
 }
 
-
-//=========================================================================
-//----- (00005C4C) --------------------------------------------------------
-__myevic__ void InitPWM()
-{
-	PWM_ConfigOutputChannel( PWM0, BBC_PWMCH_BUCK, 150000, 0 );
-	PWM_ConfigOutputChannel( PWM0, BBC_PWMCH_BOOST, 150000, 0 );
-
-	PWM_EnableOutput( PWM0, 1 << BBC_PWMCH_BUCK );
-	PWM_EnablePeriodInt( PWM0, BBC_PWMCH_BUCK, 0 );
-
-	PWM_EnableOutput( PWM0, 1 << BBC_PWMCH_BOOST );
-	PWM_EnablePeriodInt( PWM0, BBC_PWMCH_BOOST, 0 );
-
-	PWM_Start( PWM0, 1 << BBC_PWMCH_BUCK );
-	PWM_Start( PWM0, 1 << BBC_PWMCH_BOOST );
-
-	BoostDuty = 0;
-	PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, 0 );
-
-	BuckDuty = 0;
-	PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, 0 );
-}
 

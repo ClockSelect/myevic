@@ -8,6 +8,7 @@
 #include "miscs.h"
 #include "flappy.h"
 #include "meusbd.h"
+#include "atomizer.h"
 
 //=============================================================================
 // MENUS
@@ -210,8 +211,8 @@ __myevic__ void ModesIClick()
 
 //-----------------------------------------------------------------------------
 
-static uint8_t *CoilSelectedLock;
-static uint16_t *CoilSelectedRez;
+uint8_t *CoilSelectedLock;
+uint16_t *CoilSelectedRez;
 
 __myevic__ void CoilsISelect()
 {
@@ -369,8 +370,8 @@ __myevic__ int CoilsMEvent( int event )
 
 //-----------------------------------------------------------------------------
 
-static signed char dt_sel = 0;
-static S_RTC_TIME_DATA_T rtd;
+signed char dt_sel = 0;
+S_RTC_TIME_DATA_T rtd;
 
 __myevic__ void DTMenuOnEnter()
 {

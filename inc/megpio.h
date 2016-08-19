@@ -12,8 +12,6 @@ extern void InitGPIO();
 extern void InitUART0();
 extern void UART0_Cout( uint8_t c );
 
-extern void InitPWM();
-extern void BBC_Configure( uint32_t chan, uint32_t mode );
 
 
 #endif /* __MEGPIO_H__ */

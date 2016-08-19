@@ -2,6 +2,8 @@
 #include "myprintf.h"
 #include "myrtc.h"
 #include "screens.h"
+#include "atomizer.h"
+#include "display.h"
 
 #include "dataflash.h"
 
@@ -11,6 +13,19 @@
 dfStruct_t DataFlash;
 
 uint8_t ParamsBackup[DATAFLASH_PARAMS_SIZE];
+
+
+//-------------------------------------------------------------------------
+// Global variables
+
+uint8_t		UpdateDFTimer;
+uint8_t		UpdatePTTimer;
+
+
+//-------------------------------------------------------------------------
+// Internal variables
+
+uint16_t	fmcCntrsIndex;
 
 
 //=============================================================================

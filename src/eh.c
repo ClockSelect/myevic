@@ -11,6 +11,13 @@
 #include "atomizer.h"
 #include "flappy.h"
 
+//=========================================================================
+
+volatile uint8_t Event;
+uint8_t	LastEvent;
+
+uint8_t	MenuPage;
+
 
 //----- (000039E0) --------------------------------------------------------
 __myevic__ void EventHandler()
@@ -38,12 +45,12 @@ __myevic__ void EventHandler()
 	int v60;
 	signed short v61;
 
-	if ( (signed char)Event == (signed char)-1 )
+	if ( Event == 0 )
 		return;
 
 	BatRefreshTmr = 200;
 	LastEvent = Event;
-	Event = -1;
+	Event = 0;
 
 	if ( CustomEvents() )
 		return;

@@ -55,3 +55,4 @@ projects/
 *.o
 startfiles
 driver/*.sys
+*.map

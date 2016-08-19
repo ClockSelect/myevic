@@ -1,15 +1,21 @@
 #include "myevic.h"
 #include "dataflash.h"
 #include "screens.h"
+#include "events.h"
 #include "myrtc.h"
+#include "battery.h"
 #include "flappy.h"
 
 //==============================================================================
 
 volatile uint32_t	TMR0Counter;
+volatile uint32_t	TMR0Counter2;
 volatile uint32_t	TMR1Counter;
 volatile uint32_t	TMR2Counter;
 volatile uint32_t	TMR3Counter;
+
+uint16_t	SleepTimer;
+
 
 //==============================================================================
 //----- (00007CD4) --------------------------------------------------------
@@ -138,6 +144,8 @@ __myevic__ void TMR3_IRQHandler()
 
 __myevic__ void TimedItems()
 {
+	static  uint8_t BatAnimTimer = 0;
+
 	if ( !Screen && SleepTimer )
 		--SleepTimer;
 

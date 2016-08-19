@@ -2,8 +2,10 @@
 #include "dataflash.h"
 #include "display.h"
 #include "screens.h"
+#include "events.h"
 #include "miscs.h"
 #include "timers.h"
+#include "battery.h"
 
 #include "flappy.h"
 

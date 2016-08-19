@@ -262,6 +262,13 @@ extern dfStruct_t DataFlash;
 
 
 //=========================================================================
+// Some globals
+
+extern uint8_t	UpdateDFTimer;
+extern uint8_t	UpdatePTTimer;
+
+
+//=========================================================================
 // Functions
 
 extern void InitDataFlash();

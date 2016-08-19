@@ -1,6 +1,7 @@
 #include "myevic.h"
 #include "dataflash.h"
 #include "screens.h"
+#include "events.h"
 #include "meadc.h"
 #include "atomizer.h"
 
@@ -9,7 +10,19 @@
 
 const uint16_t BatteryVoltsTable[] =
 	{ 310, 330, 342, 350, 358, 363, 368, 379, 389, 400, 410 };
-		
+
+uint16_t	LowBatVolts;
+uint32_t	PowerScale;
+uint16_t	BatteryVoltage;
+uint16_t	SavedBatVoltage;
+uint8_t		BatteryPercent;
+uint8_t		BatteryTenth;
+uint8_t		BatRefreshTmr;
+uint8_t		BatReadTimer;
+
+uint8_t		byte_20000048;
+
+
 //=============================================================================
 //----- (00000608) ------------------------------------------------------------
 __myevic__ int BatteryVoltsToPercent( int bv )
@@ -51,6 +64,9 @@ __myevic__ int BatteryVoltsToPercent( int bv )
 
 __myevic__ void NewBatteryVoltage()
 {
+	static uint8_t SavedBatPercent = 0;
+	static uint8_t BatPCCmpCnt = 0;
+
 	BatteryPercent = BatteryVoltsToPercent( BatteryVoltage );
 
 	if ( !( gFlags.battery_charging ) && ( gFlags.usb_attached ) )
@@ -94,6 +110,9 @@ __myevic__ void NewBatteryVoltage()
 //----- (000006E0) --------------------------------------------------------
 __myevic__ void ReadBatteryVoltage()
 {
+	static uint32_t VbatSampleSum = 0;
+	static uint8_t	VbatSampleCnt = 0;
+
 	unsigned int newbv; // r0@5
 
 	if ( !(gFlags.firing) )

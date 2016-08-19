@@ -4,9 +4,13 @@
 //=========================================================================
 
 extern volatile uint32_t TMR0Counter;
+extern volatile uint32_t TMR0Counter2;
 extern volatile uint32_t TMR1Counter;
 extern volatile uint32_t TMR2Counter;
 extern volatile uint32_t TMR3Counter;
+
+extern uint16_t	SleepTimer;
+
 
 //-------------------------------------------------------------------------
 
