@@ -209,7 +209,7 @@ __myevic__ void InitVariables()
 	InitDataFlash();
 	KeyPressTime |= 0x8000;
 	LastInputs |= 0x80;
-	word_200000B6 = -1;
+	LastAtoRez = -1;
 	byte_200000B3 = 1;
 	BatRefreshTmr = -1;
 	gFlags.draw_edited_item = 1;
@@ -376,7 +376,7 @@ __myevic__ void Main()
 
 			if ( gFlags.firing )
 			{
-				if ( !TargetVolts )
+				if ( TargetVolts == 0 )
 				{
 					ProbeAtomizer();
 				}

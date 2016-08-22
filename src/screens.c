@@ -488,7 +488,7 @@ __myevic__ void ShowBoardTemp()
 __myevic__ void ShowVersion()
 {
 	DrawStringCentered( String_Version, 88 );
-	DrawValue( 6, 102, 303, 2, 0x52, 3 );
+	DrawValue( 6, 102, FWVERSION, 2, 0x52, 3 );
 }
 
 

@@ -11,6 +11,15 @@
 #define ISMODEVW(m) (((m)==4)||((m)==6))
 #define ISMODEBY(m) ((m)==5)
 
+#define FWVERSION 303
+
+// Are we on a VTC Mini or a VTwo Mini?
+// Since VTwo has a real time clock feature,
+// it must have the external 32kHz crystal
+// slodered on the circuit board.
+#define ISVTWOMINI (gFlags.has_x32)
+
+
 //=============================================================================
 
 typedef struct

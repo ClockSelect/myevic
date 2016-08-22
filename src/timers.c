@@ -9,7 +9,7 @@
 //==============================================================================
 
 volatile uint32_t	TMR0Counter;
-volatile uint32_t	TMR0Counter2;
+volatile uint32_t	WarmUpCounter;
 volatile uint32_t	TMR1Counter;
 volatile uint32_t	TMR2Counter;
 volatile uint32_t	TMR3Counter;
@@ -59,8 +59,8 @@ __myevic__ void TMR0_IRQHandler()
 
 		++TMR0Counter;
 
-		if ( TMR0Counter2 < 2000 )
-			++TMR0Counter2;
+		if ( WarmUpCounter < 2000 )
+			++WarmUpCounter;
 	}
 }
 

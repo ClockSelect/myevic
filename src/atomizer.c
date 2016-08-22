@@ -22,7 +22,7 @@ uint32_t	AtoMaxVolts;
 uint32_t	AtoMinPower;
 uint32_t	AtoMaxPower;
 uint32_t	MaxTCPower;
-uint32_t	MaxVWVolts;
+uint32_t	MaxVolts;
 uint32_t	MaxPower;
 uint16_t	FireDuration;
 uint16_t	AtoTemp;
@@ -30,9 +30,7 @@ uint16_t	AtoCurrent;
 uint16_t	AtoRez;
 uint16_t	TCR;
 uint8_t		AtoProbeCount;
-uint8_t		AtoShuntValue;
-uint8_t		BBCNextMode;
-uint8_t		BBCMode;
+uint8_t		AtoShuntRez;
 uint8_t		AtoError;		// 0,1,2,3 = Ok,Open/Large,Short,Low
 uint8_t		AtoStatus;		// 0,1,2,3,4 = Open,Short,Low,Large,Ok
 uint8_t		BoardTemp;
@@ -40,7 +38,7 @@ uint8_t		ConfigIndex;
 uint8_t		LastAtoError;
 
 uint8_t		byte_200000B3;
-uint16_t	word_200000B6;
+uint16_t	LastAtoRez;
 uint16_t	word_200000B8;
 uint16_t	word_200000BA;
 uint16_t	word_200000BC;
@@ -50,6 +48,8 @@ uint16_t	word_200000C0;
 
 //-------------------------------------------------------------------------
 
+uint8_t		BBCNextMode;
+uint8_t		BBCMode;
 uint16_t	BuckDuty;
 uint16_t	BoostDuty;
 
@@ -151,7 +151,7 @@ __myevic__ uint16_t ClampPower( uint16_t volts, int clampmax )
 __myevic__ void ClampAtoVolts()
 {
 	if ( AtoMinVolts < 50 ) AtoMinVolts = 50;
-	if ( AtoMaxVolts > MaxVWVolts ) AtoMaxVolts = MaxVWVolts;
+	if ( AtoMaxVolts > MaxVolts ) AtoMaxVolts = MaxVolts;
 }
 
 
@@ -267,30 +267,36 @@ __myevic__ uint16_t AtoPowerLimit( uint16_t pwr )
 //----- (00003564) --------------------------------------------------------
 __myevic__ void GetAtoCurrent()
 {
-	unsigned int avolts;
-	unsigned int ashunt;
+	unsigned int adcShunt;
+	unsigned int adcAtoVolts;
 	unsigned int arez;
 	int s;
 
 	if ( gFlags.firing || gFlags.probing_ato )
 	{
-		avolts = ADC_Read( 2 );
+		adcShunt = ADC_Read( 2 );
 		CLK_SysTickDelay( 10 );
-		ashunt = ADC_Read( 1 );
+		adcAtoVolts = ADC_Read( 1 );
 
-		AtoCurrent = ( (25600 * avolts) >> 12 ) / AtoShuntValue;
+		// Shunt current, in 10th of an Amp
+		AtoCurrent = ( (10 * 2560 * adcShunt) >> 12 ) / AtoShuntRez;
 
 		arez = LowestRezMeasure();
 
-		if	(	gFlags.firing
-			&&	2080 * AtoShuntValue / 100 * ashunt < 30 * avolts * arez
-			&& AtoCurrent > 50
-			&& TargetVolts >= 100	)
+		if	(  gFlags.firing
+			   // ( theorical ato current ) < ( shunt current / 1.6 )
+			&& 160 * 13 * adcAtoVolts / 100 * AtoShuntRez < 30 * adcShunt * arez
+			&& AtoCurrent > 50		// 5.0A
+			&& TargetVolts >= 100	// 1.00V
+		)
 		{
 			s = 2;
 		}
 		else if ( AtoCurrent > 256 && !ISMODEBY(dfMode) )
 		{
+			// This case can only occur if shunt resistance value is below 1 mOhm,
+			// due to the resolution of the EADC. On all hardware versions, shunts
+			// are between 1.05 and 1.25 mOhm so we should never get there.
 			s = 3;
 		}
 		else
@@ -308,8 +314,8 @@ __myevic__ void GetAtoCurrent()
 					" Short %d! u32ADValue_Res_temp(%d) u32ADValue_CurVol_temp(%d)"
 					" g_u16DetRes_I(%d.%d) u16Res(%d) g_u32Set_OutVol(%d).\n",
 					s,
-					avolts,
-					ashunt,
+					adcShunt,
+					adcAtoVolts,
 					AtoCurrent / 10,
 					AtoCurrent % 10,
 					arez,
@@ -472,7 +478,7 @@ __myevic__ void ReadAtoTemp()
 		}
 
 		if ( !ADCShuntSum ) ADCShuntSum = 1;
-		AtoRezMilli = 1300 * AtoShuntValue / 100 * ADCAtoSum / ( 3 * ADCShuntSum );
+		AtoRezMilli = 1300 * AtoShuntRez / 100 * ADCAtoSum / ( 3 * ADCShuntSum );
 
 		GetAtoCurrent();
 
@@ -542,10 +548,15 @@ __myevic__ void RegulateBuckBoost()
 {
 	static uint8_t BBCNumCmps;
 
-	if ( ( (gFlags.firing) && CheckBattery() )
-		|| ( !(gFlags.probing_ato) && !(gFlags.firing) ) )
+	if ( gFlags.firing )
 	{
-		return;
+		if ( CheckBattery() )
+			return;
+	}
+	else
+	{
+		if ( !gFlags.probing_ato )
+			return;
 	}
 
 	AtoVoltsADC = ADC_Read( 1 );
@@ -644,7 +655,6 @@ __myevic__ void RegulateBuckBoost()
 					BBC_Configure( BBC_PWMCH_BOOST, 1 );
 
 					BoostDuty = 479;
-				//	PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, BuckDuty );	// bug?
 					PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, BoostDuty );
 
 					PC3 = 1;
@@ -678,11 +688,11 @@ __myevic__ void RegulateBuckBoost()
 
 //=============================================================================
 //----- (00002EBC) --------------------------------------------------------
-__myevic__ void ReachTargetVoltage()
+__myevic__ void AtoWarmUp()
 {
 	BBCNextMode = 2;
 	BBCMode = 0;
-	TMR0Counter2 = 0;
+	WarmUpCounter = 0;
 
 	do
 	{
@@ -695,7 +705,7 @@ __myevic__ void ReachTargetVoltage()
 		if ( AtoVolts == TargetVolts )
 			break;
 
-		if ((AtoStatus == 0 || AtoStatus == 1 || (!(gFlags.firing) && AtoProbeCount >= 12))
+		if (( AtoStatus == 0 || AtoStatus == 1 || (!(gFlags.firing) && AtoProbeCount >= 12))
 			&& BuckDuty >= 45 )
 		{
 			break;
@@ -704,7 +714,7 @@ __myevic__ void ReachTargetVoltage()
 		if ( ISMODEBY(dfMode) && BBCMode == 1 ) break;
 
 	}
-	while ( TMR0Counter2 < 2000 );
+	while ( WarmUpCounter < 2000 );
 }
 
 
@@ -728,7 +738,7 @@ __myevic__ uint16_t GetVoltsForPower( uint16_t pwr )
 
 	v = sqrtul( (uint32_t)pwr * AtoRezMilli );
 
-	if ( v > MaxVWVolts ) v = MaxVWVolts;
+	if ( v > MaxVolts ) v = MaxVolts;
 
 	return v;
 }
@@ -836,7 +846,7 @@ __myevic__ void SetMinMaxPower()
 	else
 	{
 		u = 25 * AtoRez;
-		if ( u > MaxVWVolts ) u = MaxVWVolts;
+		if ( u > MaxVolts ) u = MaxVolts;
 		AtoMaxPower = (( u * u ) / AtoRez + 5 ) / 10;
 		AtoMinPower = 2500 / AtoRez / 10;
 		ClampPowers();
@@ -851,7 +861,7 @@ __myevic__ void SetMinMaxVolts()
 	if ( AtoError || !AtoRez )
 	{
 		AtoMinVolts = 50;
-		AtoMaxVolts = MaxVWVolts;
+		AtoMaxVolts = MaxVolts;
 	}
 	else
 	{
@@ -1017,7 +1027,7 @@ __myevic__ void ProbeAtomizer()
 	if ( TargetVolts > 600 ) TargetVolts = 600;
 
 	gFlags.probing_ato = 1;
-	ReachTargetVoltage();
+	AtoWarmUp();
 	WaitOnTMR2(2);
 	ReadAtoTemp();
 	gFlags.probing_ato = 0;
@@ -1066,24 +1076,24 @@ __myevic__ void ProbeAtomizer()
 	else
 	{
 		AtoRez = 0;
-		if ( !AtoStatus ) AtoProbeCount = 0;
+		if ( AtoStatus == 0 ) AtoProbeCount = 0;
 	}
 
 	if ( AtoError == LastAtoError
-			&& ( AtoRez + AtoRez / 20 ) >= word_200000B6
-			&& ( AtoRez - AtoRez / 20 ) <= word_200000B6 )
+			&& ( AtoRez + AtoRez / 20 ) >= LastAtoRez
+			&& ( AtoRez - AtoRez / 20 ) <= LastAtoRez )
 	{
-		AtoRez = word_200000B6;
+		AtoRez = LastAtoRez;
 	}
 
-	if ( AtoRez != word_200000B6
+	if ( AtoRez != LastAtoRez
 			|| AtoError != LastAtoError )
 	{
-		if ( !word_200000B6 )
+		if ( !LastAtoRez )
 		{
 			byte_200000B3 = 1;
 		}
-		word_200000B6 = AtoRez;
+		LastAtoRez = AtoRez;
 		LastAtoError = AtoError;
 		SetAtoLimits();
 		gFlags.refresh_display = 1;
@@ -1104,11 +1114,11 @@ __myevic__ void ProbeAtomizer()
 				UpdateDFTimer = 50;
 			}
 		}
-		gFlags.check_rez_ss = 1;
 		gFlags.check_rez_ni = 1;
 		gFlags.check_rez_ti = 1;
-		gFlags.check_mode = 1;
+		gFlags.check_rez_ss = 1;
 		gFlags.check_rez_tcr = 1;
+		gFlags.check_mode = 1;
 	}
 }
 
@@ -1160,7 +1170,7 @@ __myevic__ void SwitchRezLock()
 const uint32_t BoardTempTable[] =
 	{	34800, 26670, 20620, 16070, 12630, 10000, 
 		7976, 6407, 5182, 4218, 3455, 2847, 2360, 
-	1967, 1648, 1388, 1175, 999, 853, 732, 630	};
+		1967, 1648, 1388, 1175, 999, 853, 732, 630	};
  
 
 //=============================================================================

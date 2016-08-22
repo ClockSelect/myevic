@@ -32,8 +32,16 @@ uint16_t	fmcCntrsIndex;
 //----- (00002064) --------------------------------------------------------
 __myevic__ void SetProductID()
 {
-	dfProductID = *(uint32_t*)"E052";
-	dfMaxHWVersion = 0x00010101;
+	if ( ISVTWOMINI )
+	{
+		dfProductID = *(uint32_t*)"E115";
+		dfMaxHWVersion = 0x00000001;
+	}
+	else
+	{
+		dfProductID = *(uint32_t*)"E052";
+		dfMaxHWVersion = 0x00010101;
+	}
 }
 
 
@@ -181,7 +189,7 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfMode >= 7 )
 		dfMode = 4;
 
-	if ( dfVWVolts > MaxVWVolts || dfVWVolts < 50 )
+	if ( dfVWVolts > MaxVolts || dfVWVolts < 50 )
 		dfVWVolts = 330;
 
 	if ( dfPower > MaxPower || dfPower < 10 )
@@ -567,35 +575,39 @@ __myevic__ void InitDataFlash()
 	{
 		case 100:
 		case 102:
+		case 115:	// VTwo Mini
 		default:
-			AtoShuntValue = 115;
+			AtoShuntRez = 115;
 			break;
 		case 101:
 		case 108:
-			AtoShuntValue = 125;
+			AtoShuntRez = 125;
 			break;
 		case 103:
 		case 104:
 		case 105:
 		case 106:
-			AtoShuntValue = 110;
+			AtoShuntRez = 110;
 			break;
 		case 107:
 		case 109:
-			AtoShuntValue = 120;
+			AtoShuntRez = 120;
 			break;
 		case 110:
 		case 111:
-			AtoShuntValue = 105;
+			AtoShuntRez = 105;
 			break;
 	}
 
-	dfFWVersion	= 303;
-	MaxVWVolts	= 900;
+	dfFWVersion	= FWVERSION;
+	MaxVolts	= 900;
 	MaxPower	= 750;
 	MaxTCPower	= 750;
 
-	myprintf( "  APROM Version ......................... [%d.%d%d]\n", 3, 0, 3 );
+	myprintf( "  APROM Version ......................... [%d.%d%d]\n",
+				FWVERSION / 100,
+				FWVERSION / 10 % 10,
+				FWVERSION % 10 );
 	myprintf( "  Hardware Version ...................... [%d.%d%d]\n",
 				dfHWVersion / 100,
 				dfHWVersion / 10 % 10,
