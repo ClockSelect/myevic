@@ -13,11 +13,9 @@
 
 #define FWVERSION 303
 
-// Are we on a VTC Mini or a VTwo Mini?
-// Since VTwo has a real time clock feature,
-// it must have the external 32kHz crystal
-// slodered on the circuit board.
-#define ISVTWOMINI (gFlags.has_x32)
+#define ISVTCMINI (!gFlags.is_vtwo && gFlags.is_mini)
+#define ISVTWOMINI (gFlags.is_vtwo && gFlags.is_mini)
+#define ISVTWO (gFlags.is_vtwo && !gFlags.is_mini)
 
 
 //=============================================================================
@@ -68,6 +66,8 @@ typedef struct
 	int	tick_1hz:1;
 	int	playing_fb:1;
 	int has_x32:1;
+	int is_vtwo:1;
+	int is_mini:1;
 }
 gFlags_t;
 

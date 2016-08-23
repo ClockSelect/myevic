@@ -230,7 +230,7 @@ const UFI_InquiryResponse_t MSC_InquiryResp =
 	0x00, // additional fields, none set
 	0x00, // additional fields, none set
 	"Joyetech", // 8-byte T10-assigned Vendor ID
-	"eVic VTC mini   ", // 16-byte product identification
+	"eVic VTC/VTwo[M]", // 16-byte product identification
 	"0001" // 4-byte product revision level
 };
 
@@ -531,7 +531,7 @@ const FAT16_Block0_t FAT16_Block0 =
 	{ 0 },
 	0x29,
 	0x12345678,
-	"VTCMINI    ",
+	"MYEVIC     ",
 	"FAT16   "
 };
 
@@ -562,7 +562,7 @@ FAT16_FileEntry_t;
 
 const FAT16_FileEntry_t VNFileEntry =
 {
-	"VCTMINI ",
+	"MYEVIC  ",
 	"   ",
 	0x08,
 	0,

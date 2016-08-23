@@ -26,6 +26,10 @@
 #define DATAFLASH_LOGO_1327_BASE	0x19000
 #define DATAFLASH_LOGO_1306_BASE	0x19200
 
+// To read product ID
+#define LDROM_BASE 0x100000
+#define LDROM_SIZE 0x1000
+
 
 //=========================================================================
 // DataFlash content structure
