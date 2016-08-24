@@ -44,9 +44,7 @@
         <File name="src\timers.c" />
         <File name="inc\vcom.h" />
         <File name="src\vcom.c" />
-        <File name="src\globals.s" />
         <File name="src\myevic.s" />
         <File name="src\rodata.s" />
-        <File name="src\sram.s" />
     </Project>
 </NotepadPlus>

@@ -571,7 +571,18 @@ __myevic__ int EvtPlusButton()
 		case 103:
 		{
 			unsigned int cs = RTCGetClockSpeed();
-			if ( cs < 50000 ) ++cs;
+			if ( cs < 50000 )
+			{
+				if ( KeyTicks < 105 )
+				{
+					++cs;
+				}
+				else
+				{
+					cs -= cs % 100;
+					cs += 100;
+				}
+			}
 			RTCSetClockSpeed( cs );
 			gFlags.refresh_display = 1;
 			ScreenDuration = 120;
@@ -623,7 +634,18 @@ __myevic__ int EvtMinusButton()
 		case 103:
 		{
 			unsigned int cs = RTCGetClockSpeed();
-			if ( cs > 10000 ) --cs;
+			if ( cs > 10000 )
+			{
+				if ( KeyTicks < 105 )
+				{
+					--cs;
+				}
+				else
+				{
+					if ( cs % 100 ) cs -= cs % 100;
+					else cs -= 100;
+				}
+			}
 			RTCSetClockSpeed( cs );
 			gFlags.refresh_display = 1;
 			ScreenDuration = 120;

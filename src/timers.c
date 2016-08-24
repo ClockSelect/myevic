@@ -91,7 +91,10 @@ __myevic__ void TMR2_IRQHandler()
 	{
 		TIMER_ClearIntFlag( TIMER2 );
 
-		++ClockCorrection;
+		if ( !gFlags.has_x32 )
+		{
+			++ClockCorrection;
+		}
 
 		gFlags.tick_1khz = 1;
 		gFlags.tick_us = 1;

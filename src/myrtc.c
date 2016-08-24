@@ -281,7 +281,7 @@ __myevic__ void GetRTC( S_RTC_TIME_DATA_T *rtd )
 			cs  = RTCGetClockSpeed();
 
 			d = (( (unsigned long long)t - ref ) * cs ) / 10000;
-			t += d;
+			t = ref + d;
 
 			t += ClockCorrection / 1000;
 		}
