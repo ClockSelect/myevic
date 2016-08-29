@@ -146,7 +146,7 @@ INCDIRS := $(foreach d,$(shell arm-none-eabi-gcc -x c -v -E /dev/null 2>&1 | sed
 
 INCDIRS += -I$(ARMGCC)/arm-none-eabi/include
 
-GCC_VERSION := 5.3.1
+GCC_VERSION := $(shell arm-none-eabi-gcc -dumpversion)
 
 LIBDIRS := -L$(ARMGCC)/arm-none-eabi/lib \
 	-L$(ARMGCC)/arm-none-eabi/newlib \
@@ -189,7 +189,7 @@ $(OBJS_FIXPATH): %.o: %.c
 
 $(TARGET).bin: $(OBJS_FIXPATH) $(MYEVIC_OBJS)
 	test -d $(OUTDIR) || mkdir $(OUTDIR)
-	$(LD) $(LDFLAGS) -o $(OUTDIR)/$(TARGET).elf --start-group $(LIBS) $(OBJS_FIXPATH) $(MYEVIC_OBJS) --end-group
+	$(LD) --start-group $(LIBS) $(OBJS_FIXPATH) $(MYEVIC_OBJS) --end-group $(LDFLAGS) -o $(OUTDIR)/$(TARGET).elf
 	$(OBJCOPY) -O binary -j .text -j .data $(OUTDIR)/$(TARGET).elf $(OUTDIR)/$(TARGET).bin
 	evic convert $(OUTDIR)/$(TARGET).bin -o $(OUTDIR)/$(TARGET)_enc.bin
 
@@ -197,7 +197,7 @@ docs:
 	doxygen
 
 clean:
-	rm -rf $(OBJS) $(AEABI_OBJS) $(OUTDIR)/$(TARGET).bin $(OUTDIR) $(DOCDIR)
+	rm -rf $(OBJS) $(MYEVIC_OBJS) $(AEABI_OBJS) $(OUTDIR)/$(TARGET).bin $(OUTDIR) $(DOCDIR)
 
 env_check:
 ifeq ($(ARMGCC),)
