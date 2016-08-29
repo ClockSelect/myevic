@@ -11,48 +11,48 @@ EVICSDK := $(subst \,/,$(EVICSDK))
 NUVOSDK = $(EVICSDK)/nuvoton-sdk/Library
 
 OBJS := $(NUVOSDK)/Device/Nuvoton/M451Series/Source/system_M451Series.o \
-		$(NUVOSDK)/StdDriver/src/clk.o \
-		$(NUVOSDK)/StdDriver/src/fmc.o \
-		$(NUVOSDK)/StdDriver/src/gpio.o \
-		$(NUVOSDK)/StdDriver/src/spi.o \
-		$(NUVOSDK)/StdDriver/src/sys.o \
-		$(NUVOSDK)/StdDriver/src/timer.o \
-		$(NUVOSDK)/StdDriver/src/rtc.o \
-		$(NUVOSDK)/StdDriver/src/usbd.o \
-		$(NUVOSDK)/StdDriver/src/eadc.o \
-		$(NUVOSDK)/StdDriver/src/wdt.o \
-		$(NUVOSDK)/StdDriver/src/uart.o \
-		$(NUVOSDK)/StdDriver/src/crc.o \
-		$(NUVOSDK)/StdDriver/src/pwm.o
+	$(NUVOSDK)/StdDriver/src/clk.o \
+	$(NUVOSDK)/StdDriver/src/fmc.o \
+	$(NUVOSDK)/StdDriver/src/gpio.o \
+	$(NUVOSDK)/StdDriver/src/spi.o \
+	$(NUVOSDK)/StdDriver/src/sys.o \
+	$(NUVOSDK)/StdDriver/src/timer.o \
+	$(NUVOSDK)/StdDriver/src/rtc.o \
+	$(NUVOSDK)/StdDriver/src/usbd.o \
+	$(NUVOSDK)/StdDriver/src/eadc.o \
+	$(NUVOSDK)/StdDriver/src/pwm.o \
+	$(NUVOSDK)/StdDriver/src/wdt.o \
+	$(NUVOSDK)/StdDriver/src/uart.o \
+	$(NUVOSDK)/StdDriver/src/crc.o
 
-MYEVIC_OBJS :=	src/myevic.o \
-				src/myprintf.o \
-				src/atomizer.o \
-				src/dataflash.o \
-				src/screens.o \
-				src/menus.o \
-				src/mainview.o \
-				src/battery.o \
-				src/events.o \
-				src/myrtc.o \
-				src/miscs.o \
-				src/eh.o \
-				src/timers.o \
-				src/meadc.o \
-				src/megpio.o \
-				src/strings.o \
-				src/meusbd.o \
-				src/vcom.o \
-				src/storage.o \
-				src/flappy.o \
-				src/fbdata.o \
-				src/display.o \
-				src/SSD1306.o \
-				src/SSD1327.o \
-				src/main.o
+MYEVIC_OBJS := src/myevic.o \
+	src/myprintf.o \
+	src/atomizer.o \
+	src/dataflash.o \
+	src/screens.o \
+	src/menus.o \
+	src/mainview.o \
+	src/battery.o \
+	src/events.o \
+	src/myrtc.o \
+	src/miscs.o \
+	src/eh.o \
+	src/timers.o \
+	src/meadc.o \
+	src/megpio.o \
+	src/strings.o \
+	src/meusbd.o \
+	src/vcom.o \
+	src/storage.o \
+	src/flappy.o \
+	src/fbdata.o \
+	src/display.o \
+	src/SSD1306.o \
+	src/SSD1327.o \
+	src/main.o
 
 AEABI_OBJS := src/aeabi/aeabi_memset-thumb2.o \
-			  src/aeabi/aeabi_memclr.o
+	src/aeabi/aeabi_memclr.o
 
 OUTDIR := bin
 DOCDIR := doc
@@ -67,7 +67,6 @@ ifeq ($(OS),Windows_NT)
 	else
 		WIN_CYG := 1
 	endif
-	
 endif
 
 ifeq ($(shell $(CC) -v 2>&1 | grep -c "clang version"), 1)
@@ -87,9 +86,8 @@ ifeq ($(OS),Windows_NT)
 		ifeq ($(WIN_CYG),1)
 			ARMGCC := $(shell cygpath -w $(ARMGCC))
 		endif
-		
 	endif
-	
+
 	ifndef CC_IS_CLANG
 		NEED_FIXPATH := 1
 	endif
@@ -139,26 +137,24 @@ LD := arm-none-eabi-ld
 AR := arm-none-eabi-ar
 OBJCOPY := arm-none-eabi-objcopy
 
-INCDIRS := -I$(ARMGCC)/arm-none-eabi/include
+INCDIRS := $(foreach d,$(shell arm-none-eabi-gcc -x c -v -E /dev/null 2>&1 | sed -n -e '/<\.\.\.>/,/End/ p' | tail -n +2 | head -n -1 | sed 's/^\s*//'),-I$d) \
+	-I$(NUVOSDK)/CMSIS/Include \
+	-I$(NUVOSDK)/Device/Nuvoton/M451Series/Include \
+	-I$(NUVOSDK)/StdDriver/inc \
+	-Iinc \
+	-Isrc
 
-INCDIRS += $(foreach d,$(shell arm-none-eabi-gcc -x c -v -E /dev/null 2>&1 | sed -n -e '/<\.\.\.>/,/End/ p' | tail -n +2 | head -n -1 | sed 's/^\s*//'),-I$d) \
-			-I$(NUVOSDK)/CMSIS/Include \
-			-I$(NUVOSDK)/Device/Nuvoton/M451Series/Include \
-			-I$(NUVOSDK)/StdDriver/inc \
-			-Iinc \
-			-Isrc
+INCDIRS += -I$(ARMGCC)/arm-none-eabi/include
 
-GCC_VERSION := 5.3.1
+GCC_VERSION := $(shell arm-none-eabi-gcc -dumpversion)
 
-LIBDIRS :=	-L$(ARMGCC)/arm-none-eabi/lib \
-			-L$(ARMGCC)/arm-none-eabi/newlib \
-			-L$(ARMGCC)/lib/arm-none-eabi/newlib \
-			-L$(ARMGCC)/gcc/arm-none-eabi/$(GCC_VERSION) \
-			-L$(ARMGCC)/lib/gcc/arm-none-eabi/$(GCC_VERSION)
+LIBDIRS := -L$(ARMGCC)/arm-none-eabi/lib \
+	-L$(ARMGCC)/arm-none-eabi/newlib \
+	-L$(ARMGCC)/lib/arm-none-eabi/newlib \
+	-L$(ARMGCC)/gcc/arm-none-eabi/$(GCC_VERSION) \
+	-L$(ARMGCC)/lib/gcc/arm-none-eabi/$(GCC_VERSION)
 
-#LIBS := -lgcc
-
-CFLAGS += -Wall -mcpu=$(CPU) -mfpu=$(FPU) -mthumb -Os -fdata-sections -ffunction-sections
+CFLAGS += -Wall -mcpu=$(CPU) -mfpu=$(FPU) -mthumb -Os -fdata-sections -ffunction-sections -std=c99
 CFLAGS += -fno-builtin-printf
 CFLAGS += $(INCDIRS)
 
@@ -182,22 +178,18 @@ INCLUDES := $(wildcard $(SRCDIR)/*.s)
 
 all: env_check $(TARGET).bin
 
-$(OBJS_FIXPATH) : %.o : %.c
+$(OBJS_FIXPATH): %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-%.o : %.c $(INCLUDEH)
+%.o: %.c $(INCLUDEH)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-%.o : %.s $(INCLUDES)
+%.o: %.s $(INCLUDES)
 	$(CC) $(CFLAGS) -c $< -o $@
-
-#$(TARGET).elf: $(OBJS_FIXPATH)
-#	test -d $(OUTDIR) || mkdir $(OUTDIR)
-#	$(LD) $(LDFLAGS) -o $(OUTDIR)/$(TARGET).elf $(OBJS_FIXPATH)
 
 $(TARGET).bin: $(OBJS_FIXPATH) $(MYEVIC_OBJS)
 	test -d $(OUTDIR) || mkdir $(OUTDIR)
-	$(LD) $(LDFLAGS) -o $(OUTDIR)/$(TARGET).elf --start-group $(LIBS) $(OBJS_FIXPATH) $(MYEVIC_OBJS) --end-group
+	$(LD) --start-group $(LIBS) $(OBJS_FIXPATH) $(MYEVIC_OBJS) --end-group $(LDFLAGS) -o $(OUTDIR)/$(TARGET).elf
 	$(OBJCOPY) -O binary -j .text -j .data $(OUTDIR)/$(TARGET).elf $(OUTDIR)/$(TARGET).bin
 	evic convert $(OUTDIR)/$(TARGET).bin -o $(OUTDIR)/$(TARGET)_enc.bin
 
@@ -205,7 +197,7 @@ docs:
 	doxygen
 
 clean:
-	rm -rf $(OBJS) $(AEABI_OBJS) $(OUTDIR)/$(TARGET).bin $(OUTDIR) $(DOCDIR)
+	rm -rf $(OBJS) $(MYEVIC_OBJS) $(AEABI_OBJS) $(OUTDIR)/$(TARGET).bin $(OUTDIR) $(DOCDIR)
 
 env_check:
 ifeq ($(ARMGCC),)
