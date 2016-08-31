@@ -124,7 +124,15 @@ __myevic__ void GetUserInput()
 		if ( gFlags.firing )
 		{
 			if ( LastInputs == 1 )
+			{
 				StopFire();
+				if ( !ISMODETC(dfMode) )
+				{
+					// Display last puff duration
+					// a little longer
+					ScreenDuration = 2;
+				}
+			}
 			gFlags.user_idle = 1;
 			LastInputs = -1;
 			KeyPressTime = 0;

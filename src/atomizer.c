@@ -201,17 +201,18 @@ __myevic__ void StopFire()
 {
 	GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_INPUT );
 
-	if ( gFlags.firing ) gFlags.firing = 0;
-
-	if ( FireDuration > 5 )
+	if ( gFlags.firing )
 	{
-		dfTimeCount += FireDuration;
-		if ( dfTimeCount > 999999 ) dfTimeCount = 0;
-		if ( ++dfPuffCount > 99999 ) dfPuffCount = 0;
-		UpdatePTTimer = 80;
-	}
+		gFlags.firing = 0;
 
-	FireDuration = 0;
+		if ( FireDuration > 5 )
+		{
+			dfTimeCount += FireDuration;
+			if ( dfTimeCount > 999999 ) dfTimeCount = 0;
+			if ( ++dfPuffCount > 99999 ) dfPuffCount = 0;
+			UpdatePTTimer = 80;
+		}
+	}
 
 	PC1 = 0;
 	PC3 = 0;

@@ -398,6 +398,7 @@ __myevic__ void EventHandler()
 			PD7 = 0;
 
 			gFlags.firing = 1;
+			FireDuration = 0;
 
 			if ( byte_20000048 == 1 ) byte_20000048 = 2;
 
