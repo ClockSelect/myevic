@@ -123,7 +123,7 @@ Usage: First setup date & time. Wait a few hours to let the clock drift; then us
 
 ### Build:
 Follow [evic-sdk::Readme] (https://github.com/ReservedField/evic-sdk/blob/master/README.md) instructions to:
-  * Setting up the environment
+  * Setup the environment
 
   * Install python-evic
 
@@ -133,5 +133,14 @@ Follow [evic-sdk::Readme] (https://github.com/ReservedField/evic-sdk/blob/master
 
   * To build invoke: ```EVICSDK=. make```
 
-### Known issues:
-  * TEMP mode (SS316 for sure other might be affected also) behaviour is currently differs from the original firmware. Ssetting a higher temperature is required.
+### Known quirks/issues:
+  * Temperature Control on SS316
+
+    Temperature Control on SS316 is different in this firmware when compared to the original one.
+    Depending on your setup, you might need to change you regular temperature setting.
+    It's often better to use Temperature Control in TCR mode with SS316L, adapting the TCR/Temperature values to the build by a dry cotton test.
+
+    *It's hard to find a consensusal value for the TCR of SS316L.
+    Anything from 88 to 100 can be found depending on the source.
+    The original value of 120 is obviously way too high.
+    steam-engine.org gives a value of 87.9, which seems to reliable, therefor the TCR for SS316 was selected as 88 instead of original 120.*
