@@ -51,7 +51,7 @@ There's many more to LOGO and Game menus now. See below.
 
     Coil management menu.
 
-    ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/coils_zpsn29ef1h5.png)
+    ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/coils_zpshuhlyme4.png)
     * On each line of the four TC modes:
 
         Click fire to switch to edit mode on the resistance.
@@ -60,9 +60,12 @@ There's many more to LOGO and Game menus now. See below.
         Bring the resistance to zero with - to unlock and reset it.
         You may also fire two seconds to zero the resistance.
     * Other lines:
-       * Zero All:
+      * Zero All:
 
-         Also zeroes all "START" mode resistances.
+        Zeroes all resistances; also zeroes all "START" mode saved resistance settings.
+      * TCR Set:
+      
+        Enters the TCR Set menu. This menu can also be accessed by switching off the box and pressing both Fire and Right regulatory button for 5 seconds.
       * Exit:
 
         Self explanatory.
@@ -143,4 +146,4 @@ Follow [evic-sdk::Readme] (https://github.com/ReservedField/evic-sdk/blob/master
     *It's hard to find a consensusal value for the TCR of SS316L.
     Anything from 88 to 100 can be found depending on the source.
     The original value of 120 is obviously way too high.
-    steam-engine.org gives a value of 87.9, which seems to reliable, therefor the TCR for SS316 was selected as 88 instead of original 120.*
+    steam-engine.org gives a value of 87.9, which seems reliable, therefore the TCR for SS316 was selected as 88 instead of original 120.*
