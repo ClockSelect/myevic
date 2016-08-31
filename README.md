@@ -1,8 +1,13 @@
 ## **myevic**
 This is My eVic VTC Mini.
 
+### Compatible hardwares:
+* eVic VTC Mini
+* eVic VTwo Mini
+* eVic VTwo
+
 ### Based on:
-*Original 3.03 firmware*
+*Original VTC Mini 3.03 firmware*
 
 ### Main Features:
 My custom firmware is more or less identical to the official firmware - Just added some missing features.
