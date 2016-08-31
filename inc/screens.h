@@ -159,6 +159,7 @@ extern const uint16_t String_USB[];
 extern const uint16_t String_HID[];
 extern const uint16_t String_COM[];
 extern const uint16_t String_DSK[];
+extern const uint16_t String_DBG[];
 
 //==============================================================================
 

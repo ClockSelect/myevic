@@ -56,6 +56,13 @@ __myevic__ void ExpertMenuIDraw( int it, int line, int sel )
 				DrawString( String_HID, 36, line+2 );
 			break;
 
+		case 1:
+			DrawFillRect( 32, line, 63, line+12, 0 );
+			if ( dfStatus.dbgena )
+				DrawString( String_ON, 36, line+2 );
+			else
+				DrawString( String_OFF, 36, line+2 );
+
 		default:
 			break;
 	}
@@ -83,6 +90,12 @@ __myevic__ void ExpertMenuOnClick()
 			break;
 
 		case 1:
+			dfStatus.dbgena ^= 1;
+			if ( ! dfStatus.dbgena ) gFlags.debug = 0;
+			gFlags.refresh_display = 1;
+			break;
+			
+		case 2:
 			UpdateDataFlash();
 			InitUSB();
 			MainView();
@@ -709,9 +722,10 @@ const menu_t ExpertMenu =
 	0,
 	ExpertMenuOnClick+1,
 	0,
-	2,
+	3,
 	{
 		{ String_USB, 0, -1, 0 },
+		{ String_DBG, 0, -1, 0 },
 		{ String_Exit, 0, 1, 30 }
 	}
 };

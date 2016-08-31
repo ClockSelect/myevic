@@ -96,18 +96,22 @@ Usage: First setup date & time. Wait a few hours to let the clock drift; then us
 
 * Expert
 
-  Some advanced options:
+    Some advanced options:
 
   * USB:
 
-    Choose between several USB modes:
-     * HID: Normal operation mode - factory setting. Disables anyother USB device than HID.
+        Choose between several USB modes:
+     * HID: Normal operation mode - factory setting. Disables any other USB device than HID.
        HID is always active, even in the two others modes of operation.
 
      * COM: A virtual COM interface; mainly used for debugging with a COM terminal such as putty.
 
      * DSK: A virtual drive to download the firmware file.
-     Connect the box to a PC, and a disk device will appear with a "FIRMWARE.BIN" file. This can be read and copied.
+     Connect the box to a PC, and a disk device will appear with a "FIRMWARE.BIN" file. This can be read and copied. This file is an encoded firmware file that can be uploaded to another device using evic-usb or the official Joyetech firmware tool.
+
+  * DBG
+  
+        Enables or disables the debug informations mode. Once the DBG option is set to "ON", Debug informations can be shown/hidden by clicking fire button four times. This option is OFF by default to prevent users to inadvertendly mess up their screen.
  
 * Miscs
   * LOGO

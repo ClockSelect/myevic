@@ -48,6 +48,7 @@ typedef struct
 	int anaclk:1;
 	int vcom:1;
 	int storage:1;
+	int dbgena:1;
 }
 dfStatus_t;
 

@@ -131,7 +131,7 @@ __myevic__ void DrawCoilLine( int line )
 {
 	unsigned int rez;
 
-	if ( myDbgFlag & 1 )
+	if ( gFlags.debug & 1 )
 	{
 		if ( !EditModeTimer || EditItemIndex != 3 )
 		{

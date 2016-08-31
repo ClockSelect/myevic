@@ -86,4 +86,5 @@ const uint16_t String_USB		[] = { 0xB0, 0xAE, 0x9D, 0 };
 const uint16_t String_HID		[] = { 0xA3, 0xA4, 0x9F, 0 };
 const uint16_t String_COM		[] = { 0x9E, 0xAA, 0xA8, 0 };
 const uint16_t String_DSK		[] = { 0x9F, 0xAE, 0xA6, 0 };
+const uint16_t String_DBG		[] = { 0x9F, 0x9D, 0xA2, 0 };
 

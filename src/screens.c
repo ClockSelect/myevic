@@ -166,7 +166,7 @@ __myevic__ void DrawScreen()
 				break;
 		}
 
-		if ( myDbgFlag & 1 )
+		if ( gFlags.debug & 1 )
 		{
 			int nd = (Screen<100?Screen<10?1:2:3);
 			DrawValue( 64-6*nd, 120, Screen, 0, 0x01, nd );
