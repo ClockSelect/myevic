@@ -301,8 +301,15 @@ __myevic__ void GetUserInput()
 			if ( Screen == 59 )
 			{
 				UpdateDataFlash();
-				gFlags.refresh_display = 1;
-				Screen = 0;
+				if ( dfStatus.off )
+				{
+					gFlags.refresh_display = 1;
+					Screen = 0;
+				}
+				else
+				{
+					MainView();
+				}
 			}
 			else if ( Screen == 102 )
 			{
