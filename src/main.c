@@ -457,6 +457,8 @@ __myevic__ void Plantouille( int xpsr, int* stack )
 	WDT_Open( WDT_TIMEOUT_2POW14, WDT_RESET_DELAY_18CLK, FALSE, FALSE );
 	SYS_LockReg();
 
+	InitDisplay();
+
 	while ( 1 )
 	{
 		ClearScreenBuffer();

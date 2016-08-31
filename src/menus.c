@@ -477,10 +477,10 @@ __myevic__ int DTMenuOnEvent( int event )
 							if ( rtd.u32Year < RTC_YEAR2000 + 1000 ) ++rtd.u32Year;
 							break;
 						case 1:
-							rtd.u32Month = (rtd.u32Month+1) %12;
+							rtd.u32Month = rtd.u32Month %12 + 1;
 							break;
 						case 2:
-							rtd.u32Day = (rtd.u32Day+1) %31;
+							rtd.u32Day = rtd.u32Day %31 + 1;
 							break;
 					}
 					gFlags.refresh_display = 1;
