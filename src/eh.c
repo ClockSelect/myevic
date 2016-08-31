@@ -824,8 +824,15 @@ __myevic__ void EventHandler()
 					else
 						EditTCRIndex = 2;
 				}
+				return;
 			}
-			else if ( Screen == 82 )
+
+			if ( dfStatus.off )
+			{
+				return;
+			}
+
+			if ( Screen == 82 )
 			{
 				dfStatus.nologo ^= 1;
 			}
@@ -1023,8 +1030,15 @@ __myevic__ void EventHandler()
 				}
 				gFlags.refresh_display = 1;
 				ScreenDuration = 10;
+				return;
 			}
-			else if (( Screen >= 80 ) && ( Screen < 100 ))
+
+			if ( dfStatus.off )
+			{
+				return;
+			}
+
+			if (( Screen >= 80 ) && ( Screen < 100 ))
 			{
 				if ( ++MenuPage > 2 )
 				{

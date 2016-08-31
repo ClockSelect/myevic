@@ -27,6 +27,10 @@ __myevic__ void GPD_IRQHandler()
 	{
 		GPIO_CLR_INT_FLAG( PD, GPIO_PIN_PIN0_Msk );
 	}
+	else
+	{
+		PD->INTSRC = PD->INTSRC;
+	}
 }
 
 //----- (00002334) --------------------------------------------------------

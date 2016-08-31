@@ -736,7 +736,7 @@ __myevic__ int EvtEnterMenus()
 __myevic__ int CustomEvents()
 {
 	int vret;
-	
+
 	vret = 0;
 
 	switch ( LastEvent )
