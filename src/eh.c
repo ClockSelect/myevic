@@ -825,6 +825,8 @@ __myevic__ void EventHandler()
 					else
 						EditTCRIndex = 2;
 				}
+				gFlags.refresh_display = 1;
+				ScreenDuration = 10;
 				return;
 			}
 
