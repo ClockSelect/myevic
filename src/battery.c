@@ -119,7 +119,14 @@ __myevic__ void ReadBatteryVoltage()
 	{
 		while ( VbatSampleCnt < 16 )
 		{
-			VbatSampleSum += ADC_Read( 18 );
+			if ( gFlags.is_vtwo && gFlags.is_mini )
+			{
+				VbatSampleSum += ADC_Read( 0 );
+			}
+			else
+			{
+				VbatSampleSum += ADC_Read( 18 );
+			}
 			++VbatSampleCnt;
 
 			if ( !(gFlags.sample_vbat) )
