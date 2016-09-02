@@ -179,8 +179,9 @@ __myevic__ void ResetDataFlash()
 	dfRezSS = 0;
 	dfRezLockedSS = 0;
 	dfRezTCR = 0;
+	dfScreenSaver = 1;
 	dfRezLockedTCR = 0;
-	dfScreenSave = 0;
+	dfScreenProt = 0;
 	dfTCRM[0] = 120;
 	dfTCRM[1] = 120;
 	dfTCRM[2] = 120;
@@ -282,11 +283,14 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfRezTCR > 150 )
 		dfRezTCR = 0;
 
+	if ( dfScreenSaver > 1 )
+		dfScreenSaver = 1;
+
 	if ( dfRezLockedTCR > 1 )
 		dfRezLockedTCR = 0;
 
-	if ( dfScreenSave > 7 )
-		dfScreenSave = 0;
+	if ( dfScreenProt > 7 )
+		dfScreenProt = 0;
 
 	for ( i = 0 ; i < 21 ; ++i )
 	{

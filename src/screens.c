@@ -7,6 +7,7 @@
 #include "atomizer.h"
 #include "timers.h"
 #include "battery.h"
+#include "miscs.h"
 
 
 //=========================================================================
@@ -205,6 +206,7 @@ __myevic__ void DrawScreen()
 				if (( !gFlags.firing )
 				&&	( !dfStealthOn )
 				&&	( SleepTimer > 0 )
+				&&	( dfScreenSaver > 0 )
 				&&	( GetScreenProtection() > 0 ))
 				{
 					Screen = 60;
@@ -298,7 +300,7 @@ __myevic__ void DrawScreen()
 
 __myevic__ uint16_t GetScreenProtection()
 {
-	return ( 60 * ScrSaveTimes[dfScreenSave] );
+	return ( 60 * ScrSaveTimes[dfScreenProt] );
 }
 
 
@@ -409,11 +411,11 @@ __myevic__ void ShowRTCSpeed()
 
 __myevic__ int IsClockOnScreen()
 {
-	return (	Screen == 103
-			||	Screen == 104
-			|| ( dfAPT == 6 && ( Screen == 1 || Screen == 2 ))
-			|| ( Screen == 1 && dfStatus.anaclk )
-			|| ( Screen == 60 )
+	return (  ((( Screen == 1 ) || ( Screen == 2 )) && ( dfAPT == 6 ))
+			|| (( Screen == 1 ) && ( dfStatus.anaclk ))
+			|| (( Screen == 60 ) && ( dfScreenSaver == 1 ))
+			||  ( Screen == 103 )
+			||  ( Screen == 104 )
 			);
 }
 
@@ -781,6 +783,18 @@ __myevic__ void ShowRTCAdjust()
 //=========================================================================
 __myevic__ void ShowScreenSaver()
 {
-	DrawClock( 54 );
+	switch ( dfScreenSaver )
+	{
+		case 1:
+			DrawClock( 54 );
+			break;
+
+		case 2:
+			anim3d( 1 );
+			break;
+
+		default:
+			break;
+	}
 }
 

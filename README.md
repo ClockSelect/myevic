@@ -12,10 +12,11 @@ This is My eVic VTC Mini.
 ### Main Features:
 My custom firmware is more or less identical to the official firmware - Just added some missing features.
 ### Usage:
-- Use official firmware updater to upload bin/myevic_enc.bin
+- Use official firmware updater to upload ```bin/myevic_enc.bin```
 OR
-- Use evic-usb to upload bin/myevic.bin to your box:
-  ```evic-usb upload bin/myevic.bin```  (change to myevic_enc.bin if you see "Verifying APROM...FAIL").
+- Use evic-usb to upload unencrypted ```bin/myevic.bin``` to your box:
+
+    ```evic-usb upload -u bin/myevic.bin```
 
 ### Main Screen
 * Double-click:
@@ -41,16 +42,27 @@ Holding fire and right button a few seconds enters menus.
 There's many more to LOGO and Game menus now. See below.
 
 * Screen
+
+    ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/screenmenu_zpssfqwsuy4.png)
+
+    Screen management menu:
+
   * Contrast:
 
         ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/contrast_zpsjuouc0v4.png)
 
          Default VTC contrast is around 17%. This screen gives you access to the full contrast range of the display.
-  * Saver:
+  * Protection:
 
          ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/protec_zpsniaf7bl8.png)
 
-         Configure screen saver timing. After 30 seconds of inactivity, the main screen switches to an analog clock screen for the duration configured in this menu, after what the box shuts down. Scroll down the menu to the "Off" option to disable box shutdown.
+         Configure screen saver timing. After 30 seconds of inactivity, the main screen switches to the screen saver animation (see below) for the duration configured in this menu, after what the box shuts down. Scroll down the menu to the "Off" option to disable box shutdown.
+
+  * Saver:
+
+         ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/saver_zpsrfxibqb5.png)
+
+         Select the screen saver animation. You may choose between None (blank screen), an analog clock or a 3D spinning cube. More to come.
 
 * Coils
 
@@ -89,7 +101,7 @@ There's many more to LOGO and Game menus now. See below.
 
     For owners of VTC mini (useless for VTwo owners)
     The VTC mini does not have the needed 32kHz crystal soldered on the pcb to regulate the clock speed; so, another internal clock source is used to drive the clock. Since its frequency is quite different, a clock speed ratio is needed to regulate the clock.
-Usage: First setup date & time. Wait a few hours to let the clock drift; then use this menu to adjust time to the real time. This will compute the box-specific ratio between real time and internal processor clock speed. Accuracy of a few seconds per day can be achieved this way.
+    Usage: First setup date & time. Wait a few hours to let the clock drift; then use this menu to adjust time to the real time. This will compute the box-specific ratio between real time and internal processor clock speed. Accuracy of a few seconds per day can be achieved this way.
 
 * Modes
 
@@ -107,9 +119,10 @@ Usage: First setup date & time. Wait a few hours to let the clock drift; then us
 
         Choose between several USB modes:
      * HID: Normal operation mode - factory setting. Disables any other USB device than HID.
-       HID is always active, even in the two others modes of operation.
+       HID is always active, even in the two others modes of operation. This feature permits communication between the box and firmware utilities.
 
      * COM: A virtual COM interface; mainly used for debugging with a COM terminal such as putty.
+       May be usefull if you are developping your own version of the firmware.
 
      * DSK: A virtual drive to download the firmware file.
      Connect the box to a PC, and a disk device will appear with a "FIRMWARE.BIN" file. This can be read and copied. This file is an encoded firmware file that can be uploaded to another device using evic-usb or the official Joyetech firmware tool.

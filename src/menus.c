@@ -105,13 +105,28 @@ __myevic__ void ExpertMenuOnClick()
 
 //-----------------------------------------------------------------------------
 
-__myevic__ void ScreenSaveMenuOnEnter()
+__myevic__ void ScreenSaveOnEnter()
 {
-	CurrentMenuItem = dfScreenSave;
+	CurrentMenuItem = dfScreenSaver;
 }
 
 
-__myevic__ void ScreenSaveMenuIDraw( int it, int line, int sel )
+__myevic__ void ScreenSaveOnSelect()
+{
+	dfScreenSaver = CurrentMenuItem;
+	UpdateDFTimer = 50;
+}
+
+
+//-----------------------------------------------------------------------------
+
+__myevic__ void ScreenProtMenuOnEnter()
+{
+	CurrentMenuItem = dfScreenProt;
+}
+
+
+__myevic__ void ScreenProtMenuIDraw( int it, int line, int sel )
 {
 	if ( ScrSaveTimes[it] )
 	{
@@ -130,9 +145,9 @@ __myevic__ void ScreenSaveMenuIDraw( int it, int line, int sel )
 }
 
 
-__myevic__ void ScreenSaveMenuOnClick()
+__myevic__ void ScreenProtMenuOnClick()
 {
-	dfScreenSave = CurrentMenuItem;
+	dfScreenProt = CurrentMenuItem;
 	UpdateDataFlash();
 	MainView();
 }
@@ -693,13 +708,13 @@ const menu_t ClockMenu =
 	}
 };
 
-const menu_t ScreenSaveMenu =
+const menu_t ScreenProtMenu =
 {
 	String_Screen,
-	ScreenSaveMenuOnEnter+1,
-	ScreenSaveMenuIDraw+1,
+	ScreenProtMenuOnEnter+1,
+	ScreenProtMenuIDraw+1,
 	0,
-	ScreenSaveMenuOnClick+1,
+	ScreenProtMenuOnClick+1,
 	0,
 	8,
 	{
@@ -730,6 +745,22 @@ const menu_t ExpertMenu =
 	}
 };
 
+const menu_t ScreenSaveMenu =
+{
+	String_Saver,
+	ScreenSaveOnEnter+1,
+	0,
+	ScreenSaveOnSelect+1,
+	0,
+	0,
+	3,
+	{
+		{ String_None, 0, 1, 0 },
+		{ String_Clock, 0, 1, 0 },
+		{ String_Cube, 0, 1, 0 },
+	}
+};
+
 const menu_t ScreenMenu =
 {
 	String_Screen,
@@ -738,10 +769,11 @@ const menu_t ScreenMenu =
 	0,
 	ScreenIClick+1,
 	0,
-	3,
+	4,
 	{
 		{ String_Contrast, 0, 101, 10 },
-		{ String_Protec, &ScreenSaveMenu, -1, 0 },
+		{ String_Protec, &ScreenProtMenu, -1, 0 },
+		{ String_Saver, &ScreenSaveMenu, -1, 0 },
 		{ String_Exit, 0, 1, 0 }
 	}
 };

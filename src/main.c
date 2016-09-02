@@ -329,12 +329,10 @@ __myevic__ void Main()
 			ReadBatteryVoltage();
 			ReadBoardTemp();
 
-			if ( Anim3d )
+			if ((( Anim3d ) && ( Screen == 1 ) && ( !EditModeTimer ))
+			||	(( Screen == 60 ) && ( dfScreenSaver == 2 )))
 			{
-				if (( Screen == 1 ) && ( !EditModeTimer ))
-				{
-					anim3d( 0 );
-				}
+				anim3d( 0 );
 			}
 
 			if ( gFlags.firing && BoardTemp >= 70 )
