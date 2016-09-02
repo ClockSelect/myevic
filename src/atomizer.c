@@ -1204,7 +1204,7 @@ __myevic__ void ReadBoardTemp()
 
 	if ( sample != 4096 && sample )
 	{
-		tdr = 10 * ( 2000 * sample / ( 5280 - sample ));
+		tdr = ( 20000 * sample / ( 5280 - sample ));
 
 		if ( tdr <= 630 )
 		{
