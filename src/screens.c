@@ -172,7 +172,7 @@ __myevic__ void DrawScreen()
 			DrawValue( 64-6*nd, 120, Screen, 0, 0x01, nd );
 			DrawValue( 0, 120, ScreenDuration, 0, 0x01, 0 );
 		}
-		
+
 		DisplayRefresh();
 	}
 

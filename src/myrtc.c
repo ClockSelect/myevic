@@ -280,10 +280,8 @@ __myevic__ void GetRTC( S_RTC_TIME_DATA_T *rtd )
 			ref = RTCGetReferenceDate();
 			cs  = RTCGetClockSpeed();
 
-			d = (( (unsigned long long)t - ref ) * cs ) / 10000;
+			d = (( (unsigned long long)t - ref ) * cs + 10 * ClockCorrection ) / 10000;
 			t = ref + d;
-
-			t += ClockCorrection / 1000;
 		}
 
 		t += adjustment;

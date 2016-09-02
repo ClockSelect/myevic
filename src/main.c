@@ -389,6 +389,20 @@ __myevic__ void Main()
 				ProbeAtomizer();
 			}
 
+			if ( IsClockOnScreen() )
+			{
+				static uint8_t u8Seconds = 61;
+				S_RTC_TIME_DATA_T rtd;
+
+				GetRTC( &rtd );
+
+				if ( (uint8_t)rtd.u32Second != u8Seconds )
+				{
+					u8Seconds = (uint8_t)rtd.u32Second;
+					gFlags.refresh_display = 1;
+				}
+			}
+
 			if ( KeyTicks < 5 )
 			{
 				KeyRepeat();
@@ -424,17 +438,14 @@ __myevic__ void Main()
 				{
 					if ( Screen == 1 )
 					{
-						if ( --HideLogo )
+						--HideLogo;
+
+						if ( !HideLogo )
 						{
 							gFlags.refresh_display = 1;
 						}
 					}
 				}
-			}
-
-			if ( IsClockOnScreen() )
-			{
-				gFlags.refresh_display = 1;
 			}
 		}
 
