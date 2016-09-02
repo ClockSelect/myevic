@@ -13,9 +13,17 @@
 
 #define FWVERSION 303
 
-#define ISVTCMINI (!gFlags.is_vtwo && gFlags.is_mini)
-#define ISVTWOMINI (gFlags.is_vtwo && gFlags.is_mini)
-#define ISVTWO (gFlags.is_vtwo && !gFlags.is_mini)
+#define PID_VTCMINI		(*(uint32_t*)"E052")
+#define PID_VTWOMINI	(*(uint32_t*)"E115")
+#define PID_VTWO		(*(uint32_t*)"E043")
+#define PID_PRESA75W	(*(uint32_t*)"W007")
+
+#define ISVTCMINI	(!gFlags.is_vtwo && gFlags.is_mini)
+#define ISVTWOMINI	(gFlags.is_vtwo && gFlags.is_mini)
+#define ISVTWO		(gFlags.is_vtwo && !gFlags.is_mini)
+#define ISPRESA75W	(gFlags.is_presa && gFlags.is_mini)
+
+#define MAXPWRLIMIT (gFlags.is_mini?600:700)
 
 
 //=============================================================================
@@ -68,6 +76,7 @@ typedef struct
 	int has_x32:1;
 	int is_vtwo:1;
 	int is_mini:1;
+	int is_presa:1;
 	int debug:1;
 }
 gFlags_t;

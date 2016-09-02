@@ -5,6 +5,9 @@ This is My eVic VTC Mini.
 * eVic VTC Mini
 * eVic VTwo Mini
 * eVic VTwo
+* Wismec Presa 75W*
+
+\* *untested yet*
 
 ### Based on:
 *Original VTC Mini 3.03 firmware*

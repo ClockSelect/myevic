@@ -35,22 +35,23 @@ __myevic__ void SetProductID()
 	SYS_UnlockReg();
 	FMC_ENABLE_ISP();
 
-	dfProductID = *(uint32_t*)"E052";
+	dfProductID = PID_VTCMINI;
 	dfMaxHWVersion = 0x00010101;
-	gFlags.is_vtwo = 0;
-	gFlags.is_mini = 1;
+	gFlags.is_mini  = 1;
+	gFlags.is_vtwo  = 0;
+	gFlags.is_presa = 0;
 
 	for ( uint32_t offset = 0 ; offset < LDROM_SIZE ; offset += 4 )
 	{
 		uint32_t u32Data = FMC_Read( LDROM_BASE + offset );
-		if ( u32Data == *(uint32_t*)"E115" )
+		if ( u32Data == PID_VTWOMINI )
 		{
 			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00000001;
 			gFlags.is_vtwo = 1;
 			break;
 		}
-		else if ( u32Data == *(uint32_t*)"E043" )
+		else if ( u32Data == PID_VTWO )
 		{
 			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00010001;
@@ -58,8 +59,15 @@ __myevic__ void SetProductID()
 			gFlags.is_mini = 0;
 			break;
 		}
+		else if ( u32Data == PID_PRESA75W )
+		{
+			dfProductID = u32Data;
+			dfMaxHWVersion = 0x00030001;
+			gFlags.is_presa = 1;
+			break;
+		}
 	}
-	
+
 	FMC_DISABLE_ISP();
 	SYS_LockReg();
 
@@ -589,11 +597,32 @@ __myevic__ void InitDataFlash()
 
 	if ( ISVTWO )
 	{
-		DisplayModel = ( dfHWVersion == 101 );
+		switch ( dfHWVersion )
+		{
+			case 101:
+				DisplayModel = 1;
+				break;
+			default:
+				DisplayModel = 0;
+				break;
+		}
 	}
 	else if ( ISVTWOMINI )
 	{
 		DisplayModel = 0;
+	}
+	else if ( ISPRESA75W )
+	{
+		switch ( dfHWVersion )
+		{
+			case 102:
+			case 103:
+				DisplayModel = 1;
+				break;
+			default:
+				DisplayModel = 0;
+				break;
+		}
 	}
 	else
 	{
@@ -613,7 +642,11 @@ __myevic__ void InitDataFlash()
 		}
 	}
 
-	if ( ISVTWOMINI || ISVTWO )
+	if ( ISPRESA75W )
+	{
+		AtoShuntRez = 100;
+	}
+	else if ( ISVTWOMINI || ISVTWO )
 	{
 		AtoShuntRez = 115;
 	}

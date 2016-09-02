@@ -119,7 +119,7 @@ __myevic__ void ReadBatteryVoltage()
 	{
 		while ( VbatSampleCnt < 16 )
 		{
-			if ( gFlags.is_vtwo && gFlags.is_mini )
+			if ( ISVTWOMINI )
 			{
 				VbatSampleSum += ADC_Read( 0 );
 			}
@@ -176,7 +176,14 @@ __myevic__ int CheckBattery()
 	i = 0;
 	do
 	{
-		bv = ADC_Read( 18 ) >> 3;
+		if ( ISVTWOMINI )
+		{
+			bv = ADC_Read( 0 ) >> 3;
+		}
+		else
+		{
+			bv = ADC_Read( 18 ) >> 3;
+		}
 		if ( bv > 280 )
 			break;
 		++i;
@@ -200,13 +207,13 @@ __myevic__ int CheckBattery()
 	}
 
 	if ( LowBatVolts
-		&& pwr > 600
+		&& pwr > MAXPWRLIMIT
 		&& PowerScale == 100
 		&& bv >= 290
 		&& 100 * ( bv - 290 ) / ( LowBatVolts - 290 ) < 10 )
 	{
 		v0 = 1;
-		PowerScale = 60000 / pwr;
+		PowerScale = 100 * MAXPWRLIMIT / pwr;
 	}
 
 	if ( v0 || gFlags.limit_power || bv < 290 )
