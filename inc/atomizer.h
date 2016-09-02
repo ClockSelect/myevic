@@ -34,6 +34,7 @@ extern uint8_t	AtoStatus;
 extern uint8_t	BoardTemp;
 extern uint8_t	ConfigIndex;
 extern uint8_t	LastAtoError;
+extern uint8_t	PreheatTimer;
 
 extern uint8_t	byte_200000B3;
 extern uint16_t	LastAtoRez;

@@ -340,6 +340,11 @@ __myevic__ void Main()
 				Overtemp();
 			}
 
+			if ( gFlags.firing && PreheatTimer )
+			{
+				--PreheatTimer;
+			}
+
 			if ( KeyTicks >= 5 )
 			{
 				KeyRepeat();

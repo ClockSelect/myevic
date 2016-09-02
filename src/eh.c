@@ -478,10 +478,19 @@ __myevic__ void EventHandler()
 
 			if ( ISMODEVW(dfMode) )
 			{
-				if ( pwr <= 300 )
+				if ( dfPreheatTime )
+				{
+					PreheatTimer = dfPreheatTime;
+					TargetVolts = GetVoltsForPower( dfPreheatPwr );
+				}
+				else if ( pwr <= 300 )
+				{
 					TargetVolts = dfVWVolts;
+				}
 				else
+				{
 					TargetVolts = GetVoltsForPower( 300 );
+				}
 
 				gFlags.limit_power = 0;
 				if ( pwr > MAXPWRLIMIT && BatteryVoltage <= 340 )

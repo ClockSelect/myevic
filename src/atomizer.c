@@ -36,6 +36,7 @@ uint8_t		AtoStatus;		// 0,1,2,3,4 = Open,Short,Low,Large,Ok
 uint8_t		BoardTemp;
 uint8_t		ConfigIndex;
 uint8_t		LastAtoError;
+uint8_t		PreheatTimer;
 
 uint8_t		byte_200000B3;
 uint16_t	LastAtoRez;
@@ -213,6 +214,8 @@ __myevic__ void StopFire()
 			UpdatePTTimer = 80;
 		}
 	}
+
+	PreheatTimer = 0;
 
 	PC1 = 0;
 	PC3 = 0;
@@ -751,7 +754,11 @@ __myevic__ void TweakTargetVoltsVW()
 {
 	unsigned int pwr;
 
-	if ( dfMode == 6 )
+	if ( PreheatTimer )
+	{
+		pwr = dfPreheatPwr;
+	}
+	else if ( dfMode == 6 )
 	{
 		pwr = dfSavedCfgPwr[ConfigIndex];
 	}

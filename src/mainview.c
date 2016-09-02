@@ -338,6 +338,11 @@ __myevic__ void ShowMainView()
 
 	pwr = dfPower;
 
+	if ( gFlags.firing && PreheatTimer )
+	{
+		pwr = dfPreheatPwr;
+	}
+
 	if ( dfMode == 5 )
 	{
 		if ( gFlags.firing )
@@ -349,6 +354,7 @@ __myevic__ void ShowMainView()
 			pwr = ClampPower( BatteryVoltage, 0 );
 		}
 	}
+
 	if ( Screen == 2 )
 	{
 		pwr = pwr * PowerScale / 100;

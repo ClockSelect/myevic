@@ -211,6 +211,8 @@ __myevic__ void ResetDataFlash()
 	dfContrast = 45;
 	dfModesSel = 0;
 	dfClkRatio = gFlags.is_vtwo ? 10000 : RTC_DEF_CLK_RATIO;
+	dfPreheatPwr = 200;
+	dfPreheatTime = 0;
 }
 
 
@@ -350,6 +352,12 @@ __myevic__ void DFCheckValuesValidity()
 		dfClkRatio = 10000;
 	else if ( dfClkRatio < 10000 || dfClkRatio > 50000 )
 		dfClkRatio = RTC_DEF_CLK_RATIO;
+
+	if ( dfPreheatPwr > MaxPower )
+		dfPreheatPwr = 200;
+
+	if ( dfPreheatTime > 200 )
+		dfPreheatTime = 0;
 }
 
 

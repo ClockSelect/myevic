@@ -101,7 +101,8 @@ typedef struct dfParams
 	uint8_t		Contrast;
 	uint8_t		ModesSel;
 	uint16_t	ClkRatio;
-//	2-bytes pad
+	uint16_t	PreheatPwr;
+	uint8_t		PreheatTime;
 }
 dfParams_t;
 
@@ -246,6 +247,8 @@ extern dfStruct_t DataFlash;
 #define dfContrast		DFP(Contrast)
 #define dfModesSel		DFP(ModesSel)
 #define dfClkRatio		DFP(ClkRatio)
+#define dfPreheatPwr	DFP(PreheatPwr)
+#define dfPreheatTime	DFP(PreheatTime)
 
 #define dfFWVersion		DFI(FWVersion)
 #define dffmcCID        DFI(fmcCID)

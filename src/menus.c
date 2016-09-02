@@ -42,6 +42,138 @@ unsigned char CurrentMenuItem;
 
 
 //-----------------------------------------------------------------------------
+
+__myevic__ void PreheatIDraw( int it, int line, int sel )
+{
+	if ( it > 1 ) return;
+
+	int v, dp, nd, img;
+
+	switch ( it )
+	{
+		case 0 : 
+			v = dfPreheatPwr;
+			dp = 1;
+			nd = ( v < 100 ) ? 2 : 3;
+			dp = 1;
+			img = 0x98;
+			break;
+
+		case 1 : 
+			v = dfPreheatTime / 10;
+			dp = 1;
+			nd = 2;
+			img = 0x94;
+			break;
+		
+		default:
+			return;
+	}
+
+	if ( gFlags.edit_value && sel )
+	{
+		DrawFillRect( 0, line, 29, line+12, 0 );
+		DrawString( CurrentMenu->mitems[CurrentMenuItem].caption, 4, line +2 );
+		DrawFillRect( 30, line, 63, line+12, 1 );
+		DrawValueInv( 32, line+2, v, dp, 0x0B, nd );
+		DrawImageInv( 54, line+2, img );
+	}
+	else
+	{
+		DrawFillRect( 30, line, 63, line+12, 0 );
+		DrawValue( 32, line+2, v, dp, 0x0B, nd );
+		DrawImage( 54, line+2, img );
+	}
+}
+
+
+__myevic__ int PreheatMEvent( int event )
+{
+	int vret = 0;
+	if ( CurrentMenuItem > 1 )
+		return vret;
+
+	switch ( event )
+	{
+		case 1:
+			gFlags.edit_value ^= 1;
+			gFlags.refresh_display = 1;
+			vret = 1;
+			break;
+
+		case 2:
+			if ( gFlags.edit_value )
+			{
+				if ( CurrentMenuItem == 0 )
+				{
+					if ( KeyTicks >= 105 )
+					{
+						if ( dfPreheatPwr < MaxPower )
+						{
+							dfPreheatPwr -= dfPreheatPwr % 10;
+							dfPreheatPwr += 10;
+						}
+					}
+					else
+					{
+						if ( dfPreheatPwr < MaxPower ) ++dfPreheatPwr;
+						else dfPreheatPwr = 10;
+					}
+				}
+				else
+				{
+					if ( dfPreheatTime < 200 ) dfPreheatTime += 10;
+					else if ( KeyTicks < 5 ) dfPreheatTime = 0;
+				}
+				UpdateDFTimer = 50;
+				gFlags.refresh_display = 1;
+				vret = 1;
+			}
+			break;
+
+		case 3:
+			if ( gFlags.edit_value )
+			{
+				if ( CurrentMenuItem == 0 )
+				{
+					if ( KeyTicks >= 105 )
+					{
+						if ( dfPreheatPwr > 10 )
+						{
+							dfPreheatPwr += 10 - dfPreheatPwr % 10;
+							dfPreheatPwr -= 10;
+						}
+					}
+					else
+					{
+						if ( dfPreheatPwr > 10 ) --dfPreheatPwr;
+						else dfPreheatPwr = MaxPower;
+					}
+				}
+				else
+				{
+					if ( dfPreheatTime > 0 ) dfPreheatTime -= 10;
+					else if ( KeyTicks < 5 ) dfPreheatTime = 200;
+				}
+				UpdateDFTimer = 50;
+				gFlags.refresh_display = 1;
+				vret = 1;
+			}
+			break;
+
+		case EVENT_LONG_FIRE:
+			UpdateDataFlash();
+			MainView();
+			vret = 1;
+			break;
+
+	}
+	return vret;
+}
+
+
+//-----------------------------------------------------------------------------
+
 __myevic__ void ExpertMenuIDraw( int it, int line, int sel )
 {
 	switch ( it )
@@ -320,7 +452,7 @@ __myevic__ void CoilsIClick()
 	{
 		dfResistance = AtoRez;
 	}
-	if ( CurrentMenuItem == 5 )
+	if ( CurrentMenuItem == CurrentMenu->nitems - 1 )
 	{
 		UpdateDataFlash();
 	}
@@ -622,6 +754,22 @@ const menu_t ModesMenu =
 	}
 };
 
+const menu_t PreheatMenu =
+{
+	String_Preheat,
+	0,
+	PreheatIDraw+1,
+	0,
+	0,
+	PreheatMEvent+1,
+	3,
+	{
+		{ String_Pwr, 0, -1, 0 },
+		{ String_Time, 0, -1, 0 },
+		{ String_Exit, 0, 1, 0 },
+	}
+};
+
 const menu_t CoilsMenu =
 {
 	String_Coils,
@@ -630,13 +778,14 @@ const menu_t CoilsMenu =
 	CoilsISelect+1,
 	CoilsIClick+1,
 	CoilsMEvent+1,
-	7,
+	8,
 	{
 		{ String_NI, 0, -1, 0 },
 		{ String_TI, 0, -1, 0 },
 		{ String_SS, 0, -1, 0 },
 		{ String_TCR, 0, -1, 0 },
 		{ String_Zero_All, 0, -1, 0 },
+		{ String_Preheat, &PreheatMenu, -1, 0 },
 		{ String_TCRSet, 0, 59, 10 },
 		{ String_Exit, 0, 1, 0 }
 	}
