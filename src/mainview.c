@@ -36,31 +36,31 @@ __myevic__ void DrawMode()
 	switch ( dfMode )
 	{
 		case 0:
-			DrawString( String_TEMP, 0, 2 );
+			DrawStringCentered( String_TEMP, 2 );
 			if ( !BLINKITEM(1) )
 			{
-				DrawString( String_NI, 32, 2 );
+				DrawStringCentered( String_NI, 2 );
 			}
 			break;
 		case 1:
-			DrawString( String_TEMP, 0, 2 );
+			DrawStringCentered( String_TEMP, 2 );
 			if ( !BLINKITEM(1) )
 			{
-				DrawString( String_TI, 32, 2 );
+				DrawStringCentered( String_TI, 2 );
 			}
 			break;
 		case 2:
-			DrawString( String_TEMP, 0, 2 );
+			DrawStringCentered( String_TEMP, 2 );
 			if ( !BLINKITEM(1) )
 			{
-				DrawString( String_SS, 32, 2 );
+				DrawStringCentered( String_SS, 2 );
 				DrawImage( 48, 3, 0x04 );
 				DrawImage( 54, 3, 0x02 );
 				DrawImage( 59, 3, 0x07 );
 			}
 			break;
 		case 3:
-			DrawString( String_TCR, 0, 2 );
+			DrawStringCentered( String_TCR, 2 );
 			DrawValue( 25, 2, dfTCRM[dfTCRIndex], 0, 0x0B, 3 );
 			if ( !BLINKITEM(1) )
 			{
@@ -69,13 +69,13 @@ __myevic__ void DrawMode()
 			}
 			break;
 		case 4:
-			DrawString( String_POWER, 0, 2 );
+			DrawStringCentered( String_POWER, 2 );
 			break;
 		case 5:
-			DrawString( String_BYPASS, 0, 2 );
+			DrawStringCentered( String_BYPASS, 2 );
 			break;
 		case 6:
-			DrawString( String_START, 13, 4 );
+			DrawStringCentered( String_START, 4 );
 			break;
 		default:
 			break;
