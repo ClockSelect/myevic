@@ -406,16 +406,28 @@ __myevic__ void ShowMainView()
 		{
 			DrawValue( 0, 18, pwr, 1, 0x29, 4 );
 			DrawImage( 54, 26, 0x98 );
+			if ( dfPreheatTime )
+			{
+				DrawImage( 54, 17, 0x77 );
+			}
 		}
 		else if ( pwr > 99 )
 		{
 			DrawValue( 0, 13, pwr, 1, 0x48, 3 );
 			DrawImage( 54, 26, 0x98 );
+			if ( dfPreheatTime )
+			{
+				DrawImage( 54, 13, 0x77 );
+			}
 		}
 		else
 		{
 			DrawValue( 5, 13, pwr, 1, 0x48, 2 );
 			DrawImage( 45, 18, 0xB9 );
+			if ( dfPreheatTime )
+			{
+				DrawImage( 45, 13, 0x77 );
+			}
 		}
 	}
 

@@ -5,9 +5,8 @@ This is My eVic VTC Mini.
 * eVic VTC Mini
 * eVic VTwo Mini
 * eVic VTwo
-* Wismec Presa 75W*
+* Wismec Presa 75W
 
-\* *untested yet*
 
 ### Based on:
 *Original VTC Mini 3.03 firmware*
@@ -69,26 +68,33 @@ There's many more to LOGO and Game menus now. See below.
 
 * Coils
 
-    Coil management menu.
+    * Management:
 
-    ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/coils_zpshuhlyme4.png)
-    * On each line of the four TC modes:
+        ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/coils_zpsn29ef1h5.png)
+     * On each line of the four TC modes:
 
-        Click fire to switch to edit mode on the resistance.
-        While the resistance value is highlighted, click + and - to edit its value.
-        Setting the resistance to any non-zero value automaticaly locks it.
-        Bring the resistance to zero with - to unlock and reset it.
-        You may also fire two seconds to zero the resistance.
-    * Other lines:
+            Click fire to switch to edit mode on the resistance.
+            While the resistance value is highlighted, click + and - to edit its value.
+            Setting the resistance to any non-zero value automaticaly locks it.
+            Bring the resistance to zero with - to unlock and reset it.
+            You may also fire two seconds to zero the resistance.
       * Zero All:
 
-        Zeroes all resistances; also zeroes all "START" mode saved resistance settings.
-      * TCR Set:
-      
-        Enters the TCR Set menu. This menu can also be accessed by switching off the box and pressing both Fire and Right regulatory button for 5 seconds.
+            Zeroes all resistances; also zeroes all "START" mode saved resistance settings.
       * Exit:
 
-        Self explanatory.
+            Self explanatory.
+
+    * Preheat:
+    
+        ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/preheat_zpsrpcu0fml.png)
+        
+        Coil preheat function. Set at wich power and how long you want the coil to be preheated when you fire; after this delay, the atomizer will be powered by your regular setting. Set the delay to zero to switch preheating off. A small "P" icon will appear on the main screen next the the power setting to remind you the preheat function is enabled ("POWER" mode only). This function can only be active in "POWER" and "START" modes; it is ignored in all other modes.
+
+    * TCR Set:
+      
+        Enters the TCR Set menu. This menu can also be accessed by switching off the box and pressing both Fire and Right regulatory button for 5 seconds.
+
 
 * Clock
   * Date/Time
@@ -133,6 +139,10 @@ There's many more to LOGO and Game menus now. See below.
   * DBG
   
         Enables or disables the debug informations mode. Once the DBG option is set to "ON", Debug informations can be shown/hidden by clicking fire button four times. This option is OFF by default to prevent users to inadvertendly mess up their screen.
+
+  * X32
+
+        Enables or disables usage of the X32 crystal of the PCB. If this setting is "OFF", the firmware won't try to drive the Real-Time Clock with the 32.768kHz crystal. This may solve freezing issues on some malfunctionning boxes.
  
 * Miscs
   * LOGO

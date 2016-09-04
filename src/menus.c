@@ -47,7 +47,7 @@ __myevic__ void PreheatIDraw( int it, int line, int sel )
 {
 	if ( it > 1 ) return;
 
-	int v, dp, nd, img;
+	int x, v, dp, nd, img;
 
 	switch ( it )
 	{
@@ -55,8 +55,9 @@ __myevic__ void PreheatIDraw( int it, int line, int sel )
 			v = dfPreheatPwr;
 			dp = 1;
 			nd = ( v < 100 ) ? 2 : 3;
-			dp = 1;
+			dp = ( v < 1000 ) ? 1 : 0;
 			img = 0x98;
+			x = ( v < 100 ) ? 38 : ( v < 1000 ) ? 32 : 34;
 			break;
 
 		case 1 : 
@@ -64,8 +65,9 @@ __myevic__ void PreheatIDraw( int it, int line, int sel )
 			dp = 1;
 			nd = 2;
 			img = 0x94;
+			x = 38;
 			break;
-		
+
 		default:
 			return;
 	}
@@ -75,14 +77,28 @@ __myevic__ void PreheatIDraw( int it, int line, int sel )
 		DrawFillRect( 0, line, 29, line+12, 0 );
 		DrawString( CurrentMenu->mitems[CurrentMenuItem].caption, 4, line +2 );
 		DrawFillRect( 30, line, 63, line+12, 1 );
-		DrawValueInv( 32, line+2, v, dp, 0x0B, nd );
-		DrawImageInv( 54, line+2, img );
+		if ( v == 0 && it == 1 )
+		{
+			DrawStringInv( String_Off, 37, line+2 );
+		}
+		else
+		{
+			DrawValueInv( x, line+2, v, dp, 0x0B, nd );
+			DrawImageInv( 54, line+2, img );
+		}
 	}
 	else
 	{
 		DrawFillRect( 30, line, 63, line+12, 0 );
-		DrawValue( 32, line+2, v, dp, 0x0B, nd );
-		DrawImage( 54, line+2, img );
+		if ( v == 0 && it == 1 )
+		{
+			DrawString( String_Off, 37, line+2 );
+		}
+		else
+		{
+			DrawValue( x, line+2, v, dp, 0x0B, nd );
+			DrawImage( 54, line+2, img );
+		}
 	}
 }
 
@@ -116,7 +132,11 @@ __myevic__ int PreheatMEvent( int event )
 					}
 					else
 					{
-						if ( dfPreheatPwr < MaxPower ) ++dfPreheatPwr;
+						if ( dfPreheatPwr < MaxPower )
+						{
+							if ( dfPreheatPwr < 1000 ) ++dfPreheatPwr;
+							else dfPreheatPwr += 10;
+						}
 						else dfPreheatPwr = 10;
 					}
 				}
@@ -140,13 +160,16 @@ __myevic__ int PreheatMEvent( int event )
 					{
 						if ( dfPreheatPwr > 10 )
 						{
-							dfPreheatPwr += 10 - dfPreheatPwr % 10;
-							dfPreheatPwr -= 10;
+							if ( dfPreheatPwr % 10 )
+								dfPreheatPwr -= dfPreheatPwr % 10;
+							else
+								dfPreheatPwr -= 10;
 						}
 					}
 					else
 					{
-						if ( dfPreheatPwr > 10 ) --dfPreheatPwr;
+						if ( dfPreheatPwr > 1000 ) dfPreheatPwr -= 10;
+						else if ( dfPreheatPwr > 10 ) --dfPreheatPwr;
 						else dfPreheatPwr = MaxPower;
 					}
 				}
