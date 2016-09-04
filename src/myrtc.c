@@ -22,8 +22,6 @@ __myevic__ void RTC_IRQHandler()
 	{
 		RTC_CLEAR_TICK_INT_FLAG();
 
-		gPlayfield.ul[0]++;
-
 		ClockCorrection = 0;
 
 //		gPlayfield.ul[4] = TMR2Counter - gPlayfield.ul[0];
@@ -207,6 +205,13 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 {
 	SYS_UnlockReg();
 
+	// Enable LIRC 10kHz clock
+	if ( !( CLK->STATUS & CLK_STATUS_LIRCSTB_Msk ) )
+	{
+		CLK_EnableXtalRC( CLK_PWRCTL_LIRCEN_Msk );
+		CLK_WaitClockReady( CLK_STATUS_LIRCSTB_Msk );
+	}
+
 	CLK_EnableModuleClock( RTC_MODULE );
 
 	if ( gFlags.has_x32 )
@@ -216,19 +221,35 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 	}
 	else
 	{
-		// Enable LIRC 10kHz clock
-		if ( !( CLK->STATUS & CLK_STATUS_LIRCSTB_Msk ) )
-		{
-			CLK_EnableXtalRC( CLK_PWRCTL_LIRCEN_Msk );
-			CLK_WaitClockReady( CLK_STATUS_LIRCSTB_Msk );
-		}
-
 		CLK_SetModuleClock( RTC_MODULE, CLK_CLKSEL3_RTCSEL_LIRC, 0 );
 	}
 
 	SYS_LockReg();
 
 	RTC_Open( 0 );
+
+	// Check that everything works fine with the X32 crystal.
+	// If not, revert to the LIRC.
+	if ( gFlags.has_x32 )
+	{
+		// Checking that we correctly get access to the RTC registers
+		// should be a good test.
+		register int rtccnt = 100000;
+		while( ( RTC->RWEN & RTC_RWEN_RWENF_Msk ) == RTC_RWEN_RWENF_Msk );
+		RTC->RWEN = RTC_WRITE_KEY;
+		while( ( RTC->RWEN & RTC_RWEN_RWENF_Msk ) == 0x0 )
+			if ( !--rtccnt )
+				break;
+
+		// In case we did not acces to the protected registers,
+		// disable X32 usage and  re-init the RTC with the LIRC.
+		if ( !rtccnt )
+		{
+			gFlags.has_x32 = 0;
+			InitRTC( d );
+			return;
+		}
+	}
 
 	if ( d )
 	{

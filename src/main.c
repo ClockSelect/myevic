@@ -117,9 +117,7 @@ void InitDevices()
 	SYS->GPF_MFPL |=  (SYS_GPF_MFPL_PF0MFP_X32_OUT|SYS_GPF_MFPL_PF1MFP_X32_IN);
 
 	CLK_EnableXtalRC( CLK_PWRCTL_LXTEN_Msk );
-	CLK_WaitClockReady( CLK_STATUS_LXTSTB_Msk );
-
-	if ( ( CLK->STATUS & CLK_STATUS_LXTSTB_Msk ) == CLK_STATUS_LXTSTB_Msk )
+	if ( CLK_WaitClockReady( CLK_STATUS_LXTSTB_Msk ) )
 	{
 		gFlags.has_x32 = 1;
 	}
