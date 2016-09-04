@@ -11,7 +11,7 @@
 #define ISMODEVW(m) (((m)==4)||((m)==6))
 #define ISMODEBY(m) ((m)==5)
 
-#define FWVERSION 303
+#define FWVERSION 310
 
 #define PID_VTCMINI		(*(uint32_t*)"E052")
 #define PID_VTWOMINI	(*(uint32_t*)"E115")
