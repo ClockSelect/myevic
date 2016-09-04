@@ -198,8 +198,6 @@ __myevic__ void InitHardware()
 	InitPWM();
 
 	InitTimers();
-
-	InitRTC( 0 );
 }
 
 
@@ -226,6 +224,13 @@ __myevic__ void Main()
 {
 	InitHardware();
 	InitVariables();
+
+	if ( dfStatus.x32off )
+	{
+		gFlags.has_x32 = 0;
+	}
+
+	InitRTC( 0 );
 
 	InitUSB();
 

@@ -194,6 +194,15 @@ __myevic__ void ExpertMenuIDraw( int it, int line, int sel )
 				DrawString( String_ON, 36, line+2 );
 			else
 				DrawString( String_OFF, 36, line+2 );
+			break;
+
+		case 2:
+			DrawFillRect( 32, line, 63, line+12, 0 );
+			if ( dfStatus.x32off )
+				DrawString( String_OFF, 36, line+2 );
+			else
+				DrawString( String_ON, 36, line+2 );
+			break;
 
 		default:
 			break;
@@ -228,6 +237,11 @@ __myevic__ void ExpertMenuOnClick()
 			break;
 			
 		case 2:
+			dfStatus.x32off ^= 1;
+			gFlags.refresh_display = 1;
+			break;
+			
+		case 3:
 			UpdateDataFlash();
 			InitUSB();
 			MainView();
@@ -901,10 +915,11 @@ const menu_t ExpertMenu =
 	0,
 	ExpertMenuOnClick+1,
 	0,
-	3,
+	4,
 	{
 		{ String_USB, 0, -1, 0 },
 		{ String_DBG, 0, -1, 0 },
+		{ String_X32, 0, -1, 0 },
 		{ String_Exit, 0, 1, 30 }
 	}
 };

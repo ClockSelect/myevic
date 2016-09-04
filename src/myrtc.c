@@ -140,7 +140,7 @@ __myevic__ void RTCEpochToTime( S_RTC_TIME_DATA_T *d, const time_t *t )
 	d->u32Hour		= s.tm_hour;
 	d->u32Minute	= s.tm_min;
 	d->u32Second	= s.tm_sec;
-	d->u32DayOfWeek	= s.tm_wday; 
+	d->u32DayOfWeek	= s.tm_wday;
 	d->u32TimeScale	= RTC_CLOCK_24;
 }
 
@@ -148,11 +148,7 @@ __myevic__ void RTCEpochToTime( S_RTC_TIME_DATA_T *d, const time_t *t )
 
 __myevic__ void RTCFullAccess()
 {
-	if ( !(RTC->RWEN&RTC_RWEN_RWENF_Msk) )
-	{
-		RTC_WaitAccessEnable();
-	}
-	if ( !(RTC->SPRCTL&RTC_SPRCTL_SPRRWEN_Msk) )
+	if ( !(RTC->RWEN&RTC_RWEN_RWENF_Msk) || !(RTC->SPRCTL&RTC_SPRCTL_SPRRWEN_Msk) )
 	{
 		RTC_EnableSpareAccess();
 	}
@@ -193,7 +189,7 @@ __myevic__ unsigned int RTCGetClockSpeed()
 {
 	if ( ! dfClkRatio )
 	{
-		dfClkRatio = gFlags.has_x32 ? 10000 : RTC_DEF_CLK_RATIO;
+		dfClkRatio = RTC_DEF_CLK_RATIO;
 		UpdateDFTimer = 50;
 	}
 	return dfClkRatio;
@@ -203,6 +199,8 @@ __myevic__ unsigned int RTCGetClockSpeed()
 
 __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 {
+	register int rtccnt;
+
 	SYS_UnlockReg();
 
 	// Enable LIRC 10kHz clock
@@ -234,7 +232,7 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 	{
 		// Checking that we correctly get access to the RTC registers
 		// should be a good test.
-		register int rtccnt = 100000;
+		rtccnt = 100000;
 		while( ( RTC->RWEN & RTC_RWEN_RWENF_Msk ) == RTC_RWEN_RWENF_Msk );
 		RTC->RWEN = RTC_WRITE_KEY;
 		while( ( RTC->RWEN & RTC_RWEN_RWENF_Msk ) == 0x0 )
@@ -249,6 +247,10 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 			InitRTC( d );
 			return;
 		}
+	}
+	else
+	{
+		RTC_32KCalibration( 3276800 );
 	}
 
 	if ( d )
@@ -350,7 +352,7 @@ __myevic__ void RTCAdjustClock( int seconds )
 
 			int dt1 = t - ref;
 			int dt2 = t + adj - ref;
-			
+
 			if ( dt1 <= 0 || dt2 <= 0 ) return;
 
 			uint64_t f1 =
@@ -361,7 +363,7 @@ __myevic__ void RTCAdjustClock( int seconds )
 						>> RTC_FREQADJ_FRACTION_Pos ) * 100) / 60;
 
 			int32_t f2 = f1 * dt2 / dt1;
-			
+
 			RTC_32KCalibration( f2 );
 		}
 	}

@@ -402,8 +402,16 @@ __myevic__ void ShowRTCSpeed()
 	GetRTC( &rtd );
 	DrawTimeSmall( 12, 20, &rtd, 0x1F );
 
-	cs = RTCGetClockSpeed();
-	DrawValue( 12, 40, cs, 0, 0x1F, 5 );
+	if ( gFlags.has_x32 )
+	{
+		DrawString( String_X32, 11, 40 );
+		DrawString( String_ON, 37, 40 );
+	}
+	else
+	{
+		cs = RTCGetClockSpeed();
+		DrawValue( 12, 40, cs, 0, 0x1F, 5 );
+	}
 }
 
 

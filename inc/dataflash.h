@@ -49,6 +49,7 @@ typedef struct
 	int vcom:1;
 	int storage:1;
 	int dbgena:1;
+	int x32off:1;
 }
 dfStatus_t;
 

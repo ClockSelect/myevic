@@ -550,9 +550,6 @@ __myevic__ int EvtPlusButton()
 		case 83:
 		{
 			Event = EVENT_EDIT_CONTRAST;
-		//	Screen = 101;
-		//	ScreenDuration = 10;
-		//	gFlags.refresh_display = 1;
 			vret = 1;
 		}
 		break;
@@ -585,20 +582,23 @@ __myevic__ int EvtPlusButton()
 
 		case 103:
 		{
-			unsigned int cs = RTCGetClockSpeed();
-			if ( cs < 50000 )
+			if ( !gFlags.has_x32 )
 			{
-				if ( KeyTicks < 105 )
+				unsigned int cs = RTCGetClockSpeed();
+				if ( cs < 50000 )
 				{
-					++cs;
+					if ( KeyTicks < 105 )
+					{
+						++cs;
+					}
+					else
+					{
+						cs -= cs % 50;
+						cs += 50;
+					}
 				}
-				else
-				{
-					cs -= cs % 50;
-					cs += 50;
-				}
+				RTCSetClockSpeed( cs );
 			}
-			RTCSetClockSpeed( cs );
 			gFlags.refresh_display = 1;
 			ScreenDuration = 120;
 			vret = 1;
@@ -648,20 +648,23 @@ __myevic__ int EvtMinusButton()
 
 		case 103:
 		{
-			unsigned int cs = RTCGetClockSpeed();
-			if ( cs > 20000 )
+			if ( !gFlags.has_x32 )
 			{
-				if ( KeyTicks < 105 )
+				unsigned int cs = RTCGetClockSpeed();
+				if ( cs > 20000 )
 				{
-					--cs;
+					if ( KeyTicks < 105 )
+					{
+						--cs;
+					}
+					else
+					{
+						if ( cs % 50 ) cs -= cs % 50;
+						else cs -= 50;
+					}
 				}
-				else
-				{
-					if ( cs % 50 ) cs -= cs % 50;
-					else cs -= 50;
-				}
+				RTCSetClockSpeed( cs );
 			}
-			RTCSetClockSpeed( cs );
 			gFlags.refresh_display = 1;
 			ScreenDuration = 120;
 			vret = 1;

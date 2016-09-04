@@ -26,6 +26,7 @@ uint8_t		UpdatePTTimer;
 // Internal variables
 
 uint16_t	fmcCntrsIndex;
+uint8_t		MagicNumber;
 
 
 //=============================================================================
@@ -37,6 +38,7 @@ __myevic__ void SetProductID()
 
 	dfProductID = PID_VTCMINI;
 	dfMaxHWVersion = 0x00010101;
+	MagicNumber = 0x36;
 	gFlags.is_mini  = 1;
 	gFlags.is_vtwo  = 0;
 	gFlags.is_presa = 0;
@@ -48,6 +50,7 @@ __myevic__ void SetProductID()
 		{
 			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00000001;
+			MagicNumber = 0x10;
 			gFlags.is_vtwo = 1;
 			break;
 		}
@@ -55,6 +58,7 @@ __myevic__ void SetProductID()
 		{
 			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00010001;
+			MagicNumber = 0x40;
 			gFlags.is_vtwo = 1;
 			gFlags.is_mini = 0;
 			break;
@@ -63,6 +67,7 @@ __myevic__ void SetProductID()
 		{
 			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00030001;
+			MagicNumber = 0x30;
 			gFlags.is_presa = 1;
 			break;
 		}
@@ -159,7 +164,7 @@ __myevic__ void ResetDataFlash()
 //	if ( hwv < 100 || hwv > 111 ) hwv = 100;
 	MemClear( DataFlash.params, DATAFLASH_PARAMS_SIZE );
 	dfHWVersion = hwv;
-	dfMagic = 0x36;
+	dfMagic = MagicNumber;
 	dfMode = 4;
 	dfVWVolts = 330;
 	dfPower = MaxPower;
@@ -205,7 +210,7 @@ __myevic__ void ResetDataFlash()
 	FMCWriteCounters();
 	dfContrast = 45;
 	dfModesSel = 0;
-	dfClkRatio = gFlags.has_x32 ? 10000 : RTC_DEF_CLK_RATIO;
+	dfClkRatio = RTC_DEF_CLK_RATIO;
 	dfPreheatPwr = 200;
 	dfPreheatTime = 0;
 }
@@ -343,9 +348,7 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfModesSel & 0x80 || ( dfModesSel & 0x7F ) == 0x7F )
 		dfModesSel = 0;
 
-	if ( gFlags.has_x32 )
-		dfClkRatio = 10000;
-	else if ( dfClkRatio < 20000 || dfClkRatio > 50000 )
+	if ( dfClkRatio < 20000 || dfClkRatio > 50000 )
 		dfClkRatio = RTC_DEF_CLK_RATIO;
 
 	if ( dfPreheatPwr > MaxPower )
@@ -709,7 +712,7 @@ __myevic__ void InitDataFlash()
 				dfHWVersion / 10 % 10,
 				dfHWVersion % 10 );
 
-	if ( dfMagic == 0x36 && CalcPageCRC( DataFlash.params ) == dfCRC )
+	if ( dfMagic == MagicNumber && CalcPageCRC( DataFlash.params ) == dfCRC )
 	{
 		DFCheckValuesValidity();
 	}
