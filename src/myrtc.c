@@ -11,8 +11,6 @@ volatile unsigned short ClockCorrection = 0;
 
 //=============================================================================
 
-#define IS_RTC_OPENED() ((RTC->INIT&RTC_INIT_ACTIVE_Msk)!=0)
-
 static time_t ref_date = 0;
 static int adjustment = 0;
 
@@ -23,6 +21,8 @@ __myevic__ void RTC_IRQHandler()
 	if ( RTC_GET_TICK_INT_FLAG() )
 	{
 		RTC_CLEAR_TICK_INT_FLAG();
+
+		gPlayfield.ul[0]++;
 
 		ClockCorrection = 0;
 
@@ -162,15 +162,22 @@ __myevic__ void RTCFullAccess()
 
 __myevic__ void RTCSetReferenceDate( time_t *t )
 {
-	ref_date = *t;
+	if ( !gFlags.has_x32 )
+	{
+		ref_date = *t;
 
-	RTCFullAccess();
-	RTC_WRITE_SPARE_REGISTER( 0, ref_date );
+		RTCFullAccess();
+		RTC_WRITE_SPARE_REGISTER( 0, ref_date );
+	}
 }
 
 __myevic__ time_t RTCGetReferenceDate()
 {
-	if ( ! ref_date )
+	if ( gFlags.has_x32 )
+	{
+		ref_date = 0;
+	}
+	else if ( !ref_date )
 	{
 		RTCFullAccess();
 		ref_date = (time_t)RTC_READ_SPARE_REGISTER( 0 );
@@ -188,7 +195,7 @@ __myevic__ unsigned int RTCGetClockSpeed()
 {
 	if ( ! dfClkRatio )
 	{
-		dfClkRatio = RTC_DEF_CLK_RATIO;
+		dfClkRatio = gFlags.has_x32 ? 10000 : RTC_DEF_CLK_RATIO;
 		UpdateDFTimer = 50;
 	}
 	return dfClkRatio;
@@ -198,43 +205,36 @@ __myevic__ unsigned int RTCGetClockSpeed()
 
 __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 {
-	if ( !IS_RTC_OPENED() )
+	SYS_UnlockReg();
+
+	CLK_EnableModuleClock( RTC_MODULE );
+
+	if ( gFlags.has_x32 )
 	{
-		SYS_UnlockReg();
-
-		CLK_EnableModuleClock( RTC_MODULE );
-
-		if ( !gFlags.has_x32 )
+		RTC->LXTCTL |= RTC_LXTCTL_LXTEN_Msk;
+		CLK_SetModuleClock( RTC_MODULE, CLK_CLKSEL3_RTCSEL_LXT, 0 );
+	}
+	else
+	{
+		// Enable LIRC 10kHz clock
+		if ( !( CLK->STATUS & CLK_STATUS_LIRCSTB_Msk ) )
 		{
-			// Enable LIRC 10kHz clock
-			if ( !( CLK->STATUS&CLK_STATUS_LIRCSTB_Msk ) )
-			{
-				CLK_EnableXtalRC( CLK_PWRCTL_LIRCEN_Msk );
-				CLK_WaitClockReady( CLK_STATUS_LIRCSTB_Msk );
-			}
-
-			CLK_SetModuleClock( RTC_MODULE, CLK_CLKSEL3_RTCSEL_LIRC, 0 );
-		}
-		else
-		{
-			RTC->LXTCTL |= RTC_LXTCTL_LXTEN_Msk;
-			CLK_SetModuleClock( RTC_MODULE, CLK_CLKSEL3_RTCSEL_LXT, 0 );
+			CLK_EnableXtalRC( CLK_PWRCTL_LIRCEN_Msk );
+			CLK_WaitClockReady( CLK_STATUS_LIRCSTB_Msk );
 		}
 
-		SYS_LockReg();
-
-		if ( !IS_RTC_OPENED() )
-		{
-			RTC_Open( 0 );
-
-			if ( d )
-			{
-				SetRTC( d );
-			}
-		}
+		CLK_SetModuleClock( RTC_MODULE, CLK_CLKSEL3_RTCSEL_LIRC, 0 );
 	}
 
-	RTC_SetTickPeriod( RTC_TICK_1_SEC );
+	SYS_LockReg();
+
+	RTC_Open( 0 );
+
+	if ( d )
+	{
+		SetRTC( d );
+	}
+
 	RTC_EnableInt( RTC_INTEN_TICKIEN_Msk );
 	NVIC_EnableIRQ( RTC_IRQn );
 }
@@ -245,6 +245,12 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 __myevic__ void SetRTC( S_RTC_TIME_DATA_T *rtd )
 {
 	time_t t;
+
+	if ( !IS_RTC_OPENED() )
+	{
+		return;
+	}
+
 	RTCTimeToEpoch( &t, rtd );
 
 	RTC_SetDateAndTime( rtd );
@@ -266,12 +272,13 @@ __myevic__ void GetRTC( S_RTC_TIME_DATA_T *rtd )
 
 	if ( !IS_RTC_OPENED() )
 	{
-		InitRTC( 0 );
+		MemClear( rtd, sizeof( rtd ) );
+		return;
 	}
 
 	RTC_GetDateAndTime( rtd );
 
-	if ( !gFlags.has_x32 || adjustment )
+	if ( ( !gFlags.has_x32 ) || ( adjustment != 0 ) )
 	{
 		RTCTimeToEpoch( &t, rtd );
 
@@ -295,6 +302,11 @@ __myevic__ void GetRTC( S_RTC_TIME_DATA_T *rtd )
 
 __myevic__ void RTCAdjustClock( int seconds )
 {
+	if ( !IS_RTC_OPENED() )
+	{
+		return;
+	}
+
 	if ( seconds )
 	{
 		adjustment += seconds;

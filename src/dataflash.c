@@ -70,11 +70,6 @@ __myevic__ void SetProductID()
 
 	FMC_DISABLE_ISP();
 	SYS_LockReg();
-
-	if ( gFlags.is_vtwo )
-	{
-		gFlags.has_x32 = 1;
-	}
 }
 
 
@@ -210,7 +205,7 @@ __myevic__ void ResetDataFlash()
 	FMCWriteCounters();
 	dfContrast = 45;
 	dfModesSel = 0;
-	dfClkRatio = gFlags.is_vtwo ? 10000 : RTC_DEF_CLK_RATIO;
+	dfClkRatio = gFlags.has_x32 ? 10000 : RTC_DEF_CLK_RATIO;
 	dfPreheatPwr = 200;
 	dfPreheatTime = 0;
 }
@@ -348,9 +343,9 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfModesSel & 0x80 || ( dfModesSel & 0x7F ) == 0x7F )
 		dfModesSel = 0;
 
-	if ( gFlags.is_vtwo )
+	if ( gFlags.has_x32 )
 		dfClkRatio = 10000;
-	else if ( dfClkRatio < 10000 || dfClkRatio > 50000 )
+	else if ( dfClkRatio < 20000 || dfClkRatio > 50000 )
 		dfClkRatio = RTC_DEF_CLK_RATIO;
 
 	if ( dfPreheatPwr > MaxPower )

@@ -770,7 +770,7 @@ const menu_t PreheatMenu =
 	}
 };
 
-const menu_t CoilsMenu =
+const menu_t CoilsMgmtMenu =
 {
 	String_Coils,
 	CoilsMEnter+1,
@@ -778,13 +778,28 @@ const menu_t CoilsMenu =
 	CoilsISelect+1,
 	CoilsIClick+1,
 	CoilsMEvent+1,
-	8,
+	6,
 	{
 		{ String_NI, 0, -1, 0 },
 		{ String_TI, 0, -1, 0 },
 		{ String_SS, 0, -1, 0 },
 		{ String_TCR, 0, -1, 0 },
 		{ String_Zero_All, 0, -1, 0 },
+		{ String_Exit, 0, 1, 0 }
+	}
+};
+
+const menu_t CoilsMenu =
+{
+	String_Coils,
+	0,
+	0,
+	0,
+	0,
+	0,
+	4,
+	{
+		{ String_Manage, &CoilsMgmtMenu, -1, 0 },
 		{ String_Preheat, &PreheatMenu, -1, 0 },
 		{ String_TCRSet, 0, 59, 10 },
 		{ String_Exit, 0, 1, 0 }

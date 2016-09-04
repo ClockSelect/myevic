@@ -198,6 +198,9 @@ __myevic__ uint32_t SSD1327_Bitmap( int x, int y, const image_t *image, int colo
 	{
 		laddr = caddr;
 
+		if ( laddr >= 0x400 )
+			continue;
+
 		if ( w == bpl - 1 )
 		{
 			npix = image->width & 7;
@@ -237,7 +240,7 @@ __myevic__ uint32_t SSD1327_Bitmap( int x, int y, const image_t *image, int colo
 					ScreenBuffer[laddr] &= ml;
 					ScreenBuffer[laddr] |= ( pixels >> shiftr ) & mr;
 
-					if ( npix >= 8 )
+					if (( npix >= 8 ) && ( laddr + 1 < 0x400 ))
 					{
 						ScreenBuffer[laddr+1] &= mr;
 						ScreenBuffer[laddr+1] |= ( pixels << shiftl ) & ml;
@@ -253,6 +256,7 @@ __myevic__ uint32_t SSD1327_Bitmap( int x, int y, const image_t *image, int colo
 		}
 		++caddr;
 	}
+
 	return image->width;
 }
 

@@ -164,6 +164,7 @@ extern const uint16_t String_Saver[];
 extern const uint16_t String_Preheat[];
 extern const uint16_t String_Time[];
 extern const uint16_t String_Pwr[];
+extern const uint16_t String_Manage[];
 
 
 //==============================================================================

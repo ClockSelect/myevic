@@ -594,8 +594,8 @@ __myevic__ int EvtPlusButton()
 				}
 				else
 				{
-					cs -= cs % 100;
-					cs += 100;
+					cs -= cs % 50;
+					cs += 50;
 				}
 			}
 			RTCSetClockSpeed( cs );
@@ -649,7 +649,7 @@ __myevic__ int EvtMinusButton()
 		case 103:
 		{
 			unsigned int cs = RTCGetClockSpeed();
-			if ( cs > 10000 )
+			if ( cs > 20000 )
 			{
 				if ( KeyTicks < 105 )
 				{
@@ -657,8 +657,8 @@ __myevic__ int EvtMinusButton()
 				}
 				else
 				{
-					if ( cs % 100 ) cs -= cs % 100;
-					else cs -= 100;
+					if ( cs % 50 ) cs -= cs % 50;
+					else cs -= 50;
 				}
 			}
 			RTCSetClockSpeed( cs );

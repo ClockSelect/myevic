@@ -26,6 +26,7 @@ OBJS := $(NUVOSDK)/Device/Nuvoton/M451Series/Source/system_M451Series.o \
 	$(NUVOSDK)/StdDriver/src/crc.o
 
 MYEVIC_OBJS := src/myevic.o \
+	src/main.o \
 	src/myprintf.o \
 	src/atomizer.o \
 	src/dataflash.o \
@@ -48,8 +49,7 @@ MYEVIC_OBJS := src/myevic.o \
 	src/fbdata.o \
 	src/display.o \
 	src/SSD1306.o \
-	src/SSD1327.o \
-	src/main.o
+	src/SSD1327.o
 
 AEABI_OBJS := src/aeabi/aeabi_memset-thumb2.o \
 	src/aeabi/aeabi_memclr.o

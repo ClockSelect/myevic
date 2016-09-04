@@ -117,16 +117,15 @@ void InitDevices()
 	SYS->GPF_MFPL |=  (SYS_GPF_MFPL_PF0MFP_X32_OUT|SYS_GPF_MFPL_PF1MFP_X32_IN);
 
 	CLK_EnableXtalRC( CLK_PWRCTL_LXTEN_Msk );
-	if ( CLK_WaitClockReady( CLK_STATUS_LXTSTB_Msk ) )
+	CLK_WaitClockReady( CLK_STATUS_LXTSTB_Msk );
+
+	if ( ( CLK->STATUS & CLK_STATUS_LXTSTB_Msk ) == CLK_STATUS_LXTSTB_Msk )
 	{
 		gFlags.has_x32 = 1;
 	}
 
 	// FMC Frequency Optimisation mode <= 72MHz
 	FMC_EnableFreqOptimizeMode( FMC_FTCTL_OPTIMIZE_72MHZ );
-
-	// CRC CLK = HCLK/1
-	CLK_EnableModuleClock( CRC_MODULE );
 
 	// Setup PLL to 144MHz and HCLK source to PLL/2
 	CLK_SetCoreClock( 72000000 );
@@ -157,6 +156,10 @@ void InitDevices()
 	CLK_EnableModuleClock( EADC_MODULE );
 	CLK_SetModuleClock( EADC_MODULE, 0, CLK_CLKDIV0_EADC( 8 ) );
 
+	// CRC CLK = HCLK/1
+	CLK_EnableModuleClock( CRC_MODULE );
+
+	// TIMERS CLOCKS
 	CLK_EnableModuleClock( TMR0_MODULE );
 	CLK_EnableModuleClock( TMR1_MODULE );
 	CLK_EnableModuleClock( TMR2_MODULE );
