@@ -1,6 +1,7 @@
 #include "myevic.h"
 #include "dataflash.h"
 #include "screens.h"
+#include "myprintf.h"
 #include "myrtc.h"
 
 #include <time.h>
@@ -22,24 +23,38 @@ __myevic__ void RTC_IRQHandler()
 	{
 		RTC_CLEAR_TICK_INT_FLAG();
 
-		ClockCorrection = 0;
+	//	static uint32_t sum = 0;
+	//	static uint32_t cnt = 0;
+    //
+	//	if ( cnt < 3 )
+	//	{
+	//		++cnt;
+	//		sum = ClockCorrection << 1;
+	//	}
+	//	else
+	//	{
+	//		sum = ( 7 * sum + ( ClockCorrection << 1 )) >> 3;
+	//		myprintf( "%d %d\n", ClockCorrection << 1, sum );
+	//	}
 
-//		gPlayfield.ul[4] = TMR2Counter - gPlayfield.ul[0];
-//		gPlayfield.ul[0] = TMR2Counter;
-//		if ( gPlayfield.ul[9] )
-//		{
-//			gPlayfield.ul[8] += gPlayfield.ul[4];
-//			if ( gPlayfield.ul[10] > gPlayfield.ul[4] )
-//				gPlayfield.ul[10] = gPlayfield.ul[4];
-//			if ( gPlayfield.ul[11] < gPlayfield.ul[4] )
-//				gPlayfield.ul[11] = gPlayfield.ul[4];
-//			gPlayfield.ul[12] = gPlayfield.ul[8] / gPlayfield.ul[9];
-//		}
-//		else
-//		{
-//			gPlayfield.ul[10] = 0x7fffffff;
-//		}
-//		gPlayfield.ul[9] += 1;
+		ClockCorrection = 0;
+		
+	//	gPlayfield.ul[4] = TMR2Counter - gPlayfield.ul[0];
+	//	gPlayfield.ul[0] = TMR2Counter;
+	//	if ( gPlayfield.ul[9] )
+	//	{
+	//		gPlayfield.ul[8] += gPlayfield.ul[4];
+	//		if ( gPlayfield.ul[10] > gPlayfield.ul[4] )
+	//			gPlayfield.ul[10] = gPlayfield.ul[4];
+	//		if ( gPlayfield.ul[11] < gPlayfield.ul[4] )
+	//			gPlayfield.ul[11] = gPlayfield.ul[4];
+	//		gPlayfield.ul[12] = gPlayfield.ul[8] / gPlayfield.ul[9];
+	//	}
+	//	else
+	//	{
+	//		gPlayfield.ul[10] = 0x7fffffff;
+	//	}
+	//	gPlayfield.ul[9] += 1;
 	}
 }
 
@@ -310,7 +325,7 @@ __myevic__ void GetRTC( S_RTC_TIME_DATA_T *rtd )
 			ref = RTCGetReferenceDate();
 			cs  = RTCGetClockSpeed();
 
-			d = (( (unsigned long long)t - ref ) * cs + 10 * ClockCorrection ) / 10000;
+			d = (( (unsigned long long)t - ref ) * cs + 2 * ClockCorrection ) / 10000;
 			t = ref + d;
 		}
 

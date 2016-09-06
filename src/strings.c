@@ -94,3 +94,6 @@ const uint16_t String_Pwr		[] = { 0xAB, 0x98, 0x93, 0 };
 const uint16_t String_Manage	[] = { 0xA8, 0x82, 0x8F, 0x82, 0x88, 0x86, 0 };
 const uint16_t String_X32		[] = { 0xB3, 0x0E, 0x0D,0 };
 
+// Keep this the very last string.
+// Used by NFirmwareEditor.
+const uint16_t String_End		[] = { 0xA0, 0x8F, 0x85, 0 };

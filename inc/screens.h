@@ -116,6 +116,7 @@ extern const uint16_t String_COIL_s[];
 extern const uint16_t String_TIME_s[];
 extern const uint16_t String_PUFF_s[];
 extern const uint16_t String_START[];
+extern const uint16_t String_End[];
 
 //-------------------------------------------------------------------------
 

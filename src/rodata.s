@@ -4,7 +4,9 @@
 		.section .rodata
 
 		.global font1
+		.global font1_end
 		.global font2
+		.global font2_end
 
 
 byte_9522:	.byte 6, 8, 0, 0x30, 0x48, 0x48, 0x48, 0x48, 0x30, 0 @ ...
@@ -7837,6 +7839,7 @@ font2:
 		.long f2_slash
 		.long f2_colon8
 		.long f2_clock
+font2_end:
 
 byte_B898:
 		.byte 6, 8
@@ -14921,6 +14924,7 @@ font1:	.long byte_B898		@ Images DB for	SSD1306
 		.long f1_slash		@	0x102
 		.long f1_colon8		@	0x103
 		.long f1_clock		@	0x104
+font1_end:
 
 
 @============================================================================
