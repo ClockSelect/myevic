@@ -18,6 +18,7 @@ SECTIONS {
 	.text : {
 		KEEP(*(.isr_vectors))
 
+		LONG(0x5746594D)
 		LONG(font1)
 		LONG(font1_end)
 		LONG(font2)
