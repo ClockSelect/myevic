@@ -18,6 +18,13 @@ SECTIONS {
 	.text : {
 		KEEP(*(.isr_vectors))
 
+		LONG(font1)
+		LONG(font1_end)
+		LONG(font2)
+		LONG(font2_end)
+		LONG(Strings_Start)
+		LONG(Strings_End)
+
 		. = ALIGN(4);
 		*(.text*)
 
@@ -26,6 +33,11 @@ SECTIONS {
 
 		. = ALIGN(4);
 		*(.rodata*)
+
+		. = ALIGN(4);
+		Strings_Start = .;
+		*(.strings*)
+		Strings_End = .;
 
 	} > ROM
 
@@ -75,37 +87,4 @@ SECTIONS {
 		RAMInitEnd = .;
 
 	} > ROM
-
-/*
-	.ARM.extab : {
-		*(.ARM.extab* .gnu.linkonce.armextab.*)
-	} > ROM
-
-	.ARM.exidx : {
-		*(.ARM.exidx* .gnu.linkonce.armexidx.*)
-	} > ROM
-*/
-
-/*
-	.bss : {
-		. = ALIGN(4);
-		BSS_Start = .;
-		*(.bss*)
-		*(COMMON)
-		. = ALIGN(4);
-		BSS_End = .;
-	} > RAM
-
-	BSS_Size = BSS_End - BSS_Start;
-*/
-
-/*	.stack : {	*/
-		/* Stack must be 8-byte aligned for double local vars */
-/*		. = ALIGN(8);
-		*(.stack)
-	} > RAM				*/
-
-	/* Stack top to end of RAM */
-/*	Stack_Top = ORIGIN(RAM) + LENGTH(RAM);
-	Stack_Limit = Stack_Top - SIZEOF(.stack);	*/
 }

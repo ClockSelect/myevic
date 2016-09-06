@@ -108,13 +108,6 @@
 		.long Default_Handler+1		@ 62 : Reserved
 		.long Default_Handler+1		@ 63 : Touch key interrupt
 
-		.long font1
-		.long font1_end
-		.long font2
-		.long font2_end
-		.long String_ON
-		.long String_End
-
 @ ===========================================================================
 
 				.section .stack
