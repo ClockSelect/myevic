@@ -43,7 +43,7 @@
 		.long 0
 		.long PendSV_Handler+1
 		.long SysTick_Handler+1
-		.long Default_Handler+1		@  0 : Brown-Out Detector
+		.long BOD_IRQHandler+1		@  0 : Brown-Out Detector
 		.long Default_Handler+1		@  1 : Internal	RC
 		.long Default_Handler+1		@  2 : Power down wake up
 		.long Default_Handler+1		@  3 : RAM parity error

@@ -171,8 +171,12 @@ void InitDevices()
 	SYS->IVSCTL |= SYS_IVSCTL_VBATUGEN_Msk;
 	SYS->VREFCTL = SYS_VREFCTL_VREF_2_56V;
 
-	// Brown-out detector; resets under 2.2V
-	SYS_EnableBOD( SYS_BODCTL_BOD_RST_EN, SYS_BODCTL_BODVL_2_2V );
+	// Brown-out detector; interrupts under 2.2V
+	SYS_EnableBOD( SYS_BODCTL_BOD_INTERRUPT_EN, SYS_BODCTL_BODVL_2_2V );
+	NVIC_EnableIRQ( BOD_IRQn );
+
+	// Enable Low-Voltage-Reset function
+	SYS_ENABLE_LVR();
 
 	// Update clock data
 	SystemCoreClockUpdate();
@@ -465,6 +469,23 @@ __myevic__ void Main()
 
 
 //=============================================================================
+// Brown-Out Detector IRQ Handler
+
+__myevic__ void BOD_IRQHandler()
+{
+	// Clear BOD Interrupt Flag
+	SYS_CLEAR_BOD_INT_FLAG();
+
+	if ( SYS_GetBODStatus() )
+	{
+		RTCSleep();
+		while( 1 )
+			;
+	}
+}
+
+
+//=============================================================================
 // BSOD
 
 __myevic__ void Plantouille( int xpsr, int* stack )
@@ -529,8 +550,6 @@ __myevic__ void DevicesOnOff( int off )
 		TIMER_DisableInt( TIMER2 );
 		TIMER_DisableInt( TIMER3 );
 
-		RTC_DisableInt( RTC_INTEN_TICKIEN_Msk );
-
 		EADC_Close( EADC );
 		SetADCState( 1, 0 );
 		SetADCState( 2, 0 );
@@ -568,6 +587,7 @@ __myevic__ void DevicesOnOff( int off )
 		SYS_UnlockReg();
 		SYS->USBPHY &= ~SYS_USBPHY_LDO33EN_Msk;
 		SYS->IVSCTL &= ~SYS_IVSCTL_VBATUGEN_Msk;
+		SYS_DISABLE_LVR();
 		SYS_DisableBOD();
 		SYS->VREFCTL = 0;
 		SYS_LockReg();
@@ -583,7 +603,8 @@ __myevic__ void DevicesOnOff( int off )
 		SYS->USBPHY |= SYS_USBPHY_LDO33EN_Msk;
 		SYS->IVSCTL |= SYS_IVSCTL_VBATUGEN_Msk;
 		SYS->VREFCTL = SYS_VREFCTL_VREF_2_56V;
-		SYS_EnableBOD( SYS_BODCTL_BOD_RST_EN, SYS_BODCTL_BODVL_2_2V );
+		SYS_EnableBOD( SYS_BODCTL_BOD_INTERRUPT_EN, SYS_BODCTL_BODVL_2_2V );
+		SYS_ENABLE_LVR();
 		SYS_LockReg();
 
 		GPIO_DisableInt( PE, 0 );
@@ -604,8 +625,6 @@ __myevic__ void DevicesOnOff( int off )
 		SetADCState( 1, 1 );
 		SetADCState( 2, 1 );
 		SetADCState( 14, 1 );
-
-		RTC_EnableInt( RTC_INTEN_TICKIEN_Msk );
 
 		TIMER_EnableInt( TIMER0 );
 		TIMER_EnableInt( TIMER1 );
@@ -632,6 +651,7 @@ void GoToSleep()
 	ScreenOff();
 	gFlags.firing = 0;
 	BatReadTimer = 50;
+	RTCSleep();
 	DevicesOnOff( 1 );
 	CLK_SysTickDelay( 250 );
 	CLK_SysTickDelay( 250 );
@@ -646,6 +666,7 @@ void GoToSleep()
 	SYS_LockReg();
 	gFlags.refresh_battery = 1;
 	DevicesOnOff( 0 );
+	RTCWakeUp();
 	InitDisplay();
 }
 

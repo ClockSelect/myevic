@@ -26,6 +26,7 @@ __myevic__ void GPD_IRQHandler()
 	else if ( GPIO_GET_INT_FLAG( PD, GPIO_PIN_PIN0_Msk ) )
 	{
 		GPIO_CLR_INT_FLAG( PD, GPIO_PIN_PIN0_Msk );
+
 		if ( gFlags.is_presa )
 		{
 			if ( Event != 28 )

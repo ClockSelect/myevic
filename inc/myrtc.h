@@ -23,12 +23,12 @@
 
 //=========================================================================
 // When the RTC is driven by the LIRC, a "second" of the RTC is approx
-// 2.36 real seconds, but we'd like the clock to display with a correct
+// 3.3 real seconds, but we'd like the clock to display with a correct
 // second tick. The correction value is driven by the 1kHZ TMR2 and reset
 // by the RTC tick.
 // This value is unused if a X32 is soldered on the board.
 
-extern volatile uint16_t ClockCorrection;
+extern volatile int32_t ClockCorrection;
 
 //=========================================================================
 // Functions
@@ -43,6 +43,9 @@ extern void RTCEpochToTime( S_RTC_TIME_DATA_T *d, const time_t *t );
 extern void RTCSetClockSpeed( const unsigned int cs );
 extern unsigned int RTCGetClockSpeed();
 extern void RTCAdjustClock( int seconds );
+
+extern void RTCSleep();
+extern void RTCWakeUp();
 
 //=========================================================================
 

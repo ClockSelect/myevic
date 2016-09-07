@@ -8,12 +8,16 @@
 
 //=============================================================================
 
-volatile unsigned short ClockCorrection = 0;
+volatile int32_t ClockCorrection = 0;
 
 //=============================================================================
 
 static time_t ref_date = 0;
-static int adjustment = 0;
+static int32_t adjustment = 0;
+
+static volatile uint8_t int_cnt = 0;
+static volatile int64_t adj_10k = 0;
+static int32_t sleep_ticks = 0;
 
 //=============================================================================
 
@@ -23,38 +27,18 @@ __myevic__ void RTC_IRQHandler()
 	{
 		RTC_CLEAR_TICK_INT_FLAG();
 
-	//	static uint32_t sum = 0;
-	//	static uint32_t cnt = 0;
-    //
-	//	if ( cnt < 3 )
-	//	{
-	//		++cnt;
-	//		sum = ClockCorrection << 1;
-	//	}
-	//	else
-	//	{
-	//		sum = ( 7 * sum + ( ClockCorrection << 1 )) >> 3;
-	//		myprintf( "%d %d\n", ClockCorrection << 1, sum );
-	//	}
+		if ( int_cnt < 3 )
+		{
+			++int_cnt;
+
+			adj_10k += (int64_t)RTCGetClockSpeed() - 32768;
+		}
+		else
+		{
+			adj_10k += ClockCorrection * 2 - 32768;
+		}
 
 		ClockCorrection = 0;
-		
-	//	gPlayfield.ul[4] = TMR2Counter - gPlayfield.ul[0];
-	//	gPlayfield.ul[0] = TMR2Counter;
-	//	if ( gPlayfield.ul[9] )
-	//	{
-	//		gPlayfield.ul[8] += gPlayfield.ul[4];
-	//		if ( gPlayfield.ul[10] > gPlayfield.ul[4] )
-	//			gPlayfield.ul[10] = gPlayfield.ul[4];
-	//		if ( gPlayfield.ul[11] < gPlayfield.ul[4] )
-	//			gPlayfield.ul[11] = gPlayfield.ul[4];
-	//		gPlayfield.ul[12] = gPlayfield.ul[8] / gPlayfield.ul[9];
-	//	}
-	//	else
-	//	{
-	//		gPlayfield.ul[10] = 0x7fffffff;
-	//	}
-	//	gPlayfield.ul[9] += 1;
 	}
 }
 
@@ -171,22 +155,15 @@ __myevic__ void RTCFullAccess()
 
 __myevic__ void RTCSetReferenceDate( time_t *t )
 {
-	if ( !gFlags.has_x32 )
-	{
-		ref_date = *t;
+	ref_date = *t;
 
-		RTCFullAccess();
-		RTC_WRITE_SPARE_REGISTER( 0, ref_date );
-	}
+	RTCFullAccess();
+	RTC_WRITE_SPARE_REGISTER( 0, ref_date );
 }
 
 __myevic__ time_t RTCGetReferenceDate()
 {
-	if ( gFlags.has_x32 )
-	{
-		ref_date = 0;
-	}
-	else if ( !ref_date )
+	if ( !ref_date )
 	{
 		RTCFullAccess();
 		ref_date = (time_t)RTC_READ_SPARE_REGISTER( 0 );
@@ -218,13 +195,6 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 
 	SYS_UnlockReg();
 
-	// Enable LIRC 10kHz clock
-	if ( !( CLK->STATUS & CLK_STATUS_LIRCSTB_Msk ) )
-	{
-		CLK_EnableXtalRC( CLK_PWRCTL_LIRCEN_Msk );
-		CLK_WaitClockReady( CLK_STATUS_LIRCSTB_Msk );
-	}
-
 	CLK_EnableModuleClock( RTC_MODULE );
 
 	if ( gFlags.has_x32 )
@@ -234,6 +204,13 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 	}
 	else
 	{
+		// Enable LIRC 10kHz clock
+		if ( !( CLK->STATUS & CLK_STATUS_LIRCSTB_Msk ) )
+		{
+			CLK_EnableXtalRC( CLK_PWRCTL_LIRCEN_Msk );
+			CLK_WaitClockReady( CLK_STATUS_LIRCSTB_Msk );
+		}
+
 		CLK_SetModuleClock( RTC_MODULE, CLK_CLKSEL3_RTCSEL_LIRC, 0 );
 	}
 
@@ -272,9 +249,15 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 	{
 		SetRTC( d );
 	}
+	else
+	{
+		RTCWakeUp();
+	}
 
-	RTC_EnableInt( RTC_INTEN_TICKIEN_Msk );
-	NVIC_EnableIRQ( RTC_IRQn );
+	if ( !gFlags.has_x32 )
+	{
+		NVIC_EnableIRQ( RTC_IRQn );
+	}
 }
 
 
@@ -289,14 +272,20 @@ __myevic__ void SetRTC( S_RTC_TIME_DATA_T *rtd )
 		return;
 	}
 
-	RTCTimeToEpoch( &t, rtd );
+	__set_PRIMASK( 1 );
 
 	RTC_SetDateAndTime( rtd );
+
+	RTCTimeToEpoch( &t, rtd );
+	RTCSetReferenceDate( &t );
 
 	ClockCorrection = 0;
 	adjustment = 0;
 
-	RTCSetReferenceDate( &t );
+	adj_10k = 0;
+	sleep_ticks = 0;
+
+	__set_PRIMASK( 0 );
 }
 
 
@@ -305,8 +294,8 @@ __myevic__ void SetRTC( S_RTC_TIME_DATA_T *rtd )
 __myevic__ void GetRTC( S_RTC_TIME_DATA_T *rtd )
 {
 	time_t t, ref;
-	unsigned int cs;
-	unsigned long long d;
+	uint32_t cs;
+	uint64_t d;
 
 	if ( !IS_RTC_OPENED() )
 	{
@@ -325,8 +314,15 @@ __myevic__ void GetRTC( S_RTC_TIME_DATA_T *rtd )
 			ref = RTCGetReferenceDate();
 			cs  = RTCGetClockSpeed();
 
-			d = (( (unsigned long long)t - ref ) * cs + 2 * ClockCorrection ) / 10000;
-			t = ref + d;
+		//	d = (( (uint64_t)t - ref ) * cs + 2 * ClockCorrection ) / 10000;
+		//	t = ref + d;
+
+			d  = 32768ull * ( t - ref - sleep_ticks );
+			d += (int64_t)ClockCorrection * 2 + adj_10k;
+			d += (int64_t)sleep_ticks * cs;
+			d /= 10000;
+
+			t  = ref + d;
 		}
 
 		t += adjustment;
@@ -349,17 +345,20 @@ __myevic__ void RTCAdjustClock( int seconds )
 	{
 		adjustment += seconds;
 	}
-	else if ( adjustment )
+	else
 	{
 		int adj;
 		time_t ref, t;
+		int64_t adj_frac;
 		S_RTC_TIME_DATA_T rtd;
 
 		adj = adjustment;
 		ref = RTCGetReferenceDate();
 
 		GetRTC( &rtd );
+		adj_frac = ( adj_10k + 2 * ClockCorrection ) % 10000;
 		SetRTC( &rtd );
+		adj_10k = adj_frac;
 
 		if ( gFlags.has_x32 )
 		{
@@ -382,5 +381,37 @@ __myevic__ void RTCAdjustClock( int seconds )
 			RTC_32KCalibration( f2 );
 		}
 	}
+}
+
+
+//=============================================================================
+
+__myevic__ void RTCSleep()
+{
+	if ( gFlags.has_x32 )
+		return;
+
+	RTC_DisableInt( RTC_INTEN_TICKIEN_Msk );
+
+	RTCAdjustClock( 0 );
+}
+
+
+__myevic__ void RTCWakeUp()
+{
+	if ( gFlags.has_x32 )
+		return;
+
+	S_RTC_TIME_DATA_T rtd;
+	time_t ref, t;
+
+	RTC_GetDateAndTime( &rtd );
+	RTCTimeToEpoch( &t, &rtd );
+	ref = RTCGetReferenceDate();
+
+	sleep_ticks = ( t - ref );
+	int_cnt = 0;
+
+	RTC_EnableInt( RTC_INTEN_TICKIEN_Msk );
 }
 

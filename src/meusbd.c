@@ -334,6 +334,7 @@ __myevic__ void USBD_IRQHandler(void)
 			USBD_CLR_INT_FLAG(USBD_INTSTS_EP7);
 		}
 	}
+
 	/* clear unknown event */
 	USBD_CLR_INT_FLAG(u32IntSts);
 }
