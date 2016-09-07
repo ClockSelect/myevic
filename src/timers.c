@@ -162,7 +162,7 @@ __myevic__ void TimedItems()
 	{
 		if ( --EditModeTimer )
 		{
-			if ( !(EditModeTimer % 50) )
+			if ( !(EditModeTimer % 25) )
 			{
 				gFlags.draw_edited_item ^= 1;
 				MainView();
