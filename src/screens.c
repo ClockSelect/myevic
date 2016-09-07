@@ -472,13 +472,13 @@ __myevic__ void ShowBatCharging()
 		DrawFillRect( 10, 118, 49, 124, 1 );
 	}
 
-	DrawValue( 8, 105, BatteryVoltage, 2, 0x0B, 3 );
-	DrawImage( 29, 106, 0x7D );
+	DrawValue( 6, 105, BatteryVoltage, 2, 0x0B, 3 );
+	DrawImage( 27, 106, 0x7D );
 
 	int t = dfIsCelsius ? BoardTemp : CelsiusToF( BoardTemp );
 
-	DrawValue( 36, 105, t, 0, 0x0B, t > 99 ? 3 : 2 );
-	DrawImage( t > 99 ? 55 : 49, 104, dfIsCelsius ? 0x6A : 0x6D );
+	DrawValue( 38, 105, t, 0, 0x0B, t > 99 ? 3 : 2 );
+	DrawImage( t > 99 ? 57 : 51, 104, dfIsCelsius ? 0x6A : 0x6D );
 }
 
 
