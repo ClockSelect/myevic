@@ -458,6 +458,7 @@ __myevic__ void ShowBattery()
 //----- (00006764) --------------------------------------------------------
 __myevic__ void ShowBatCharging()
 {
+	DrawClock(32);
 	DrawImage( 8, 115, 0xC4 );
 
 	if ( BatteryTenth != 10 )
