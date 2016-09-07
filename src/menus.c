@@ -348,7 +348,7 @@ __myevic__ void Anim3dOnClick()
 
 __myevic__ void LogoMEnter()
 {
-	CurrentMenuItem = dfStatus.nologo;
+	CurrentMenuItem = dfStatus.nologo ? 1 : 0;
 }
 
 __myevic__ void LogoISelect()
