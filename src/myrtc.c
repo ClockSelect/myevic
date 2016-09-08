@@ -216,7 +216,36 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 
 	SYS_LockReg();
 
-	RTC_Open( 0 );
+	// Try to Open RTC
+	rtccnt = 100000;	// Give it plenty of time
+	RTC->INIT = RTC_INIT_KEY;
+	if ( RTC->INIT != RTC_INIT_ACTIVE_Msk )
+	{
+		RTC->INIT = RTC_INIT_KEY;
+		while ( RTC->INIT != RTC_INIT_ACTIVE_Msk )
+			if (--rtccnt)
+				break;
+	}
+
+	// Failed to open the RTC.
+	// Should not occur if the X32 works, or with the LIRC.
+	if ( !rtccnt )
+	{
+		if ( gFlags.has_x32 )
+		{
+			// Disable X32 and retry.
+			gFlags.has_x32 = 0;
+			InitRTC( d );
+			return;
+		}
+		else
+		{
+			// Real hardware error.
+			// No clock available.
+			gFlags.noclock = 1;
+			return;
+		}
+	}
 
 	// Check that everything works fine with the X32 crystal.
 	// If not, revert to the LIRC.
@@ -224,7 +253,7 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 	{
 		// Checking that we correctly get access to the RTC registers
 		// should be a good test.
-		rtccnt = 100000;
+		rtccnt = 100000;	// Plenty again
 		while( ( RTC->RWEN & RTC_RWEN_RWENF_Msk ) == RTC_RWEN_RWENF_Msk );
 		RTC->RWEN = RTC_WRITE_KEY;
 		while( ( RTC->RWEN & RTC_RWEN_RWENF_Msk ) == 0x0 )
@@ -267,10 +296,8 @@ __myevic__ void SetRTC( S_RTC_TIME_DATA_T *rtd )
 {
 	time_t t;
 
-	if ( !IS_RTC_OPENED() )
-	{
+	if ( gFlags.noclock )
 		return;
-	}
 
 	__set_PRIMASK( 1 );
 
@@ -297,7 +324,7 @@ __myevic__ void GetRTC( S_RTC_TIME_DATA_T *rtd )
 	uint32_t cs;
 	uint64_t d;
 
-	if ( !IS_RTC_OPENED() )
+	if ( gFlags.noclock )
 	{
 		MemClear( rtd, sizeof( rtd ) );
 		return;
@@ -336,10 +363,8 @@ __myevic__ void GetRTC( S_RTC_TIME_DATA_T *rtd )
 
 __myevic__ void RTCAdjustClock( int seconds )
 {
-	if ( !IS_RTC_OPENED() )
-	{
+	if ( gFlags.noclock )
 		return;
-	}
 
 	if ( seconds )
 	{
@@ -388,6 +413,9 @@ __myevic__ void RTCAdjustClock( int seconds )
 
 __myevic__ void RTCSleep()
 {
+	if ( gFlags.noclock )
+		return;
+
 	if ( gFlags.has_x32 )
 		return;
 
@@ -399,6 +427,9 @@ __myevic__ void RTCSleep()
 
 __myevic__ void RTCWakeUp()
 {
+	if ( gFlags.noclock )
+		return;
+
 	if ( gFlags.has_x32 )
 		return;
 

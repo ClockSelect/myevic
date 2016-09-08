@@ -78,6 +78,7 @@ typedef struct
 	int is_mini:1;
 	int is_presa:1;
 	int debug:1;
+	int noclock:1;
 }
 gFlags_t;
 
