@@ -142,7 +142,7 @@ There's many more to LOGO and Game menus now. See below.
 
   * X32
 
-        Enables or disables usage of the X32 crystal of the PCB. If this setting is "OFF", the firmware won't try to drive the Real-Time Clock with the 32.768kHz crystal. This may solve freezing issues on some malfunctionning boxes.
+        Enables or disables usage of the X32 crystal of the PCB. If this setting is "OFF", the firmware won't try to drive the Real-Time Clock with the 32.768kHz crystal. This may solve freezing issues on some malfunctionning boxes (VTwo only).
  
 * Miscs
   * LOGO

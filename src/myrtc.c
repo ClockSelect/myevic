@@ -227,10 +227,10 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 				break;
 	}
 
-	// Failed to open the RTC.
-	// Should not occur if the X32 works, or with the LIRC.
 	if ( !rtccnt )
 	{
+		// Failed to open the RTC.
+		// Should not occur if the X32 works.
 		if ( gFlags.has_x32 )
 		{
 			// Disable X32 and retry.
@@ -240,6 +240,8 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 		}
 		else
 		{
+			// RTC should always accept to be opened
+			// with the LIRC.
 			// Real hardware error.
 			// No clock available.
 			gFlags.noclock = 1;
