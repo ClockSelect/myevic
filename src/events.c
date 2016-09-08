@@ -376,7 +376,7 @@ __myevic__ void GetUserInput()
 			}
 		}
 	}
-	else if ( KeyPressTime == 500 )
+	else if ( KeyPressTime == 250 )
 	{
 		if ( UserInputs == 5 )
 		{
