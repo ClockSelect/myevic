@@ -20,6 +20,16 @@ OR
 
     ```evic-usb upload -u bin/myevic.bin```
 
+### Thanks to:
+
+    * ReservedField
+    * Bane
+    * TXBin
+    * Daveee10
+    * eugenesan
+
+
+
 ### Main Screen
 * Double-click:
 
