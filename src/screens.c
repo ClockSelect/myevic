@@ -808,6 +808,10 @@ __myevic__ void ShowScreenSaver()
 			anim3d( 1 );
 			break;
 
+		case 3:
+			qix( 1 );
+			break;
+
 		default:
 			break;
 	}

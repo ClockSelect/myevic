@@ -345,6 +345,12 @@ __myevic__ void Main()
 				anim3d( 0 );
 			}
 
+			if ((( Qix ) && ( Screen == 1 ) && ( !EditModeTimer ))
+			||	(( Screen == 60 ) && ( dfScreenSaver == 3 )))
+			{
+				qix( 0 );
+			}
+
 			if ( gFlags.firing && BoardTemp >= 70 )
 			{
 				Overtemp();
