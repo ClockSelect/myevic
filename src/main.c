@@ -340,7 +340,7 @@ __myevic__ void Main()
 			ReadBoardTemp();
 
 			if ((( Anim3d ) && ( Screen == 1 ) && ( !EditModeTimer ))
-			||	(( Screen == 60 ) && ( dfScreenSaver == 2 )))
+			||	(( Screen == 60 ) && ( dfScreenSaver == 3 )))
 			{
 				anim3d( 0 );
 			}

@@ -955,10 +955,11 @@ const menu_t ScreenSaveMenu =
 	ScreenSaveOnSelect+1,
 	0,
 	0,
-	3,
+	4,
 	{
 		{ String_None, 0, 1, 0 },
-		{ String_Clock, 0, 1, 0 },
+		{ String_Analog_Clk, 0, 1, 0 },
+		{ String_Digit_Clk, 0, 1, 0 },
 		{ String_Cube, 0, 1, 0 },
 	}
 };

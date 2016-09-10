@@ -463,6 +463,9 @@ __myevic__ void ShowBatCharging()
 		case 1:
 			DrawClock( 25 );
 			break;
+		case 2:
+			DrawDigitClock( 40 );
+			break;
 	}
 
 	DrawImage( 8, 115, 0xC4 );
@@ -805,6 +808,10 @@ __myevic__ void ShowScreenSaver()
 			break;
 
 		case 2:
+			DrawDigitClock( 54 );
+			break;
+
+		case 3:
 			anim3d( 1 );
 			break;
 
