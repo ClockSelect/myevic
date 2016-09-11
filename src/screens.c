@@ -421,7 +421,7 @@ __myevic__ int IsClockOnScreen()
 {
 	return (  ((( Screen == 1 ) || ( Screen == 2 )) && ( dfAPT == 6 ))
 			|| (( Screen == 1 ) && ( dfStatus.anaclk ))
-			|| (( Screen == 60 ) && (( dfScreenSaver == 1 ) || ( dfScreenSaver == 2 )))
+			|| (( Screen == 60 ) && (( dfScreenSaver == 2 ) || ( dfScreenSaver == 3 )))
 			||  ( Screen == 103 )
 			||  ( Screen == 104 )
 			);
@@ -461,13 +461,13 @@ __myevic__ void ShowBatCharging()
 	switch ( dfScreenSaver )
 	{
 		case 1:
-			DrawClock( 25 );
+			DrawLOGO(0,25);
 			break;
 		case 2:
-			DrawDigitClock( 40 );
+			DrawClock( 25 );
 			break;
-		case 4:
-			DrawLOGO(0,25);
+		case 3:
+			DrawDigitClock( 40 );
 			break;
 	}
 
@@ -807,19 +807,19 @@ __myevic__ void ShowScreenSaver()
 	switch ( dfScreenSaver )
 	{
 		case 1:
-			DrawClock( 54 );
+			DrawLOGO(0,32);
 			break;
 
 		case 2:
-			DrawDigitClock( 54 );
+			DrawClock( 54 );
 			break;
 
 		case 3:
-			anim3d( 1 );
+			DrawDigitClock( 54 );
 			break;
 
 		case 4:
-			DrawLOGO(0,32);
+			anim3d( 1 );
 			break;
 
 		case 5:
@@ -837,7 +837,7 @@ __myevic__ void AnimateScreenSaver()
 {
 	switch ( dfScreenSaver )
 	{
-		case 3:
+		case 4:
 			anim3d( 0 );
 			break;
 
