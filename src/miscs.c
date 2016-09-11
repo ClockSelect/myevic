@@ -329,6 +329,7 @@ __myevic__ void SetRandSeed( uint32_t s )
 
 //=========================================================================
 // Qix
+// derived from bounce.c Copyright (c) 1987 Bellcore
 //
 
 #define QIX_MAXX    63
@@ -337,53 +338,52 @@ __myevic__ void SetRandSeed( uint32_t s )
 #define QIX_MAXV    10
 #define QIX_LCT     12
 
-static int16_t vx1, vy1, vx2, vy2;
-static int16_t x1, y1, x2, y2;
-static int16_t thex1[QIX_LCT];
-static int16_t they1[QIX_LCT];
-static int16_t thex2[QIX_LCT];
-static int16_t they2[QIX_LCT];
+typedef struct {
+        int16_t x1, y1, x2, y2;
+} qix_t;
+
+static qix_t	qix_curr;
+static qix_t	qix_move;
+static qix_t	qix_prev[QIX_LCT];
 static int16_t ptr;
 
 uint8_t Qix = 0;
 
 __myevic__ void qix( int refresh )
 {
-	static uint8_t qix_init = 0;
 	static uint8_t tscaler = 0;
 
-	if ( !qix_init )
+	if ( refresh )
 	{
 		SetRandSeed( TMR1Counter );
-		vx1 = vy1 = 5;
-		vx2 = vy2 = -5;
-		x1 = x2 = QIX_MAXX/2;
-		y1 = QIX_MAXY/2-20;
-		y1 = QIX_MAXY/2+20;
-		for (ptr=0;ptr<QIX_LCT;ptr++) {
-			thex1[ptr] = they1[ptr] = thex2[ptr] = they2[ptr] = -1;
+		qix_move.x1 = qix_move.y1 = 5;
+		qix_move.x2 = qix_move.y2 = -5;
+		qix_curr.x1 = qix_curr.x2 = QIX_MAXX/2;
+		qix_curr.y1 = qix_curr.y2 = QIX_MAXY/2;
+		//qix_curr.y2 = QIX_MAXY/2+20;
+		for ( ptr=0; ptr<QIX_LCT; ptr++ ) {
+			qix_prev[ptr].x1 = qix_prev[ptr].y1 = qix_prev[ptr].x2 = qix_prev[ptr].y2 = -1;
 		}
-		qix_init++;
  	}
 
 	if ( ++tscaler < 4 ) return;
 	tscaler = 0;
 
-	ptr = (ptr+1) % QIX_LCT;
-	if (thex1[ptr] >= 0) {
-		DrawLine(thex1[ptr], they1[ptr], thex2[ptr], they2[ptr], 0, 1);
+	ptr = (ptr + 1) % QIX_LCT;
+	if (qix_prev[ptr].x1 >= 0) {
+		DrawLine(qix_prev[ptr].x1, qix_prev[ptr].y1, qix_prev[ptr].x2, qix_prev[ptr].y2, 0, 1);
 	}
 
-	qix_mvpoint(&x1, &y1, &vx1, &vy1);
-	qix_mvpoint(&x2, &y2, &vx2, &vy2);
+	qix_mvpoint(&qix_curr.x1, &qix_curr.y1, &qix_move.x1, &qix_move.y1);
+	qix_mvpoint(&qix_curr.x2, &qix_curr.y2, &qix_move.x2, &qix_move.y2);
 
-	thex1[ptr] = x1;
-	they1[ptr] = y1;
-	thex2[ptr] = x2;
-	they2[ptr] = y2;
+	qix_prev[ptr].x1 = qix_curr.x1;
+	qix_prev[ptr].y1 = qix_curr.y1;
+	qix_prev[ptr].x2 = qix_curr.x2;
+	qix_prev[ptr].y2 = qix_curr.y2;
 
-	if (thex1[ptr] >= 0) {
-		DrawLine(thex1[ptr], they1[ptr], thex2[ptr], they2[ptr], 1, 1);
+	if (qix_prev[ptr].x1 >= 0) {
+		DrawLine(qix_prev[ptr].x1, qix_prev[ptr].y1, qix_prev[ptr].x2, qix_prev[ptr].y2, 1, 1);
 	}
 	if ( !refresh )
 	{
@@ -420,10 +420,10 @@ __myevic__ void qix_mvpoint(int16_t *tx, int16_t *ty, int16_t *v_x, int16_t *v_y
 
 __myevic__ void qix_diddle(int16_t *ptr)
 {
-	int8_t tmp;
+	int16_t tmp;
 	/* pick a number between QIX_MAXV and QIX_MINV */
 	tmp = (int16_t) (Random() %(QIX_MAXV - QIX_MINV)) + QIX_MINV;
-	/* and get the sign right */
+	/* get the sign right */
 	if (*ptr < 0) *ptr = -tmp; else *ptr = tmp;
 }
 
