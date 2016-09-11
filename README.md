@@ -26,7 +26,8 @@ OR
     * Bane
     * TBXin
     * Daveee10
-    * eugenesan
+    * Eugene San
+    * MarkyAD
 
 
 
@@ -74,7 +75,7 @@ There's many more to LOGO and Game menus now. See below.
 
          ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/saver_zpsrfxibqb5.png)
 
-         Select the screen saver animation. You may choose between None (blank screen), an analog clock or a 3D spinning cube. More to come.
+         Select the screen saver animation. You may choose between None (blank screen), an analog clock or a 3D spinning cube. More to come. Content of this menu will vary from time to time; this document may not always be up to date. Have a look.
 
 * Coils
 
