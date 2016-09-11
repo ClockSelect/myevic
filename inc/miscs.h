@@ -14,5 +14,9 @@ extern int32_t cosine( int32_t x );
 extern uint32_t Random();
 extern void SetRandSeed( uint32_t s );
 
+extern uint8_t Qix;
+extern void qix( int );
+extern void qix_mvpoint(int16_t *tx, int16_t *ty, int16_t *v_x, int16_t *v_y );
+extern void qix_diddle(int16_t *ptr );
 
 #endif /* __MISCS_H__ */

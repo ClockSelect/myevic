@@ -555,6 +555,10 @@ __myevic__ void ShowMainView()
 				DrawFillRect( 0, 44, 63, 127, 0 );
 				DrawClock( 54 );
 			}
+			else if ( Qix )
+			{
+				qix( 1 );
+			}
 			else
 			{
 				DrawInfoLines();

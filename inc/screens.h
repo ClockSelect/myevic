@@ -154,6 +154,7 @@ extern const uint16_t String_Analog_Clk[];
 extern const uint16_t String_Digit_Clk[];
 extern const uint16_t String_3D[];
 extern const uint16_t String_Cube[];
+extern const uint16_t String_Qix[];
 extern const uint16_t String_None[];
 extern const uint16_t String_Screen[];
 extern const uint16_t String_Min[];
