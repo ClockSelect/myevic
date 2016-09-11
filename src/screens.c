@@ -822,6 +822,10 @@ __myevic__ void ShowScreenSaver()
 			DrawLOGO(0,32);
 			break;
 
+		case 5:
+			qix( 1 );
+			break;
+
 		default:
 			break;
 	}

@@ -2,6 +2,8 @@
 #include "dataflash.h"
 #include "display.h"
 #include "atomizer.h"
+#include "miscs.h"
+#include "timers.h"
 
 //=========================================================================
 //----- (00004FB0) --------------------------------------------------------
@@ -307,7 +309,6 @@ __myevic__ void anim3d( int refresh )
 	}
 }
 
-
 //=========================================================================
 // Pseudo-random number generator
 
@@ -325,3 +326,104 @@ __myevic__ void SetRandSeed( uint32_t s )
 {
   RNGSeed = s;
 }
+
+//=========================================================================
+// Qix
+//
+
+#define QIX_MAXX    63
+#define QIX_MAXY    127
+#define QIX_MINV    2
+#define QIX_MAXV    10
+#define QIX_LCT     12
+
+static int16_t vx1, vy1, vx2, vy2;
+static int16_t x1, y1, x2, y2;
+static int16_t thex1[QIX_LCT];
+static int16_t they1[QIX_LCT];
+static int16_t thex2[QIX_LCT];
+static int16_t they2[QIX_LCT];
+static int16_t ptr;
+
+uint8_t Qix = 0;
+
+__myevic__ void qix( int refresh )
+{
+	static uint8_t qix_init = 0;
+	static uint8_t tscaler = 0;
+
+	if ( !qix_init )
+	{
+		SetRandSeed( TMR1Counter );
+		vx1 = vy1 = 5;
+		vx2 = vy2 = -5;
+		x1 = x2 = QIX_MAXX/2;
+		y1 = QIX_MAXY/2-20;
+		y1 = QIX_MAXY/2+20;
+		for (ptr=0;ptr<QIX_LCT;ptr++) {
+			thex1[ptr] = they1[ptr] = thex2[ptr] = they2[ptr] = -1;
+		}
+		qix_init++;
+ 	}
+
+	if ( ++tscaler < 4 ) return;
+	tscaler = 0;
+
+	ptr = (ptr+1) % QIX_LCT;
+	if (thex1[ptr] >= 0) {
+		DrawLine(thex1[ptr], they1[ptr], thex2[ptr], they2[ptr], 0, 1);
+	}
+
+	qix_mvpoint(&x1, &y1, &vx1, &vy1);
+	qix_mvpoint(&x2, &y2, &vx2, &vy2);
+
+	thex1[ptr] = x1;
+	they1[ptr] = y1;
+	thex2[ptr] = x2;
+	they2[ptr] = y2;
+
+	if (thex1[ptr] >= 0) {
+		DrawLine(thex1[ptr], they1[ptr], thex2[ptr], they2[ptr], 1, 1);
+	}
+	if ( !refresh )
+	{
+		DisplayRefresh();
+	}
+}
+
+__myevic__ void qix_mvpoint(int16_t *tx, int16_t *ty, int16_t *v_x, int16_t *v_y)
+{
+	*tx += *v_x; // move the point
+	*ty += *v_y;
+
+	if ( *tx >= QIX_MAXX)  // bounce
+	{
+		*v_x = (*v_x > 0) ? -(*v_x) : *v_x;
+		qix_diddle(v_x);
+	}
+	if ( *ty >= QIX_MAXY)
+	{
+		*v_y = (*v_y > 0) ? -(*v_y) : *v_y;
+		qix_diddle(v_y);
+	}
+	if ( *tx <= 0)
+	{
+		*v_x = (*v_x < 0) ? -(*v_x) : *v_x;
+		qix_diddle(v_x);
+	}
+	if ( *ty <= 0)
+	{
+		*v_y = (*v_y < 0) ? -(*v_y) : *v_y;
+		qix_diddle(v_y);
+	}
+}
+
+__myevic__ void qix_diddle(int16_t *ptr)
+{
+	int8_t tmp;
+	/* pick a number between QIX_MAXV and QIX_MINV */
+	tmp = (int16_t) (Random() %(QIX_MAXV - QIX_MINV)) + QIX_MINV;
+	/* and get the sign right */
+	if (*ptr < 0) *ptr = -tmp; else *ptr = tmp;
+}
+
