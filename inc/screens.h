@@ -62,6 +62,8 @@ extern uint16_t GetScreenProtection();
 //==============================================================================
 
 extern void MainView();
+extern void AnimateScreenSaver();
+
 
 //==============================================================================
 // Strings

@@ -347,7 +347,6 @@ static qix_t	qix_move;
 static qix_t	qix_prev[QIX_LCT];
 static int16_t ptr;
 
-uint8_t Qix = 0;
 
 __myevic__ void qix( int refresh )
 {

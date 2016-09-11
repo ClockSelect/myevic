@@ -831,3 +831,22 @@ __myevic__ void ShowScreenSaver()
 	}
 }
 
+
+//=========================================================================
+__myevic__ void AnimateScreenSaver()
+{
+	switch ( dfScreenSaver )
+	{
+		case 3:
+			anim3d( 0 );
+			break;
+
+		case 5:
+			qix( 0 );
+			break;
+
+		default:
+			break;
+	}
+}
+
