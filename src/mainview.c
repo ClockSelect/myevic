@@ -591,3 +591,12 @@ __myevic__ void DrawClock( int line )
 	DrawLine( 32, c, 32 + (( sine( m ) * 21 ) >> 16 ), c - (( cosine( m ) * 21 ) >> 16 ), 1, 2 );
 	DrawLine( 32, c, 32 + (( sine( s ) * 23 ) >> 16 ), c - (( cosine( s ) * 23 ) >> 16 ), 1, 1 );
 }
+
+__myevic__ void DrawDigitClock( int line )
+{
+	S_RTC_TIME_DATA_T rtd;
+	GetRTC( &rtd );
+
+	DrawTime(6, line-8, &rtd, 0x1F);
+	DrawDate(4, line+8, &rtd, 0x1F);
+}

@@ -23,6 +23,7 @@ extern const uint8_t ScrSaveTimes[8];
 
 extern int IsClockOnScreen();
 extern void DrawClock();
+extern void DrawDigitClock();
 
 //==============================================================================
 
@@ -149,6 +150,8 @@ extern const uint16_t String_DateTime[];
 extern const uint16_t String_Cancel[];
 extern const uint16_t String_Save[];
 extern const uint16_t String_Clock[];
+extern const uint16_t String_Analog_Clk[];
+extern const uint16_t String_Digit_Clk[];
 extern const uint16_t String_3D[];
 extern const uint16_t String_Cube[];
 extern const uint16_t String_None[];

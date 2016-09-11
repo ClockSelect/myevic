@@ -293,7 +293,7 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfRezTCR > 150 )
 		dfRezTCR = 0;
 
-	if ( dfScreenSaver > 1 )
+	if ( dfScreenSaver > 4 )
 		dfScreenSaver = 1;
 
 	if ( dfRezLockedTCR > 1 )
