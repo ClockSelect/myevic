@@ -223,7 +223,7 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 	{
 		RTC->INIT = RTC_INIT_KEY;
 		while ( RTC->INIT != RTC_INIT_ACTIVE_Msk )
-			if (--rtccnt)
+			if (!--rtccnt)
 				break;
 	}
 
