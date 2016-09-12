@@ -340,7 +340,7 @@ __myevic__ void ShowMainView()
 
 	if ( gFlags.firing && PreheatTimer )
 	{
-		pwr = dfPreheatPwr;
+		pwr = PreheatPower;
 	}
 
 	if ( dfMode == 5 )

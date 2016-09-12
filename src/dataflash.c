@@ -351,8 +351,16 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfClkRatio < 20000 || dfClkRatio > 50000 )
 		dfClkRatio = RTC_DEF_CLK_RATIO;
 
-	if ( dfPreheatPwr > MaxPower )
-		dfPreheatPwr = 200;
+	if ( dfStatus.phpct )
+	{
+		if ( dfPreheatPwr > 200 )
+			dfPreheatPwr = 100;
+	}
+	else
+	{
+		if ( dfPreheatPwr > MaxPower )
+			dfPreheatPwr = 200;
+	}
 
 	if ( dfPreheatTime > 200 )
 		dfPreheatTime = 0;

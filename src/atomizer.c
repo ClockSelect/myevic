@@ -37,6 +37,7 @@ uint8_t		BoardTemp;
 uint8_t		ConfigIndex;
 uint8_t		LastAtoError;
 uint8_t		PreheatTimer;
+uint16_t	PreheatPower;
 
 uint8_t		byte_200000B3;
 uint16_t	LastAtoRez;
@@ -756,7 +757,7 @@ __myevic__ void TweakTargetVoltsVW()
 
 	if ( PreheatTimer )
 	{
-		pwr = dfPreheatPwr;
+		pwr = PreheatPower;
 	}
 	else if ( dfMode == 6 )
 	{

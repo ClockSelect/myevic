@@ -481,7 +481,21 @@ __myevic__ void EventHandler()
 				if ( dfPreheatTime )
 				{
 					PreheatTimer = dfPreheatTime;
-					TargetVolts = GetVoltsForPower( dfPreheatPwr );
+
+					if ( dfStatus.phpct )
+					{
+						PreheatPower = dfPower * dfPreheatPwr / 100;
+						if ( PreheatPower > MaxPower )
+						{
+							PreheatPower = MaxPower;
+						}
+					}
+					else
+					{
+						PreheatPower = dfPreheatPwr;
+					}
+
+					TargetVolts = GetVoltsForPower( PreheatPower );
 				}
 				else if ( pwr <= 300 )
 				{

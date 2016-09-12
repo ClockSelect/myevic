@@ -50,6 +50,7 @@ typedef struct
 	int storage:1;
 	int dbgena:1;
 	int x32off:1;
+	int phpct:1;
 }
 dfStatus_t;
 

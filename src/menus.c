@@ -45,22 +45,32 @@ unsigned char CurrentMenuItem;
 
 __myevic__ void PreheatIDraw( int it, int line, int sel )
 {
-	if ( it > 1 ) return;
+	if ( it > 2 ) return;
 
 	int x, v, dp, nd, img;
 
 	switch ( it )
 	{
-		case 0 : 
+		case 0:
+			DrawFillRect( 30, line, 63, line+12, 0 );
+			DrawImage( 54, line+2, dfStatus.phpct ? 0xC2 : 0x98 );
+			return;
+
+		case 1 : 
 			v = dfPreheatPwr;
-			dp = 1;
 			nd = ( v < 100 ) ? 2 : 3;
 			dp = ( v < 1000 ) ? 1 : 0;
 			img = 0x98;
 			x = ( v < 100 ) ? 38 : ( v < 1000 ) ? 32 : 34;
+			if ( dfStatus.phpct )
+			{
+				img = 0xC2;
+				dp = 0;
+				x += 2;
+			}
 			break;
 
-		case 1 : 
+		case 2 : 
 			v = dfPreheatTime / 10;
 			dp = 1;
 			nd = 2;
@@ -75,9 +85,9 @@ __myevic__ void PreheatIDraw( int it, int line, int sel )
 	if ( gFlags.edit_value && sel )
 	{
 		DrawFillRect( 0, line, 29, line+12, 0 );
-		DrawString( CurrentMenu->mitems[CurrentMenuItem].caption, 4, line +2 );
+		DrawString( CurrentMenu->mitems[it].caption, 4, line +2 );
 		DrawFillRect( 30, line, 63, line+12, 1 );
-		if ( v == 0 && it == 1 )
+		if ( v == 0 && it == 2 )
 		{
 			DrawStringInv( String_Off, 37, line+2 );
 		}
@@ -90,7 +100,7 @@ __myevic__ void PreheatIDraw( int it, int line, int sel )
 	else
 	{
 		DrawFillRect( 30, line, 63, line+12, 0 );
-		if ( v == 0 && it == 1 )
+		if ( v == 0 && it == 3 )
 		{
 			DrawString( String_Off, 37, line+2 );
 		}
@@ -106,13 +116,33 @@ __myevic__ void PreheatIDraw( int it, int line, int sel )
 __myevic__ int PreheatMEvent( int event )
 {
 	int vret = 0;
-	if ( CurrentMenuItem > 1 )
+	if ( CurrentMenuItem > 2 )
 		return vret;
 
 	switch ( event )
 	{
 		case 1:
-			gFlags.edit_value ^= 1;
+			if ( CurrentMenuItem == 0 )
+			{
+				dfStatus.phpct ^= 1;
+				if ( dfStatus.phpct )
+				{
+					dfPreheatPwr = 100 * dfPreheatPwr / dfPower;
+					if ( dfPreheatPwr > 200 ) dfPreheatPwr = 200;
+					if ( dfPreheatPwr < 10 ) dfPreheatPwr = 10;
+				}
+				else
+				{
+					dfPreheatPwr = dfPower * dfPreheatPwr / 100;
+					if ( dfPreheatPwr > MaxPower ) dfPreheatPwr = MaxPower;
+					if ( dfPreheatPwr < 10 ) dfPreheatPwr = 10;
+				}
+			}
+			else
+			{
+				gFlags.edit_value ^= 1;
+			}
+			UpdateDFTimer = 50;
 			gFlags.refresh_display = 1;
 			vret = 1;
 			break;
@@ -120,11 +150,11 @@ __myevic__ int PreheatMEvent( int event )
 		case 2:
 			if ( gFlags.edit_value )
 			{
-				if ( CurrentMenuItem == 0 )
+				if ( CurrentMenuItem == 1 )
 				{
 					if ( KeyTicks >= 105 )
 					{
-						if ( dfPreheatPwr < MaxPower )
+						if ( dfPreheatPwr < ( dfStatus.phpct ? 200 : MaxPower ) )
 						{
 							dfPreheatPwr -= dfPreheatPwr % 10;
 							dfPreheatPwr += 10;
@@ -132,7 +162,7 @@ __myevic__ int PreheatMEvent( int event )
 					}
 					else
 					{
-						if ( dfPreheatPwr < MaxPower )
+						if ( dfPreheatPwr < ( dfStatus.phpct ? 200 : MaxPower ) )
 						{
 							if ( dfPreheatPwr < 1000 ) ++dfPreheatPwr;
 							else dfPreheatPwr += 10;
@@ -140,7 +170,7 @@ __myevic__ int PreheatMEvent( int event )
 						else dfPreheatPwr = 10;
 					}
 				}
-				else
+				else if ( CurrentMenuItem == 2 )
 				{
 					if ( dfPreheatTime < 200 ) dfPreheatTime += 10;
 					else if ( KeyTicks < 5 ) dfPreheatTime = 0;
@@ -154,7 +184,7 @@ __myevic__ int PreheatMEvent( int event )
 		case 3:
 			if ( gFlags.edit_value )
 			{
-				if ( CurrentMenuItem == 0 )
+				if ( CurrentMenuItem == 1 )
 				{
 					if ( KeyTicks >= 105 )
 					{
@@ -173,7 +203,7 @@ __myevic__ int PreheatMEvent( int event )
 						else dfPreheatPwr = MaxPower;
 					}
 				}
-				else
+				else if ( CurrentMenuItem == 2 )
 				{
 					if ( dfPreheatTime > 0 ) dfPreheatTime -= 10;
 					else if ( KeyTicks < 5 ) dfPreheatTime = 200;
@@ -799,8 +829,9 @@ const menu_t PreheatMenu =
 	0,
 	0,
 	PreheatMEvent+1,
-	3,
+	4,
 	{
+		{ String_Unit, 0, -1, 0 },
 		{ String_Pwr, 0, -1, 0 },
 		{ String_Time, 0, -1, 0 },
 		{ String_Exit, 0, 1, 0 },
