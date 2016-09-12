@@ -377,7 +377,7 @@ __myevic__ void ShowContrast()
 	DrawStringCentered( String_Fireto, 57 );
 	DrawStringCentered( ( gFlags.edit_capture_evt ) ? String_Exit : String_Edit, 67 );
 
-	if ( !(dfStatus.nologo) ) DrawLOGO( 0, 88 );
+	DrawLOGO( 0, 88 );
 }
 
 
@@ -461,7 +461,7 @@ __myevic__ void ShowBatCharging()
 	switch ( dfScreenSaver )
 	{
 		case 1:
-			DrawLOGO(0,25);
+			DrawLOGO( 0, 25 );
 			break;
 		case 2:
 			DrawClock( 25 );
@@ -807,7 +807,7 @@ __myevic__ void ShowScreenSaver()
 	switch ( dfScreenSaver )
 	{
 		case 1:
-			DrawLOGO(0,32);
+			DrawLOGO( 0, 32 );
 			break;
 
 		case 2:

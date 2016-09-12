@@ -1,6 +1,7 @@
 #include "myevic.h"
 #include "display.h"
 #include "dataflash.h"
+#include "screens.h"
 
 
 //=========================================================================
@@ -302,7 +303,7 @@ __myevic__ void DrawLOGO( const int x, const int y )
 	image_t *img;
 	uint32_t base_addr;
 
-	if ( dfStatus.nologo ) return;
+	if (( dfStatus.nologo ) && ( Screen != 60 )) return;
 
 	switch ( DisplayModel )
 	{
