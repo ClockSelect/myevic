@@ -100,7 +100,7 @@ __myevic__ void PreheatIDraw( int it, int line, int sel )
 	else
 	{
 		DrawFillRect( 30, line, 63, line+12, 0 );
-		if ( v == 0 && it == 3 )
+		if ( v == 0 && it == 2 )
 		{
 			DrawString( String_Off, 37, line+2 );
 		}
@@ -200,7 +200,10 @@ __myevic__ int PreheatMEvent( int event )
 					{
 						if ( dfPreheatPwr > 1000 ) dfPreheatPwr -= 10;
 						else if ( dfPreheatPwr > 10 ) --dfPreheatPwr;
-						else dfPreheatPwr = MaxPower;
+						else
+						{
+							dfPreheatPwr = ( dfStatus.phpct ? 200 : MaxPower );
+						}
 					}
 				}
 				else if ( CurrentMenuItem == 2 )
