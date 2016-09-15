@@ -217,6 +217,7 @@ __myevic__ void DrawScreen()
 			break;
 
 		case   2: // Firing
+		case  40: // Stealth ON/OFF
 			if ( dfStealthOn )
 			{
 				gFlags.refresh_display = 1;
@@ -265,7 +266,6 @@ __myevic__ void DrawScreen()
 		case  28: // Key Lock
 		case  31: // Key UnLock
 		case  37: // Board Temp
-		case  40: // Stealth ON/OFF
 		case  41: // Ti ON/OFF
 		case  54: // Battery Voltage
 		case 100: // Infos page
