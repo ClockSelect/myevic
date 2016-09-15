@@ -339,6 +339,11 @@ __myevic__ void Main()
 			ReadBatteryVoltage();
 			ReadBoardTemp();
 
+			if ( gFlags.firing && BoardTemp >= 70 )
+			{
+				Overtemp();
+			}
+
 			if (( Anim3d ) && ( Screen == 1 ) && ( !EditModeTimer ))
 			{
 				anim3d( 0 );
@@ -347,11 +352,6 @@ __myevic__ void Main()
 			if ( Screen == 60 )
 			{
 				AnimateScreenSaver();
-			}
-
-			if ( gFlags.firing && BoardTemp >= 70 )
-			{
-				Overtemp();
 			}
 
 			if ( gFlags.firing && PreheatTimer )

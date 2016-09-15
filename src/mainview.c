@@ -255,6 +255,14 @@ __myevic__ void DrawAPTLine( int line )
 			}
 			break;
 		}
+
+		case 7:
+		{
+			DrawString( String_RES_s, 0, line+2 );
+			DrawValue( 19, line, AtoRezMilli, 3, 0x1F, 4 );
+			DrawImage( 56, line+2, 0xC0 );
+			break;
+		}
 	}
 }
 

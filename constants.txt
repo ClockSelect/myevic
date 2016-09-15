@@ -156,3 +156,9 @@ Key state (20000041)
 0x7C	reset parameters
 0xA5	set boot logo
 0xB4	reset device
+
+RX200S
+------
+ADC18	BATT VOLTS 1
+ADC0	BATT VOLTS 1+2
+ADC4	BATT VOLTS 1+2+3
