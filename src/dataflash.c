@@ -213,6 +213,7 @@ __myevic__ void ResetDataFlash()
 	dfClkRatio = RTC_DEF_CLK_RATIO;
 	dfPreheatPwr = 200;
 	dfPreheatTime = 0;
+	dfScrMainTime = 0;
 }
 
 
@@ -290,6 +291,9 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfRezLockedSS > 1 )
 		dfRezLockedSS = 0;
 
+	if ( dfScrMainTime > 4 )
+		dfScrMainTime = 0;
+	
 	if ( dfRezTCR > 150 )
 		dfRezTCR = 0;
 

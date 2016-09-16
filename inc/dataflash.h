@@ -88,7 +88,7 @@ typedef struct dfParams
 	uint8_t		RezLockedSS;
 	uint8_t		UIVersion;	// useless
 	uint8_t		TCRIndex;
-//	1-byte pad
+	uint8_t		ScrMainTime;	//	1-byte pad
 	uint16_t	TCRM[3];
 	uint16_t	RezTCR;
 	uint8_t		RezLockedTCR;
@@ -235,6 +235,7 @@ extern dfStruct_t DataFlash;
 #define dfRezLockedSS	DFP(RezLockedSS)
 #define dfUIVersion		DFP(UIVersion)
 #define dfTCRIndex		DFP(TCRIndex)
+#define dfScrMainTime	DFP(ScrMainTime)
 #define dfTCRM			DFP(TCRM)
 #define dfRezTCR		DFP(RezTCR)
 #define dfRezLockedTCR	DFP(RezLockedTCR)

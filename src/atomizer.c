@@ -1106,7 +1106,7 @@ __myevic__ void ProbeAtomizer()
 		LastAtoError = AtoError;
 		SetAtoLimits();
 		gFlags.refresh_display = 1;
-		ScreenDuration = 30;
+		ScreenDuration = GetMainScreenDuration();
 	}
 
 	if ( byte_200000B3 )

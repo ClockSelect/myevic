@@ -20,6 +20,7 @@ extern uint16_t	EditModeTimer;
 extern uint8_t	EditTCRIndex;
 
 extern const uint8_t ScrSaveTimes[8];
+extern const uint8_t ScrMainTimes[5];
 
 extern int IsClockOnScreen();
 extern void DrawClock();
@@ -58,6 +59,7 @@ extern void ShowRTCAdjust();
 extern void ShowScreenSaver();
 
 extern uint16_t GetScreenProtection();
+extern uint16_t GetMainScreenDuration();
 
 //==============================================================================
 
@@ -175,6 +177,7 @@ extern const uint16_t String_Pwr[];
 extern const uint16_t String_Manage[];
 extern const uint16_t String_X32[];
 extern const uint16_t String_Unit[];
+extern const uint16_t String_Main[];
 
 
 //==============================================================================

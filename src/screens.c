@@ -16,6 +16,7 @@ uint16_t	ScreenDuration;
 uint8_t		Screen;
 
 const uint8_t ScrSaveTimes[8] = { 1, 2, 5, 10, 15, 20, 30, 0 };
+const uint8_t ScrMainTimes[5] = { 30, 60, 5, 10, 20 };
 
 uint8_t		EditItemIndex;
 uint16_t	EditModeTimer;
@@ -301,6 +302,11 @@ __myevic__ void DrawScreen()
 __myevic__ uint16_t GetScreenProtection()
 {
 	return ( 60 * ScrSaveTimes[dfScreenProt] );
+}
+
+__myevic__ uint16_t GetMainScreenDuration()
+{
+	return ScrMainTimes[dfScrMainTime];
 }
 
 

@@ -322,36 +322,64 @@ __myevic__ void ScreenSaveOnSelect()
 
 //-----------------------------------------------------------------------------
 
-__myevic__ void ScreenProtMenuOnEnter()
-{
-	CurrentMenuItem = dfScreenProt;
-}
-
-
 __myevic__ void ScreenProtMenuIDraw( int it, int line, int sel )
 {
-	if ( ScrSaveTimes[it] )
+	int v;
+
+	switch ( it )
 	{
-		if ( sel )
-		{
-			DrawFillRect( 0, line, 63, line+12, 1 );
-			DrawValueInv( 4, line+2, ScrSaveTimes[it], 0, 0x0B, 0 );
-			DrawStringInv( String_Min, 32, line+2 );
-		}
-		else
-		{
-			DrawValue( 4, line+2, ScrSaveTimes[it], 0, 0x0B, 0 );
-			DrawString( String_Min, 32, line+2 );
-		}
+		case 0:	// Saver
+			DrawFillRect( 38, line, 63, line+12, 0 );
+			v = ScrSaveTimes[dfScreenProt];
+			if ( v )
+			{
+				DrawValue( ( v < 10 ) ? 47 : 41, line+2, v, 0, 0x0B, 0 );
+				DrawImage( 55, line+2, 0x8E );
+			}
+			else
+			{
+				DrawString( String_Off, 42, line+2 );
+			}
+			break;
+
+		case 1:	// Main
+			DrawFillRect( 38, line, 63, line+12, 0 );
+			v = ScrMainTimes[dfScrMainTime];
+			DrawValue( ( v < 10 ) ? 49 : 43, line+2, v, 0, 0x0B, 0 );
+			DrawImage( 57, line+2, 0x94 );
+			break;
+
+		default:
+			break;
 	}
 }
 
 
 __myevic__ void ScreenProtMenuOnClick()
 {
-	dfScreenProt = CurrentMenuItem;
-	UpdateDataFlash();
-	MainView();
+	switch ( CurrentMenuItem )
+	{
+		case 0:	// Saver
+			if ( ++dfScreenProt > 7 )
+				dfScreenProt = 0;
+			UpdateDFTimer = 50;
+			gFlags.refresh_display = 1;
+			break;
+
+		case 1:	// Main
+			if ( ++dfScrMainTime > 4 )
+				dfScrMainTime = 0;
+			UpdateDFTimer = 50;
+			gFlags.refresh_display = 1;
+			break;
+
+		case 2:
+			UpdateDataFlash();
+			break;
+
+		default:
+			break;
+	}
 }
 
 
@@ -946,21 +974,16 @@ const menu_t ClockMenu =
 const menu_t ScreenProtMenu =
 {
 	String_Screen,
-	ScreenProtMenuOnEnter+1,
+	0,
 	ScreenProtMenuIDraw+1,
 	0,
 	ScreenProtMenuOnClick+1,
 	0,
-	8,
+	3,
 	{
-		{ 0, 0, -1, 0 },
-		{ 0, 0, -1, 0 },
-		{ 0, 0, -1, 0 },
-		{ 0, 0, -1, 0 },
-		{ 0, 0, -1, 0 },
-		{ 0, 0, -1, 0 },
-		{ 0, 0, -1, 0 },
-		{ String_Off, 0, 1, 0 }
+		{ String_Saver, 0, -1, 0 },
+		{ String_Main, 0, -1, 0 },
+		{ String_Exit, 0, 1, 30 }
 	}
 };
 
