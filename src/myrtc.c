@@ -235,6 +235,7 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 		{
 			// Disable X32 and retry.
 			gFlags.has_x32 = 0;
+			CLK_DisableXtalRC( CLK_PWRCTL_LXTEN_Msk );
 			InitRTC( d );
 			return;
 		}
@@ -267,6 +268,7 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 		if ( !rtccnt )
 		{
 			gFlags.has_x32 = 0;
+			CLK_DisableXtalRC( CLK_PWRCTL_LXTEN_Msk );
 			InitRTC( d );
 			return;
 		}
@@ -342,9 +344,6 @@ __myevic__ void GetRTC( S_RTC_TIME_DATA_T *rtd )
 		{
 			ref = RTCGetReferenceDate();
 			cs  = RTCGetClockSpeed();
-
-		//	d = (( (uint64_t)t - ref ) * cs + 2 * ClockCorrection ) / 10000;
-		//	t = ref + d;
 
 			d  = 32768ull * ( t - ref - sleep_ticks );
 			d += (int64_t)ClockCorrection * 2 + adj_10k;

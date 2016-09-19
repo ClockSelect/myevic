@@ -232,6 +232,7 @@ __myevic__ void Main()
 	if ( dfStatus.x32off )
 	{
 		gFlags.has_x32 = 0;
+		CLK_DisableXtalRC( CLK_PWRCTL_LXTEN_Msk );
 	}
 
 	InitRTC( 0 );

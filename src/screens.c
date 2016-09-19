@@ -218,6 +218,7 @@ __myevic__ void DrawScreen()
 			break;
 
 		case   2: // Firing
+		case  28: // Key Lock
 		case  40: // Stealth ON/OFF
 			if ( dfStealthOn )
 			{
@@ -249,6 +250,7 @@ __myevic__ void DrawScreen()
 		case  20: // No Atomizer Found
 		case  21: // Atomizer Short
 		case  29: // Device too hot
+		case  31: // Key UnLock
 		case  51: // New Coil
 			MainView();
 			break;
@@ -264,8 +266,6 @@ __myevic__ void DrawScreen()
 			UpdateDataFlash();
 			// NOBREAK
 		case   1: // Main view
-		case  28: // Key Lock
-		case  31: // Key UnLock
 		case  37: // Board Temp
 		case  41: // Ti ON/OFF
 		case  54: // Battery Voltage

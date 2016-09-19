@@ -289,7 +289,7 @@ __myevic__ void GetAtoCurrent()
 		arez = LowestRezMeasure();
 
 		if	(  gFlags.firing
-			   // ( theorical ato current ) < ( shunt current / 1.6 )
+			   // ( shunt current ) > ( 1.6 * theorical ato current )
 			&& 160 * 13 * adcAtoVolts / 100 * AtoShuntRez < 30 * adcShunt * arez
 			&& AtoCurrent > 50		// 5.0A
 			&& TargetVolts >= 100	// 1.00V
