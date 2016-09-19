@@ -43,6 +43,59 @@ unsigned char CurrentMenuItem;
 
 //-----------------------------------------------------------------------------
 
+__myevic__ void IFMenuIDraw( int it, int line, int sel )
+{
+	if ( it > CurrentMenu->nitems - 2 )
+		return;
+
+	DrawFillRect( 40, line, 63, line+12, 0 );
+	
+	switch ( it )
+	{
+		case 0:	// Batt%
+			DrawString( dfStatus.battpc ? String_On : String_Off, 44, line+2 );
+			break;
+
+		case 1:	// 1Watt
+			DrawString( dfStatus.onewatt ? String_On : String_Off, 44, line+2 );
+			break;
+
+		default:
+			break;
+	}
+}
+
+
+__myevic__ void IFMenuOnClick()
+{
+	switch ( CurrentMenuItem )
+	{
+		case 0:	// Batt%
+			dfStatus.battpc ^= 1;
+			break;
+		
+		case 1:	// 1Watt
+			dfStatus.onewatt ^= 1;
+			WattsInc = dfStatus.onewatt ? 10 : 1;
+		//	if ( dfStatus.onewatt )
+		//	{
+		//		dfPower -= dfPower % 10;
+		//		dfTCPower -= dfTCPower % 10;
+		//	}
+			break;
+		
+		case 2:	// Exit
+			UpdateDataFlash();
+			return;
+	}
+
+	UpdateDFTimer = 50;
+	gFlags.refresh_display = 1;
+}
+
+
+//-----------------------------------------------------------------------------
+
 __myevic__ void PreheatIDraw( int it, int line, int sel )
 {
 	if ( it > 2 ) return;
@@ -164,7 +217,15 @@ __myevic__ int PreheatMEvent( int event )
 					{
 						if ( dfPreheatPwr < ( dfStatus.phpct ? 200 : MaxPower ) )
 						{
-							if ( dfPreheatPwr < 1000 ) ++dfPreheatPwr;
+							if ( dfPreheatPwr < 1000 )
+							{
+								if ( dfStatus.phpct ) ++dfPreheatPwr;
+								else
+								{
+									dfPreheatPwr += WattsInc;
+									if ( dfPreheatPwr > MaxPower ) dfPreheatPwr = MaxPower;
+								}
+							}
 							else dfPreheatPwr += 10;
 						}
 						else dfPreheatPwr = 10;
@@ -199,7 +260,15 @@ __myevic__ int PreheatMEvent( int event )
 					else
 					{
 						if ( dfPreheatPwr > 1000 ) dfPreheatPwr -= 10;
-						else if ( dfPreheatPwr > 10 ) --dfPreheatPwr;
+						else if ( dfPreheatPwr > 10 )
+						{
+							if ( dfStatus.phpct ) --dfPreheatPwr;
+							else
+							{
+								dfPreheatPwr -= WattsInc;
+								if ( dfPreheatPwr < 10 ) dfPreheatPwr = 10;
+							}
+						}
 						else
 						{
 							dfPreheatPwr = ( dfStatus.phpct ? 200 : MaxPower );
@@ -1040,6 +1109,22 @@ const menu_t ScreenMenu =
 	}
 };
 
+const menu_t IFMenu =
+{
+	String_Interface,
+	0,
+	IFMenuIDraw+1,
+	0,
+	IFMenuOnClick+1,
+	0,
+	3,
+	{
+		{ String_BattPC, 0, -1, 0 },
+		{ String_1Watt, 0, -1, 0 },
+		{ String_Exit, 0, 1, 0 }
+	}
+};
+
 const menu_t MainMenu =
 {
 	String_Menus,
@@ -1048,14 +1133,15 @@ const menu_t MainMenu =
 	0,
 	0,
 	0,
-	7,
+	8,
 	{
 		{ String_Screen, &ScreenMenu, -1, 0 },
 		{ String_Coils, &CoilsMenu, -1, 0 },
 		{ String_Clock, &ClockMenu, -1, 0 },
 		{ String_Modes, &ModesMenu, -1, 0 },
-		{ String_Expert, &ExpertMenu, -1, 0 },
 		{ String_Miscs, &MiscsMenu, -1, 0 },
+		{ String_Interface, &IFMenu, -1, 0 },
+		{ String_Expert, &ExpertMenu, -1, 0 },
 		{ String_Exit, 0, 1, 0 }
 	}
 };

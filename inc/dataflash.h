@@ -51,6 +51,8 @@ typedef struct
 	int dbgena:1;
 	int x32off:1;
 	int phpct:1;
+	int battpc:1;
+	int onewatt:1;
 }
 dfStatus_t;
 

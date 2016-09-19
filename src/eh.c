@@ -17,6 +17,7 @@ volatile uint8_t Event;
 uint8_t	LastEvent;
 
 uint8_t	MenuPage;
+uint8_t	WattsInc;
 
 
 //----- (000039E0) --------------------------------------------------------
@@ -31,7 +32,6 @@ __myevic__ void EventHandler()
 	int tempf;
 	unsigned int v41;
 	short v42;
-	short v43;
 	unsigned int v44;
 	unsigned int v45;
 	unsigned int v46;
@@ -908,7 +908,11 @@ __myevic__ void EventHandler()
 						}
 						else if ( KeyTicks < 105 )
 						{
-							--dfTCPower;
+							dfTCPower -= WattsInc;
+							if ( dfTCPower <= 10 )
+							{
+								dfTCPower = 10;
+							}
 						}
 						else
 						{
@@ -1002,7 +1006,7 @@ __myevic__ void EventHandler()
 					{
 						if ( KeyTicks < 105 )
 						{
-							if ( dfPower ) --dfPower;
+							if ( dfPower ) dfPower -= WattsInc;
 						}
 						else
 						{
@@ -1142,7 +1146,11 @@ __myevic__ void EventHandler()
 							}
 							else if ( KeyTicks < 105 )
 							{
-								++dfTCPower;
+								dfTCPower += WattsInc;
+								if ( dfTCPower >= MaxTCPower )
+								{
+									dfTCPower = MaxTCPower;
+								}
 							}
 							else
 							{
@@ -1200,16 +1208,15 @@ __myevic__ void EventHandler()
 						case 4:
 							if ( KeyTicks < 105 )
 							{
-								v43 = dfPower + 1;
+								dfPower += WattsInc;
 							}
 							else
 							{
 								if ( dfPower % 10 )
 									dfPower = 10 * (dfPower / 10);
-								v43 = dfPower + 10;
+								dfPower += 10;
 							}
-							dfPower = v43;
-							if ( v43 > AtoMaxPower )
+							if ( dfPower > AtoMaxPower )
 								dfPower = AtoMaxPower;
 							dfVWVolts = GetAtoVWVolts( dfPower );
 							break;

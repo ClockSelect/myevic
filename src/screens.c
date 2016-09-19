@@ -438,23 +438,56 @@ __myevic__ int IsClockOnScreen()
 //----- (000067C8) --------------------------------------------------------
 __myevic__ void ShowBattery()
 {
+	if ( dfStatus.battpc )
+	{
+		DrawValue(	BatteryPercent < 10  ? 12 :
+					BatteryPercent < 100 ? 6 :
+					0, 118, BatteryPercent, 0, 0x0B, 0 );
+		DrawImage( 18, 118, 0xC2 );
+	}
+
 	if ( gFlags.battery_10pc && !(gFlags.battery_charging) )
 	{
 		if ( gFlags.draw_battery )
 		{
-			DrawImage( 8, 115, 0xC4 );
+			if ( dfStatus.battpc )
+			{
+				DrawImage( 30, 114, 0xE2 );
+			}
+			else
+			{
+				DrawImage( 8, 115, 0xC4 );
+			}
 		}
 	}
 	else if ( gFlags.draw_battery_charging && gFlags.battery_charging )
 	{
-		DrawImage( 8, 115, 0xC5 );
+		if ( dfStatus.battpc )
+		{
+			DrawImage( 30, 114, 0xE3 );
+		}
+		else
+		{
+			DrawImage( 8, 115, 0xC5 );
+		}
 	}
 	else
 	{
-		DrawImage( 8, 115, 0xC4 );
-		if ( BatteryTenth )
+		if ( dfStatus.battpc )
 		{
-			DrawFillRect( 10, 118, (4 * BatteryTenth + 9), 124, 1 );
+			DrawImage( 30, 114, 0xE2 );
+			if ( BatteryTenth )
+			{
+				DrawFillRect( 32, 118, (25 * BatteryTenth / 10 + 31), 124, 1 );
+			}
+		}
+		else
+		{
+			DrawImage( 8, 115, 0xC4 );
+			if ( BatteryTenth )
+			{
+				DrawFillRect( 10, 118, (4 * BatteryTenth + 9), 124, 1 );
+			}
 		}
 	}
 }
@@ -477,18 +510,43 @@ __myevic__ void ShowBatCharging()
 			break;
 	}
 
-	DrawImage( 8, 115, 0xC4 );
+	if ( dfStatus.battpc )
+	{
+		DrawValue(	BatteryPercent < 10  ? 12 :
+					BatteryPercent < 100 ? 6 :
+					0, 118, BatteryPercent, 0, 0x0B, 0 );
+		DrawImage( 18, 118, 0xC2 );
+		DrawImage( 30, 114, 0xE2 );
+	}
+	else
+	{
+		DrawImage( 8, 115, 0xC4 );
+	}
 
 	if ( BatteryTenth != 10 )
 	{
 		if ( BatAnimLevel )
 		{
-			DrawFillRect( 10, 118, (4 * BatAnimLevel + 9), 124, 1 );
+			if ( dfStatus.battpc )
+			{
+				DrawFillRect( 32, 118, (25 * BatAnimLevel / 10 + 31), 124, 1 );
+			}
+			else
+			{
+				DrawFillRect( 10, 118, (4 * BatAnimLevel + 9), 124, 1 );
+			}
 		}
 	}
 	else if ( gFlags.draw_battery_charging )
 	{
-		DrawFillRect( 10, 118, 49, 124, 1 );
+		if ( dfStatus.battpc )
+		{
+			DrawFillRect( 32, 118, 56, 124, 1 );
+		}
+		else
+		{
+			DrawFillRect( 10, 118, 49, 124, 1 );
+		}
 	}
 
 	DrawValue( 6, 105, BatteryVoltage, 2, 0x0B, 3 );

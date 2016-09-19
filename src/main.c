@@ -219,6 +219,7 @@ __myevic__ void InitVariables()
 	gFlags.refresh_battery = 1;
 	gFlags.read_battery = 1;
 	EditItemIndex = 0;
+	WattsInc = dfStatus.onewatt ? 10 : 1;
 }
 
 

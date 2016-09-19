@@ -14,6 +14,7 @@ extern uint16_t	KeyTicks;
 extern uint16_t	KeyPressTime;
 
 extern uint8_t	MenuPage;
+extern uint8_t	WattsInc;
 
 //-------------------------------------------------------------------------
 extern volatile uint8_t Event;
