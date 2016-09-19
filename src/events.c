@@ -306,6 +306,23 @@ __myevic__ void GetUserInput()
 			FireClicksEvent = 0;
 		}
 	}
+	else if ( KeyPressTime == 50 )
+	{
+		if ( UserInputs == 4 )
+		{
+			if ( Screen == 102 )
+			{
+				Event = EVENT_PARENTMENU;
+			}
+		}
+		else if ( UserInputs == 5 )
+		{
+			if ( Screen == 102 )
+			{
+				Event = EVENT_EXITMENUS;
+			}
+		}
+	}
 	else if ( KeyPressTime == 200 )
 	{
 		if ( UserInputs == 1 )
@@ -729,6 +746,38 @@ __myevic__ int EvtLongFire()
 
 //-----------------------------------------------------------------------------
 
+__myevic__ int EvtExitMenus()
+{
+	int vret = 0;
+
+	switch ( Screen )
+	{
+		case 102:
+			vret = MenuEvent( LastEvent );
+			break;
+	}
+
+	return vret;
+}
+
+//-----------------------------------------------------------------------------
+
+__myevic__ int EvtParentMenu()
+{
+	int vret = 0;
+
+	switch ( Screen )
+	{
+		case 102:
+			vret = MenuEvent( LastEvent );
+			break;
+	}
+
+	return vret;
+}
+
+//-----------------------------------------------------------------------------
+
 __myevic__ int EvtContrastMenu()
 {
 	Screen = 101;
@@ -793,6 +842,14 @@ __myevic__ int CustomEvents()
 
 		case EVENT_LONG_FIRE:
 			vret = EvtLongFire();
+			break;
+
+		case EVENT_EXITMENUS:
+			vret = EvtExitMenus();
+			break;
+
+		case EVENT_PARENTMENU:
+			vret = EvtParentMenu();
 			break;
 
 		default:

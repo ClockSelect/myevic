@@ -28,6 +28,7 @@ struct mitem_s
 struct menu_s
 {
 	const uint16_t *caption;
+	struct menu_s const *parent;
 	void (*on_enter)();
 	void (*on_drawitem)( int mi, int y, int sel );
 	void (*on_selectitem)();
@@ -867,10 +868,20 @@ __myevic__ void ScreenIClick()
 }
 
 //-----------------------------------------------------------------------------
+// Forward declarations for parent menu pointers
+
+const menu_t MainMenu;
+const menu_t CoilsMenu;
+const menu_t ClockMenu;
+const menu_t ScreenMenu;
+const menu_t MiscsMenu;
+
+//-----------------------------------------------------------------------------
 
 const menu_t LOGOMenu =
 {
 	String_LOGO,
+	&MiscsMenu,
 	LogoMEnter+1,
 	0,
 	LogoISelect+1,
@@ -886,6 +897,7 @@ const menu_t LOGOMenu =
 const menu_t GameMenu =
 {
 	String_Game,
+	&MiscsMenu,
 	GameMEnter+1,
 	0,
 	GameISelect+1,
@@ -903,6 +915,7 @@ const menu_t GameMenu =
 const menu_t ModesMenu =
 {
 	String_Modes,
+	&MainMenu,
 	ModesMEnter+1,
 	ModesIDraw+1,
 	0,
@@ -924,6 +937,7 @@ const menu_t ModesMenu =
 const menu_t PreheatMenu =
 {
 	String_Preheat,
+	&CoilsMenu,
 	0,
 	PreheatIDraw+1,
 	0,
@@ -941,6 +955,7 @@ const menu_t PreheatMenu =
 const menu_t CoilsMgmtMenu =
 {
 	String_Coils,
+	&CoilsMenu,
 	CoilsMEnter+1,
 	CoilsIDraw+1,
 	CoilsISelect+1,
@@ -960,6 +975,7 @@ const menu_t CoilsMgmtMenu =
 const menu_t CoilsMenu =
 {
 	String_Coils,
+	&MainMenu,
 	0,
 	0,
 	0,
@@ -977,6 +993,7 @@ const menu_t CoilsMenu =
 const menu_t Anim3dMenu =
 {
 	String_3D,
+	&MiscsMenu,
 	Anim3dOnEnter+1,
 	0,
 	0,
@@ -992,6 +1009,7 @@ const menu_t Anim3dMenu =
 const menu_t MiscsMenu =
 {
 	String_Miscs,
+	&MainMenu,
 	0,
 	0,
 	0,
@@ -1009,6 +1027,7 @@ const menu_t MiscsMenu =
 const menu_t TimeMenu =
 {
 	String_DateTime,
+	&ClockMenu,
 	DTMenuOnEnter+1,
 	DTMenuIDraw+1,
 	0,
@@ -1026,6 +1045,7 @@ const menu_t TimeMenu =
 const menu_t ClockMenu =
 {
 	String_Clock,
+	&MainMenu,
 	0,
 	0,
 	0,
@@ -1043,6 +1063,7 @@ const menu_t ClockMenu =
 const menu_t ScreenProtMenu =
 {
 	String_Screen,
+	&ScreenMenu,
 	0,
 	ScreenProtMenuIDraw+1,
 	0,
@@ -1059,6 +1080,7 @@ const menu_t ScreenProtMenu =
 const menu_t ExpertMenu =
 {
 	String_Expert,
+	&MainMenu,
 	0,
 	ExpertMenuIDraw+1,
 	0,
@@ -1076,6 +1098,7 @@ const menu_t ExpertMenu =
 const menu_t ScreenSaveMenu =
 {
 	String_Saver,
+	&ScreenMenu,
 	ScreenSaveOnEnter+1,
 	0,
 	ScreenSaveOnSelect+1,
@@ -1095,6 +1118,7 @@ const menu_t ScreenSaveMenu =
 const menu_t ScreenMenu =
 {
 	String_Screen,
+	&MainMenu,
 	0,
 	0,
 	0,
@@ -1112,6 +1136,7 @@ const menu_t ScreenMenu =
 const menu_t IFMenu =
 {
 	String_Interface,
+	&MainMenu,
 	0,
 	IFMenuIDraw+1,
 	0,
@@ -1128,6 +1153,7 @@ const menu_t IFMenu =
 const menu_t MainMenu =
 {
 	String_Menus,
+	0,
 	0,
 	0,
 	0,
@@ -1311,6 +1337,28 @@ __myevic__ int MenuEvent( int event )
 		}	break;
 
 		case 15:
+			vret = 1;
+			break;
+
+		case EVENT_EXITMENUS:
+			MainView();
+			vret = 1;
+			break;
+
+		case EVENT_PARENTMENU:
+			if ( CurrentMenu->parent )
+			{
+				CurrentMenu = CurrentMenu->parent;
+				CurrentMenuItem = 0;
+
+				if ( CurrentMenu->on_enter ) CurrentMenu->on_enter();
+
+				gFlags.refresh_display = 1;
+			}
+			else
+			{
+				MainView();
+			}
 			vret = 1;
 			break;
 

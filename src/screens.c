@@ -442,8 +442,8 @@ __myevic__ void ShowBattery()
 	{
 		DrawValue(	BatteryPercent < 10  ? 12 :
 					BatteryPercent < 100 ? 6 :
-					0, 118, BatteryPercent, 0, 0x0B, 0 );
-		DrawImage( 18, 118, 0xC2 );
+					0, 118, BatteryTenth * 10, 0, 0x0B, 0 );
+		DrawImage( 19, 118, 0xC2 );
 	}
 
 	if ( gFlags.battery_10pc && !(gFlags.battery_charging) )
@@ -514,8 +514,8 @@ __myevic__ void ShowBatCharging()
 	{
 		DrawValue(	BatteryPercent < 10  ? 12 :
 					BatteryPercent < 100 ? 6 :
-					0, 118, BatteryPercent, 0, 0x0B, 0 );
-		DrawImage( 18, 118, 0xC2 );
+					0, 118, BatteryTenth * 10, 0, 0x0B, 0 );
+		DrawImage( 19, 118, 0xC2 );
 		DrawImage( 30, 114, 0xE2 );
 	}
 	else

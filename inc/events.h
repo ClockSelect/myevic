@@ -63,6 +63,8 @@ extern uint8_t	LastEvent;
 #define EVENT_ENTER_MENUS	102
 #define EVENT_QUAD_FIRE		103
 #define EVENT_LONG_FIRE		104
+#define EVENT_EXITMENUS		105
+#define EVENT_PARENTMENU	106
 
 
 //==============================================================================
