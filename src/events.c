@@ -310,14 +310,14 @@ __myevic__ void GetUserInput()
 	{
 		if ( UserInputs == 4 )
 		{
-			if ( Screen == 102 )
+			if ( Screen == 59 || ( Screen >= 101 && Screen <= 104 ) )
 			{
 				Event = EVENT_PARENTMENU;
 			}
 		}
 		else if ( UserInputs == 5 )
 		{
-			if ( Screen == 102 )
+			if ( Screen == 59 || ( Screen >= 101 && Screen <= 104 ) )
 			{
 				Event = EVENT_EXITMENUS;
 			}
@@ -752,7 +752,11 @@ __myevic__ int EvtExitMenus()
 
 	switch ( Screen )
 	{
+		case 59:
+		case 101:
 		case 102:
+		case 103:
+		case 104:
 			vret = MenuEvent( LastEvent );
 			break;
 	}
@@ -768,7 +772,11 @@ __myevic__ int EvtParentMenu()
 
 	switch ( Screen )
 	{
+		case 59:
+		case 101:
 		case 102:
+		case 103:
+		case 104:
 			vret = MenuEvent( LastEvent );
 			break;
 	}

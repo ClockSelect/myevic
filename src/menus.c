@@ -1241,13 +1241,7 @@ __myevic__ int MenuEvent( int event )
 {
 	int vret = 1;
 
-	if ( !CurrentMenu )
-	{
-		MainView();
-		return 1;
-	}
-
-	if ( CurrentMenu->on_event )
+	if ( CurrentMenu && CurrentMenu->on_event )
 	{
 		ScreenDuration = 10;
 		vret = CurrentMenu->on_event( event );
@@ -1346,21 +1340,50 @@ __myevic__ int MenuEvent( int event )
 			break;
 
 		case EVENT_PARENTMENU:
-			if ( CurrentMenu->parent )
+		{
+			switch ( Screen )
 			{
-				CurrentMenu = CurrentMenu->parent;
+				case 59:
+					CurrentMenu = &CoilsMenu;
+					break;
+					
+				case 101:
+					CurrentMenu = &ScreenMenu;
+					break;
+
+				case 102:
+					if ( CurrentMenu )
+					{
+						CurrentMenu = CurrentMenu->parent;
+					}
+					break;
+
+				case 103:
+				case 104:
+					CurrentMenu = &ClockMenu;
+					break;
+
+				default:
+					CurrentMenu = 0;
+					break;
+			}
+
+			if ( CurrentMenu )
+			{
 				CurrentMenuItem = 0;
-
 				if ( CurrentMenu->on_enter ) CurrentMenu->on_enter();
-
+				Screen = 102;
+				ScreenDuration = 10;
 				gFlags.refresh_display = 1;
 			}
 			else
 			{
 				MainView();
 			}
+
 			vret = 1;
 			break;
+		}
 
 		default:
 			break;
