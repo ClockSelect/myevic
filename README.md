@@ -13,12 +13,16 @@ This is My eVic VTC Mini.
 
 ### Main Features:
 My custom firmware is more or less identical to the official firmware - Just added some missing features.
+
 ### Usage:
-- Use official firmware updater to upload ```bin/myevic_enc.bin```
-OR
-- Use evic-usb to upload unencrypted ```bin/myevic.bin``` to your box:
+
+You may:
+
+- Use [official firmware updater](http://www.joyetech.com/mvr-software/) to upload [bin/myevic_enc.bin](https://github.com/ClockSelect/myevic/blob/master/bin/myevic_enc.bin)
+- Use evic-usb to upload unencrypted [bin/myevic.bin](https://github.com/ClockSelect/myevic/blob/master/bin/myevic.bin) to your box, using command line:
 
     ```evic-usb upload -u bin/myevic.bin```
+- Use [NFirmwareEditor](https://github.com/TBXin/NFirmwareEditor/releases) to upload any of those files to your box.
 
 ### Thanks to:
 
@@ -48,12 +52,16 @@ OR
     - Atomizer voltage
     - Board temperature
     - Real-time clock
+    - Real-time atomizer resistance
 
     ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/mainscreen2_zpsclbvvdah.png)
 
 ###Menus:
 Holding fire and right button a few seconds enters menus.
 There's many more to LOGO and Game menus now. See below.
+
+* At any time, you may press simultaneously fire and right button to get out of the menus and return to the main screen.
+* When navigating in sub-menus, you may press simultaneously left and right buttons to return to the parent (upper level) menu.
 
 * Screen
 
@@ -111,18 +119,25 @@ There's many more to LOGO and Game menus now. See below.
 * Clock
   * Date/Time
 
-    Setup date and time.
-    Fire change edited field, + and - set value.
+        Setup date and time.
+        Fire change edited field, + and - set value.
 
   * Clk Adjust
 
-    Adjust clock: for small adjustments to clock time + and - adjust clock by seconds. Fire to save. For VTwo owners, this option also adjusts the X32 frequency accordingly if done properly.
+        Adjust clock: for small adjustments to clock time + and - adjust clock by seconds. Fire to save. For VTwo owners, this option also adjusts the X32 frequency accordingly if done properly.
 
   * Clk Speed
 
-    For owners of VTC mini (useless for VTwo owners)
-    The VTC mini does not have the needed 32kHz crystal soldered on the pcb to regulate the clock speed; so, another internal clock source is used to drive the clock. Since its frequency is quite different, a clock speed ratio is needed to regulate the clock.
-    Usage: First setup date & time. Wait a few hours to let the clock drift; then use this menu to adjust time to the real time. This will compute the box-specific ratio between real time and internal processor clock speed. Accuracy of a few seconds per day can be achieved this way.
+        For owners of VTC mini (useless for VTwo owners)
+        The VTC mini does not have the needed 32kHz crystal soldered on the pcb to regulate the clock speed; so, another time source is used to drive the clock. Since its frequency is quite different, a clock speed ratio is needed to regulate the clock. As long as the box is awake (you're using it), the clock is regulated by the external 12.000MHz crystal, which is an accurate time source. Problem arises when the box enters sleep mode, since the crystal is switched off and the only clock source is the somewhat unreliable 10kHz internal oscillator of the processor. Clock drift mostly occurs when the box is switched off or sleeping.
+    
+        The procedure to adjust the clock speed ratio is as follow:
+        * First, setup time accurately via the date/time menu or the "```evic-usb time```" command line.
+        * Let the box enter sleep mode (leave it alone or switch it off) for several hours. I suggest you're doing this before sleeping yourself.
+        * Awake the box and go into the "Clk Speed" menu; do not let the box enter sleep mode again in between, or you'll have to redo the whole thing.
+        * Using + and - buttons, adjust the time shown on top of the screen to catch up the real time. The number shown in the center of the screen is the clock speed ratio; reasonable values should be around 32~34000.
+        * Once you have adjusted the time to the real time, click fire to save the new clock speed ratio. Your clock should now be as accurate as it can. If not, try to repeat the procedure. Accuracy of a few seconds per day can be achieved this way.
+    
 
 * Modes
 
