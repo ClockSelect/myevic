@@ -7839,7 +7839,6 @@ font2:
 		.long f2_slash
 		.long f2_colon8
 		.long f2_clock
-font2_end:
 
 
 		.section .rodata
@@ -14928,7 +14927,7 @@ font1:	.long byte_B898		@ Images DB for	SSD1306
 		.long f1_slash		@	0x102
 		.long f1_colon8		@	0x103
 		.long f1_clock		@	0x104
-font1_end:
+
 		.section .rodata
 
 

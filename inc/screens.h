@@ -7,8 +7,9 @@
 
 //==============================================================================
 
-extern uint16_t	ScreenDuration;
 extern uint8_t	Screen;
+extern uint16_t	ScreenDuration;
+extern uint16_t	ScreenRefreshTimer;
 
 extern uint8_t	ShowDateFlag;
 extern uint16_t	HideLogo;
@@ -181,6 +182,7 @@ extern const uint16_t String_Main[];
 extern const uint16_t String_Interface[];
 extern const uint16_t String_BattPC[];
 extern const uint16_t String_1Watt[];
+extern const uint16_t String_Font[];
 
 
 //==============================================================================

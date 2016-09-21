@@ -53,6 +53,7 @@ typedef struct
 	int phpct:1;
 	int battpc:1;
 	int onewatt:1;
+	int font:1;
 }
 dfStatus_t;
 

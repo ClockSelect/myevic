@@ -61,6 +61,10 @@ __myevic__ void IFMenuIDraw( int it, int line, int sel )
 			DrawString( dfStatus.onewatt ? String_On : String_Off, 44, line+2 );
 			break;
 
+		case 2:	// Font
+			DrawImage( 44, line+2, dfStatus.font ? 0x9D : 0x9C );
+			break;
+
 		default:
 			break;
 	}
@@ -78,14 +82,14 @@ __myevic__ void IFMenuOnClick()
 		case 1:	// 1Watt
 			dfStatus.onewatt ^= 1;
 			WattsInc = dfStatus.onewatt ? 10 : 1;
-		//	if ( dfStatus.onewatt )
-		//	{
-		//		dfPower -= dfPower % 10;
-		//		dfTCPower -= dfTCPower % 10;
-		//	}
 			break;
 		
-		case 2:	// Exit
+		case 2:	// Font
+			dfStatus.font ^= 1;
+			DisplaySetFont();
+			break;
+		
+		case 3:	// Exit
 			UpdateDataFlash();
 			return;
 	}
@@ -727,6 +731,8 @@ __myevic__ void DTMenuIDraw( int it, int line, int sel )
 		default:
 			break;
 	}
+	
+	ScreenRefreshTimer = 5;
 }
 
 __myevic__ int DTMenuOnEvent( int event )
@@ -1142,10 +1148,11 @@ const menu_t IFMenu =
 	0,
 	IFMenuOnClick+1,
 	0,
-	3,
+	4,
 	{
 		{ String_BattPC, 0, -1, 0 },
 		{ String_1Watt, 0, -1, 0 },
+		{ String_Font, 0, -1, 0 },
 		{ String_Exit, 0, 1, 0 }
 	}
 };

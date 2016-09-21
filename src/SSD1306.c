@@ -119,7 +119,6 @@ __myevic__ void SSD1306_Init()
 
 	SSD1306_CLS();
 	DisplaySendCommand( 0xAF );
-
 	WaitOnTMR2( 20 );
 }
 

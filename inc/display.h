@@ -18,9 +18,13 @@ extern const uint8_t ByteMaskLeft[];
 extern uint8_t DisplayModel;
 extern uint8_t ScreenBuffer[];
 
-extern const image_t *font1[];
-extern const image_t *font2[];
+extern const image_t **font1;
+extern const image_t **font2;
 
+extern const image_t const *font0_1306[];
+extern const image_t const *font0_1327[];
+extern const image_t const *font1_1306[];
+extern const image_t const *font1_1327[];
 
 extern void InitSPI0();
 extern void InitDisplay();
@@ -31,6 +35,7 @@ extern void DisplaySetContrast( const uint8_t c );
 extern void ClearScreenBuffer();
 extern void DisplayRefresh();
 extern void Screen2Bitmap( uint8_t *pu8Bitmap );
+extern void DisplaySetFont();
 
 extern int GetImageWidth( const uint16_t imgnum );
 extern int GetStrCenteredX( const uint16_t str[] );

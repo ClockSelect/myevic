@@ -12,8 +12,9 @@
 
 //=========================================================================
 
-uint16_t	ScreenDuration;
 uint8_t		Screen;
+uint16_t	ScreenDuration;
+uint16_t	ScreenRefreshTimer;
 
 const uint8_t ScrSaveTimes[8] = { 1, 2, 5, 10, 15, 20, 30, 0 };
 const uint8_t ScrMainTimes[5] = { 30, 60, 5, 10, 20 };
@@ -27,6 +28,8 @@ uint8_t		BatAnimLevel;
 
 
 //=========================================================================
+// Called at a frequency of 10Hz except when firing in TC modes.
+// Called at a frequency of 2Hz when firing in TC modes.
 
 __myevic__ void DrawScreen()
 {
@@ -39,6 +42,11 @@ __myevic__ void DrawScreen()
 		ScreenDuration = 1;
 		ShowFDTimer = 0;
 		gFlags.refresh_display = 1;
+	}
+	else
+	{
+		if ( ScreenRefreshTimer && !--ScreenRefreshTimer )
+			gFlags.refresh_display = 1;
 	}
 
 	if ( gFlags.refresh_display )
