@@ -188,7 +188,7 @@ There's many more to LOGO and Game menus now. See below.
 
 * Interface
 
-        ![Interface menu screen](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/interface_zpsliz14bup.png)
+    ![Interface menu screen](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/interface_zpsliz14bup.png)
 
   * Batt%
 
