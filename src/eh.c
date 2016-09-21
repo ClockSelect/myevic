@@ -1131,10 +1131,10 @@ __myevic__ void EventHandler()
 							}
 							else if ( dfMode == 0 || dfMode == 1 || dfMode == 2 )
 							{
-								++dfLastTCMode;
-								if ( dfLastTCMode > 2 )
-									dfLastTCMode = 0;
-								dfMode = dfLastTCMode;
+								++dfTCMode;
+								if ( dfTCMode > 2 )
+									dfTCMode = 0;
+								dfMode = dfTCMode;
 								ModeChange();
 							}
 							break;

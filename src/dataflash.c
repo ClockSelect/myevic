@@ -87,6 +87,14 @@ __myevic__ void SetProductID()
 			gFlags.is_egrip2 = 1;
 			break;
 		}
+		else if ( u32Data == PID_CUBOMINI )
+		{
+			dfProductID = u32Data;
+			dfMaxHWVersion = 0x00020001;
+			MagicNumber = 0x50;
+			gFlags.is_cuboid = 1;
+			break;
+		}
 	}
 
 	FMC_DISABLE_ISP();
@@ -629,7 +637,7 @@ __myevic__ void InitDataFlash()
 
 	SetProductID();
 
-	if ( ISVTWO || ISEVICAIO )
+	if ( ISVTWO || ISEVICAIO || ISCUBOMINI )
 	{
 		switch ( dfHWVersion )
 		{
@@ -687,6 +695,21 @@ __myevic__ void InitDataFlash()
 	else if ( ISEGRIPII )
 	{
 		AtoShuntRez = 120;
+	}
+	else if ( ISCUBOMINI )
+	{
+		switch ( dfHWVersion )
+		{
+			case 100:
+			case 101:
+			default:
+				AtoShuntRez = 100;
+				break;
+
+			case 102:
+				AtoShuntRez = 105;
+				break;
+		}
 	}
 	else
 	{
@@ -753,7 +776,7 @@ __myevic__ void InitDataFlash()
 		myprintf( "Data Flash Re-Initialization\n" );
 		ResetDataFlash();
 		dfMode = 0;
-		dfLastTCMode = 0;
+		dfTCMode = 0;
 		dfPower = 200;
 		dfIsCelsius = 1;
 		dfTemp = 235;

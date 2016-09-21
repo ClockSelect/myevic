@@ -541,7 +541,7 @@ __myevic__ int EvtPlusButton()
 							if ( ++dfMode > 2 ) dfMode = 0;
 						}
 						while ( dfModesSel & ( 1 << dfMode ) );
-						dfLastTCMode = dfMode;
+						dfTCMode = dfMode;
 						ModeChange();
 
 						UpdateDFTimer = 50;

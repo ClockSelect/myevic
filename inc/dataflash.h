@@ -96,7 +96,7 @@ typedef struct dfParams
 	uint16_t	RezTCR;
 	uint8_t		RezLockedTCR;
 	uint8_t		ScreenSaver;	//	1-byte pad
-	uint8_t		LastTCMode;
+	uint8_t		TCMode;
 	uint8_t		ScreenProt;		//	1-byte pad
 	uint16_t	SavedCfgRez[10];
 	uint16_t	SavedCfgPwr[10];
@@ -243,7 +243,7 @@ extern dfStruct_t DataFlash;
 #define dfRezTCR		DFP(RezTCR)
 #define dfRezLockedTCR	DFP(RezLockedTCR)
 #define dfScreenSaver	DFP(ScreenSaver)
-#define dfLastTCMode	DFP(LastTCMode)
+#define dfTCMode		DFP(TCMode)
 #define dfScreenProt	DFP(ScreenProt)
 #define dfSavedCfgRez	DFP(SavedCfgRez)
 #define dfSavedCfgPwr	DFP(SavedCfgPwr)
