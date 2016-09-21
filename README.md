@@ -6,6 +6,7 @@ This is My eVic VTC Mini.
 * eVic VTwo Mini
 * eVic VTwo
 * eVic AIO
+* eGrip II (75W limit)
 * Wismec Presa 75W
 
 

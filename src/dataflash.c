@@ -79,6 +79,14 @@ __myevic__ void SetProductID()
 			gFlags.is_evicaio = 1;
 			break;
 		}
+		else if ( u32Data == PID_EGRIPII )
+		{
+			dfProductID = u32Data;
+			dfMaxHWVersion = 0x00000001;
+			MagicNumber = 0x15;
+			gFlags.is_egrip2 = 1;
+			break;
+		}
 	}
 
 	FMC_DISABLE_ISP();
@@ -633,7 +641,7 @@ __myevic__ void InitDataFlash()
 				break;
 		}
 	}
-	else if ( ISVTWOMINI )
+	else if ( ISVTWOMINI || ISEGRIPII )
 	{
 		DisplayModel = 0;
 	}
@@ -675,6 +683,10 @@ __myevic__ void InitDataFlash()
 	else if ( ISVTWOMINI || ISVTWO )
 	{
 		AtoShuntRez = 115;
+	}
+	else if ( ISEGRIPII )
+	{
+		AtoShuntRez = 120;
 	}
 	else
 	{
