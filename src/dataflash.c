@@ -117,6 +117,9 @@ __myevic__ void FMCReadCounters()
 	uint32_t pc, v;
 	uint32_t idx;
 
+	SYS_UnlockReg();
+	FMC_ENABLE_ISP();
+
 	for ( idx = 0 ; idx < FMC_FLASH_PAGE_SIZE ; idx += 4 )
 	{
 		v = FMC_Read( DATAFLASH_PUFFCNTR_BASE + idx );
@@ -136,6 +139,9 @@ __myevic__ void FMCReadCounters()
 		dfPuffCount = 0;
 		dfTimeCount = 0;
 	}
+
+	FMC_DISABLE_ISP();
+	SYS_LockReg();
 }
 
 
@@ -638,10 +644,10 @@ __myevic__ void InitDataFlash()
 		}
 	}
 
-	FMCReadCounters();
-
 	FMC_DISABLE_ISP();
 	SYS_LockReg();
+
+	FMCReadCounters();
 
 	SetProductID();
 

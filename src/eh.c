@@ -485,14 +485,15 @@ __myevic__ void EventHandler()
 					if ( dfStatus.phpct )
 					{
 						PreheatPower = dfPower * dfPreheatPwr / 100;
-						if ( PreheatPower > MaxPower )
-						{
-							PreheatPower = MaxPower;
-						}
 					}
 					else
 					{
 						PreheatPower = dfPreheatPwr;
+					}
+
+					if ( PreheatPower > AtoMaxPower )
+					{
+						PreheatPower = AtoMaxPower;
 					}
 
 					TargetVolts = GetVoltsForPower( PreheatPower );
