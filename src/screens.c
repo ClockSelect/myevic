@@ -898,7 +898,7 @@ __myevic__ void ShowScreenSaver()
 			break;
 
 		case 3:
-			DrawDigitClock( 54 );
+			DrawDigitClock( 46 );
 			break;
 
 		case 4:

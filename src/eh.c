@@ -36,14 +36,12 @@ __myevic__ void EventHandler()
 	unsigned int v45;
 	unsigned int v46;
 	unsigned int v47;
-	signed short v48;
 	unsigned int v53;
 	short v54;
 	unsigned int v57;
 	unsigned int v58;
 	unsigned int v59;
 	int v60;
-	signed short v61;
 
 	if ( Event == 0 )
 		return;
@@ -965,23 +963,20 @@ __myevic__ void EventHandler()
 					{
 						if ( dfIsCelsius )
 						{
-							v61 = dfTemp - 5;
-							if ( dfTemp - 5 < 100 )
+							dfTemp -= 1;
+							if ( dfTemp < 100 )
 							{
-								dfIsCelsius = 0;
-								v61 = 600;
+								dfTemp = 315;
 							}
 						}
 						else
 						{
-							v61 = dfTemp - 10;
-							if ( dfTemp - 10 < 200 )
+							dfTemp -= 5;
+							if ( dfTemp < 200 )
 							{
-								dfIsCelsius = 1;
-								v61 = 315;
+								dfTemp = 600;
 							}
 						}
-						dfTemp = v61;
 					}
 					else if ( dfMode == 6 )
 					{
@@ -1192,23 +1187,20 @@ __myevic__ void EventHandler()
 						case 3:
 							if ( dfIsCelsius )
 							{
-								v48 = dfTemp + 5;
-								if ( dfTemp + 5 >= 316 )
+								dfTemp += 1;
+								if ( dfTemp > 315 )
 								{
-									dfIsCelsius = 0;
-									v48 = 200;
+									dfTemp = 100;
 								}
 							}
 							else
 							{
-								v48 = dfTemp + 10;
-								if ( dfTemp + 10 > 600 )
+								dfTemp += 5;
+								if ( dfTemp > 600 )
 								{
-									dfIsCelsius = 1;
-									v48 = 100;
+									dfTemp = 200;
 								}
 							}
-							dfTemp = v48;
 							break;
 
 						case 4:

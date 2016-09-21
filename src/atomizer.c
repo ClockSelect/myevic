@@ -185,7 +185,7 @@ __myevic__ uint16_t GetAtoVWVolts( uint16_t pwr )
 //----- (00001334) --------------------------------------------------------
 __myevic__ uint16_t CelsiusToF( uint16_t tc )
 {
-  return ( tc * 9 ) / 5 + 32;
+	return ( tc * 9 ) / 5 + 32;
 }
 
 
@@ -193,7 +193,7 @@ __myevic__ uint16_t CelsiusToF( uint16_t tc )
 //----- (000022A8) --------------------------------------------------------
 __myevic__ uint16_t FarenheitToC( uint16_t tf )
 {
-  return ( 5 * ( tf - 32 )) / 9;
+	return ( 5 * ( tf - 32 )) / 9;
 }
 
 

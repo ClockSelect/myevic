@@ -29,7 +29,7 @@ uint16_t	KeyPressTime;
 
 //=============================================================================
 //----- (00003738) ------------------------------------------------------------
-// Called at 5Hz untill KeyTicks >= 5 (1s), then at 100Hz.
+// Called at 5Hz untill KeyTicks >= 5 (1.4s), then at 100Hz.
 
 __myevic__ void KeyRepeat()
 {
@@ -83,18 +83,42 @@ __myevic__ void KeyRepeat()
 				MainView();
 		}
 		KeyTicks = 0;
-		KRDelay = 0;
+		KRDelay = 3;
 	}
-	else if ( KRDelay >= 3 || ++KRDelay >= 3 )
+	else if ( !KRDelay || !--KRDelay )
 	{
-		if ( KeyTicks >= 105 )
+		// First event has been emitted by GetUserInput()
+
+		// Second event at +0.6s
+		// Next 4 events every .2s
+		// Next 100 events every .01s
+		// Following events every .03s
+
+	//	if ( KeyTicks >= 105 )
+	//	{
+	//		KRDelay = 0;
+	//	}
+	//	else
+	//	{
+	//		++KeyTicks;
+	//	}
+
+		// Second event at +0.6s
+		// Next 4 events every .2s (0.8s)
+		// Next 50 events every .05s (2.5s)
+		// Next 50 events every .03s (1.5s)
+		// Following events every .01s
+
+		if ( KeyTicks >= 5 && KeyTicks < 55 )
 		{
-			KRDelay = 0;
+			KRDelay = 5;
 		}
-		else
+		else if ( KeyTicks >= 55 && KeyTicks < 105 )
 		{
-			++KeyTicks;
+			KRDelay = 3;
 		}
+
+		++KeyTicks;
 
 		if ( !PD2 )
 		{

@@ -192,7 +192,7 @@ There's many more to LOGO and Game menus now. See below.
 
 * Interface
 
-    ![Interface menu screen](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/interface_zpshonj6isk.png)
+    ![Interface menu screen](http://i345.photobucket.com/albums/p374/ClockSelect/interface_zpspahdswto.png)
 
   * Batt%
 
@@ -209,6 +209,11 @@ There's many more to LOGO and Game menus now. See below.
   * Clock
 
         Change the format of the clock displayed on the main screen between a hand dial clock (A) and a digital clock with date and time (D).
+
+  * Temp
+
+        Choose once and for all your temperature unit, between °C and °F. Nobody needs to switch back and forth between standards. Moreover, Farenheit is not even a standard. Maybe I'll replace it by Kelvins one day.
+
 
 ### Build:
 Follow [evic-sdk::Readme] (https://github.com/ReservedField/evic-sdk/blob/master/README.md) instructions to:

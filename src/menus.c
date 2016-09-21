@@ -65,7 +65,7 @@ __myevic__ void IFMenuIDraw( int it, int line, int sel )
 		return;
 
 	DrawFillRect( 40, line, 63, line+12, 0 );
-	
+
 	switch ( it )
 	{
 		case 0:	// Batt%
@@ -84,6 +84,10 @@ __myevic__ void IFMenuIDraw( int it, int line, int sel )
 			DrawImage( 44, line+2, dfStatus.digclk ? 0x9F : 0x9C );
 			break;
 
+		case 4:	// Temp
+			DrawImage( 44, line+2, dfIsCelsius ? 0xC9 : 0xC8 );
+			break;
+
 		default:
 			break;
 	}
@@ -97,21 +101,40 @@ __myevic__ void IFMenuOnClick()
 		case 0:	// Batt%
 			dfStatus.battpc ^= 1;
 			break;
-		
+
 		case 1:	// 1Watt
 			dfStatus.onewatt ^= 1;
 			WattsInc = dfStatus.onewatt ? 10 : 1;
 			break;
-		
+
 		case 2:	// Font
 			dfStatus.font ^= 1;
 			DisplaySetFont();
 			break;
-		
+
 		case 3:	// Font
 			dfStatus.digclk ^= 1;
 			break;
-		
+
+		case 4:	// Temp
+			dfIsCelsius ^= 1;
+			if ( dfIsCelsius )
+			{
+				dfTemp = FarenheitToC( dfTemp );
+				if ( dfTemp < 100 ) dfTemp = 100;
+				if ( dfTemp > 315 ) dfTemp = 315;
+			}
+			else
+			{
+				dfTemp = CelsiusToF( dfTemp );
+				int rem = dfTemp % 5;
+				dfTemp -= rem;
+				if ( rem >= 3 ) dfTemp += 5;
+				if ( dfTemp < 200 ) dfTemp = 200;
+				if ( dfTemp > 600 ) dfTemp = 600;
+			}
+			break;
+
 		default: // Exit
 			UpdateDataFlash();
 			return;
@@ -137,7 +160,7 @@ __myevic__ void PreheatIDraw( int it, int line, int sel )
 			DrawImage( 54, line+2, dfStatus.phpct ? 0xC2 : 0x98 );
 			return;
 
-		case 1 : 
+		case 1 :
 			v = dfPreheatPwr;
 			nd = ( v < 100 ) ? 2 : 3;
 			dp = ( v < 1000 ) ? 1 : 0;
@@ -151,7 +174,7 @@ __myevic__ void PreheatIDraw( int it, int line, int sel )
 			}
 			break;
 
-		case 2 : 
+		case 2 :
 			v = dfPreheatTime / 10;
 			dp = 1;
 			nd = 2;
@@ -388,12 +411,12 @@ __myevic__ void ExpertMenuOnClick()
 			if ( ! dfStatus.dbgena ) gFlags.debug = 0;
 			gFlags.refresh_display = 1;
 			break;
-			
+
 		case 2:
 			dfStatus.x32off ^= 1;
 			gFlags.refresh_display = 1;
 			break;
-			
+
 		case 3:
 			UpdateDataFlash();
 			InitUSB();
@@ -992,12 +1015,13 @@ const menu_t IFMenu =
 	0,
 	IFMenuOnClick+1,
 	0,
-	5,
+	6,
 	{
 		{ String_BattPC, 0, -1, 0 },
 		{ String_1Watt, 0, -1, 0 },
 		{ String_Font, 0, -1, 0 },
 		{ String_Clock, 0, -1, 0 },
+		{ String_Temp, 0, -1, 0 },
 		{ String_Exit, 0, 1, 0 }
 	}
 };
@@ -1198,7 +1222,7 @@ __myevic__ int MenuEvent( int event )
 				case 59:
 					CurrentMenu = &CoilsMenu;
 					break;
-					
+
 				case 101:
 					CurrentMenu = &ScreenMenu;
 					break;

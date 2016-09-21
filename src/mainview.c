@@ -562,7 +562,7 @@ __myevic__ void ShowMainView()
 			{
 				if ( dfStatus.digclk )
 				{
-					DrawDigitClock( 71 );
+					DrawDigitClock( 63 );
 				}
 				else
 				{
@@ -612,6 +612,6 @@ __myevic__ void DrawDigitClock( int line )
 	S_RTC_TIME_DATA_T rtd;
 	GetRTC( &rtd );
 
-	DrawTime( 6, line-8, &rtd, 0x1F );
-	DrawDate( 4, line+8, &rtd, 0x1F );
+	DrawTime( 5, line,    &rtd, 0x1F );
+	DrawDate( 4, line+16, &rtd, 0x1F );
 }
