@@ -20,6 +20,7 @@
 #define PID_EVICAIO		(*(uint32_t*)"E092")
 #define PID_EGRIPII		(*(uint32_t*)"E083")
 #define PID_CUBOMINI	(*(uint32_t*)"E056")
+#define PID_EVICBASIC	(*(uint32_t*)"E150")
 
 #define ISVTCMINI	(!gFlags.is_vtwo && gFlags.is_mini)
 #define ISVTWOMINI	(gFlags.is_vtwo && gFlags.is_mini)
@@ -28,6 +29,7 @@
 #define ISEVICAIO	(gFlags.is_evicaio)
 #define ISEGRIPII	(gFlags.is_egrip2)
 #define ISCUBOMINI	(gFlags.is_cuboid && gFlags.is_mini)
+#define ISEVICBASIC	(gFlags.is_evicbasic)
 
 #define MAXPWRLIMIT (gFlags.is_mini?600:700)
 
@@ -86,6 +88,7 @@ typedef struct
 	int is_evicaio:1;
 	int is_egrip2:1;
 	int is_cuboid:1;
+	int is_evicbasic:1;
 	int debug:1;
 	int noclock:1;
 }

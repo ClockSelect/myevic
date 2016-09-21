@@ -95,6 +95,14 @@ __myevic__ void SetProductID()
 			gFlags.is_cuboid = 1;
 			break;
 		}
+		else if ( u32Data == PID_EVICBASIC )
+		{
+			dfProductID = u32Data;
+			dfMaxHWVersion = 0x00010001;
+			MagicNumber = 0x13;
+			gFlags.is_evicbasic = 1;
+			break;
+		}
 	}
 
 	FMC_DISABLE_ISP();
@@ -637,7 +645,7 @@ __myevic__ void InitDataFlash()
 
 	SetProductID();
 
-	if ( ISVTWO || ISEVICAIO || ISCUBOMINI )
+	if ( ISVTWO || ISEVICAIO || ISCUBOMINI || ISEVICBASIC )
 	{
 		switch ( dfHWVersion )
 		{
@@ -692,7 +700,7 @@ __myevic__ void InitDataFlash()
 	{
 		AtoShuntRez = 115;
 	}
-	else if ( ISEGRIPII )
+	else if ( ISEGRIPII || ISEVICBASIC )
 	{
 		AtoShuntRez = 120;
 	}
@@ -747,7 +755,12 @@ __myevic__ void InitDataFlash()
 
 	MaxVolts	= 900;
 
-	if ( gFlags.is_mini )
+	if ( ISEVICBASIC )
+	{
+		MaxPower	= 600;
+		MaxTCPower	= 600;
+	}
+	else if ( gFlags.is_mini )
 	{
 		MaxPower	= 750;
 		MaxTCPower	= 750;
