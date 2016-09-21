@@ -5,6 +5,7 @@ This is My eVic VTC Mini.
 * eVic VTC Mini
 * eVic VTwo Mini
 * eVic VTwo
+* eVic AIO
 * Wismec Presa 75W
 
 

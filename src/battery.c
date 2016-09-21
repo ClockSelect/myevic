@@ -119,7 +119,7 @@ __myevic__ void ReadBatteryVoltage()
 	{
 		while ( VbatSampleCnt < 16 )
 		{
-			if ( ISVTWOMINI )
+			if ( ISVTWOMINI || ISEVICAIO )
 			{
 				VbatSampleSum += ADC_Read( 0 );
 			}

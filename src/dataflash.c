@@ -71,6 +71,14 @@ __myevic__ void SetProductID()
 			gFlags.is_presa = 1;
 			break;
 		}
+		else if ( u32Data == PID_EVICAIO )
+		{
+			dfProductID = u32Data;
+			dfMaxHWVersion = 0x00010001;
+			MagicNumber = 0x50;
+			gFlags.is_evicaio = 1;
+			break;
+		}
 	}
 
 	FMC_DISABLE_ISP();
@@ -613,7 +621,7 @@ __myevic__ void InitDataFlash()
 
 	SetProductID();
 
-	if ( ISVTWO )
+	if ( ISVTWO || ISEVICAIO )
 	{
 		switch ( dfHWVersion )
 		{
@@ -660,7 +668,7 @@ __myevic__ void InitDataFlash()
 		}
 	}
 
-	if ( ISPRESA75W )
+	if ( ISPRESA75W || ISEVICAIO )
 	{
 		AtoShuntRez = 100;
 	}
