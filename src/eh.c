@@ -98,14 +98,16 @@ __myevic__ void EventHandler()
 				UpdateDataFlash();
 			}
 
-			if ( EditModeTimer )
+			if ( Screen == 1 )
 			{
-				EditModeTimer = 0;
-				gFlags.draw_edited_item = 1;
-				UpdateDFTimer = 50;
+				if ( EditModeTimer )
+				{
+					EditModeTimer = 0;
+					gFlags.edit_capture_evt = 0;
+					gFlags.draw_edited_item = 1;
+					UpdateDFTimer = 50;
+				}
 			}
-
-			gFlags.edit_capture_evt = 0;
 
 			if ( gFlags.firing )
 			{
@@ -742,12 +744,15 @@ __myevic__ void EventHandler()
 				gFlags.sample_vbat = 1;
 				ReadBatteryVoltage();
 			}
-			if ( EditModeTimer )
+			if ( Screen == 1 )
 			{
-				EditModeTimer = 0;
-				gFlags.edit_capture_evt = 0;
-				gFlags.draw_edited_item = 1;
-				UpdateDFTimer = 50;
+				if ( EditModeTimer )
+				{
+					EditModeTimer = 0;
+					gFlags.edit_capture_evt = 0;
+					gFlags.draw_edited_item = 1;
+					UpdateDFTimer = 50;
+				}
 			}
 			MainView();
 			return;

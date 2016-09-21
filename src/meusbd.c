@@ -670,7 +670,6 @@ __myevic__ uint32_t hidResetParamCmd( CMD_T *pCmd )
 {
 	myprintf("Reset param\n");
 	ResetDataFlash();
-	UpdateDataFlash();
 	gFlags.refresh_display = 1;
 	pCmd->u8Cmd = HID_CMD_NONE;
 	return 0;
@@ -681,6 +680,10 @@ __myevic__ uint32_t hidResetParamCmd( CMD_T *pCmd )
 __myevic__ uint32_t hidResetSysCmd( CMD_T *pCmd )
 {
 	myprintf("Reset system command\n");
+
+	if ( UpdateDFTimer ) UpdateDataFlash();
+	if ( UpdatePTTimer ) UpdatePTCounters();
+
 	SYS_UnlockReg();
 	SYS_ResetChip();
 	while ( 1 )

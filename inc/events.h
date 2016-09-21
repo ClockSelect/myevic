@@ -65,9 +65,15 @@ extern uint8_t	LastEvent;
 #define EVENT_LONG_FIRE		104
 #define EVENT_EXITMENUS		105
 #define EVENT_PARENTMENU	106
+#define EVENT_SETTIME		107
+#define EVENT_SETDATE		108
 
 
 //==============================================================================
+
+extern S_RTC_TIME_DATA_T SetTimeRTD;
+
+//------------------------------------------------------------------------------
 
 extern void KeyRepeat();
 extern void GetUserInput();

@@ -44,6 +44,21 @@ unsigned char CurrentMenuItem;
 
 //-----------------------------------------------------------------------------
 
+__myevic__ void ClockMenuOnClick()
+{
+	if ( CurrentMenuItem == 0 )
+	{
+		Event = EVENT_SETTIME;
+	}
+	else if ( CurrentMenuItem == 1 )
+	{
+		Event = EVENT_SETDATE;
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+
 __myevic__ void IFMenuIDraw( int it, int line, int sel )
 {
 	if ( it > CurrentMenu->nitems - 2 )
@@ -63,6 +78,10 @@ __myevic__ void IFMenuIDraw( int it, int line, int sel )
 
 		case 2:	// Font
 			DrawImage( 44, line+2, dfStatus.font ? 0x9D : 0x9C );
+			break;
+
+		case 3:	// Clock
+			DrawImage( 44, line+2, dfStatus.digclk ? 0x9F : 0x9C );
 			break;
 
 		default:
@@ -89,7 +108,11 @@ __myevic__ void IFMenuOnClick()
 			DisplaySetFont();
 			break;
 		
-		case 3:	// Exit
+		case 3:	// Font
+			dfStatus.digclk ^= 1;
+			break;
+		
+		default: // Exit
 			UpdateDataFlash();
 			return;
 	}
@@ -702,169 +725,6 @@ __myevic__ int CoilsMEvent( int event )
 
 //-----------------------------------------------------------------------------
 
-signed char dt_sel = 0;
-S_RTC_TIME_DATA_T rtd;
-
-__myevic__ void DTMenuOnEnter()
-{
-	dt_sel = 2;
-
-	GetRTC( &rtd );
-
-	ScreenDuration = 120;
-}
-
-__myevic__ void DTMenuIDraw( int it, int line, int sel )
-{
-	int colors = sel ? 0x1F & ~(1<<(dt_sel<<1)) : 0x1F;
-
-	switch ( it )
-	{
-		case 0:
-			DrawTimeSmall( 12, line+2, &rtd, colors );
-			break;
-
-		case 1:
-			DrawDate( 4, line+2, &rtd, colors );
-			break;
-		
-		default:
-			break;
-	}
-	
-	ScreenRefreshTimer = 5;
-}
-
-__myevic__ int DTMenuOnEvent( int event )
-{
-	int vret = 0;
-
-	ScreenDuration = 120;
-
-	switch ( event )
-	{
-		case 1:
-			switch ( CurrentMenuItem )
-			{
-				case 0:
-				case 1:
-					if ( --dt_sel < 0 )
-					{
-						dt_sel = 2;
-						++CurrentMenuItem;
-					}
-					gFlags.refresh_display = 1;
-					vret = 1;
-					break;
-
-				case 3:
-					{
-						SetRTC( &rtd );
-					}
-					break;
-
-				default:
-					break;
-			}
-			break;
-
-		case 2:
-			switch ( CurrentMenuItem )
-			{
-				case 0:
-					switch ( dt_sel )
-					{
-						case 0:
-							++rtd.u32Second;
-							rtd.u32Second %= 60;
-							break;
-						case 1:
-							++rtd.u32Minute;
-							rtd.u32Minute %= 60;
-							break;
-						case 2:
-							++rtd.u32Hour;
-							rtd.u32Hour %= 24;
-							break;
-					}
-					gFlags.refresh_display = 1;
-					vret = 1;
-					break;
-
-				case 1:
-					switch ( dt_sel )
-					{
-						case 0:
-							if ( rtd.u32Year < RTC_YEAR2000 + 1000 ) ++rtd.u32Year;
-							break;
-						case 1:
-							rtd.u32Month = rtd.u32Month %12 + 1;
-							break;
-						case 2:
-							rtd.u32Day = rtd.u32Day %31 + 1;
-							break;
-					}
-					gFlags.refresh_display = 1;
-					vret = 1;
-					break;
-
-				default:
-					break;
-			}
-			break;
-
-		case 3:
-			switch ( CurrentMenuItem )
-			{
-				case 0:
-					switch ( dt_sel )
-					{
-						case 0:
-							rtd.u32Second = ( rtd.u32Second + 59 ) % 60;
-							break;
-						case 1:
-							rtd.u32Minute = ( rtd.u32Minute + 59 ) % 60;
-							break;
-						case 2:
-							rtd.u32Hour = ( rtd.u32Hour + 23 ) % 24;
-							break;
-					}
-					gFlags.refresh_display = 1;
-					vret = 1;
-					break;
-
-				case 1:
-					switch ( dt_sel )
-					{
-						case 0:
-							if ( rtd.u32Year > RTC_YEAR2000 ) --rtd.u32Year;
-							break;
-						case 1:
-							rtd.u32Month = ( rtd.u32Month+11 ) %12;
-							break;
-						case 2:
-							rtd.u32Day = ( rtd.u32Day + 30 ) %31;
-							break;
-					}
-					gFlags.refresh_display = 1;
-					vret = 1;
-					break;
-
-				default:
-					break;
-			}
-			break;
-
-		default:
-			break;
-	}
-
-	return vret;
-}
-
-
-//-----------------------------------------------------------------------------
-
 __myevic__ void ScreenIClick()
 {
 	if ( CurrentMenu->mitems[CurrentMenuItem].screen == 101 )
@@ -872,6 +732,7 @@ __myevic__ void ScreenIClick()
 		gFlags.edit_capture_evt = 1;
 	}
 }
+
 
 //-----------------------------------------------------------------------------
 // Forward declarations for parent menu pointers
@@ -1030,24 +891,6 @@ const menu_t MiscsMenu =
 	}
 };
 
-const menu_t TimeMenu =
-{
-	String_DateTime,
-	&ClockMenu,
-	DTMenuOnEnter+1,
-	DTMenuIDraw+1,
-	0,
-	0,
-	DTMenuOnEvent+1,
-	4,
-	{
-		{ 0, 0, -1, 0 },
-		{ 0, 0, -1, 0 },
-		{ String_Cancel, 0, 1, 0 },
-		{ String_Save, 0, 1, 0 }
-	}
-};
-
 const menu_t ClockMenu =
 {
 	String_Clock,
@@ -1055,11 +898,12 @@ const menu_t ClockMenu =
 	0,
 	0,
 	0,
+	ClockMenuOnClick+1,
 	0,
-	0,
-	4,
+	5,
 	{
-		{ String_DateTime, &TimeMenu, -1, 0 },
+		{ String_SetTime, 0, -1, 0 },
+		{ String_SetDate, 0, -1, 0 },
 		{ String_ClkAdjust, 0, 104, 120 },
 		{ String_ClkSpeed, 0, 103, 120 },
 		{ String_Exit, 0, 1, 0 }
@@ -1148,11 +992,12 @@ const menu_t IFMenu =
 	0,
 	IFMenuOnClick+1,
 	0,
-	4,
+	5,
 	{
 		{ String_BattPC, 0, -1, 0 },
 		{ String_1Watt, 0, -1, 0 },
 		{ String_Font, 0, -1, 0 },
+		{ String_Clock, 0, -1, 0 },
 		{ String_Exit, 0, 1, 0 }
 	}
 };
@@ -1367,6 +1212,8 @@ __myevic__ int MenuEvent( int event )
 
 				case 103:
 				case 104:
+				case 105:
+				case 106:
 					CurrentMenu = &ClockMenu;
 					break;
 

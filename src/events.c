@@ -50,7 +50,7 @@ __myevic__ void KeyRepeat()
 		if ( Screen != 59 )
 			return;
 	}
-	else if ( EditModeTimer )
+	else if ( EditModeTimer && ( Screen == 1 ) )
 	{
 		if ( EditItemIndex != 2 )
 			return;
@@ -310,14 +310,14 @@ __myevic__ void GetUserInput()
 	{
 		if ( UserInputs == 4 )
 		{
-			if ( Screen == 59 || ( Screen >= 101 && Screen <= 104 ) )
+			if ( Screen == 59 || ( Screen >= 101 && Screen <= 106 ) )
 			{
 				Event = EVENT_PARENTMENU;
 			}
 		}
 		else if ( UserInputs == 5 )
 		{
-			if ( Screen == 59 || ( Screen >= 101 && Screen <= 104 ) )
+			if ( Screen == 59 || ( Screen >= 101 && Screen <= 106 ) )
 			{
 				Event = EVENT_EXITMENUS;
 			}
@@ -327,23 +327,7 @@ __myevic__ void GetUserInput()
 	{
 		if ( UserInputs == 1 )
 		{
-			if ( Screen == 59 )
-			{
-				UpdateDataFlash();
-				if ( dfStatus.off )
-				{
-					gFlags.refresh_display = 1;
-					Screen = 0;
-				}
-				else
-				{
-					MainView();
-				}
-			}
-			else if ( Screen == 102 )
-			{
-				Event = EVENT_LONG_FIRE;
-			}
+			Event = EVENT_LONG_FIRE;
 		}
 		else if ( UserInputs == 4 )
 		{
@@ -357,7 +341,7 @@ __myevic__ void GetUserInput()
 			else
 			{
 				EditModeTimer = 1000;
-				if ( EditItemIndex == 4 )
+				if (( Screen == 1 ) && ( EditItemIndex == 4 ))
 				{
 					if ( dfAPT == 1 )
 						Event = 22;	// puff reset
@@ -479,6 +463,17 @@ __myevic__ int EvtFire()
 			MainView();
 			vret = 1;
 		}
+		break;
+
+		case 105:
+		case 106:
+		{
+			EditModeTimer = 6000;
+			if ( --EditItemIndex > 2 ) EditItemIndex = 2;
+			gFlags.draw_edited_item = 1;
+			vret = 1;
+		}
+		break;
 	}
 
 	return vret;
@@ -502,6 +497,8 @@ __myevic__ int EvtSingleFire()
 		case 101:
 		case 103:
 		case 104:
+		case 105:
+		case 106:
 		{
 			vret = 1;
 		}
@@ -630,6 +627,53 @@ __myevic__ int EvtPlusButton()
 			vret = 1;
 		}
 		break;
+
+		case 105:
+		{
+			switch ( EditItemIndex )
+			{
+				case 0:
+					++SetTimeRTD.u32Second;
+					SetTimeRTD.u32Second %= 60;
+					break;
+				case 1:
+					++SetTimeRTD.u32Minute;
+					SetTimeRTD.u32Minute %= 60;
+					break;
+				case 2:
+					++SetTimeRTD.u32Hour;
+					SetTimeRTD.u32Hour %= 24;
+					break;
+			}
+			gFlags.draw_edited_item = 1;
+			gFlags.refresh_display = 1;
+			ScreenDuration = 60;
+			EditModeTimer = 6000;
+			vret = 1;
+		}
+		break;
+
+		case 106:
+		{
+			switch ( EditItemIndex )
+			{
+				case 0:
+					if ( SetTimeRTD.u32Year < RTC_YEAR2000 + 1000 ) ++SetTimeRTD.u32Year;
+					break;
+				case 1:
+					SetTimeRTD.u32Month = SetTimeRTD.u32Month %12 + 1;
+					break;
+				case 2:
+					SetTimeRTD.u32Day = SetTimeRTD.u32Day %31 + 1;
+					break;
+			}
+			gFlags.draw_edited_item = 1;
+			gFlags.refresh_display = 1;
+			ScreenDuration = 60;
+			EditModeTimer = 6000;
+			vret = 1;
+		}
+		break;
 	}
 
 	return vret;
@@ -696,6 +740,50 @@ __myevic__ int EvtMinusButton()
 			vret = 1;
 		}
 		break;
+
+		case 105:
+		{
+			switch ( EditItemIndex )
+			{
+				case 0:
+					SetTimeRTD.u32Second = ( SetTimeRTD.u32Second + 59 ) % 60;
+					break;
+				case 1:
+					SetTimeRTD.u32Minute = ( SetTimeRTD.u32Minute + 59 ) % 60;
+					break;
+				case 2:
+					SetTimeRTD.u32Hour = ( SetTimeRTD.u32Hour + 23 ) % 24;
+					break;
+			}
+			gFlags.draw_edited_item = 1;
+			gFlags.refresh_display = 1;
+			ScreenDuration = 60;
+			EditModeTimer = 6000;
+			vret = 1;
+		}
+		break;
+
+		case 106:
+		{
+			switch ( EditItemIndex )
+			{
+				case 0:
+					if ( SetTimeRTD.u32Year > RTC_YEAR2000 ) --SetTimeRTD.u32Year;
+					break;
+				case 1:
+					SetTimeRTD.u32Month = ( SetTimeRTD.u32Month+11 ) %12;
+					break;
+				case 2:
+					SetTimeRTD.u32Day = ( SetTimeRTD.u32Day + 30 ) %31;
+					break;
+			}
+			gFlags.draw_edited_item = 1;
+			gFlags.refresh_display = 1;
+			ScreenDuration = 60;
+			EditModeTimer = 6000;
+			vret = 1;
+		}
+		break;
 	}
 
 	return vret;
@@ -706,7 +794,7 @@ __myevic__ int EvtMinusButton()
 __myevic__ int EvtDoubleFire()
 {
 //	ShowDateFlag = 3;
-	dfStatus.anaclk ^= 1;
+	dfStatus.clock ^= 1;
 	UpdateDFTimer = 50;
 	gFlags.refresh_display = 1;
 	return 1;
@@ -736,8 +824,40 @@ __myevic__ int EvtLongFire()
 
 	switch ( Screen )
 	{
+		case  59:
+			UpdateDataFlash();
+			if ( dfStatus.off )
+			{
+				gFlags.refresh_display = 1;
+				Screen = 0;
+			}
+			else
+			{
+				MainView();
+			}
+			vret = 1;
+			break;
+
 		case 102:
 			vret = MenuEvent( LastEvent );
+			break;
+		
+		case 106:
+		{
+			S_RTC_TIME_DATA_T rtd;
+
+			GetRTC( &rtd );
+			SetTimeRTD.u32Hour = rtd.u32Hour;
+			SetTimeRTD.u32Minute = rtd.u32Minute;
+			SetTimeRTD.u32Second = rtd.u32Second;
+			// NOBREAK
+		}
+
+		case 105:
+			SetRTC( &SetTimeRTD );
+			EditModeTimer = 0;
+			MainView();
+			vret = 1;
 			break;
 	}
 
@@ -752,11 +872,13 @@ __myevic__ int EvtExitMenus()
 
 	switch ( Screen )
 	{
-		case 59:
+		case  59:
 		case 101:
 		case 102:
 		case 103:
 		case 104:
+		case 105:
+		case 106:
 			vret = MenuEvent( LastEvent );
 			break;
 	}
@@ -772,11 +894,13 @@ __myevic__ int EvtParentMenu()
 
 	switch ( Screen )
 	{
-		case 59:
+		case  59:
 		case 101:
 		case 102:
 		case 103:
 		case 104:
+		case 105:
+		case 106:
 			vret = MenuEvent( LastEvent );
 			break;
 	}
@@ -803,6 +927,32 @@ __myevic__ int EvtEnterMenus()
 	Screen = 102;
 	ScreenDuration = 10;
 	gFlags.refresh_display = 1;
+	return 1;
+}
+
+//-----------------------------------------------------------------------------
+
+S_RTC_TIME_DATA_T SetTimeRTD;
+
+__myevic__ int EvtSetTime()
+{
+	GetRTC( &SetTimeRTD );
+	Screen = 105;
+	ScreenDuration = 60;
+	gFlags.refresh_display = 1;
+	EditItemIndex = 2;
+	EditModeTimer = 6000;
+	return 1;
+}
+
+__myevic__ int EvtSetDate()
+{
+	GetRTC( &SetTimeRTD );
+	Screen = 106;
+	ScreenDuration = 60;
+	gFlags.refresh_display = 1;
+	EditItemIndex = 2;
+	EditModeTimer = 6000;
 	return 1;
 }
 
@@ -858,6 +1008,14 @@ __myevic__ int CustomEvents()
 
 		case EVENT_PARENTMENU:
 			vret = EvtParentMenu();
+			break;
+
+		case EVENT_SETTIME:
+			vret = EvtSetTime();
+			break;
+
+		case EVENT_SETDATE:
+			vret = EvtSetDate();
 			break;
 
 		default:

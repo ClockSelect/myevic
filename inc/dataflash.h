@@ -45,7 +45,7 @@ typedef struct
 	int	keylock:1;
 	int	flipped:1;
 	int	nologo:1;
-	int anaclk:1;
+	int clock:1;
 	int vcom:1;
 	int storage:1;
 	int dbgena:1;
@@ -54,6 +54,7 @@ typedef struct
 	int battpc:1;
 	int onewatt:1;
 	int font:1;
+	int digclk:1;
 }
 dfStatus_t;
 
@@ -290,6 +291,7 @@ extern void InitDataFlash();
 extern void ResetDataFlash();
 extern void DFCheckValuesValidity();
 extern void UpdateDataFlash();
+extern void UpdatePTCounters();
 extern void DataFlashUpdateTick();
 
 //-------------------------------------------------------------------------

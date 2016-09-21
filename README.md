@@ -124,7 +124,7 @@ There's many more to LOGO and Game menus now. See below.
   * Date/Time
 
         Setup date and time.
-        Fire change edited field, + and - set value.
+        Fire change edited field, + and - set value, and long click on fire saves the setting. Since you need to click 2 seconds on the fire button to save, setup the time 2 seconds in advance if you want to achieve best accuracy. I know...
 
   * Clk Adjust
 
@@ -192,7 +192,7 @@ There's many more to LOGO and Game menus now. See below.
 
 * Interface
 
-    ![Interface menu screen](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/interface_zpsliz14bup.png)
+    ![Interface menu screen](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/interface_zpshonj6isk.png)
 
   * Batt%
 
@@ -206,6 +206,9 @@ There's many more to LOGO and Game menus now. See below.
 
         Change the display font. The font A is the new bold cool-looking font, font B is the guenuine Joyetech's font.
 
+  * Clock
+
+        Change the format of the clock displayed on the main screen between a hand dial clock (A) and a digital clock with date and time (D).
 
 ### Build:
 Follow [evic-sdk::Readme] (https://github.com/ReservedField/evic-sdk/blob/master/README.md) instructions to:

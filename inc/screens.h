@@ -58,6 +58,8 @@ extern void ShowMenus();
 extern void ShowRTCSpeed();
 extern void ShowRTCAdjust();
 extern void ShowScreenSaver();
+extern void ShowSetTime();
+extern void ShowSetDate();
 
 extern uint16_t GetScreenProtection();
 extern uint16_t GetMainScreenDuration();
@@ -183,6 +185,9 @@ extern const uint16_t String_Interface[];
 extern const uint16_t String_BattPC[];
 extern const uint16_t String_1Watt[];
 extern const uint16_t String_Font[];
+extern const uint16_t String_Date[];
+extern const uint16_t String_SetTime[];
+extern const uint16_t String_SetDate[];
 
 
 //==============================================================================

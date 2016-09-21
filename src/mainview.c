@@ -558,10 +558,17 @@ __myevic__ void ShowMainView()
 			{
 				anim3d( 1 );
 			}
-			else if ( dfStatus.anaclk )
+			else if ( dfStatus.clock )
 			{
-				DrawFillRect( 0, 44, 63, 127, 0 );
-				DrawClock( 54 );
+				if ( dfStatus.digclk )
+				{
+					DrawDigitClock( 71 );
+				}
+				else
+				{
+					DrawFillRect( 0, 44, 63, 127, 0 );
+					DrawClock( 54 );
+				}
 			}
 			else
 			{
@@ -605,6 +612,6 @@ __myevic__ void DrawDigitClock( int line )
 	S_RTC_TIME_DATA_T rtd;
 	GetRTC( &rtd );
 
-	DrawTime(6, line-8, &rtd, 0x1F);
-	DrawDate(4, line+8, &rtd, 0x1F);
+	DrawTime( 6, line-8, &rtd, 0x1F );
+	DrawDate( 4, line+8, &rtd, 0x1F );
 }

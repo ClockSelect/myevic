@@ -8,6 +8,7 @@
 #include "timers.h"
 #include "battery.h"
 #include "miscs.h"
+#include "events.h"
 
 
 //=========================================================================
@@ -172,6 +173,14 @@ __myevic__ void DrawScreen()
 				ShowRTCAdjust();
 				break;
 
+			case 105:
+				ShowSetTime();
+				break;
+
+			case 106:
+				ShowSetDate();
+				break;
+
 			default:
 				break;
 		}
@@ -266,6 +275,9 @@ __myevic__ void DrawScreen()
 		case 101: // Contrast Menu
 		case 102: // Menus
 		case 103: // RTC Speed
+		case 104: // Adjust Clock
+		case 105: // Set Time
+		case 106: // Set Date
 			gFlags.edit_capture_evt = 0;
 			// NOBREAK
 		case  59: // TCR Set Menu
@@ -278,7 +290,6 @@ __myevic__ void DrawScreen()
 		case  41: // Ti ON/OFF
 		case  54: // Battery Voltage
 		case 100: // Infos page
-		case 104: // Adjust Clock
 			if ( !(gFlags.battery_charging) )
 			{
 				Screen = 0;
@@ -434,7 +445,7 @@ __myevic__ void ShowRTCSpeed()
 __myevic__ int IsClockOnScreen()
 {
 	return (  ((( Screen == 1 ) || ( Screen == 2 )) && ( dfAPT == 6 ))
-			|| (( Screen == 1 ) && ( dfStatus.anaclk ))
+			|| (( Screen == 1 ) && ( dfStatus.clock ))
 			|| (( Screen == 60 ) && (( dfScreenSaver == 2 ) || ( dfScreenSaver == 3 )))
 			||  ( Screen == 103 )
 			||  ( Screen == 104 )
@@ -922,3 +933,28 @@ __myevic__ void AnimateScreenSaver()
 	}
 }
 
+
+//=========================================================================
+__myevic__ void ShowSetTime()
+{
+	DrawString( String_SetTime, 4, 6 );
+	DrawHLine( 0, 16, 63, 1 );
+
+	DrawTime( 6, 46, &SetTimeRTD, 0x1F & ~( 1 << ( EditItemIndex << 1 ) ) );
+	DrawDate( 4, 64, &SetTimeRTD, 0x1F );
+}
+
+
+//=========================================================================
+__myevic__ void ShowSetDate()
+{
+	S_RTC_TIME_DATA_T rtd;
+
+	GetRTC( &rtd );
+
+	DrawString( String_SetDate, 4, 6 );
+	DrawHLine( 0, 16, 63, 1 );
+
+	DrawTime( 6, 46, &rtd, 0x1F );
+	DrawDate( 4, 64, &SetTimeRTD, 0x1F & ~( 1 << ( EditItemIndex << 1 ) ) );
+}

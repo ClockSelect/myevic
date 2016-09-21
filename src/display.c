@@ -112,12 +112,7 @@ __myevic__ void DisplaySetContrast( const uint8_t c )
 
 __myevic__ void DrawTimeSmall( int x, int y, S_RTC_TIME_DATA_T *rtd, int colors )
 {
-//	(colors&0x10?DrawValue+1:DrawValueInv+1)( x   , y, rtd->u32Hour, 0, 0x0B, 2 );
-//	(colors&0x08?DrawImage+1:DrawImageInv+1)( x+12, y, 0x103 );
-//	(colors&0x04?DrawValue+1:DrawValueInv+1)( x+14, y, rtd->u32Minute, 0, 0x0B, 2 );
-//	(colors&0x02?DrawImage+1:DrawImageInv+1)( x+26, y, 0x103 );
-//	(colors&0x01?DrawValue+1:DrawValueInv+1)( x+28, y, rtd->u32Second, 0, 0x0B, 2 );
-	if ( gFlags.osc_1hz ) colors = 0x1F;
+	if ( gFlags.draw_edited_item ) colors = 0x1F;
 	if (colors&0x10) DrawValue( x   , y, rtd->u32Hour, 0, 0x0B, 2 );
 	if (colors&0x08) DrawImage( x+12, y, 0x103 );
 	if (colors&0x04) DrawValue( x+14, y, rtd->u32Minute, 0, 0x0B, 2 );
@@ -127,12 +122,7 @@ __myevic__ void DrawTimeSmall( int x, int y, S_RTC_TIME_DATA_T *rtd, int colors 
 
 __myevic__ void DrawTime( int x, int y, S_RTC_TIME_DATA_T *rtd, int colors )
 {
-//	(colors&0x10?DrawValue+1:DrawValueInv+1)( x   , y, rtd->u32Hour, 0, 0x1F, 2 );
-//	(colors&0x08?DrawImage+1:DrawImageInv+1)( x+16, y, 0xDD );
-//	(colors&0x04?DrawValue+1:DrawValueInv+1)( x+19, y, rtd->u32Minute, 0, 0x1F, 2 );
-//	(colors&0x02?DrawImage+1:DrawImageInv+1)( x+35, y, 0xDD );
-//	(colors&0x01?DrawValue+1:DrawValueInv+1)( x+38, y, rtd->u32Second, 0, 0x1F, 2 );
-	if ( gFlags.osc_1hz ) colors = 0x1F;
+	if ( gFlags.draw_edited_item ) colors = 0x1F;
 	if (colors&0x10) DrawValue( x   , y, rtd->u32Hour, 0, 0x1F, 2 );
 	if (colors&0x08) DrawImage( x+16, y, 0xDD );
 	if (colors&0x04) DrawValue( x+19, y, rtd->u32Minute, 0, 0x1F, 2 );
@@ -142,12 +132,7 @@ __myevic__ void DrawTime( int x, int y, S_RTC_TIME_DATA_T *rtd, int colors )
 
 __myevic__ void DrawDate( int x, int y, S_RTC_TIME_DATA_T *rtd, int colors )
 {
-//	(colors&0x10?DrawValue+1:DrawValueInv+1)( x   , y, rtd->u32Day, 0, 0x0B, 2 );
-//	(colors&0x08?DrawImage+1:DrawImageInv+1)( x+12, y, 0x102 );
-//	(colors&0x04?DrawValue+1:DrawValueInv+1)( x+16, y, rtd->u32Month, 0, 0x0B, 2 );
-//	(colors&0x02?DrawImage+1:DrawImageInv+1)( x+28, y, 0x102 );
-//	(colors&0x01?DrawValue+1:DrawValueInv+1)( x+32, y, rtd->u32Year, 0, 0x0B, 4 );
-	if ( gFlags.osc_1hz ) colors = 0x1F;
+	if ( gFlags.draw_edited_item ) colors = 0x1F;
 	if (colors&0x10) DrawValue( x   , y, rtd->u32Day, 0, 0x0B, 2 );
 	if (colors&0x08) DrawImage( x+12, y, 0x102 );
 	if (colors&0x04) DrawValue( x+16, y, rtd->u32Month, 0, 0x0B, 2 );

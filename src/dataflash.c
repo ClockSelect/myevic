@@ -147,7 +147,7 @@ __myevic__ void FMCReadCounters()
 
 //=============================================================================
 //----- (000020CC) --------------------------------------------------------
-__myevic__ void FMCWriteCounters()
+__myevic__ void UpdatePTCounters()
 {
 	SYS_UnlockReg();
 	FMC_ENABLE_ISP();
@@ -199,59 +199,72 @@ __myevic__ void ResetDataFlash()
 	int hwv;
 
 	hwv = dfHWVersion;
-//	if ( hwv < 100 || hwv > 111 ) hwv = 100;
 	MemClear( DataFlash.params, DATAFLASH_PARAMS_SIZE );
 	dfHWVersion = hwv;
+
+	// Parameters whose reset value is zero are commented out
+	// since we start by clearing the memory.
+
 	dfMagic = MagicNumber;
 	dfMode = 4;
 	dfVWVolts = 330;
-	dfPower = MaxPower;
-	dfTCPower = MaxTCPower;
-	dfPuffCount = 0;
-	dfTimeCount = 0;
-	dfIsCelsius = 0;
+	dfPower = 200;
+	dfTCPower = 200;
+	dfIsCelsius = 1;
 	dfRezType = 1;
 	dfTempAlgo = 1;
-	dfTemp = 450;
-	dfResistance = 0;
-	dfStealthOn = 0;
+	dfTemp = 210;
+//	dfResistance = 0;
+//	dfStealthOn = 0;
 	dfUIVersion = 2;
-	dfAPT = 0;
-	dfRezTI = 0;
-	dfRezNI = 0;
-	dfRezLockedTI = 0;
-	dfRezLockedNI = 0;
+//	dfAPT = 0;
+//	dfRezTI = 0;
+//	dfRezNI = 0;
+//	dfRezLockedTI = 0;
+//	dfRezLockedNI = 0;
 	dfTiOn = 1;
-	dfRezSS = 0;
-	dfRezLockedSS = 0;
-	dfRezTCR = 0;
+//	dfRezSS = 0;
+//	dfRezLockedSS = 0;
+//	dfRezTCR = 0;
+//	dfRezLockedTCR = 0;
 	dfScreenSaver = 1;
-	dfRezLockedTCR = 0;
-	dfScreenProt = 0;
+//	dfTCMode = 0;
+//	dfScreenProt = 0;
 	dfTCRM[0] = 120;
 	dfTCRM[1] = 120;
 	dfTCRM[2] = 120;
-	dfbyte_2000033D = 0;
-	dfFBBest = 0;
-	dfFBSpeed = 0;
+//	dfbyte_2000033D = 0;
+//	dfFBBest = 0;
+//	dfFBSpeed = 0;
 	CpyTmpCoefsNI();
 	CpyTmpCoefsTI();
-	dfStatus.off = 0;
-	dfStatus.keylock = 0;
-	dfStatus.flipped = 0;
-	dfStatus.nologo = 0;
-	dfStatus.anaclk = 0;
-	dfStatus.vcom = 0;
-	dfStatus.storage = 0;
-	MemClear( dfSavedCfgRez, sizeof(dfSavedCfgRez) );
-	MemClear( dfSavedCfgPwr, sizeof(dfSavedCfgPwr) );
-	FMCWriteCounters();
+//	dfStatus.off = 0;
+//	dfStatus.keylock = 0;
+//	dfStatus.flipped = 0;
+//	dfStatus.nologo = 0;
+//	dfStatus.clock = 0;
+//	dfStatus.vcom = 0;
+//	dfStatus.storage = 0;
+//	dfStatus.dbgena = 0;
+//	dfStatus.x32off = 0;
+//	dfStatus.phpct = 0;
+//	dfStatus.battpc = 0;
+//	dfStatus.onewatt = 0;
+//	dfStatus.font = 0;
+//	dfStatus.digclk = 0;
+//	MemClear( dfSavedCfgRez, sizeof(dfSavedCfgRez) );
+//	MemClear( dfSavedCfgPwr, sizeof(dfSavedCfgPwr) );
 	dfContrast = 45;
-	dfModesSel = 0;
+//	dfModesSel = 0;
 	dfClkRatio = RTC_DEF_CLK_RATIO;
 	dfPreheatPwr = 200;
-	dfPreheatTime = 0;
-	dfScrMainTime = 0;
+//	dfPreheatTime = 0;
+//	dfScrMainTime = 0;
+	UpdateDataFlash();
+
+	dfPuffCount = 0;
+	dfTimeCount = 0;
+	UpdatePTCounters();
 }
 
 
@@ -277,7 +290,7 @@ __myevic__ void DFCheckValuesValidity()
 	{
 		dfPuffCount = 0;
 		dfTimeCount = 0;
-		FMCWriteCounters();
+		UpdatePTCounters();
 	}
 
 	if ( dfUIVersion != 2 )
@@ -794,12 +807,6 @@ __myevic__ void InitDataFlash()
 	{
 		myprintf( "Data Flash Re-Initialization\n" );
 		ResetDataFlash();
-		dfMode = 0;
-		dfTCMode = 0;
-		dfPower = 200;
-		dfIsCelsius = 1;
-		dfTemp = 235;
-		UpdateDataFlash();
 	}
 
 	dfStatus.off = 0;
@@ -871,6 +878,6 @@ __myevic__ void DataFlashUpdateTick()
 	if ( UpdatePTTimer )
 	{
 		if ( !--UpdatePTTimer )
-		FMCWriteCounters();
+		UpdatePTCounters();
 	}
 }
