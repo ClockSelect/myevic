@@ -174,17 +174,34 @@ There's many more to LOGO and Game menus now. See below.
 * Miscs
   * LOGO
 
-    Guenuine menu
+        Guenuine menu
   * Game
 
-    Flappy bird. Guenuine menu.
+        Flappy bird. Guenuine menu.
   * 3D
 
-    ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/cube_zpsf9apfiun.png)
+        ![3D cube](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/cube_zpsf9apfiun.png)
 
-    Cool 3D spinning cube.
-    Come back to this menu and set it to "None" to cancel animation.
-    Or reset the box.
+        Cool 3D spinning cube.
+        Come back to this menu and set it to "None" to cancel animation.
+        Or reset the box.
+
+* Interface
+
+        ![Interface menu screen](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/interface_zpsliz14bup.png)
+
+  * Batt%
+
+        Display battery charge percentage next to the battery picture on main screen. Resolution is 10% atm.
+
+  * 1Watt
+
+        Enable increment of power setting by plus or minus 1 Watt instead of plus or minus 0.1 Watts.
+
+  * Font
+
+        Change the display font. The font A is the new bold cool-looking font, font B is the guenuine Joyetech's font.
+
 
 ### Build:
 Follow [evic-sdk::Readme] (https://github.com/ReservedField/evic-sdk/blob/master/README.md) instructions to:
