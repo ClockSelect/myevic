@@ -47,8 +47,7 @@ MYEVIC_OBJS := src/myevic.o \
 	src/storage.o \
 	src/flappy.o \
 	src/fbdata.o \
-	src/font0.o \
-	src/font1.o \
+	src/fonts.o \
 	src/display.o \
 	src/SSD1306.o \
 	src/SSD1327.o

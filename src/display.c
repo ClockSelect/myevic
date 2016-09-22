@@ -652,3 +652,4 @@ __myevic__ void DisplaySetFont()
 		font2 = font0_1327;
 	}
 }
+
