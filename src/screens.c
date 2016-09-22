@@ -209,9 +209,9 @@ __myevic__ void DrawScreen()
 
 	ShowFDTimer = 0;
 
-	if ( ScreenDuration < EditModeTimer )
+	if (  10 * ScreenDuration < EditModeTimer )
 	{
-		ScreenDuration = EditModeTimer;
+		ScreenDuration = EditModeTimer / 10 + 1;
 	}
 
 	if ( ScreenDuration && --ScreenDuration )
