@@ -148,6 +148,10 @@ __myevic__ void IFMenuIDraw( int it, int line, int sel )
 			DrawImage( 44, line+2, dfIsCelsius ? 0xC9 : 0xC8 );
 			break;
 
+		case 7:	// TDom
+			DrawString( dfStatus.tdom ? String_On : String_Off, 44, line+2 );
+			break;
+
 		default:
 			break;
 	}
@@ -201,6 +205,10 @@ __myevic__ void IFMenuOnClick()
 				if ( dfTemp < 200 ) dfTemp = 200;
 				if ( dfTemp > 600 ) dfTemp = 600;
 			}
+			break;
+
+		case 7:	// TDom
+			dfStatus.tdom ^= 1;
 			break;
 
 		default: // Exit
@@ -1143,7 +1151,7 @@ const menu_t IFMenu =
 	0,
 	IFMenuOnClick+1,
 	0,
-	9,
+	10,
 	{
 		{ String_BattPC, 0, -1, 0 },
 		{ String_1Watt, 0, -1, 0 },
@@ -1152,6 +1160,7 @@ const menu_t IFMenu =
 		{ String_Font, 0, -1, 0 },
 		{ String_Clock, 0, -1, 0 },
 		{ String_Temp, 0, -1, 0 },
+		{ String_TDom, 0, -1, 0 },
 		{ String_Clicks, &ClicksMenu, -1, 0 },
 		{ String_Exit, 0, 1, 0 }
 	}

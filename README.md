@@ -196,33 +196,37 @@ There's many more to LOGO and Game menus now. See below.
 
     ![Interface menu screen](http://i345.photobucket.com/albums/p374/ClockSelect/interface_zps2inyhtfy.png)
 
-  * Batt%
+  * Batt% On/Off
 
         Display battery charge percentage next to the battery picture on main screen. Resolution is 10% atm.
 
-  * 1Watt
+  * 1Watt On/Off
 
         Enable increment of power setting by plus or minus 1 Watt instead of plus or minus 0.1 Watts.
 
-  * Logo
+  * Logo On/Off
   
         Enable/Disable custom logo display
 
-  * Wake < >
+  * Wake < > On/Off
 
         Enable/Disable bow wake up from sleep mode when pressing the + or - button.
 
-  * Font
+  * Font A/B
 
         Change the display font. The font A is the new bold cool-looking font, font B is the guenuine Joyetech's font.
 
-  * Clock
+  * Clock A/D
 
         Change the format of the clock displayed on the main screen between a hand dial clock (A) and a digital clock with date and time (D).
 
-  * Temp
+  * Temp °C/°F
 
-        Choose once and for all your temperature unit, between °C and °F. Nobody needs to switch back and forth between standards. Moreover, Farenheit is not even a standard. Maybe I'll replace it by Kelvins one day.
+        Choose once and for all your temperature unit, between °C and °F. Nobody needs to switch back and forth between standards. Moreover, Farenheit is not even a standard. Maybe I'll replace it by Kelvins one day. Changing temperature unit by wrapping around the temperature has been disabled.
+
+  * TDom On/Off
+  
+        Toggle Dominant Temperature mode On/Off. In temperature control modes, this switches the power and the temperature display; the power is displayed at top of screen and is directly editable by the + and - keys just like in Power mode, and the temperature is displayed on the first of the 3 informations lines in the center of the screen. Temperature remains editable in Edit mode.
 
   * Clicks
   
@@ -233,7 +237,8 @@ There's many more to LOGO and Game menus now. See below.
         Possible actions are:
         * Nothing
         * Enter edit mode
-        * Switch display of info lines / clock on the main display
+        * Toggle display of info lines / clock on the main display
+        * Toggle the "dominant temperature" mode (basically, switches temperature and power on the main screen display in TC mode)
         * Switch to next vaping mode ( TC -> POWER -> BYPASS -> ... )
         * Switch box On or Off
 
