@@ -267,7 +267,7 @@ __myevic__ void ResetDataFlash()
 	dfClick[0] = CLICK_ACTION_CLOCK;
 	dfClick[1] = CLICK_ACTION_EDIT;
 //	dfClick[2] = CLICK_ACTION_NONE;
-//	dfDimTimeout = 0;
+	dfDimTimeout = 30;
 	UpdateDataFlash();
 
 	dfPuffCount = 0;
@@ -355,7 +355,7 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfRezLockedSS > 1 )
 		dfRezLockedSS = 0;
 
-	if ( dfScrMainTime > 4 )
+	if ( dfScrMainTime > 5 )
 		dfScrMainTime = 0;
 	
 	if ( dfRezTCR > 150 )
@@ -456,7 +456,7 @@ __myevic__ void DFCheckValuesValidity()
 	}
 
 	if ( dfDimTimeout < 5 || dfDimTimeout > 60 )
-		dfDimTimeout = 0;
+		dfDimTimeout = ScrMainTimes[dfScrMainTime];
 }
 
 

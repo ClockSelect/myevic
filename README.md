@@ -40,6 +40,8 @@ You may:
 
 
 
+----------
+
 ### Main Screen
 * Double-click:
 
@@ -58,7 +60,9 @@ You may:
     - Real-time clock
     - Real-time atomizer resistance
 
-    ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/mainscreen2_zpsclbvvdah.png)
+        ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/mainscreen2_zpsclbvvdah.png)
+
+----------
 
 ###Menus:
 Holding fire and right button a few seconds enters menus.
@@ -66,6 +70,8 @@ There's many more to LOGO and Game menus now. See below.
 
 * At any time, you may press simultaneously fire and right button to get out of the menus and return to the main screen.
 * When navigating in sub-menus, you may press simultaneously left and right buttons to return to the parent (upper level) menu.
+
+----------
 
 * Screen
 
@@ -90,6 +96,8 @@ There's many more to LOGO and Game menus now. See below.
          ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/saver_zpsrfxibqb5.png)
 
          Select the screen saver animation. You may choose between None (blank screen), an analog clock or a 3D spinning cube. More to come. Content of this menu will vary from time to time; this document may not always be up to date. Have a look.
+
+----------
 
 * Coils
 
@@ -121,12 +129,22 @@ There's many more to LOGO and Game menus now. See below.
         Enters the TCR Set menu. This menu can also be accessed by switching off the box and pressing both Fire and Right regulatory button for 5 seconds.
 
 
+----------
+
 * Clock
   * Date/Time
 
         Setup date and time.
         Fire change edited field, + and - set value, and long click on fire saves the setting. Since you need to click 2 seconds on the fire button to save, setup the time 2 seconds in advance if you want to achieve best accuracy. I know...
 
+        There is some other ways to setup time:
+        * use the ```evic-usb time``` command, if you installed the [python-evic](https://github.com/ClockSelect/python-evic "python-evic") command-line utility;
+        * use the Configuration Editor of the [NFirmwareEditor 5.0](https://github.com/TBXin/NFirmwareEditor/releases); open the Configuration Editor and click "Upload settings" to upload the current time.
+        * MicroSur's [FWUpdater](https://www.dropbox.com/s/ze0z9isrmaegva4/FWUpdater.zip?dl=1) also as a "Set current time" function.
+
+        Joyetech's official firmware updater also sets date & time when uploading a firmware.
+        
+  
   * Clk Adjust
 
         Adjust clock: for small adjustments to clock time + and - adjust clock by seconds. Fire to save. For VTwo owners, this option also adjusts the X32 frequency accordingly if done properly.
@@ -144,6 +162,9 @@ There's many more to LOGO and Game menus now. See below.
         * Once you have adjusted the time to the real time, click fire to save the new clock speed ratio. Your clock should now be as accurate as it can. If not, try to repeat the procedure. Accuracy of a few seconds per day can be achieved this way.
     
 
+----------
+
+
 * Modes
 
     ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/modes_zpslphwvqhh.png)
@@ -151,6 +172,8 @@ There's many more to LOGO and Game menus now. See below.
     Configure used/useless modes.
     Click on each menu item to set 'Y' or 'N' if you want to see any given mode proposed while cycling between modes in menu mode.
     Typically, you'll set "START" mode to 'N'. Typically.
+
+----------
 
 * Miscs
   * LOGO
@@ -166,6 +189,8 @@ There's many more to LOGO and Game menus now. See below.
         Cool 3D spinning cube.
         Come back to this menu and set it to "None" to cancel animation.
         Or reset the box.
+
+----------
 
 * Interface
 
@@ -214,6 +239,8 @@ There's many more to LOGO and Game menus now. See below.
 
         As a security feature, if none of the action are configured to be the "Edit" mode, the firmware will redefine the triple click action to "Edit" at next reset.
 
+----------
+
 
 * Expert
 
@@ -243,6 +270,9 @@ There's many more to LOGO and Game menus now. See below.
  
         Enables or disables the NFirmwareEditor 5.0 myEvic Configuration Editor compatibility. This option is enabled by default; if you have troubles using some firmware/dataflash utilities other than NFirmwareEditor, you may try to set this option to "OFF".
  
+
+----------
+
 ### Build:
 Follow [evic-sdk::Readme] (https://github.com/ReservedField/evic-sdk/blob/master/README.md) instructions to:
   * Setup the environment
@@ -254,6 +284,8 @@ Follow [evic-sdk::Readme] (https://github.com/ReservedField/evic-sdk/blob/master
     * When unpacking nuSDK unpack only ```Library``` directory. For example unpack ```M451 Series BSP CMSIS V3.01.001/Library``` from ```M451_Series_BSP_CMSIS_V3.01.001.zip``` to ```myevic/nuvoton-sdk/Library```
 
   * To build invoke: ```EVICSDK=. make```
+
+----------
 
 ### Known quirks/issues:
   * Temperature Control on SS316

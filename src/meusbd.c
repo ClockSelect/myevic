@@ -4,6 +4,7 @@
 #include "dataflash.h"
 #include "display.h"
 #include "meusbd.h"
+#include "dtmacros.h"
 
 void usbdEP2Handler();
 void usbdEP3Handler();
@@ -708,8 +709,16 @@ __myevic__ uint32_t hidGetInfoCmd( CMD_T *pCmd )
 		{
 			dfMagic = DATAFLASH_NFE_MAGIC;
 
-			uint32_t build = __BUILD;
-			MemCpy( dfBuild, &build, sizeof(dfBuild) );
+		//	// Build number is the BDC coding of the date
+		//	dfBuild[0] = __DAY__ % 10 + __DAY__ / 10 * 16;
+		//	dfBuild[1] = __MONTH__ % 10 + __MONTH__ / 10 * 16;
+		//	dfBuild[2] = __YEAR__ % 10 + __YEAR__ / 10 % 10 * 16;
+
+			// The build # comparison is skewed in the NFE,
+			// so let's take a # that we know works.
+			dfBuild[0] = 0x10;
+			dfBuild[1] = 0x09;
+			dfBuild[2] = 0x16;
 		}
 		else
 		{

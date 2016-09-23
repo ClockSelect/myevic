@@ -528,10 +528,14 @@ __myevic__ void ScreenProtMenuIDraw( int it, int line, int sel )
 {
 	int v;
 
+	if ( it > 1 )
+		return;
+
+	DrawFillRect( 38, line, 63, line+12, 0 );
+
 	switch ( it )
 	{
 		case 0:	// Saver
-			DrawFillRect( 38, line, 63, line+12, 0 );
 			v = ScrSaveTimes[dfScreenProt];
 			if ( v )
 			{
@@ -545,14 +549,18 @@ __myevic__ void ScreenProtMenuIDraw( int it, int line, int sel )
 			break;
 
 		case 1:	// Main
-			DrawFillRect( 38, line, 63, line+12, 0 );
 			v = ScrMainTimes[dfScrMainTime];
-			DrawValue( ( v < 10 ) ? 49 : 43, line+2, v, 0, 0x0B, 0 );
-			DrawImage( 57, line+2, 0x94 );
+			DrawValue( ( v < 10 ) ? 47 : 41, line+2, v, 0, 0x0B, 0 );
+			DrawImage( 55, line+2, 0x94 );
 			break;
 
 		default:
 			break;
+	}
+
+	if ( gFlags.edit_value && CurrentMenuItem == it )
+	{
+		DrawFillRect( 0, line, 63, line+12, 2 );
 	}
 }
 
@@ -562,18 +570,8 @@ __myevic__ void ScreenProtMenuOnClick()
 	switch ( CurrentMenuItem )
 	{
 		case 0:	// Saver
-			if ( ++dfScreenProt > 7 )
-				dfScreenProt = 0;
-			UpdateDFTimer = 50;
-			gFlags.refresh_display = 1;
-			break;
-
 		case 1:	// Main
-			if ( ++dfScrMainTime > 4 )
-				dfScrMainTime = 0;
-			dfDimTimeout = 0;
-			dfDimTimeout = GetMainScreenDuration();
-			UpdateDFTimer = 50;
+			gFlags.edit_value ^= 1;
 			gFlags.refresh_display = 1;
 			break;
 
@@ -584,6 +582,62 @@ __myevic__ void ScreenProtMenuOnClick()
 		default:
 			break;
 	}
+}
+
+
+__myevic__ int ScreenProtMenuOnEvent( int event )
+{
+	int vret = 0;
+
+	if ( !gFlags.edit_value )
+		return vret;
+
+	switch ( event )
+	{
+		case 2:
+			switch ( CurrentMenuItem )
+			{
+				case 0:	// Saver
+					if ( ++dfScreenProt > 7 )
+						dfScreenProt = 0;
+					vret = 1;
+					break;
+
+				case 1:	// Main
+					if ( ++dfScrMainTime > 5 )
+						dfScrMainTime = 0;
+					dfDimTimeout = ScrMainTimes[dfScrMainTime];
+					vret = 1;
+					break;
+			}
+			break;
+
+		case 3:
+			switch ( CurrentMenuItem )
+			{
+				case 0:	// Saver
+					if ( !dfScreenProt-- )
+						dfScreenProt = 7;
+					vret = 1;
+					break;
+
+				case 1:	// Main
+					if ( !dfScrMainTime-- )
+						dfScrMainTime = 5;
+					dfDimTimeout = ScrMainTimes[dfScrMainTime];
+					vret = 1;
+					break;
+			}
+			break;
+	}
+
+	if ( vret )
+	{
+		UpdateDFTimer = 50;
+		gFlags.refresh_display = 1;
+	}
+	
+	return vret;
 }
 
 
@@ -1026,7 +1080,7 @@ const menu_t ScreenProtMenu =
 	ScreenProtMenuIDraw+1,
 	0,
 	ScreenProtMenuOnClick+1,
-	0,
+	ScreenProtMenuOnEvent+1,
 	3,
 	{
 		{ String_Saver, 0, -1, 0 },

@@ -158,13 +158,17 @@ __myevic__ void SSD1306_Plot( int x, int y, int color )
 	mask = 1 << ( y & 7 );
 	i = x + ( ( y & ~7 ) << 3 );
 
-	if ( color )
+	if ( color == 1 )
 	{
 		ScreenBuffer[i] |= mask;
 	}
-	else
+	else if ( color == 0 )
 	{
 		ScreenBuffer[i] &= ~mask;
+	}
+	else
+	{
+		ScreenBuffer[i] ^= mask;
 	}
 }
 
