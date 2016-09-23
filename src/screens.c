@@ -521,7 +521,26 @@ __myevic__ void ShowBattery()
 //----- (00006764) --------------------------------------------------------
 __myevic__ void ShowBatCharging()
 {
-	ShowScreenSaver();
+	switch ( dfScreenSaver )
+	{
+		case 1:
+			if ( dfStatus.digclk )
+			{
+				DrawDigitClock( 40 );
+			}
+			else
+			{
+				DrawClock( 25 );
+			}
+			break;
+
+		case 3:
+			DrawLOGO( 0, 32 );
+			break;
+
+		default:
+			break;
+	}
 
 	if ( dfStatus.battpc )
 	{
