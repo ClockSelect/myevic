@@ -243,6 +243,14 @@ __myevic__ void DrawAPTLine( int line )
 
 		case 6:
 		{
+			DrawString( String_RES_s, 0, line+2 );
+			DrawValue( 19, line, AtoRezMilli, 3, 0x1F, 4 );
+			DrawImage( 56, line+2, 0xC0 );
+			break;
+		}
+
+		case 7:
+		{
 			S_RTC_TIME_DATA_T rtd;
 			GetRTC( &rtd );
 			if ( ShowDateFlag )
@@ -253,14 +261,6 @@ __myevic__ void DrawAPTLine( int line )
 			{
 				DrawTime( 5, line, &rtd, 0x1F );
 			}
-			break;
-		}
-
-		case 7:
-		{
-			DrawString( String_RES_s, 0, line+2 );
-			DrawValue( 19, line, AtoRezMilli, 3, 0x1F, 4 );
-			DrawImage( 56, line+2, 0xC0 );
 			break;
 		}
 	}

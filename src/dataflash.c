@@ -20,13 +20,13 @@ uint8_t ParamsBackup[DATAFLASH_PARAMS_SIZE];
 
 uint8_t		UpdateDFTimer;
 uint8_t		UpdatePTTimer;
+uint8_t		DFMagicNumber;
 
 
 //-------------------------------------------------------------------------
 // Internal variables
 
 uint16_t	fmcCntrsIndex;
-uint8_t		MagicNumber;
 
 
 //=============================================================================
@@ -38,7 +38,7 @@ __myevic__ void SetProductID()
 
 	dfProductID = PID_VTCMINI;
 	dfMaxHWVersion = 0x00010101;
-	MagicNumber = 0x36;
+	DFMagicNumber = 0x36;
 	gFlags.is_mini  = 1;
 	gFlags.is_vtwo  = 0;
 	gFlags.is_presa = 0;
@@ -50,7 +50,7 @@ __myevic__ void SetProductID()
 		{
 			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00000001;
-			MagicNumber = 0x10;
+			DFMagicNumber = 0x10;
 			gFlags.is_vtwo = 1;
 			break;
 		}
@@ -58,7 +58,7 @@ __myevic__ void SetProductID()
 		{
 			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00010001;
-			MagicNumber = 0x40;
+			DFMagicNumber = 0x40;
 			gFlags.is_vtwo = 1;
 			gFlags.is_mini = 0;
 			break;
@@ -67,7 +67,7 @@ __myevic__ void SetProductID()
 		{
 			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00030001;
-			MagicNumber = 0x30;
+			DFMagicNumber = 0x30;
 			gFlags.is_presa = 1;
 			break;
 		}
@@ -75,7 +75,7 @@ __myevic__ void SetProductID()
 		{
 			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00010001;
-			MagicNumber = 0x50;
+			DFMagicNumber = 0x50;
 			gFlags.is_evicaio = 1;
 			break;
 		}
@@ -83,7 +83,7 @@ __myevic__ void SetProductID()
 		{
 			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00000001;
-			MagicNumber = 0x15;
+			DFMagicNumber = 0x15;
 			gFlags.is_egrip2 = 1;
 			break;
 		}
@@ -91,7 +91,7 @@ __myevic__ void SetProductID()
 		{
 			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00020001;
-			MagicNumber = 0x50;
+			DFMagicNumber = 0x50;
 			gFlags.is_cuboid = 1;
 			break;
 		}
@@ -99,7 +99,7 @@ __myevic__ void SetProductID()
 		{
 			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00010001;
-			MagicNumber = 0x13;
+			DFMagicNumber = 0x13;
 			gFlags.is_evicbasic = 1;
 			break;
 		}
@@ -205,7 +205,7 @@ __myevic__ void ResetDataFlash()
 	// Parameters whose reset value is zero are commented out
 	// since we start by clearing the memory.
 
-	dfMagic = MagicNumber;
+	dfMagic = DFMagicNumber;
 	dfMode = 4;
 	dfVWVolts = 330;
 	dfPower = 200;
@@ -403,7 +403,7 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfModesSel & 0x80 || ( dfModesSel & 0x7F ) == 0x7F )
 		dfModesSel = 0;
 
-	if ( dfClkRatio < 20000 || dfClkRatio > 50000 )
+	if ( dfClkRatio < 30000 || dfClkRatio > 35000 )
 		dfClkRatio = RTC_DEF_CLK_RATIO;
 
 	if ( dfStatus.phpct )
@@ -419,6 +419,8 @@ __myevic__ void DFCheckValuesValidity()
 
 	if ( dfPreheatTime > 200 )
 		dfPreheatTime = 0;
+
+	dfDimTimeout = GetMainScreenDuration();
 }
 
 
@@ -664,6 +666,9 @@ __myevic__ void InitDataFlash()
 
 	SetProductID();
 
+	uint32_t build = __BUILD;
+	MemCpy( &dfBuild, &build, 3 );
+	
 	if ( ISVTWO || ISEVICAIO || ISCUBOMINI || ISEVICBASIC )
 	{
 		switch ( dfHWVersion )
@@ -799,7 +804,7 @@ __myevic__ void InitDataFlash()
 				dfHWVersion / 10 % 10,
 				dfHWVersion % 10 );
 
-	if ( dfMagic == MagicNumber && CalcPageCRC( DataFlash.params ) == dfCRC )
+	if ( dfMagic == DFMagicNumber && CalcPageCRC( DataFlash.params ) == dfCRC )
 	{
 		DFCheckValuesValidity();
 	}

@@ -22,12 +22,6 @@ volatile gFlags_t gFlags;
 
 
 //=============================================================================
-// Forward declarations
-
-void SleepIfIdle();
-
-
-//=============================================================================
 // Useless function - testing purpose
 //------------------------------------------------------------------------------
 __myevic__ void CustomStartup()
@@ -220,6 +214,236 @@ __myevic__ void InitVariables()
 	gFlags.read_battery = 1;
 	EditItemIndex = 0;
 	WattsInc = dfStatus.onewatt ? 10 : 1;
+}
+
+
+//=============================================================================
+// Brown-Out Detector IRQ Handler
+
+__myevic__ void BOD_IRQHandler()
+{
+	// Clear BOD Interrupt Flag
+	SYS_CLEAR_BOD_INT_FLAG();
+
+	if ( SYS_GetBODStatus() )
+	{
+		RTCSleep();
+		while( 1 )
+			;
+	}
+}
+
+
+//=============================================================================
+// BSOD
+
+__myevic__ void Plantouille( int xpsr, int* stack )
+{
+	int i, k;
+
+	k = 0;
+
+	SYS_UnlockReg();
+	WDT_Open( WDT_TIMEOUT_2POW14, WDT_RESET_DELAY_18CLK, FALSE, FALSE );
+	SYS_LockReg();
+
+	InitDisplay();
+
+	while ( 1 )
+	{
+		ClearScreenBuffer();
+		
+		DrawImage( 0, 0, 'X'+0x27 );
+		DrawHexLong( 16, 0, xpsr, 0 );
+
+		DrawHexDigit( 0, 16, k );
+
+		for ( i = 0; i < 14 ; ++i )
+		{
+			DrawHexLong( 16, 16+i*8, stack[i+k*14], 0 );
+		}
+
+		DisplayRefresh();
+
+		while ( !PE0 || !PD2 || !PD3 )
+			CLK_SysTickDelay( 10000 );
+
+		while ( PE0 && PD2 && PD3 )
+			CLK_SysTickDelay( 10000 );
+
+		if ( !PE0 )
+		{
+		  SYS_UnlockReg();
+		  SYS_ResetChip();
+		  while ( 1 )
+			;
+		}
+
+		if ( !PD2 ) ++k;
+		if ( !PD3 ) --k;
+
+		if ( k < 0 ) k = 0;
+		else if ( k > 15 ) k = 15;
+	}
+}
+
+
+//=============================================================================
+//----- (00005D24) --------------------------------------------------------
+__myevic__ void DevicesOnOff( int off )
+{
+	if ( off )
+	{
+		TIMER_DisableInt( TIMER0 );
+		TIMER_DisableInt( TIMER1 );
+		TIMER_DisableInt( TIMER2 );
+		TIMER_DisableInt( TIMER3 );
+
+		EADC_Close( EADC );
+		SetADCState( 1, 0 );
+		SetADCState( 2, 0 );
+		SetADCState( 14, 0 );
+
+		PC1 = 0;
+		PC0 = 0;
+		BBC_Configure( BBC_PWMCH_BUCK, 0 );
+		PC3 = 0;
+		PC2 = 0;
+		BBC_Configure( BBC_PWMCH_BOOST, 0 );
+
+		PB7 = 0;
+
+		GPIO_DisableInt( PD, 0 );
+		PD0 = 0;
+		GPIO_SetMode( PD, GPIO_PIN_PIN0_Msk, GPIO_MODE_OUTPUT );
+		GPIO_DisableInt( PD, 7 );
+		PD7 = 0;
+		GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_OUTPUT );
+
+		SYS->GPE_MFPH &= ~(SYS_GPE_MFPH_PE11MFP_Msk|SYS_GPE_MFPH_PE12MFP_Msk|SYS_GPE_MFPH_PE13MFP_Msk);
+		PE11 = 0;
+		GPIO_SetMode( PE, GPIO_PIN_PIN11_Msk, GPIO_MODE_OUTPUT );
+		PE12 = 0;
+		GPIO_SetMode( PE, GPIO_PIN_PIN12_Msk, GPIO_MODE_OUTPUT );
+		PE13 = 0;
+		GPIO_SetMode( PE, GPIO_PIN_PIN13_Msk, GPIO_MODE_OUTPUT );	// org: pin 3. bug.
+		PE10 = 0;
+
+		GPIO_EnableInt( PE, 0, GPIO_INT_BOTH_EDGE );
+		GPIO_EnableInt( PD, 2, GPIO_INT_BOTH_EDGE );
+		GPIO_EnableInt( PD, 3, GPIO_INT_BOTH_EDGE );
+
+		SYS_UnlockReg();
+		SYS->USBPHY &= ~SYS_USBPHY_LDO33EN_Msk;
+		SYS->IVSCTL &= ~SYS_IVSCTL_VBATUGEN_Msk;
+		SYS_DISABLE_LVR();
+		SYS_DisableBOD();
+		SYS->VREFCTL = 0;
+		SYS_LockReg();
+
+		USBD_CLR_INT_FLAG( USBD_INTSTS_WAKEUP|USBD_INTSTS_FLDET|USBD_INTSTS_BUS|USBD_INTSTS_USB );
+		USBD_ENABLE_INT( USBD_INT_WAKEUP );
+	}
+	else
+	{
+		USBD_CLR_INT_FLAG( USBD_INTSTS_WAKEUP );
+
+		SYS_UnlockReg();
+		SYS->USBPHY |= SYS_USBPHY_LDO33EN_Msk;
+		SYS->IVSCTL |= SYS_IVSCTL_VBATUGEN_Msk;
+		SYS->VREFCTL = SYS_VREFCTL_VREF_2_56V;
+		SYS_EnableBOD( SYS_BODCTL_BOD_INTERRUPT_EN, SYS_BODCTL_BODVL_2_2V );
+		SYS_ENABLE_LVR();
+		SYS_LockReg();
+
+		GPIO_DisableInt( PE, 0 );
+		GPIO_DisableInt( PD, 2 );
+		GPIO_DisableInt( PD, 3 );
+
+		SYS->GPE_MFPH &= ~(SYS_GPE_MFPH_PE11MFP_Msk|SYS_GPE_MFPH_PE12MFP_Msk|SYS_GPE_MFPH_PE13MFP_Msk);
+		SYS->GPE_MFPH |= (SYS_GPE_MFPH_PE11MFP_SPI0_MOSI0|SYS_GPE_MFPH_PE12MFP_SPI0_SS|SYS_GPE_MFPH_PE13MFP_SPI0_CLK);
+
+		GPIO_SetMode( PD, GPIO_PIN_PIN0_Msk, GPIO_MODE_INPUT );
+		GPIO_EnableInt( PD, 0, GPIO_INT_FALLING );
+		GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_INPUT );
+		GPIO_EnableInt( PD, 7, GPIO_INT_RISING );
+		GPIO_ENABLE_DEBOUNCE( PD, GPIO_PIN_PIN7_Msk );
+
+		PB7 = 1;
+
+		SetADCState( 1, 1 );
+		SetADCState( 2, 1 );
+		SetADCState( 14, 1 );
+
+		TIMER_EnableInt( TIMER0 );
+		TIMER_EnableInt( TIMER1 );
+		TIMER_EnableInt( TIMER2 );
+		TIMER_EnableInt( TIMER3 );
+	}
+}
+
+
+//=============================================================================
+//----- (00005D14) --------------------------------------------------------
+__myevic__ void FlushAndSleep()
+{
+	UART_WAIT_TX_EMPTY( UART0 );
+	CLK_PowerDown();
+}
+
+
+//=============================================================================
+//----- (00004F0C) --------------------------------------------------------
+
+void GoToSleep()
+{
+	ScreenOff();
+	gFlags.firing = 0;
+	BatReadTimer = 50;
+	RTCSleep();
+	DevicesOnOff( 1 );
+	CLK_SysTickDelay( 250 );
+	CLK_SysTickDelay( 250 );
+	CLK_SysTickDelay( 250 );
+	if ( dfStatus.off || PE0 || KeyPressTime == 1100 )
+	{
+		SYS_UnlockReg();
+		WDT_Open( WDT_TIMEOUT_2POW14, WDT_RESET_DELAY_18CLK, FALSE, FALSE );
+		FlushAndSleep();
+	}
+	WDT_Open( WDT_TIMEOUT_2POW14, WDT_RESET_DELAY_18CLK, TRUE, FALSE );
+	SYS_LockReg();
+	gFlags.refresh_battery = 1;
+	DevicesOnOff( 0 );
+	RTCWakeUp();
+	InitDisplay();
+}
+
+
+//=============================================================================
+//----- (0000782C) --------------------------------------------------------
+__myevic__ void SleepIfIdle()
+{
+	if ( !( gFlags.firing ) && !BatRefreshTmr )
+	{
+		if ( ( Screen == 0 && SleepTimer == 0 ) && ( gFlags.user_idle ) )
+		{
+			GoToSleep();
+
+			byte_200000B3 = 2;
+			AtoProbeCount = 0;
+			AtoRezMilli = 0;
+			gFlags.sample_vbat = 1;
+			ReadBatteryVoltage();
+			if ( BatteryVoltage <= 300 && !(gFlags.usb_attached) )
+			{
+				dfStatus.off = 1;
+				Screen = 0;
+			}
+			gFlags.sample_btemp = 1;
+		}
+		BatRefreshTmr = 200;
+	}
 }
 
 
@@ -470,236 +694,6 @@ __myevic__ void Main()
 
 		EventHandler();
 
-	}
-}
-
-
-//=============================================================================
-// Brown-Out Detector IRQ Handler
-
-__myevic__ void BOD_IRQHandler()
-{
-	// Clear BOD Interrupt Flag
-	SYS_CLEAR_BOD_INT_FLAG();
-
-	if ( SYS_GetBODStatus() )
-	{
-		RTCSleep();
-		while( 1 )
-			;
-	}
-}
-
-
-//=============================================================================
-// BSOD
-
-__myevic__ void Plantouille( int xpsr, int* stack )
-{
-	int i, k;
-
-	k = 0;
-
-	SYS_UnlockReg();
-	WDT_Open( WDT_TIMEOUT_2POW14, WDT_RESET_DELAY_18CLK, FALSE, FALSE );
-	SYS_LockReg();
-
-	InitDisplay();
-
-	while ( 1 )
-	{
-		ClearScreenBuffer();
-		
-		DrawImage( 0, 0, 'X'+0x27 );
-		DrawHexLong( 16, 0, xpsr, 0 );
-
-		DrawHexDigit( 0, 16, k );
-
-		for ( i = 0; i < 14 ; ++i )
-		{
-			DrawHexLong( 16, 16+i*8, stack[i+k*14], 0 );
-		}
-
-		DisplayRefresh();
-
-		while ( !PE0 || !PD2 || !PD3 )
-			CLK_SysTickDelay( 10000 );
-
-		while ( PE0 && PD2 && PD3 )
-			CLK_SysTickDelay( 10000 );
-
-		if ( !PE0 )
-		{
-		  SYS_UnlockReg();
-		  SYS_ResetChip();
-		  while ( 1 )
-			;
-		}
-
-		if ( !PD2 ) ++k;
-		if ( !PD3 ) --k;
-
-		if ( k < 0 ) k = 0;
-		else if ( k > 15 ) k = 15;
-	}
-}
-
-
-//=============================================================================
-//----- (00005D24) --------------------------------------------------------
-__myevic__ void DevicesOnOff( int off )
-{
-	if ( off )
-	{
-		TIMER_DisableInt( TIMER0 );
-		TIMER_DisableInt( TIMER1 );
-		TIMER_DisableInt( TIMER2 );
-		TIMER_DisableInt( TIMER3 );
-
-		EADC_Close( EADC );
-		SetADCState( 1, 0 );
-		SetADCState( 2, 0 );
-		SetADCState( 14, 0 );
-
-		PC1 = 0;
-		PC0 = 0;
-		BBC_Configure( BBC_PWMCH_BUCK, 0 );
-		PC3 = 0;
-		PC2 = 0;
-		BBC_Configure( BBC_PWMCH_BOOST, 0 );
-
-		PB7 = 0;
-
-		GPIO_DisableInt( PD, 0 );
-		PD0 = 0;
-		GPIO_SetMode( PD, GPIO_PIN_PIN0_Msk, GPIO_MODE_OUTPUT );
-		GPIO_DisableInt( PD, 7 );
-		PD7 = 0;
-		GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_OUTPUT );
-
-		SYS->GPE_MFPH &= ~(SYS_GPE_MFPH_PE11MFP_Msk|SYS_GPE_MFPH_PE12MFP_Msk|SYS_GPE_MFPH_PE13MFP_Msk);
-		PE11 = 0;
-		GPIO_SetMode( PE, GPIO_PIN_PIN11_Msk, GPIO_MODE_OUTPUT );
-		PE12 = 0;
-		GPIO_SetMode( PE, GPIO_PIN_PIN12_Msk, GPIO_MODE_OUTPUT );
-		PE13 = 0;
-		GPIO_SetMode( PE, GPIO_PIN_PIN13_Msk, GPIO_MODE_OUTPUT );	// org: pin 3. bug.
-		PE10 = 0;
-
-		GPIO_EnableInt( PE, 0, GPIO_INT_BOTH_EDGE );
-		GPIO_EnableInt( PD, 2, GPIO_INT_BOTH_EDGE );
-		GPIO_EnableInt( PD, 3, GPIO_INT_BOTH_EDGE );
-
-		SYS_UnlockReg();
-		SYS->USBPHY &= ~SYS_USBPHY_LDO33EN_Msk;
-		SYS->IVSCTL &= ~SYS_IVSCTL_VBATUGEN_Msk;
-		SYS_DISABLE_LVR();
-		SYS_DisableBOD();
-		SYS->VREFCTL = 0;
-		SYS_LockReg();
-
-		USBD_CLR_INT_FLAG( USBD_INTSTS_WAKEUP|USBD_INTSTS_FLDET|USBD_INTSTS_BUS|USBD_INTSTS_USB );
-		USBD_ENABLE_INT( USBD_INT_WAKEUP );
-	}
-	else
-	{
-		USBD_CLR_INT_FLAG( USBD_INTSTS_WAKEUP );
-
-		SYS_UnlockReg();
-		SYS->USBPHY |= SYS_USBPHY_LDO33EN_Msk;
-		SYS->IVSCTL |= SYS_IVSCTL_VBATUGEN_Msk;
-		SYS->VREFCTL = SYS_VREFCTL_VREF_2_56V;
-		SYS_EnableBOD( SYS_BODCTL_BOD_INTERRUPT_EN, SYS_BODCTL_BODVL_2_2V );
-		SYS_ENABLE_LVR();
-		SYS_LockReg();
-
-		GPIO_DisableInt( PE, 0 );
-		GPIO_DisableInt( PD, 2 );
-		GPIO_DisableInt( PD, 3 );
-
-		SYS->GPE_MFPH &= ~(SYS_GPE_MFPH_PE11MFP_Msk|SYS_GPE_MFPH_PE12MFP_Msk|SYS_GPE_MFPH_PE13MFP_Msk);
-		SYS->GPE_MFPH |= (SYS_GPE_MFPH_PE11MFP_SPI0_MOSI0|SYS_GPE_MFPH_PE12MFP_SPI0_SS|SYS_GPE_MFPH_PE13MFP_SPI0_CLK);
-
-		GPIO_SetMode( PD, GPIO_PIN_PIN0_Msk, GPIO_MODE_INPUT );
-		GPIO_EnableInt( PD, 0, GPIO_INT_FALLING );
-		GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_INPUT );
-		GPIO_EnableInt( PD, 7, GPIO_INT_RISING );
-		GPIO_ENABLE_DEBOUNCE( PD, GPIO_PIN_PIN7_Msk );
-
-		PB7 = 1;
-
-		SetADCState( 1, 1 );
-		SetADCState( 2, 1 );
-		SetADCState( 14, 1 );
-
-		TIMER_EnableInt( TIMER0 );
-		TIMER_EnableInt( TIMER1 );
-		TIMER_EnableInt( TIMER2 );
-		TIMER_EnableInt( TIMER3 );
-	}
-}
-
-
-//=============================================================================
-//----- (00005D14) --------------------------------------------------------
-__myevic__ void FlushAndSleep()
-{
-	UART_WAIT_TX_EMPTY( UART0 );
-	CLK_PowerDown();
-}
-
-
-//=============================================================================
-//----- (00004F0C) --------------------------------------------------------
-
-void GoToSleep()
-{
-	ScreenOff();
-	gFlags.firing = 0;
-	BatReadTimer = 50;
-	RTCSleep();
-	DevicesOnOff( 1 );
-	CLK_SysTickDelay( 250 );
-	CLK_SysTickDelay( 250 );
-	CLK_SysTickDelay( 250 );
-	if ( dfStatus.off || PE0 || KeyPressTime == 1100 )
-	{
-		SYS_UnlockReg();
-		WDT_Open( WDT_TIMEOUT_2POW14, WDT_RESET_DELAY_18CLK, FALSE, FALSE );
-		FlushAndSleep();
-	}
-	WDT_Open( WDT_TIMEOUT_2POW14, WDT_RESET_DELAY_18CLK, TRUE, FALSE );
-	SYS_LockReg();
-	gFlags.refresh_battery = 1;
-	DevicesOnOff( 0 );
-	RTCWakeUp();
-	InitDisplay();
-}
-
-
-//=============================================================================
-//----- (0000782C) --------------------------------------------------------
-__myevic__ void SleepIfIdle()
-{
-	if ( !( gFlags.firing ) && !BatRefreshTmr )
-	{
-		if ( ( Screen == 0 && SleepTimer == 0 ) && ( gFlags.user_idle ) )
-		{
-			GoToSleep();
-
-			byte_200000B3 = 2;
-			AtoProbeCount = 0;
-			AtoRezMilli = 0;
-			gFlags.sample_vbat = 1;
-			ReadBatteryVoltage();
-			if ( BatteryVoltage <= 300 && !(gFlags.usb_attached) )
-			{
-				dfStatus.off = 1;
-				Screen = 0;
-			}
-			gFlags.sample_btemp = 1;
-		}
-		BatRefreshTmr = 200;
 	}
 }
 

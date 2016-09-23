@@ -704,6 +704,8 @@ __myevic__ uint32_t hidGetInfoCmd( CMD_T *pCmd )
 
 	if ( u32ParamLen )
 	{
+		dfMagic = DATAFLASH_NFE_MAGIC;
+
 		dfChecksum = Checksum( (uint8_t *)DataFlash.params, FMC_FLASH_PAGE_SIZE - 4 );
 
 		if ( u32StartAddr + u32ParamLen > FMC_FLASH_PAGE_SIZE )
@@ -712,6 +714,8 @@ __myevic__ uint32_t hidGetInfoCmd( CMD_T *pCmd )
 		}
 
 		MemCpy( hidData, ((uint8_t *)&DataFlash) + u32StartAddr, u32ParamLen );
+		
+		dfMagic = DFMagicNumber;
 
 		hidInDataPtr = hidData;
 		hidStartInReport( u32ParamLen );
@@ -953,6 +957,8 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 								df->p.BootFlag );
 
 					MemCpy( DataFlash.params, df->params, DATAFLASH_PARAMS_SIZE );
+
+					if ( dfMagic == DATAFLASH_NFE_MAGIC ) dfMagic = DFMagicNumber;
 
 					DFCheckValuesValidity();
 					UpdateDataFlash();

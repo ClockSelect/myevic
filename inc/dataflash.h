@@ -30,6 +30,9 @@
 #define LDROM_BASE 0x100000
 #define LDROM_SIZE 0x1000
 
+// NFE Magic Number
+#define DATAFLASH_NFE_MAGIC	0xFE
+
 
 //=========================================================================
 // DataFlash content structure
@@ -49,12 +52,15 @@ typedef struct
 	int vcom:1;
 	int storage:1;
 	int dbgena:1;
+
 	int x32off:1;
-	int phpct:1;
-	int battpc:1;
+	int tdom:1;
 	int onewatt:1;
-	int font:1;
 	int digclk:1;
+	int battpc:1;
+	int phpct:1;
+	int wakeonpm:1;
+	int font:1;
 }
 dfStatus_t;
 
@@ -109,6 +115,8 @@ typedef struct dfParams
 	uint16_t	ClkRatio;
 	uint16_t	PreheatPwr;
 	uint8_t		PreheatTime;
+	uint8_t		Clicks[3];
+	uint8_t		DimTimeout;
 }
 dfParams_t;
 
@@ -144,11 +152,23 @@ typedef struct
 dfInfos_t;
 
 
+//-------------------------------------------------------------------------
+// NFE Block
+//-------------------------------------------------------------------------
+
+typedef struct
+{
+	uint8_t	Build[3];
+}
+dfNFEBlock_t;
+
+
 #define ALIGN256(x) (((x)&0xff)?((x)-((x)&0xff)+0x100):(x))
 
 #define DATAFLASH_PARAMS_SIZE	ALIGN256(sizeof(dfParams_t))
 #define DATAFLASH_INFOS_SIZE	ALIGN256(sizeof(dfInfos_t))
-#define DATAFLASH_FREE_SIZE		(FMC_FLASH_PAGE_SIZE-DATAFLASH_PARAMS_SIZE-DATAFLASH_INFOS_SIZE)
+#define DATAFLASH_NFEBLOCK_SIZE	ALIGN256(sizeof(dfNFEBlock_t))
+#define DATAFLASH_FREE_SIZE		(FMC_FLASH_PAGE_SIZE-DATAFLASH_PARAMS_SIZE-DATAFLASH_INFOS_SIZE-DATAFLASH_NFEBLOCK_SIZE)
 
 //-------------------------------------------------------------------------
 // It's important for DATAFLASH_PARAMS_SIZE to be a divider of
@@ -157,7 +177,7 @@ dfInfos_t;
 //	due to the sizeof() operation.
 // It won't be a problem as long as the size of the parameters do not
 //	exceed 0x200 bytes. Just be aware.
-// In any case, parameters size should never exceed 0x600 bytes.
+// In any case, parameters size should never exceed 0x500 bytes.
 //-------------------------------------------------------------------------
 
 
@@ -189,6 +209,11 @@ typedef struct dfStruct
 	};
 	union
 	{
+		dfNFEBlock_t	n;
+		uint32_t		nfe[DATAFLASH_NFEBLOCK_SIZE/4];
+	};
+	union
+	{
 		uint32_t	free_pages[DATAFLASH_FREE_SIZE/4];
 		Playfield_t	playfield;
 	};
@@ -208,6 +233,7 @@ extern dfStruct_t DataFlash;
 
 #define DFP(x) DataFlash.p.x
 #define DFI(x) DataFlash.i.x
+#define DFN(x) DataFlash.n.x
 
 #define dfChecksum		DataFlash.Checksum
 #define dfCRC			DFP(PCRC)
@@ -256,6 +282,8 @@ extern dfStruct_t DataFlash;
 #define dfClkRatio		DFP(ClkRatio)
 #define dfPreheatPwr	DFP(PreheatPwr)
 #define dfPreheatTime	DFP(PreheatTime)
+#define dfClick			DFP(Clicks)
+#define dfDimTimeout	DFP(DimTimeout)
 
 #define dfFWVersion		DFI(FWVersion)
 #define dffmcCID        DFI(fmcCID)
@@ -274,6 +302,8 @@ extern dfStruct_t DataFlash;
 #define dfMinute		DFI(Minute)
 #define dfSecond		DFI(Second)
 
+#define dfBuild			DFN(Build)
+
 #define gPlayfield		DataFlash.playfield
 
 
@@ -282,7 +312,7 @@ extern dfStruct_t DataFlash;
 
 extern uint8_t	UpdateDFTimer;
 extern uint8_t	UpdatePTTimer;
-
+extern uint8_t	DFMagicNumber;
 
 //=========================================================================
 // Functions
