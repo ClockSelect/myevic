@@ -44,6 +44,59 @@ unsigned char CurrentMenuItem;
 
 //-----------------------------------------------------------------------------
 
+__myevic__ void ClicksMenuIDraw( int it, int line, int sel )
+{
+	if ( it > CurrentMenu->nitems - 2 )
+		return;
+
+	DrawFillRect( 15, line, 63, line+12, 0 );
+
+	switch ( dfClick[it] )
+	{
+		default:
+		case CLICK_ACTION_NONE:
+		case CLICK_ACTION_TDOM:
+			DrawString( String_None, 20, line+2 );
+			break;
+
+		case CLICK_ACTION_EDIT:
+			DrawString( String_Edit, 20, line+2 );
+			break;
+
+		case CLICK_ACTION_CLOCK:
+			DrawString( String_Clock, 20, line+2 );
+			break;
+
+		case CLICK_ACTION_NEXT_MODE:
+			DrawString( String_ModePlus, 20, line+2 );
+			break;
+
+		case CLICK_ACTION_ON_OFF:
+			DrawString( String_OnOff, 20, line+2 );
+			break;
+	}
+}
+
+
+__myevic__ void ClicksMenuOnClick()
+{
+	if ( CurrentMenuItem > CurrentMenu->nitems - 2 )
+		return;
+
+	do
+	{
+		if ( ++dfClick[CurrentMenuItem] >= CLICK_ACTION_MAX )
+			dfClick[CurrentMenuItem] = CLICK_ACTION_NONE;
+	}
+	while ( dfClick[CurrentMenuItem] == CLICK_ACTION_TDOM );
+
+	UpdateDFTimer = 50;
+	gFlags.refresh_display = 1;
+}
+
+
+//-----------------------------------------------------------------------------
+
 __myevic__ void ClockMenuOnClick()
 {
 	if ( CurrentMenuItem == 0 )
@@ -76,15 +129,23 @@ __myevic__ void IFMenuIDraw( int it, int line, int sel )
 			DrawString( dfStatus.onewatt ? String_On : String_Off, 44, line+2 );
 			break;
 
-		case 2:	// Font
+		case 2:	// Logo
+			DrawString( dfStatus.nologo ? String_Off : String_On, 44, line+2 );
+			break;
+
+		case 3:	// Wake -+
+			DrawString( dfStatus.wakeonpm ? String_On : String_Off, 44, line+2 );
+			break;
+
+		case 4:	// Font
 			DrawImage( 44, line+2, dfStatus.font ? 0x9D : 0x9C );
 			break;
 
-		case 3:	// Clock
+		case 5:	// Clock
 			DrawImage( 44, line+2, dfStatus.digclk ? 0x9F : 0x9C );
 			break;
 
-		case 4:	// Temp
+		case 6:	// Temp
 			DrawImage( 44, line+2, dfIsCelsius ? 0xC9 : 0xC8 );
 			break;
 
@@ -107,16 +168,24 @@ __myevic__ void IFMenuOnClick()
 			WattsInc = dfStatus.onewatt ? 10 : 1;
 			break;
 
-		case 2:	// Font
+		case 2:	// Logo
+			dfStatus.nologo ^= 1;
+			break;
+
+		case 3:	// Wake -+
+			dfStatus.wakeonpm ^= 1;
+			break;
+
+		case 4:	// Font
 			dfStatus.font ^= 1;
 			DisplaySetFont();
 			break;
 
-		case 3:	// Font
+		case 5:	// Clock
 			dfStatus.digclk ^= 1;
 			break;
 
-		case 4:	// Temp
+		case 6:	// Temp
 			dfIsCelsius ^= 1;
 			if ( dfIsCelsius )
 			{
@@ -380,6 +449,14 @@ __myevic__ void ExpertMenuIDraw( int it, int line, int sel )
 				DrawString( String_ON, 36, line+2 );
 			break;
 
+		case 3:
+			DrawFillRect( 32, line, 63, line+12, 0 );
+			if ( dfStatus.nfeoff )
+				DrawString( String_OFF, 36, line+2 );
+			else
+				DrawString( String_ON, 36, line+2 );
+			break;
+
 		default:
 			break;
 	}
@@ -403,6 +480,7 @@ __myevic__ void ExpertMenuOnClick()
 			{
 				dfStatus.vcom = 1;
 			}
+			InitUSB();
 			gFlags.refresh_display = 1;
 			break;
 
@@ -418,8 +496,12 @@ __myevic__ void ExpertMenuOnClick()
 			break;
 
 		case 3:
+			dfStatus.nfeoff ^= 1;
+			gFlags.refresh_display = 1;
+			break;
+
+		case 4:
 			UpdateDataFlash();
-			InitUSB();
 			MainView();
 			break;
 	}
@@ -489,6 +571,8 @@ __myevic__ void ScreenProtMenuOnClick()
 		case 1:	// Main
 			if ( ++dfScrMainTime > 4 )
 				dfScrMainTime = 0;
+			dfDimTimeout = 0;
+			dfDimTimeout = GetMainScreenDuration();
 			UpdateDFTimer = 50;
 			gFlags.refresh_display = 1;
 			break;
@@ -765,12 +849,13 @@ const menu_t CoilsMenu;
 const menu_t ClockMenu;
 const menu_t ScreenMenu;
 const menu_t MiscsMenu;
+const menu_t IFMenu;
 
 //-----------------------------------------------------------------------------
 
 const menu_t LOGOMenu =
 {
-	String_LOGO,
+	String_Logo,
 	&MiscsMenu,
 	LogoMEnter+1,
 	0,
@@ -907,7 +992,7 @@ const menu_t MiscsMenu =
 	0,
 	4,
 	{
-		{ String_LOGO, &LOGOMenu, -1, 0 },
+		{ String_Logo, &LOGOMenu, -1, 0 },
 		{ String_Game, &GameMenu, -1, 0 },
 		{ String_3D, &Anim3dMenu, -1, 0 },
 		{ String_Exit, 0, 1, 0 }
@@ -959,11 +1044,12 @@ const menu_t ExpertMenu =
 	0,
 	ExpertMenuOnClick+1,
 	0,
-	4,
+	5,
 	{
 		{ String_USB, 0, -1, 0 },
 		{ String_DBG, 0, -1, 0 },
 		{ String_X32, 0, -1, 0 },
+		{ String_NFE, 0, -1, 0 },
 		{ String_Exit, 0, 1, 30 }
 	}
 };
@@ -977,13 +1063,12 @@ const menu_t ScreenSaveMenu =
 	ScreenSaveOnSelect+1,
 	0,
 	0,
-	6,
+	5,
 	{
 		{ String_None, 0, 1, 0 },
-		{ String_LOGO, 0, 1, 0 },
-		{ String_Analog_Clk, 0, 1, 0 },
-		{ String_Digit_Clk, 0, 1, 0 },
+		{ String_Clock, 0, 1, 0 },
 		{ String_Cube, 0, 1, 0 },
+		{ String_Logo, 0, 1, 0 },
 		{ String_Qix, 0, 1, 0 }
 	}
 };
@@ -1006,6 +1091,24 @@ const menu_t ScreenMenu =
 	}
 };
 
+const menu_t ClicksMenu =
+{
+	String_Clicks,
+	&IFMenu,
+	0,
+	ClicksMenuIDraw+1,
+	0,
+	ClicksMenuOnClick+1,
+	0,
+	4,
+	{
+		{ String_2, 0, -1, 0 },
+		{ String_3, 0, -1, 0 },
+		{ String_4, 0, -1, 0 },
+		{ String_Exit, 0, 1, 0 },
+	}
+};
+
 const menu_t IFMenu =
 {
 	String_Interface,
@@ -1015,13 +1118,16 @@ const menu_t IFMenu =
 	0,
 	IFMenuOnClick+1,
 	0,
-	6,
+	9,
 	{
 		{ String_BattPC, 0, -1, 0 },
 		{ String_1Watt, 0, -1, 0 },
+		{ String_Logo, 0, -1, 0 },
+		{ String_WakeMP, 0, -1, 0 },
 		{ String_Font, 0, -1, 0 },
 		{ String_Clock, 0, -1, 0 },
 		{ String_Temp, 0, -1, 0 },
+		{ String_Clicks, &ClicksMenu, -1, 0 },
 		{ String_Exit, 0, 1, 0 }
 	}
 };

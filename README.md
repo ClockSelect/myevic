@@ -80,9 +80,10 @@ There's many more to LOGO and Game menus now. See below.
          Default VTC contrast is around 17%. This screen gives you access to the full contrast range of the display.
   * Protection:
 
-         ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/protec_zpsniaf7bl8.png)
+         ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/protec_zpsx0jd4aok.png)
 
-         Configure screen saver timing. After 30 seconds of inactivity, the main screen switches to the screen saver animation (see below) for the duration configured in this menu, after what the box shuts down. Scroll down the menu to the "Off" option to disable box shutdown.
+         Configure main screen dim timeout and screen saver timing. After the time setup with the "Main" option, (default 30 seconds) of inactivity, the main screen switches to the screen saver animation (see below) for the duration configured with the "Saver" option, after what the box shuts down.
+         If the "Saver" item is set to "Off", the box will dim after "Main" second, then switch to a black screen for 3 minutes before being shut down.
 
   * Saver:
 
@@ -151,6 +152,69 @@ There's many more to LOGO and Game menus now. See below.
     Click on each menu item to set 'Y' or 'N' if you want to see any given mode proposed while cycling between modes in menu mode.
     Typically, you'll set "START" mode to 'N'. Typically.
 
+* Miscs
+  * LOGO
+
+        Guenuine menu
+  * Game
+
+        Flappy bird. Guenuine menu.
+  * 3D
+
+        ![3D cube](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/cube_zpsf9apfiun.png)
+
+        Cool 3D spinning cube.
+        Come back to this menu and set it to "None" to cancel animation.
+        Or reset the box.
+
+* Interface
+
+    ![Interface menu screen](http://i345.photobucket.com/albums/p374/ClockSelect/interface_zps2inyhtfy.png)
+
+  * Batt%
+
+        Display battery charge percentage next to the battery picture on main screen. Resolution is 10% atm.
+
+  * 1Watt
+
+        Enable increment of power setting by plus or minus 1 Watt instead of plus or minus 0.1 Watts.
+
+  * Logo
+  
+        Enable/Disable custom logo display
+
+  * Wake < >
+
+        Enable/Disable bow wake up from sleep mode when pressing the + or - button.
+
+  * Font
+
+        Change the display font. The font A is the new bold cool-looking font, font B is the guenuine Joyetech's font.
+
+  * Clock
+
+        Change the format of the clock displayed on the main screen between a hand dial clock (A) and a digital clock with date and time (D).
+
+  * Temp
+
+        Choose once and for all your temperature unit, between °C and °F. Nobody needs to switch back and forth between standards. Moreover, Farenheit is not even a standard. Maybe I'll replace it by Kelvins one day.
+
+  * Clicks
+  
+        ![Clicks Menu](http://i345.photobucket.com/albums/p374/ClockSelect/clicks_zpsoqy6ngvh.png)
+        
+        The Clicks submenu allows you to configure the action associated to a Fire button multi-clic. Configurable multi-clicks are double, triple and quadruple clicks.
+
+        Possible actions are:
+        * Nothing
+        * Enter edit mode
+        * Switch display of info lines / clock on the main display
+        * Switch to next vaping mode ( TC -> POWER -> BYPASS -> ... )
+        * Switch box On or Off
+
+        As a security feature, if none of the action are configured to be the "Edit" mode, the firmware will redefine the triple click action to "Edit" at next reset.
+
+
 * Expert
 
     Some advanced options:
@@ -174,47 +238,11 @@ There's many more to LOGO and Game menus now. See below.
   * X32
 
         Enables or disables usage of the X32 crystal of the PCB. If this setting is "OFF", the firmware won't try to drive the Real-Time Clock with the 32.768kHz crystal. This may solve freezing issues on some malfunctionning boxes (VTwo only).
+
+  * NFE
  
-* Miscs
-  * LOGO
-
-        Guenuine menu
-  * Game
-
-        Flappy bird. Guenuine menu.
-  * 3D
-
-        ![3D cube](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/cube_zpsf9apfiun.png)
-
-        Cool 3D spinning cube.
-        Come back to this menu and set it to "None" to cancel animation.
-        Or reset the box.
-
-* Interface
-
-    ![Interface menu screen](http://i345.photobucket.com/albums/p374/ClockSelect/interface_zpspahdswto.png)
-
-  * Batt%
-
-        Display battery charge percentage next to the battery picture on main screen. Resolution is 10% atm.
-
-  * 1Watt
-
-        Enable increment of power setting by plus or minus 1 Watt instead of plus or minus 0.1 Watts.
-
-  * Font
-
-        Change the display font. The font A is the new bold cool-looking font, font B is the guenuine Joyetech's font.
-
-  * Clock
-
-        Change the format of the clock displayed on the main screen between a hand dial clock (A) and a digital clock with date and time (D).
-
-  * Temp
-
-        Choose once and for all your temperature unit, between °C and °F. Nobody needs to switch back and forth between standards. Moreover, Farenheit is not even a standard. Maybe I'll replace it by Kelvins one day.
-
-
+        Enables or disables the NFirmwareEditor 5.0 myEvic Configuration Editor compatibility. This option is enabled by default; if you have troubles using some firmware/dataflash utilities other than NFirmwareEditor, you may try to set this option to "OFF".
+ 
 ### Build:
 Follow [evic-sdk::Readme] (https://github.com/ReservedField/evic-sdk/blob/master/README.md) instructions to:
   * Setup the environment

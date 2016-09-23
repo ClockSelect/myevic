@@ -61,6 +61,8 @@ typedef struct
 	int phpct:1;
 	int wakeonpm:1;
 	int font:1;
+
+	int nfeoff:1;
 }
 dfStatus_t;
 

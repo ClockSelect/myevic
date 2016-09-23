@@ -330,7 +330,7 @@ __myevic__ uint16_t GetScreenProtection()
 
 __myevic__ uint16_t GetMainScreenDuration()
 {
-	return ScrMainTimes[dfScrMainTime];
+	return dfDimTimeout ? : ScrMainTimes[dfScrMainTime];
 }
 
 
@@ -451,7 +451,7 @@ __myevic__ int IsClockOnScreen()
 {
 	return (  ((( Screen == 1 ) || ( Screen == 2 )) && ( dfAPT == 6 ))
 			|| (( Screen == 1 ) && ( dfStatus.clock ))
-			|| (( Screen == 60 ) && (( dfScreenSaver == 2 ) || ( dfScreenSaver == 3 )))
+			|| (( Screen == 60 ) && ( dfScreenSaver == 1 ))
 			||  ( Screen == 103 )
 			||  ( Screen == 104 )
 			);
@@ -521,18 +521,7 @@ __myevic__ void ShowBattery()
 //----- (00006764) --------------------------------------------------------
 __myevic__ void ShowBatCharging()
 {
-	switch ( dfScreenSaver )
-	{
-		case 1:
-			DrawLOGO( 0, 25 );
-			break;
-		case 2:
-			DrawClock( 25 );
-			break;
-		case 3:
-			DrawDigitClock( 40 );
-			break;
-	}
+	ShowScreenSaver();
 
 	if ( dfStatus.battpc )
 	{
@@ -655,7 +644,7 @@ __myevic__ void ShowLOGOMenu()
 {
 	int l;
 
-	DrawString( String_LOGO, 4, 6 );
+	DrawString( String_Logo, 4, 6 );
 	DrawHLine( 0, 16, 63, 1 );
 
 	l = dfStatus.nologo;
@@ -895,22 +884,25 @@ __myevic__ void ShowScreenSaver()
 	switch ( dfScreenSaver )
 	{
 		case 1:
-			DrawLOGO( 0, 32 );
+			if ( dfStatus.digclk )
+			{
+				DrawDigitClock( 40 );
+			}
+			else
+			{
+				DrawClock( 25 );
+			}
 			break;
 
 		case 2:
-			DrawClock( 54 );
-			break;
-
-		case 3:
-			DrawDigitClock( 46 );
-			break;
-
-		case 4:
 			anim3d( 1 );
 			break;
 
-		case 5:
+		case 3:
+			DrawLOGO( 0, 32 );
+			break;
+
+		case 4:
 			qix( 1 );
 			break;
 
@@ -925,11 +917,11 @@ __myevic__ void AnimateScreenSaver()
 {
 	switch ( dfScreenSaver )
 	{
-		case 4:
+		case 2:
 			anim3d( 0 );
 			break;
 
-		case 5:
+		case 4:
 			qix( 0 );
 			break;
 

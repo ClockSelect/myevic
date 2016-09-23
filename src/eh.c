@@ -862,6 +862,14 @@ __myevic__ void EventHandler()
 				return;
 			}
 
+			if ( Screen == 0 || Screen == 60 )
+			{
+				if ( dfStatus.wakeonpm )
+				{
+					MainView();
+				}
+			}
+
 			if ( Screen == 82 )
 			{
 				dfStatus.nologo ^= 1;
@@ -1067,6 +1075,14 @@ __myevic__ void EventHandler()
 			if ( dfStatus.off )
 			{
 				return;
+			}
+
+			if ( Screen == 0 || Screen == 60 )
+			{
+				if ( dfStatus.wakeonpm )
+				{
+					MainView();
+				}
 			}
 
 			if (( Screen >= 80 ) && ( Screen < 100 ))

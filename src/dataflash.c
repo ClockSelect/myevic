@@ -4,6 +4,7 @@
 #include "screens.h"
 #include "atomizer.h"
 #include "display.h"
+#include "events.h"
 
 #include "dataflash.h"
 
@@ -215,7 +216,6 @@ __myevic__ void ResetDataFlash()
 	dfTempAlgo = 1;
 	dfTemp = 210;
 //	dfResistance = 0;
-//	dfStealthOn = 0;
 	dfUIVersion = 2;
 //	dfAPT = 0;
 //	dfRezTI = 0;
@@ -223,19 +223,7 @@ __myevic__ void ResetDataFlash()
 //	dfRezLockedTI = 0;
 //	dfRezLockedNI = 0;
 	dfTiOn = 1;
-//	dfRezSS = 0;
-//	dfRezLockedSS = 0;
-//	dfRezTCR = 0;
-//	dfRezLockedTCR = 0;
-	dfScreenSaver = 1;
-//	dfTCMode = 0;
-//	dfScreenProt = 0;
-	dfTCRM[0] = 120;
-	dfTCRM[1] = 120;
-	dfTCRM[2] = 120;
-//	dfbyte_2000033D = 0;
-//	dfFBBest = 0;
-//	dfFBSpeed = 0;
+//	dfStealthOn = 0;
 	CpyTmpCoefsNI();
 	CpyTmpCoefsTI();
 //	dfStatus.off = 0;
@@ -247,19 +235,39 @@ __myevic__ void ResetDataFlash()
 //	dfStatus.storage = 0;
 //	dfStatus.dbgena = 0;
 //	dfStatus.x32off = 0;
-//	dfStatus.phpct = 0;
-//	dfStatus.battpc = 0;
 //	dfStatus.onewatt = 0;
-//	dfStatus.font = 0;
 //	dfStatus.digclk = 0;
+//	dfStatus.battpc = 0;
+//	dfStatus.phpct = 0;
+//	dfStatus.wakeonpm = 0;
+//	dfStatus.font = 0;
+//	dfStatus.nfeoff = 0;
+//	dfRezSS = 0;
+//	dfRezLockedSS = 0;
+//	dfRezTCR = 0;
+//	dfRezLockedTCR = 0;
+//	dfTCRIndex = 0;
+//	dfScrMainTime = 0;
+	dfTCRM[0] = 120;
+	dfTCRM[1] = 120;
+	dfTCRM[2] = 120;
+	dfScreenSaver = 1;
+//	dfTCMode = 0;
+//	dfScreenProt = 0;
 //	MemClear( dfSavedCfgRez, sizeof(dfSavedCfgRez) );
 //	MemClear( dfSavedCfgPwr, sizeof(dfSavedCfgPwr) );
+//	dfFBBest = 0;
+//	dfFBSpeed = 0;
+//	dfbyte_2000033D = 0;
 	dfContrast = 45;
 //	dfModesSel = 0;
 	dfClkRatio = RTC_DEF_CLK_RATIO;
 	dfPreheatPwr = 200;
 //	dfPreheatTime = 0;
-//	dfScrMainTime = 0;
+	dfClick[0] = CLICK_ACTION_CLOCK;
+	dfClick[1] = CLICK_ACTION_EDIT;
+//	dfClick[2] = CLICK_ACTION_NONE;
+//	dfDimTimeout = 0;
 	UpdateDataFlash();
 
 	dfPuffCount = 0;
@@ -273,6 +281,11 @@ __myevic__ void ResetDataFlash()
 __myevic__ void DFCheckValuesValidity()
 {
 	int i,v;
+
+	if ( dfMagic == DATAFLASH_NFE_MAGIC )
+	{
+		dfMagic = DFMagicNumber;
+	}
 
 	if ( dfMode >= 7 )
 		dfMode = 4;
@@ -348,7 +361,7 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfRezTCR > 150 )
 		dfRezTCR = 0;
 
-	if ( dfScreenSaver > 5 )
+	if ( dfScreenSaver > 4 )
 		dfScreenSaver = 1;
 
 	if ( dfRezLockedTCR > 1 )
@@ -372,6 +385,9 @@ __myevic__ void DFCheckValuesValidity()
 	}
 	if ( i != 21 )
 		CpyTmpCoefsTI();
+
+	if ( dfTCRIndex > 2 )
+		dfTCRIndex = 0;
 
 	for ( i = 0 ; i < 3 ; ++i )
 	{
@@ -420,7 +436,27 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfPreheatTime > 200 )
 		dfPreheatTime = 0;
 
-	dfDimTimeout = GetMainScreenDuration();
+	v = 0;
+	for ( i = 0 ; i < 3 ; ++i )
+	{
+		if ( dfClick[i] >= CLICK_ACTION_MAX )
+			break;
+		if ( dfClick[i] == CLICK_ACTION_EDIT )
+			v = 1;
+	}
+	if ( i < 3 )
+	{
+		dfClick[0] = CLICK_ACTION_CLOCK;
+		dfClick[1] = CLICK_ACTION_EDIT;
+		dfClick[2] = CLICK_ACTION_NONE;
+	}
+	else if ( v == 0 )
+	{
+		dfClick[1] = CLICK_ACTION_EDIT;
+	}
+
+	if ( dfDimTimeout < 5 || dfDimTimeout > 60 )
+		dfDimTimeout = 0;
 }
 
 
@@ -666,9 +702,6 @@ __myevic__ void InitDataFlash()
 
 	SetProductID();
 
-	uint32_t build = __BUILD;
-	MemCpy( &dfBuild, &build, 3 );
-	
 	if ( ISVTWO || ISEVICAIO || ISCUBOMINI || ISEVICBASIC )
 	{
 		switch ( dfHWVersion )
@@ -803,6 +836,11 @@ __myevic__ void InitDataFlash()
 				dfHWVersion / 100,
 				dfHWVersion / 10 % 10,
 				dfHWVersion % 10 );
+
+	if ( dfMagic == DATAFLASH_NFE_MAGIC )
+	{
+		dfMagic = DFMagicNumber;
+	}
 
 	if ( dfMagic == DFMagicNumber && CalcPageCRC( DataFlash.params ) == dfCRC )
 	{

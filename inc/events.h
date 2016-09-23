@@ -67,6 +67,21 @@ extern uint8_t	LastEvent;
 #define EVENT_PARENTMENU	106
 #define EVENT_SETTIME		107
 #define EVENT_SETDATE		108
+#define EVENT_NEXT_MODE		109
+
+
+//==============================================================================
+
+enum
+{
+	CLICK_ACTION_NONE = 0,
+	CLICK_ACTION_EDIT,
+	CLICK_ACTION_CLOCK,
+	CLICK_ACTION_TDOM,
+	CLICK_ACTION_NEXT_MODE,
+	CLICK_ACTION_ON_OFF,
+	CLICK_ACTION_MAX
+};
 
 
 //==============================================================================

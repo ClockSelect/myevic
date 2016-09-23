@@ -270,15 +270,35 @@ __myevic__ void GetUserInput()
 					break;
 
 				case 2:
-					FireClicksEvent = EVENT_DOUBLE_FIRE; // show clock
-					break;
-
 				case 3:
-					FireClicksEvent = 16;	// edit mode
-					break;
-
 				case 4:
-					FireClicksEvent = EVENT_QUAD_FIRE;	// debug mode
+					switch ( dfClick[FireClickCount-2] )
+					{
+						default:
+						case CLICK_ACTION_TDOM:
+							break;
+
+						case CLICK_ACTION_NONE:
+							if ( FireClickCount == 4 )
+								FireClicksEvent = EVENT_QUAD_FIRE;	// debug mode
+							break;
+
+						case CLICK_ACTION_EDIT:
+							FireClicksEvent = 16;	// edit mode
+							break;
+
+						case CLICK_ACTION_CLOCK:
+							FireClicksEvent = EVENT_DOUBLE_FIRE; // show clock
+							break;
+
+						case CLICK_ACTION_NEXT_MODE:
+							FireClicksEvent = EVENT_NEXT_MODE; // show clock
+							break;
+
+						case CLICK_ACTION_ON_OFF:
+							FireClicksEvent = 17;	// Switch On/Off
+							break;
+					}
 					break;
 
 				case 5:
@@ -1040,6 +1060,12 @@ __myevic__ int CustomEvents()
 
 		case EVENT_SETDATE:
 			vret = EvtSetDate();
+			break;
+
+		case EVENT_NEXT_MODE:
+			NextMode();
+			gFlags.refresh_display = 1;
+			vret = 1;
 			break;
 
 		default:
