@@ -55,7 +55,6 @@ __myevic__ void ClicksMenuIDraw( int it, int line, int sel )
 	{
 		default:
 		case CLICK_ACTION_NONE:
-		case CLICK_ACTION_TDOM:
 			DrawString( String_None, 20, line+2 );
 			break;
 
@@ -65,6 +64,10 @@ __myevic__ void ClicksMenuIDraw( int it, int line, int sel )
 
 		case CLICK_ACTION_CLOCK:
 			DrawString( String_Clock, 20, line+2 );
+			break;
+
+		case CLICK_ACTION_TDOM:
+			DrawString( String_TDom, 20, line+2 );
 			break;
 
 		case CLICK_ACTION_NEXT_MODE:
@@ -83,12 +86,8 @@ __myevic__ void ClicksMenuOnClick()
 	if ( CurrentMenuItem > CurrentMenu->nitems - 2 )
 		return;
 
-	do
-	{
-		if ( ++dfClick[CurrentMenuItem] >= CLICK_ACTION_MAX )
-			dfClick[CurrentMenuItem] = CLICK_ACTION_NONE;
-	}
-	while ( dfClick[CurrentMenuItem] == CLICK_ACTION_TDOM );
+	if ( ++dfClick[CurrentMenuItem] >= CLICK_ACTION_MAX )
+		dfClick[CurrentMenuItem] = CLICK_ACTION_NONE;
 
 	UpdateDFTimer = 50;
 	gFlags.refresh_display = 1;
@@ -325,30 +324,17 @@ __myevic__ int PreheatMEvent( int event )
 			{
 				if ( CurrentMenuItem == 1 )
 				{
-					if ( KeyTicks >= 105 )
+					if ( dfStatus.onewatt )
 					{
-						if ( dfPreheatPwr < ( dfStatus.phpct ? 200 : MaxPower ) )
-						{
-							dfPreheatPwr -= dfPreheatPwr % 10;
-							dfPreheatPwr += 10;
-						}
+						dfPreheatPwr -= dfPreheatPwr % 10;
+					}
+					if ( dfStatus.phpct )
+					{
+						PowerPlus( &dfPreheatPwr, 10, 200 );
 					}
 					else
 					{
-						if ( dfPreheatPwr < ( dfStatus.phpct ? 200 : MaxPower ) )
-						{
-							if ( dfPreheatPwr < 1000 )
-							{
-								if ( dfStatus.phpct ) ++dfPreheatPwr;
-								else
-								{
-									dfPreheatPwr += WattsInc;
-									if ( dfPreheatPwr > MaxPower ) dfPreheatPwr = MaxPower;
-								}
-							}
-							else dfPreheatPwr += 10;
-						}
-						else dfPreheatPwr = 10;
+						PowerPlus( &dfPreheatPwr, AtoMinPower, AtoMaxPower );
 					}
 				}
 				else if ( CurrentMenuItem == 2 )
@@ -367,32 +353,17 @@ __myevic__ int PreheatMEvent( int event )
 			{
 				if ( CurrentMenuItem == 1 )
 				{
-					if ( KeyTicks >= 105 )
+					if ( dfStatus.onewatt )
 					{
-						if ( dfPreheatPwr > 10 )
-						{
-							if ( dfPreheatPwr % 10 )
-								dfPreheatPwr -= dfPreheatPwr % 10;
-							else
-								dfPreheatPwr -= 10;
-						}
+						dfPreheatPwr -= dfPreheatPwr % 10;
+					}
+					if ( dfStatus.phpct )
+					{
+						PowerMinus( &dfPreheatPwr, 10, 200 );
 					}
 					else
 					{
-						if ( dfPreheatPwr > 1000 ) dfPreheatPwr -= 10;
-						else if ( dfPreheatPwr > 10 )
-						{
-							if ( dfStatus.phpct ) --dfPreheatPwr;
-							else
-							{
-								dfPreheatPwr -= WattsInc;
-								if ( dfPreheatPwr < 10 ) dfPreheatPwr = 10;
-							}
-						}
-						else
-						{
-							dfPreheatPwr = ( dfStatus.phpct ? 200 : MaxPower );
-						}
+						PowerMinus( &dfPreheatPwr, AtoMinPower, AtoMaxPower );
 					}
 				}
 				else if ( CurrentMenuItem == 2 )

@@ -12,12 +12,118 @@
 #include "flappy.h"
 
 //=========================================================================
+// Globals
 
 volatile uint8_t Event;
 uint8_t	LastEvent;
 
 uint8_t	MenuPage;
 uint8_t	WattsInc;
+
+
+//=========================================================================
+
+__myevic__ void PowerPlus( uint16_t *pwr, uint16_t min, uint16_t max )
+{
+	if ( *pwr >= max )
+	{
+		if ( KeyTicks < 5 )
+		{
+			*pwr = min;
+		}
+	}
+	else if ( KeyTicks < 105 )
+	{
+		*pwr += WattsInc;
+
+		if ( *pwr >= max )
+		{
+			*pwr = max;
+		}
+	}
+	else
+	{
+		if ( *pwr % 10 )
+		{
+			*pwr -= *pwr % 10;
+		}
+		*pwr += 10;
+	}
+}
+
+
+__myevic__ void PowerMinus( uint16_t *pwr, uint16_t min, uint16_t max )
+{
+	if ( *pwr <= min )
+	{
+		if ( KeyTicks < 5 )
+		{
+			*pwr = max;
+		}
+	}
+	else if ( KeyTicks < 105 )
+	{
+		*pwr -= WattsInc;
+
+		if ( *pwr <= min )
+		{
+			*pwr = min;
+		}
+	}
+	else
+	{
+		if ( *pwr % 10 )
+		{
+			*pwr -= *pwr % 10;
+		}
+		else
+		{
+			*pwr -= 10;
+		}
+	}
+}
+
+
+__myevic__ void TempPlus()
+{
+	if ( dfIsCelsius )
+	{
+		dfTemp += 1;
+		if ( dfTemp > 315 )
+		{
+			dfTemp = ( KeyTicks < 5 ) ? 100 : 315;
+		}
+	}
+	else
+	{
+		dfTemp += 5;
+		if ( dfTemp > 600 )
+		{
+			dfTemp = ( KeyTicks < 5 ) ? 200 : 600;
+		}
+	}
+}
+
+
+__myevic__ void TempMinus()
+{
+	if ( dfIsCelsius )
+	{
+		dfTemp -= 1;
+		if ( dfTemp < 100 )
+		{
+			dfTemp = ( KeyTicks < 5 ) ? 315 : 100;
+		}
+	}
+	else
+	{
+		dfTemp -= 5;
+		if ( dfTemp < 200 )
+		{
+			dfTemp = ( KeyTicks < 5 ) ? 600 : 200;
+		}
+	}
+}
 
 
 //----- (000039E0) --------------------------------------------------------
@@ -30,14 +136,10 @@ __myevic__ void EventHandler()
 	int v22;
 	int v23;
 	int tempf;
-	unsigned int v41;
-	short v42;
 	unsigned int v44;
 	unsigned int v45;
 	unsigned int v46;
 	unsigned int v47;
-	unsigned int v53;
-	short v54;
 	unsigned int v57;
 	unsigned int v58;
 	unsigned int v59;
@@ -914,29 +1016,7 @@ __myevic__ void EventHandler()
 
 					if ( EditItemIndex == 2 && gFlags.edit_capture_evt )
 					{
-						if ( dfTCPower <= 10 )
-						{
-							dfTCPower = MaxTCPower;
-						}
-						else if ( KeyTicks < 105 )
-						{
-							dfTCPower -= WattsInc;
-							if ( dfTCPower <= 10 )
-							{
-								dfTCPower = 10;
-							}
-						}
-						else
-						{
-							if ( dfTCPower % 10 )
-							{
-								dfTCPower -= dfTCPower % 10;
-							}
-							else
-							{
-								dfTCPower -= 10;
-							}
-						}
+						dfStatus.tdom ? TempMinus() : PowerMinus( &dfTCPower, 10, MaxTCPower );
 					}
 					else if ( !ISMODETC(dfMode) )
 					{
@@ -964,27 +1044,9 @@ __myevic__ void EventHandler()
 				}
 				else
 				{
-					v53 = AtoMinPower;
-					v54 = AtoMinPower;
-
 					if ( ISMODETC(dfMode) )
 					{
-						if ( dfIsCelsius )
-						{
-							dfTemp -= 1;
-							if ( dfTemp < 100 )
-							{
-								dfTemp = 315;
-							}
-						}
-						else
-						{
-							dfTemp -= 5;
-							if ( dfTemp < 200 )
-							{
-								dfTemp = 600;
-							}
-						}
+						dfStatus.tdom ? PowerMinus( &dfTCPower, 10, MaxTCPower ) : TempMinus();
 					}
 					else if ( dfMode == 6 )
 					{
@@ -1001,33 +1063,19 @@ __myevic__ void EventHandler()
 							v60 = v58 - 10;
 
 							if ( v60 <= 0 )
-								dfSavedCfgPwr[ConfigIndex] = v54;
+								dfSavedCfgPwr[ConfigIndex] = AtoMinPower;
 							else
 								dfSavedCfgPwr[ConfigIndex] = v60;
 
-							if ( dfSavedCfgPwr[ConfigIndex] <= v53 )
-								dfSavedCfgPwr[ConfigIndex] = v54;
+							if ( dfSavedCfgPwr[ConfigIndex] <= AtoMinPower )
+								dfSavedCfgPwr[ConfigIndex] = AtoMinPower;
 						}
 						v57 = dfSavedCfgPwr[ConfigIndex];
 						dfVWVolts = GetAtoVWVolts(v57);
 					}
 					else if ( dfMode == 4 )
 					{
-						if ( KeyTicks < 105 )
-						{
-							if ( dfPower ) dfPower -= WattsInc;
-						}
-						else
-						{
-							if ( dfPower % 10 )
-								dfPower -= dfPower % 10;
-							else
-								if ( dfPower >= 10 ) dfPower -= 10;
-						}
-
-						if ( dfPower <= AtoMinPower )
-							dfPower = AtoMinPower;
-
+						PowerMinus( &dfPower, AtoMinPower, AtoMaxPower );
 						dfVWVolts = GetAtoVWVolts( dfPower );
 					}
 				}
@@ -1155,28 +1203,9 @@ __myevic__ void EventHandler()
 								ModeChange();
 							}
 							break;
-						
+
 						case 2:
-							if ( dfTCPower >= MaxTCPower )
-							{
-								dfTCPower = 10;
-							}
-							else if ( KeyTicks < 105 )
-							{
-								dfTCPower += WattsInc;
-								if ( dfTCPower >= MaxTCPower )
-								{
-									dfTCPower = MaxTCPower;
-								}
-							}
-							else
-							{
-								if ( dfTCPower % 10 )
-								{
-									dfTCPower -= dfTCPower % 10;
-								}
-								dfTCPower += 10;
-							}
+							dfStatus.tdom ? TempPlus() : PowerPlus( &dfTCPower, 10, MaxTCPower );
 							gFlags.edit_capture_evt = 1;
 							break;
 
@@ -1192,46 +1221,17 @@ __myevic__ void EventHandler()
 				}
 				else
 				{
-					v41 = AtoMaxPower;
-					v42 = AtoMaxPower;
-		
 					switch ( dfMode )
 					{
 						case 0:
 						case 1:
 						case 2:
 						case 3:
-							if ( dfIsCelsius )
-							{
-								dfTemp += 1;
-								if ( dfTemp > 315 )
-								{
-									dfTemp = 100;
-								}
-							}
-							else
-							{
-								dfTemp += 5;
-								if ( dfTemp > 600 )
-								{
-									dfTemp = 200;
-								}
-							}
+							dfStatus.tdom ? PowerPlus( &dfTCPower, 10, MaxTCPower ) : TempPlus();
 							break;
 
 						case 4:
-							if ( KeyTicks < 105 )
-							{
-								dfPower += WattsInc;
-							}
-							else
-							{
-								if ( dfPower % 10 )
-									dfPower = 10 * (dfPower / 10);
-								dfPower += 10;
-							}
-							if ( dfPower > AtoMaxPower )
-								dfPower = AtoMaxPower;
+							PowerPlus( &dfPower, AtoMinPower, AtoMaxPower );
 							dfVWVolts = GetAtoVWVolts( dfPower );
 							break;
 
@@ -1247,8 +1247,8 @@ __myevic__ void EventHandler()
 								}
 								v47 = ( v45 + 10 );
 								dfSavedCfgPwr[ConfigIndex] = v47;
-								if ( v47 > v41 )
-									dfSavedCfgPwr[ConfigIndex] = v42;
+								if ( v47 > AtoMaxPower )
+									dfSavedCfgPwr[ConfigIndex] = AtoMaxPower;
 							}
 							v44 = dfSavedCfgPwr[ConfigIndex];
 							dfVWVolts = GetAtoVWVolts(v44);

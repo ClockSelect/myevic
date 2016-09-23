@@ -123,6 +123,7 @@ extern const uint16_t String_VOLT_s[];
 extern const uint16_t String_COIL_s[];
 extern const uint16_t String_TIME_s[];
 extern const uint16_t String_PUFF_s[];
+extern const uint16_t String_BOARD_s[];
 extern const uint16_t String_RES_s[];
 extern const uint16_t String_START[];
 extern const uint16_t String_End[];
@@ -193,6 +194,7 @@ extern const uint16_t String_3[];
 extern const uint16_t String_4[];
 extern const uint16_t String_OnOff[];
 extern const uint16_t String_ModePlus[];
+extern const uint16_t String_TDom[];
 extern const uint16_t String_Clicks[];
 
 

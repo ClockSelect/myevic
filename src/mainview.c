@@ -115,6 +115,36 @@ __myevic__ void DrawPwrLine( int pwr, int line )
 	}
 }
 
+
+//=============================================================================
+
+__myevic__ void DrawTempLine( int line )
+{
+	if ( BLINKITEM(2) && PD2 && PD3 )
+		return;
+
+    DrawString( String_TEMP_s, 0, line+2 );
+
+	DrawImage( 56, line+2, dfIsCelsius ? 0xC9 : 0xC8 );
+
+	if ( Screen == 2 )
+	{
+		if ( dfIsCelsius )
+		{
+			DrawValue( 31, line, FarenheitToC( AtoTemp ), 0, 0x1F, 3 );
+		}
+		else
+		{
+			DrawValue( 31, line, AtoTemp, 0, 0x1F, 3 );
+		}
+	}
+	else
+	{
+		DrawValue( 31, line, dfTemp, 0, 0x1F, 3 );
+	}
+}
+
+
 //=============================================================================
 
 __myevic__ void DrawVoltsLine( int volts, int line )
@@ -221,7 +251,7 @@ __myevic__ void DrawAPTLine( int line )
 			DrawImage( 57, line+2, 0x97 );
 			break;
 		}
-		
+
 		case 4:
 		{
 			DrawString( String_VOUT_s, 0, line+2 );
@@ -229,15 +259,15 @@ __myevic__ void DrawAPTLine( int line )
 			DrawImage( 57, line+2, 0x97 );
 			break;
 		}
-		
+
 		case 5:
 		{
-			DrawString( String_TEMP_s, 0, line+2 );
+			DrawString( String_BOARD_s, 0, line+2 );
 
 			int t = dfIsCelsius ? BoardTemp : CelsiusToF( BoardTemp );
 
 			DrawValue( t>99?31:39, line, t, 0, 0x1F, t>99?3:2 );
-			DrawImage( 57, line-1, dfIsCelsius ? 0x6A : 0x6D );
+			DrawImage( 56, line+2, dfIsCelsius ? 0xC9 : 0xC8 );
 			break;
 		}
 
@@ -278,7 +308,14 @@ __myevic__ void DrawInfoLines()
 			case 1:
 			case 2:
 			case 3:
-				DrawPwrLine( AtoPower( TargetVolts ), 52 );
+				if ( dfStatus.tdom )
+				{
+					DrawTempLine( 52 );
+				}
+				else
+				{
+					DrawPwrLine( AtoPower( TargetVolts ), 52 );
+				}
 				break;
 			case 4:
 				DrawValue( 10, 49, FireDuration, 1, 0x29, 2 );
@@ -300,7 +337,14 @@ __myevic__ void DrawInfoLines()
 			case 1:
 			case 2:
 			case 3:
-				DrawPwrLine( dfTCPower, 52 );
+				if ( dfStatus.tdom )
+				{
+					DrawTempLine( 52 );
+				}
+				else
+				{
+					DrawPwrLine( dfTCPower, 52 );
+				}
 				break;
 			case 4:
 				DrawVoltsLine( dfVWVolts, 52 );
@@ -326,6 +370,81 @@ __myevic__ void DrawBFLine( int y )
 	{
 		DrawHLine( 5 * v, y, 5 * v + 2, 1 );
 		DrawHLine( 5 * v, y + 1, 5 * v + 2, 1 );
+	}
+}
+
+
+//=============================================================================
+
+__myevic__ void DrawTemp()
+{
+	if ( Screen == 2 )
+	{
+		if ( dfIsCelsius )
+		{
+			int tempc = FarenheitToC( AtoTemp );
+
+			if ( dfTemp <= tempc )
+			{
+				DrawString( String_Protec, 2, 20 );
+			}
+			else
+			{
+				DrawValue( 0, 13, tempc, 0, 0x48, 3 );
+				DrawImage( 48, 20, 0xE0 );
+			}
+		}
+		else
+		{
+			if ( dfTemp <= AtoTemp )
+			{
+				DrawString( String_Protec, 2, 20 );
+			}
+			else
+			{
+				DrawValue( 0, 13, AtoTemp, 0, 0x48, 3 );
+				DrawImage( 48, 20, 0xE1 );
+			}
+		}
+	}
+	else
+	{
+		DrawValue( 0, 13, dfTemp, 0, 0x48, 3 );
+		DrawImage( 48, 20, dfIsCelsius ? 0xE0 : 0xE1 );
+	}
+}
+
+
+//=============================================================================
+
+__myevic__ void DrawPower( int pwr )
+{
+	if ( pwr > 999 )
+	{
+		DrawValue( 0, 18, pwr, 1, 0x29, 4 );
+		DrawImage( 54, 26, 0x98 );
+		if ( dfPreheatTime )
+		{
+			DrawImage( 54, 17, 0x77 );
+		}
+	}
+	else if ( pwr > 99 )
+	{
+		DrawValue( 0, 13, pwr, 1, 0x48, 3 );
+		DrawImage( 54, 26, 0x98 );
+		if ( dfPreheatTime )
+		{
+			DrawImage( 54, 13, 0x77 );
+		}
+	}
+	else
+	{
+		DrawValue( 5, 13, pwr, 1, 0x48, 2 );
+		DrawImage( 45, 18, 0xB9 );
+		if ( dfPreheatTime )
+		{
+			DrawImage( 45, 13, 0x77 );
+		}
 	}
 }
 
@@ -372,71 +491,27 @@ __myevic__ void ShowMainView()
 
 	if ( ISMODETC(dfMode) )
 	{
-		if ( Screen == 2 )
+		if ( dfStatus.tdom )
 		{
-			if ( dfIsCelsius )
+			if ( Screen == 2 )
 			{
-				int tempc = FarenheitToC( AtoTemp );
-
-				if ( dfTemp <= tempc )
-				{
-					DrawString( String_Protec, 2, 20 );
-				}
-				else
-				{
-					DrawValue( 0, 13, tempc, 0, 0x48, 3 );
-					DrawImage( 48, 20, 0xE0 );
-				}
+				pwr = AtoPower( TargetVolts );
 			}
 			else
 			{
-				if ( dfTemp <= AtoTemp )
-				{
-					DrawString( String_Protec, 2, 20 );
-				}
-				else
-				{
-					DrawValue( 0, 13, AtoTemp, 0, 0x48, 3 );
-					DrawImage( 48, 20, 0xE1 );
-				}
+				pwr = dfTCPower;
 			}
+			DrawPower( pwr );
 		}
 		else
 		{
-			DrawValue( 0, 13, dfTemp, 0, 0x48, 3 );
-			DrawImage( 48, 20, dfIsCelsius ? 0xE0 : 0xE1 );
+			DrawTemp();
 		}
 	}
 
 	if ( dfMode == 4 )
 	{
-		if ( pwr > 999 )
-		{
-			DrawValue( 0, 18, pwr, 1, 0x29, 4 );
-			DrawImage( 54, 26, 0x98 );
-			if ( dfPreheatTime )
-			{
-				DrawImage( 54, 17, 0x77 );
-			}
-		}
-		else if ( pwr > 99 )
-		{
-			DrawValue( 0, 13, pwr, 1, 0x48, 3 );
-			DrawImage( 54, 26, 0x98 );
-			if ( dfPreheatTime )
-			{
-				DrawImage( 54, 13, 0x77 );
-			}
-		}
-		else
-		{
-			DrawValue( 5, 13, pwr, 1, 0x48, 2 );
-			DrawImage( 45, 18, 0xB9 );
-			if ( dfPreheatTime )
-			{
-				DrawImage( 45, 13, 0x77 );
-			}
-		}
+		DrawPower( pwr );
 	}
 
 	if ( dfMode == 5 )

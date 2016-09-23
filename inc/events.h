@@ -68,6 +68,7 @@ extern uint8_t	LastEvent;
 #define EVENT_SETTIME		107
 #define EVENT_SETDATE		108
 #define EVENT_NEXT_MODE		109
+#define EVENT_TOGGLE_TDOM	110
 
 
 //==============================================================================
@@ -95,6 +96,10 @@ extern void GetUserInput();
 extern void EventHandler();
 
 extern int CustomEvents();
+
+extern void PowerPlus( uint16_t *pwr, uint16_t min, uint16_t max );
+extern void PowerMinus( uint16_t *pwr, uint16_t min, uint16_t max );
+
 
 //==============================================================================
 
