@@ -9,6 +9,7 @@
 #include "flappy.h"
 #include "meusbd.h"
 #include "atomizer.h"
+#include "battery.h"
 
 //=============================================================================
 // MENUS
@@ -400,10 +401,14 @@ __myevic__ int PreheatMEvent( int event )
 
 __myevic__ void ExpertMenuIDraw( int it, int line, int sel )
 {
+	if ( it >= CurrentMenu->nitems - 1 )
+		return;
+
+	DrawFillRect( 32, line, 63, line+12, 0 );
+
 	switch ( it )
 	{
-		case 0:
-			DrawFillRect( 32, line, 63, line+12, 0 );
+		case 0:	// USB
 			if ( dfStatus.vcom )
 				DrawString( String_COM, 36, line+2 );
 			else if ( dfStatus.storage )
@@ -412,28 +417,29 @@ __myevic__ void ExpertMenuIDraw( int it, int line, int sel )
 				DrawString( String_HID, 36, line+2 );
 			break;
 
-		case 1:
-			DrawFillRect( 32, line, 63, line+12, 0 );
+		case 1:	// DBG
 			if ( dfStatus.dbgena )
 				DrawString( String_ON, 36, line+2 );
 			else
 				DrawString( String_OFF, 36, line+2 );
 			break;
 
-		case 2:
-			DrawFillRect( 32, line, 63, line+12, 0 );
+		case 2:	// X32
 			if ( dfStatus.x32off )
 				DrawString( String_OFF, 36, line+2 );
 			else
 				DrawString( String_ON, 36, line+2 );
 			break;
 
-		case 3:
-			DrawFillRect( 32, line, 63, line+12, 0 );
+		case 3:	// NFE
 			if ( dfStatus.nfeoff )
 				DrawString( String_OFF, 36, line+2 );
 			else
 				DrawString( String_ON, 36, line+2 );
+			break;
+
+		case 4:	// BAT
+			DrawString( GetBatteryName(), 36, line+2 );
 			break;
 
 		default:
@@ -445,7 +451,7 @@ __myevic__ void ExpertMenuOnClick()
 {
 	switch ( CurrentMenuItem )
 	{
-		case 0:
+		case 0:	// USB
 			if ( dfStatus.vcom )
 			{
 				dfStatus.vcom = 0;
@@ -460,30 +466,36 @@ __myevic__ void ExpertMenuOnClick()
 				dfStatus.vcom = 1;
 			}
 			InitUSB();
-			gFlags.refresh_display = 1;
 			break;
 
-		case 1:
+		case 1:	// DBG
 			dfStatus.dbgena ^= 1;
 			if ( ! dfStatus.dbgena ) gFlags.debug = 0;
-			gFlags.refresh_display = 1;
 			break;
 
-		case 2:
+		case 2:	// X32
 			dfStatus.x32off ^= 1;
-			gFlags.refresh_display = 1;
 			break;
 
-		case 3:
+		case 3:	// NFE
 			dfStatus.nfeoff ^= 1;
-			gFlags.refresh_display = 1;
 			break;
 
-		case 4:
+		case 4:	// BAT
+			if ( ++dfBatteryModel >= GetNBatteries() )
+				dfBatteryModel = 0;
+			SetBatteryModel();
+			gFlags.read_battery = 1;
+			NewBatteryVoltage();
+			break;
+
+		case 5:	// Exit
 			UpdateDataFlash();
 			MainView();
 			break;
 	}
+
+	gFlags.refresh_display = 1;
 }
 
 //-----------------------------------------------------------------------------
@@ -1077,12 +1089,13 @@ const menu_t ExpertMenu =
 	0,
 	ExpertMenuOnClick+1,
 	0,
-	5,
+	6,
 	{
 		{ String_USB, 0, -1, 0 },
 		{ String_DBG, 0, -1, 0 },
 		{ String_X32, 0, -1, 0 },
 		{ String_NFE, 0, -1, 0 },
+		{ String_BAT, 0, -1, 0 },
 		{ String_Exit, 0, 1, 30 }
 	}
 };

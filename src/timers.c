@@ -155,8 +155,8 @@ __myevic__ void TimedItems()
 	if ( !PD7 && ( byte_20000048 >= 2 ) && ( byte_20000048 < 50 ) )
 		++byte_20000048;
 
-	if ( BatRefreshTmr )
-		--BatRefreshTmr;
+	if ( NoEventTimer )
+		--NoEventTimer;
 
 	if ( EditModeTimer )
 	{

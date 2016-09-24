@@ -208,7 +208,7 @@ __myevic__ void InitVariables()
 	LastInputs |= 0x80;
 	LastAtoRez = -1;
 	byte_200000B3 = 1;
-	BatRefreshTmr = -1;
+	NoEventTimer = -1;
 	gFlags.draw_edited_item = 1;
 	gFlags.refresh_battery = 1;
 	gFlags.read_battery = 1;
@@ -424,7 +424,7 @@ void GoToSleep()
 //----- (0000782C) --------------------------------------------------------
 __myevic__ void SleepIfIdle()
 {
-	if ( !( gFlags.firing ) && !BatRefreshTmr )
+	if ( !gFlags.firing && !NoEventTimer )
 	{
 		if ( ( Screen == 0 && SleepTimer == 0 ) && ( gFlags.user_idle ) )
 		{
@@ -442,7 +442,7 @@ __myevic__ void SleepIfIdle()
 			}
 			gFlags.sample_btemp = 1;
 		}
-		BatRefreshTmr = 200;
+		NoEventTimer = 200;
 	}
 }
 

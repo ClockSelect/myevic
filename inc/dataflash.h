@@ -119,6 +119,7 @@ typedef struct dfParams
 	uint8_t		PreheatTime;
 	uint8_t		Clicks[3];
 	uint8_t		DimTimeout;
+	uint8_t		BatteryModel;
 }
 dfParams_t;
 
@@ -286,6 +287,7 @@ extern dfStruct_t DataFlash;
 #define dfPreheatTime	DFP(PreheatTime)
 #define dfClick			DFP(Clicks)
 #define dfDimTimeout	DFP(DimTimeout)
+#define dfBatteryModel	DFP(BatteryModel)
 
 #define dfFWVersion		DFI(FWVersion)
 #define dffmcCID        DFI(fmcCID)

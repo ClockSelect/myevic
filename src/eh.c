@@ -154,7 +154,7 @@ __myevic__ void EventHandler()
 	if ( Event == 0 )
 		return;
 
-	BatRefreshTmr = 200;
+	NoEventTimer = 200;
 	LastEvent = Event;
 	Event = 0;
 

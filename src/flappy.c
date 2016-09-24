@@ -693,7 +693,7 @@ __myevic__ void fbStartGame()
 		Screen = 0;
 		gFlags.user_idle = 1;
 		gFlags.refresh_display = 1;
-		BatRefreshTmr = 0;
+		NoEventTimer = 0;
 		SleepTimer = 3000;
 		fbInitTimeouts();
 		ClearScreenBuffer();

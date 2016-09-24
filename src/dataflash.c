@@ -5,6 +5,7 @@
 #include "atomizer.h"
 #include "display.h"
 #include "events.h"
+#include "battery.h"
 
 #include "dataflash.h"
 
@@ -268,6 +269,7 @@ __myevic__ void ResetDataFlash()
 	dfClick[1] = CLICK_ACTION_EDIT;
 //	dfClick[2] = CLICK_ACTION_NONE;
 	dfDimTimeout = 30;
+//	dfBatteryModel = 0;
 	UpdateDataFlash();
 
 	dfPuffCount = 0;
@@ -457,6 +459,10 @@ __myevic__ void DFCheckValuesValidity()
 
 	if ( dfDimTimeout < 5 || dfDimTimeout > 60 )
 		dfDimTimeout = ScrMainTimes[dfScrMainTime];
+
+	if ( dfBatteryModel >= GetNBatteries() )
+		dfBatteryModel = 0;
+	SetBatteryModel( dfBatteryModel );
 }
 
 

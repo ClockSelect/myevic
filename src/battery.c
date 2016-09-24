@@ -6,10 +6,162 @@
 #include "atomizer.h"
 
 
-//=============================================================================
+//=========================================================================
 
-const uint16_t BatteryVoltsTable[] =
-	{ 310, 330, 342, 350, 358, 363, 368, 379, 389, 400, 410 };
+typedef struct
+{
+	const uint16_t percent;
+	const uint16_t voltage;
+}
+BatV2P_t;
+
+const BatV2P_t GENB_VTable[] =
+{
+	{   0, 310 }, 
+	{  10, 330 },
+	{  20, 342 },
+	{  30, 350 },
+	{  40, 358 },
+	{  50, 363 },
+	{  60, 368 },
+	{  70, 379 },
+	{  80, 389 },
+	{  90, 400 },
+	{ 100, 410 }
+};
+
+const BatV2P_t S25R_VTable[] =
+{
+	{   0, 302 },
+	{   1, 310 },
+	{   5, 327 },
+	{   9, 341 },
+	{  25, 357 },
+	{  39, 365 },
+	{  70, 391 },
+	{  84, 405 },
+	{  93, 409 },
+	{  97, 417 },
+	{ 100, 419 }
+};
+
+const BatV2P_t LHG2_VTable[] =
+{
+	{   0, 312 },
+	{   4, 326 },
+	{   9, 338 },
+	{  13, 345 },
+	{  26, 356 },
+	{  38, 364 },
+	{  79, 401 },
+	{  96, 411 },
+	{  98, 414 },
+	{  99, 417 },
+	{ 100, 420 }
+};
+
+const BatV2P_t S30Q_VTable[] =
+{
+	{   0, 312 },
+	{  15, 340 },
+	{  23, 352 },
+	{  54, 381 },
+	{  68, 391 },
+	{  75, 400 },
+	{  81, 403 },
+	{  94, 408 },
+	{  97, 411 },
+	{  99, 416 },
+	{ 100, 420 }
+};
+
+const BatV2P_t VTC4_VTable[] =
+{
+	{   0, 314 },
+	{   1, 321 },
+	{   2, 331 },
+	{   4, 339 },
+	{   6, 343 },
+	{  14, 351 },
+	{  22, 356 },
+	{  49, 367 },
+	{  66, 380 },
+	{  99, 419 },
+	{ 100, 421 }
+};
+
+const BatV2P_t VTC5_VTable[] =
+{
+	{   0, 305 },
+	{   1, 310 },
+	{   2, 320 },
+	{   4, 329 },
+	{  14, 342 },
+	{  23, 351 },
+	{  45, 365 },
+	{  79, 396 },
+	{  95, 411 },
+	{  99, 418 },
+	{ 100, 420 }
+};
+
+typedef struct
+{
+	const uint16_t	*name;
+	const BatV2P_t	*V2P;
+	const uint16_t	cutoff;
+	const uint16_t	intrez;
+}
+Battery_t;
+
+const Battery_t Batteries[] =
+{
+	{
+		String_GEN,
+		GENB_VTable,
+		280,
+		10
+	},
+
+	{
+		String_25R,
+		S25R_VTable,
+		250,
+		15
+	},
+
+	{
+		String_HG2,
+		LHG2_VTable,
+		200,
+		25
+	},
+
+	{
+		String_30Q,
+		S30Q_VTable,
+		250,
+		20
+	},
+
+	{
+		String_VT4,
+		VTC4_VTable,
+		250,
+		25
+	},
+
+	{
+		String_VT5,
+		VTC5_VTable,
+		250,
+		25
+	}
+};
+
+#define NBATTERIES (sizeof(Batteries)/sizeof(Battery_t))
+
+//-------------------------------------------------------------------------
 
 uint16_t	LowBatVolts;
 uint32_t	PowerScale;
@@ -17,50 +169,70 @@ uint16_t	BatteryVoltage;
 uint16_t	SavedBatVoltage;
 uint8_t		BatteryPercent;
 uint8_t		BatteryTenth;
-uint8_t		BatRefreshTmr;
+uint8_t		NoEventTimer;
 uint8_t		BatReadTimer;
 
 uint8_t		byte_20000048;
 
+const Battery_t	*Battery;
 
-//=============================================================================
-//----- (00000608) ------------------------------------------------------------
+
+//=========================================================================
+
+__myevic__ int GetNBatteries()
+{
+	return NBATTERIES;
+}
+
+
+__myevic__ void SetBatteryModel()
+{
+	Battery = &Batteries[dfBatteryModel];
+	// TODO: more to come
+}
+
+
+__myevic__ const uint16_t *GetBatteryName()
+{
+	return Batteries[dfBatteryModel].name;
+}
+
+
+//=========================================================================
 __myevic__ int BatteryVoltsToPercent( int bv )
 {
 	int bpc;
 	int i;
 
-	if ( bv > 310 )
-	{
-		if ( bv < 410 )
-		{
-			i = 1;
-			do
-			{
-				if ( BatteryVoltsTable[i] >= bv )
-					break;
-				++i;
-			}
-			while ( i < 11 );
+	const BatV2P_t *v2p = Battery->V2P;
 
-			bpc = 10 * ( i - 1 ) +
-				  10 * ( bv - BatteryVoltsTable[i - 1] )
-					 / ( BatteryVoltsTable[i] - BatteryVoltsTable[i - 1] );
-		}
-		else
-		{
-			bpc = 100;
-		}
-	}
-	else
+	if ( bv <= v2p[0].voltage )
+		return 0;
+
+	if ( bv >= v2p[10].voltage )
+		return 100;
+
+	i = 1;
+	do
 	{
-		bpc = 0;
+		if ( v2p[i].voltage >= bv )
+			break;
+		++i;
 	}
+	while ( i < 11 );
+
+	// Linear interpolation.
+	// Will be pessimistic on the high-side, and optimistic on the low-side.
+	bpc = ( v2p[i-1].percent )
+		+	( bv - v2p[i-1].voltage )
+		  * ( v2p[i].percent - v2p[i-1].percent ) / ( v2p[i].voltage - v2p[i-1].voltage );
+	
 	return bpc;
 }
 
-//=============================================================================
-//----- (0000065C) ------------------------------------------------------------
+
+//=========================================================================
+//----- (0000065C) --------------------------------------------------------
 
 __myevic__ void NewBatteryVoltage()
 {
@@ -106,7 +278,7 @@ __myevic__ void NewBatteryVoltage()
 }
 
 
-//=============================================================================
+//=========================================================================
 //----- (000006E0) --------------------------------------------------------
 __myevic__ void ReadBatteryVoltage()
 {
@@ -139,7 +311,7 @@ __myevic__ void ReadBatteryVoltage()
 		VbatSampleSum = newbv;
 		BatteryVoltage = newbv;
 
-		if ( ( BatRefreshTmr <= 100 )
+		if ( ( NoEventTimer <= 100 )
 			&& (	( SavedBatVoltage > newbv && SavedBatVoltage - newbv > 3 )
 				||	( newbv > SavedBatVoltage && newbv - SavedBatVoltage > 3 ) ) )
 		{
@@ -152,8 +324,8 @@ __myevic__ void ReadBatteryVoltage()
 }
 
 
-//=============================================================================
-//----- (0000074C) ------------------------------------------------------------
+//=========================================================================
+//----- (0000074C) --------------------------------------------------------
 
 unsigned short RTBatVolts = 0;
 

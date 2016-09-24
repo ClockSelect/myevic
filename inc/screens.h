@@ -196,6 +196,13 @@ extern const uint16_t String_OnOff[];
 extern const uint16_t String_ModePlus[];
 extern const uint16_t String_PPwr[];
 extern const uint16_t String_Clicks[];
+extern const uint16_t String_BAT[];
+extern const uint16_t String_GEN[];
+extern const uint16_t String_25R[];
+extern const uint16_t String_HG2[];
+extern const uint16_t String_30Q[];
+extern const uint16_t String_VT4[];
+extern const uint16_t String_VT5[];
 
 
 //==============================================================================
