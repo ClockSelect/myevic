@@ -67,7 +67,7 @@ __myevic__ void ClicksMenuIDraw( int it, int line, int sel )
 			break;
 
 		case CLICK_ACTION_TDOM:
-			DrawString( String_TDom, 20, line+2 );
+			DrawString( String_PPwr, 20, line+2 );
 			break;
 
 		case CLICK_ACTION_NEXT_MODE:
@@ -149,7 +149,7 @@ __myevic__ void IFMenuIDraw( int it, int line, int sel )
 			break;
 
 		case 7:	// TDom
-			DrawString( dfStatus.tdom ? String_On : String_Off, 44, line+2 );
+			DrawString( dfStatus.priopwr ? String_On : String_Off, 44, line+2 );
 			break;
 
 		default:
@@ -208,7 +208,7 @@ __myevic__ void IFMenuOnClick()
 			break;
 
 		case 7:	// TDom
-			dfStatus.tdom ^= 1;
+			dfStatus.priopwr ^= 1;
 			break;
 
 		default: // Exit
@@ -1160,7 +1160,7 @@ const menu_t IFMenu =
 		{ String_Font, 0, -1, 0 },
 		{ String_Clock, 0, -1, 0 },
 		{ String_Temp, 0, -1, 0 },
-		{ String_TDom, 0, -1, 0 },
+		{ String_PPwr, 0, -1, 0 },
 		{ String_Clicks, &ClicksMenu, -1, 0 },
 		{ String_Exit, 0, 1, 0 }
 	}

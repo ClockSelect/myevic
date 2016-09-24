@@ -194,7 +194,7 @@ extern const uint16_t String_3[];
 extern const uint16_t String_4[];
 extern const uint16_t String_OnOff[];
 extern const uint16_t String_ModePlus[];
-extern const uint16_t String_TDom[];
+extern const uint16_t String_PPwr[];
 extern const uint16_t String_Clicks[];
 
 

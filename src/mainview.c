@@ -308,7 +308,7 @@ __myevic__ void DrawInfoLines()
 			case 1:
 			case 2:
 			case 3:
-				if ( dfStatus.tdom )
+				if ( dfStatus.priopwr )
 				{
 					DrawTempLine( 52 );
 				}
@@ -337,7 +337,7 @@ __myevic__ void DrawInfoLines()
 			case 1:
 			case 2:
 			case 3:
-				if ( dfStatus.tdom )
+				if ( dfStatus.priopwr )
 				{
 					DrawTempLine( 52 );
 				}
@@ -491,7 +491,7 @@ __myevic__ void ShowMainView()
 
 	if ( ISMODETC(dfMode) )
 	{
-		if ( dfStatus.tdom )
+		if ( dfStatus.priopwr )
 		{
 			if ( Screen == 2 )
 			{

@@ -52,6 +52,8 @@ __myevic__ void PowerPlus( uint16_t *pwr, uint16_t min, uint16_t max )
 }
 
 
+//-------------------------------------------------------------------------
+
 __myevic__ void PowerMinus( uint16_t *pwr, uint16_t min, uint16_t max )
 {
 	if ( *pwr <= min )
@@ -84,6 +86,8 @@ __myevic__ void PowerMinus( uint16_t *pwr, uint16_t min, uint16_t max )
 }
 
 
+//-------------------------------------------------------------------------
+
 __myevic__ void TempPlus()
 {
 	if ( dfIsCelsius )
@@ -104,6 +108,8 @@ __myevic__ void TempPlus()
 	}
 }
 
+
+//-------------------------------------------------------------------------
 
 __myevic__ void TempMinus()
 {
@@ -1016,7 +1022,7 @@ __myevic__ void EventHandler()
 
 					if ( EditItemIndex == 2 && gFlags.edit_capture_evt )
 					{
-						dfStatus.tdom ? TempMinus() : PowerMinus( &dfTCPower, 10, MaxTCPower );
+						dfStatus.priopwr ? TempMinus() : PowerMinus( &dfTCPower, 10, MaxTCPower );
 					}
 					else if ( !ISMODETC(dfMode) )
 					{
@@ -1046,7 +1052,7 @@ __myevic__ void EventHandler()
 				{
 					if ( ISMODETC(dfMode) )
 					{
-						dfStatus.tdom ? PowerMinus( &dfTCPower, 10, MaxTCPower ) : TempMinus();
+						dfStatus.priopwr ? PowerMinus( &dfTCPower, 10, MaxTCPower ) : TempMinus();
 					}
 					else if ( dfMode == 6 )
 					{
@@ -1205,7 +1211,7 @@ __myevic__ void EventHandler()
 							break;
 
 						case 2:
-							dfStatus.tdom ? TempPlus() : PowerPlus( &dfTCPower, 10, MaxTCPower );
+							dfStatus.priopwr ? TempPlus() : PowerPlus( &dfTCPower, 10, MaxTCPower );
 							gFlags.edit_capture_evt = 1;
 							break;
 
@@ -1227,7 +1233,7 @@ __myevic__ void EventHandler()
 						case 1:
 						case 2:
 						case 3:
-							dfStatus.tdom ? PowerPlus( &dfTCPower, 10, MaxTCPower ) : TempPlus();
+							dfStatus.priopwr ? PowerPlus( &dfTCPower, 10, MaxTCPower ) : TempPlus();
 							break;
 
 						case 4:

@@ -54,7 +54,7 @@ typedef struct
 	int dbgena:1;
 
 	int x32off:1;
-	int tdom:1;
+	int priopwr:1;
 	int onewatt:1;
 	int digclk:1;
 	int battpc:1;

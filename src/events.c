@@ -1055,7 +1055,7 @@ __myevic__ int CustomEvents()
 			break;
 
 		case EVENT_TOGGLE_TDOM:
-			dfStatus.tdom ^= 1;
+			dfStatus.priopwr ^= 1;
 			UpdateDFTimer = 50;
 			gFlags.refresh_display = 1;
 			break;

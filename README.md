@@ -224,9 +224,11 @@ There's many more to LOGO and Game menus now. See below.
 
         Choose once and for all your temperature unit, between °C and °F. Nobody needs to switch back and forth between standards. Moreover, Farenheit is not even a standard. Maybe I'll replace it by Kelvins one day. Changing temperature unit by wrapping around the temperature has been disabled.
 
-  * TDom On/Off
+  * PPwr On/Off
   
-        Toggle Dominant Temperature mode On/Off. In temperature control modes, this switches the power and the temperature display; the power is displayed at top of screen and is directly editable by the + and - keys just like in Power mode, and the temperature is displayed on the first of the 3 informations lines in the center of the screen. Temperature remains editable in Edit mode.
+        *TEMP Mode Only*  
+        Toggle Priority Power mode On/Off. In temperature control modes, this switches the power and the temperature display; the power is displayed at top of screen and is directly editable by the + and - keys just like in Power mode, and the temperature is displayed on the first of the 3 informations lines in the center of the screen. Temperature remains editable in Edit mode.  
+        The purpose of this function is near the preheat function in PWR mode; once you have set your correct vape temperature (not burning your dry cotton), your comfort come from the heat rise speed. This feature let you adjust this parameter more easily.
 
   * Clicks
   
@@ -238,7 +240,7 @@ There's many more to LOGO and Game menus now. See below.
         * Nothing
         * Enter edit mode
         * Toggle display of info lines / clock on the main display
-        * Toggle the "dominant temperature" mode (basically, switches temperature and power on the main screen display in TC mode)
+        * Toggle the "Priority Power" mode (basically, switches temperature and power on the main screen display in TC mode, see above "PPwr On/Off" doc)
         * Switch to next vaping mode ( TC -> POWER -> BYPASS -> ... )
         * Switch box On or Off
 
