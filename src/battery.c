@@ -8,8 +8,8 @@
 
 //=============================================================================
 
-const uint16_t BatteryVoltsTable[] =
-	{ 310, 330, 342, 350, 358, 363, 368, 379, 389, 400, 410 };
+//const uint16_t BatteryVoltsTable[] =
+//	{ 310, 330, 342, 350, 358, 363, 368, 379, 389, 400, 410 };
 
 uint16_t	LowBatVolts;
 uint32_t	PowerScale;
@@ -29,23 +29,27 @@ __myevic__ int BatteryVoltsToPercent( int bv )
 {
 	int bpc;
 	int i;
+	int min_bv = 320;
+	int max_bv = 420;
 
-	if ( bv > 310 )
+	if ( bv > min_bv ) //it could be setted in Expert menu
 	{
-		if ( bv < 410 )
+		if ( bv < max_bv ) //I have 4,21V fully charged on HG2, it could be setted in Expert menu
 		{
-			i = 1;
-			do
-			{
-				if ( BatteryVoltsTable[i] >= bv )
-					break;
-				++i;
-			}
-			while ( i < 11 );
+			//i = 1;
+			//do
+			//{
+			//	if ( BatteryVoltsTable[i] >= bv )
+			//		break;
+			//	++i;
+			//}
+			//while ( i < 11 );
 
-			bpc = 10 * ( i - 1 ) +
-				  10 * ( bv - BatteryVoltsTable[i - 1] )
-					 / ( BatteryVoltsTable[i] - BatteryVoltsTable[i - 1] );
+			//bpc = 10 * ( i - 1 ) +
+			//	  10 * ( bv - BatteryVoltsTable[i - 1] )
+			//		 / ( BatteryVoltsTable[i] - BatteryVoltsTable[i - 1] );
+			
+			bpc = bv - min_bv; //1% step battery
 		}
 		else
 		{
