@@ -141,6 +141,7 @@ extern const uint16_t String_Fireto[];
 extern const uint16_t String_Edit[];
 extern const uint16_t String_ClkSpeed[];
 extern const uint16_t String_ClkAdjust[];
+extern const uint16_t String_myevic[];
 
 // from menus.c
 extern const uint16_t String_Menus[];
@@ -205,6 +206,7 @@ extern const uint16_t String_VT4[];
 extern const uint16_t String_VT5[];
 extern const uint16_t String_Vaping[];
 extern const uint16_t String_Prot[];
+extern const uint16_t String_Build[];
 
 
 //==============================================================================

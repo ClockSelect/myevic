@@ -614,6 +614,14 @@ __myevic__ void ShowBoardTemp()
 //----- (00007684) --------------------------------------------------------
 __myevic__ void ShowVersion()
 {
+	uint16_t buf[12];
+
+	DrawStringCentered( String_myevic, 32 );
+
+	DrawStringCentered( String_Build, 55 );
+	Value2Str( buf, __BUILD1, 0, 0x01F, 0 );
+	DrawStringCentered( buf, 69 );
+
 	DrawStringCentered( String_Version, 88 );
 	DrawValue( 6, 102, FWVERSION, 2, 0x52, 3 );
 }

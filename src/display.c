@@ -217,8 +217,7 @@ __myevic__ int GetImageWidth( const uint16_t imgnum )
 
 
 //=========================================================================
-//----- (000051A8) --------------------------------------------------------
-__myevic__ int GetStrCenteredX( const uint16_t str[] )
+__myevic__ int GetStringWidth( const uint16_t str[] )
 {
 	int width = 0;
 
@@ -227,7 +226,15 @@ __myevic__ int GetStrCenteredX( const uint16_t str[] )
 		width += GetImageWidth( str[l] );
 	}
 
-	return ( ( 64 - width ) >> 1 );
+	return width;
+}
+
+
+//=========================================================================
+//----- (000051A8) --------------------------------------------------------
+__myevic__ int GetStrCenteredX( const uint16_t str[] )
+{
+	return ( ( 64 - GetStringWidth( str ) ) >> 1 );
 }
 
 
@@ -365,26 +372,8 @@ __myevic__ uint16_t* Value2Str( uint16_t *str, int v, int dp, uint16_t z, int nd
 
 	if ( !nd )
 	{
-		if ( v >= 10000 )
-		{
-			nd = 5;
-		}
-		else if ( v >= 1000 )
-		{
-			nd = 4;
-		}
-		else if ( v >= 100 )
-		{
-			nd = 3;
-		}
-		else if ( v >= 10 )
-		{
-			nd = 2;
-		}
-		else
-		{
-			nd = 1;
-		}
+		for ( int i = v ; i ; i /= 10 ) ++nd;
+		if ( nd <= dp ) nd = dp + 1;
 	}
 
 	for ( i = 0 ; i < nd ; ++i )
@@ -407,8 +396,8 @@ __myevic__ uint16_t* Value2Str( uint16_t *str, int v, int dp, uint16_t z, int nd
 
 		switch ( z )
 		{
-			case 0x0B:
 			default:
+			case 0x0B:
 				dot = 0xC1;
 				break;
 			case 0x15:
@@ -455,10 +444,22 @@ __myevic__ void DrawValue( int x, int y, int v, int dp, uint16_t z, int nd )
 
 
 //=========================================================================
+// Draw right-justified numerical value
+//-------------------------------------------------------------------------
+__myevic__ void DrawValueRight( int x, int y, int v, int dp, uint16_t z, int nd )
+{
+	uint16_t str[12];
+
+	Value2Str( str, v, dp, z, nd );
+	DrawString( str, x - GetStringWidth( str ), y );
+}
+
+
+//=========================================================================
 //----- (000058A4) --------------------------------------------------------
 __myevic__ void DrawValueInv( int x, int y, int v, int dp, uint16_t z, int nd )
 {
-	uint16_t str[7];
+	uint16_t str[12];
 
 	Value2Str( str, v, dp, z, nd );
 	DrawStringInv( str, x, y );

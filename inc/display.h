@@ -38,7 +38,9 @@ extern void Screen2Bitmap( uint8_t *pu8Bitmap );
 extern void DisplaySetFont();
 
 extern int GetImageWidth( const uint16_t imgnum );
+extern int GetStringWidth( const uint16_t str[] );
 extern int GetStrCenteredX( const uint16_t str[] );
+extern uint16_t* Value2Str( uint16_t *str, int v, int dp, uint16_t z, int nd );
 
 extern void DrawTimeSmall( int x, int y, S_RTC_TIME_DATA_T *rtd, int colors );
 extern void DrawTime( int x, int y, S_RTC_TIME_DATA_T *rtd, int colors );
@@ -51,6 +53,7 @@ extern uint32_t DrawImage( const int x, const int y, const uint16_t img );
 extern uint32_t DrawImageInv( const int x, const int y, const uint16_t img );
 extern void DrawLOGO( const int x, const int y );
 extern void DrawValue( int x, int y, int v, int dp, uint16_t z, int nd );
+extern void DrawValueRight( int x, int y, int v, int dp, uint16_t z, int nd );
 extern void DrawValueInv( int x, int y, int v, int dp, uint16_t z, int nd );
 extern void DrawString( const uint16_t s[], int x, int y );
 extern void DrawStringInv( const uint16_t s[], int x, int y );

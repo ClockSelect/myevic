@@ -52,7 +52,7 @@ __myevic__ void VapingMenuIDraw( int it, int line, int sel )
 		case 2:	//Protec
 			DrawFillRect( 36, line, 63, line+12, 0 );
 			DrawImage( 58, line+2, 0x94 );
-			DrawValue( ( dfProtec < 100 ) ? 44 : 38, line+2, dfProtec, 1, 0x0B, 0 );
+			DrawValueRight( 56, line+2, dfProtec, 1, 0x0B, 0 );
 			if ( gFlags.edit_value )
 			{
 				DrawFillRect( 0, line, 63, line+12, 2 );
@@ -297,7 +297,7 @@ __myevic__ void PreheatIDraw( int it, int line, int sel )
 {
 	if ( it > 2 ) return;
 
-	int x, v, dp, nd, img;
+	int v, dp, img;
 
 	switch ( it )
 	{
@@ -308,57 +308,43 @@ __myevic__ void PreheatIDraw( int it, int line, int sel )
 
 		case 1:	// Power
 			v = dfPreheatPwr;
-			nd = ( v < 100 ) ? 2 : 3;
-			dp = ( v < 1000 ) ? 1 : 0;
-			img = 0x98;
-			x = ( v < 100 ) ? 38 : ( v < 1000 ) ? 32 : 34;
 			if ( dfStatus.phpct )
 			{
-				img = 0xC2;
 				dp = 0;
-				x += 2;
+				img = 0xC2;
+			}
+			else
+			{
+				dp = ( v < 1000 ) ? 1 : 0;
+				img = 0x98;
 			}
 			break;
 
 		case 2:	// Time
 			v = dfPreheatTime / 10;
 			dp = 1;
-			nd = 2;
 			img = 0x94;
-			x = 38;
 			break;
 
 		default:
 			return;
 	}
 
-	if ( gFlags.edit_value && sel )
+	DrawFillRect( 30, line, 63, line+12, 0 );
+
+	if ( v == 0 && it == 2 )
 	{
-		DrawFillRect( 0, line, 29, line+12, 0 );
-		DrawString( CurrentMenu->mitems[it].caption, 4, line +2 );
-		DrawFillRect( 30, line, 63, line+12, 1 );
-		if ( v == 0 && it == 2 )
-		{
-			DrawStringInv( String_Off, 37, line+2 );
-		}
-		else
-		{
-			DrawValueInv( x, line+2, v, dp, 0x0B, nd );
-			DrawImageInv( 54, line+2, img );
-		}
+		DrawString( String_Off, 37, line+2 );
 	}
 	else
 	{
-		DrawFillRect( 30, line, 63, line+12, 0 );
-		if ( v == 0 && it == 2 )
-		{
-			DrawString( String_Off, 37, line+2 );
-		}
-		else
-		{
-			DrawValue( x, line+2, v, dp, 0x0B, nd );
-			DrawImage( 54, line+2, img );
-		}
+		DrawValueRight( 52, line+2, v, dp, 0x0B, 0 );
+		DrawImage( 54, line+2, img );
+	}
+
+	if ( gFlags.edit_value && sel )
+	{
+		DrawFillRect( 0, line, 63, line+12, 2 );
 	}
 }
 
@@ -599,7 +585,7 @@ __myevic__ void ScreenProtMenuIDraw( int it, int line, int sel )
 			v = ScrSaveTimes[dfScreenProt];
 			if ( v )
 			{
-				DrawValue( ( v < 10 ) ? 47 : 41, line+2, v, 0, 0x0B, 0 );
+				DrawValueRight( 53, line+2, v, 0, 0x0B, 0 );
 				DrawImage( 55, line+2, 0x8E );
 			}
 			else
@@ -610,7 +596,7 @@ __myevic__ void ScreenProtMenuIDraw( int it, int line, int sel )
 
 		case 1:	// Main
 			v = ScrMainTimes[dfScrMainTime];
-			DrawValue( ( v < 10 ) ? 47 : 41, line+2, v, 0, 0x0B, 0 );
+			DrawValueRight( 53, line+2, v, 0, 0x0B, 0 );
 			DrawImage( 55, line+2, 0x94 );
 			break;
 

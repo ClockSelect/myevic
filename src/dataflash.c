@@ -293,7 +293,7 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfMode >= 7 )
 		dfMode = 4;
 
-	if (( dfProtec < 30 ) || ( dfProtec > 100 ))
+	if (( dfProtec < 20 ) || ( dfProtec > 100 ))
 		dfProtec = 100;
 
 	if ( dfVWVolts > MaxVolts || dfVWVolts < 50 )
