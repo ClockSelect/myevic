@@ -62,6 +62,21 @@ const BatV2P_t LHG2_VTable[] =
 	{ 100, 420 }
 };
 
+const BatV2P_t LHE4_VTable[] =
+{
+	{   0, 323 },
+	{   3, 332 },
+	{  11, 347 },
+	{  19, 352 },
+	{  27, 359 },
+	{  48, 369 },
+	{  62, 379 },
+	{  84, 400 },
+	{  96, 413 },
+	{  99, 418 },
+	{ 100, 420 }
+};
+
 const BatV2P_t S30Q_VTable[] =
 {
 	{   0, 312 },
@@ -135,6 +150,13 @@ const Battery_t Batteries[] =
 	{
 		String_HG2,
 		LHG2_VTable,
+		280,
+		20
+	},
+
+	{
+		String_HE4,
+		LHE4_VTable,
 		280,
 		20
 	},
