@@ -212,6 +212,7 @@ __myevic__ void InitVariables()
 	gFlags.draw_edited_item = 1;
 	gFlags.refresh_battery = 1;
 	gFlags.read_battery = 1;
+	gFlags.read_bir = 1;
 	EditItemIndex = 0;
 	WattsInc = dfStatus.onewatt ? 10 : 1;
 }
@@ -435,7 +436,7 @@ __myevic__ void SleepIfIdle()
 			AtoRezMilli = 0;
 			gFlags.sample_vbat = 1;
 			ReadBatteryVoltage();
-			if ( BatteryVoltage <= 300 && !(gFlags.usb_attached) )
+			if (( BatteryVoltage <= BatteryCutOff + 20 ) && !(gFlags.usb_attached) )
 			{
 				dfStatus.off = 1;
 				Screen = 0;
@@ -526,7 +527,7 @@ __myevic__ void Main()
 
 			if ( gFlags.firing )
 			{
-				ReadAtoTemp();
+				ReadAtomizer();
 
 				if ( ISMODETC(dfMode) )
 				{
@@ -582,7 +583,30 @@ __myevic__ void Main()
 
 			if ( gFlags.firing && PreheatTimer )
 			{
-				--PreheatTimer;
+				if ( !--PreheatTimer )
+				{
+					uint16_t pwr;
+
+					if ( dfMode == 6 )
+					{
+						pwr = dfSavedCfgPwr[ConfigIndex];
+					}
+					else
+					{
+						pwr = dfPower;
+					}
+
+					if ( pwr > BatteryMaxPwr )
+					{
+						gFlags.limit_power = 1;
+						PowerScale = 100 * BatteryMaxPwr / pwr;
+					}
+					else
+					{
+						gFlags.limit_power = 0;
+						PowerScale = 100;
+					}
+				}
 			}
 
 			if ( KeyTicks >= 5 )

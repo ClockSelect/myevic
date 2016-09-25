@@ -331,7 +331,7 @@ __myevic__ void GetAtoCurrent()
 
 //=============================================================================
 //----- (00002F44) --------------------------------------------------------
-__myevic__ void GetAtoTemp()
+__myevic__ void ReadAtoTemp()
 {
 	long v;
 
@@ -457,7 +457,7 @@ __myevic__ void CheckMode()
 
 //=============================================================================
 //----- (00003250) --------------------------------------------------------
-__myevic__ void ReadAtoTemp()
+__myevic__ void ReadAtomizer()
 {
 	int NumShuntSamples;
 
@@ -540,7 +540,7 @@ __myevic__ void ReadAtoTemp()
 					&& (gFlags.firing || AtoProbeCount <= 10) )
 			{
 				AtoStatus = 4;
-				if ( gFlags.firing ) GetAtoTemp();
+				if ( gFlags.firing ) ReadAtoTemp();
 			}
 		}
 	}
@@ -710,7 +710,7 @@ __myevic__ void AtoWarmUp()
 		if ( AtoVolts == TargetVolts )
 			break;
 
-		if (( AtoStatus == 0 || AtoStatus == 1 || (!(gFlags.firing) && AtoProbeCount >= 12))
+		if (( AtoStatus == 0 || AtoStatus == 1 || ( !gFlags.firing && AtoProbeCount >= 12 ))
 			&& BuckDuty >= 45 )
 		{
 			break;
@@ -1038,7 +1038,7 @@ __myevic__ void ProbeAtomizer()
 	gFlags.probing_ato = 1;
 	AtoWarmUp();
 	WaitOnTMR2(2);
-	ReadAtoTemp();
+	ReadAtomizer();
 	gFlags.probing_ato = 0;
 
 	if ( !(gFlags.firing) )

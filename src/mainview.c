@@ -470,7 +470,7 @@ __myevic__ void ShowMainView()
 		pwr = PreheatPower;
 	}
 
-	if ( dfMode == 5 )
+	if ( ISMODEBY(dfMode) )
 	{
 		if ( gFlags.firing )
 		{

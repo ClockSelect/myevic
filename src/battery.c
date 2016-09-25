@@ -4,6 +4,8 @@
 #include "events.h"
 #include "meadc.h"
 #include "atomizer.h"
+#include "myprintf.h"
+#include "timers.h"
 
 
 //=========================================================================
@@ -126,36 +128,36 @@ const Battery_t Batteries[] =
 	{
 		String_25R,
 		S25R_VTable,
-		250,
-		15
+		280,
+		20
 	},
 
 	{
 		String_HG2,
 		LHG2_VTable,
-		200,
-		25
+		280,
+		20
 	},
 
 	{
 		String_30Q,
 		S30Q_VTable,
-		250,
+		280,
 		20
 	},
 
 	{
 		String_VT4,
 		VTC4_VTable,
-		250,
-		25
+		280,
+		20
 	},
 
 	{
 		String_VT5,
 		VTC5_VTable,
-		250,
-		25
+		280,
+		20
 	}
 };
 
@@ -166,6 +168,9 @@ const Battery_t Batteries[] =
 uint16_t	LowBatVolts;
 uint32_t	PowerScale;
 uint16_t	BatteryVoltage;
+uint16_t	BatteryCutOff;
+uint16_t	BatteryIntRez;
+uint16_t	BatteryMaxPwr;
 uint16_t	SavedBatVoltage;
 uint8_t		BatteryPercent;
 uint8_t		BatteryTenth;
@@ -188,13 +193,32 @@ __myevic__ int GetNBatteries()
 __myevic__ void SetBatteryModel()
 {
 	Battery = &Batteries[dfBatteryModel];
-	// TODO: more to come
+	BatteryCutOff = Battery->cutoff;
+	BatteryIntRez = Battery->intrez;
 }
 
 
 __myevic__ const uint16_t *GetBatteryName()
 {
 	return Batteries[dfBatteryModel].name;
+}
+
+
+//=========================================================================
+__myevic__ int ReadBatterySample()
+{
+	int sample;
+
+	if ( ISVTWOMINI || ISEVICAIO )
+	{
+		sample = ADC_Read( 0 );
+	}
+	else
+	{
+		sample = ADC_Read( 18 );
+	}
+
+	return sample;
 }
 
 
@@ -253,7 +277,7 @@ __myevic__ void NewBatteryVoltage()
 		SavedBatVoltage = BatteryVoltage;
 		SavedBatPercent = BatteryPercent;
 
-		if ( ( BatteryVoltage > 300 ) && ( Screen == 1 ) )
+		if ( ( BatteryVoltage > Battery->V2P[0].voltage ) && ( Screen == 1 ) )
 		{
 			gFlags.refresh_display = 1;
 		}
@@ -274,6 +298,16 @@ __myevic__ void NewBatteryVoltage()
 
 	BatteryTenth = BatteryPercent / 10;
 
+	// Assume 90% efficiency of the circuitry (conservative)
+	int Pmax = 90	* ( BatteryCutOff + 10 )
+					* ( BatteryVoltage - ( BatteryCutOff + 10 ) )
+					/ BatteryIntRez;
+
+	BatteryMaxPwr = Pmax / 100;
+
+//	int Imax = 10000 * ( BatteryVoltage - ( BatteryCutOff + 10 ) ) / BatteryIntRez;
+//	myprintf( "Imax = %dA, Pmax = %dW\n", Imax / 1000, Pmax / 1000 );
+
 	return;
 }
 
@@ -291,14 +325,7 @@ __myevic__ void ReadBatteryVoltage()
 	{
 		while ( VbatSampleCnt < 16 )
 		{
-			if ( ISVTWOMINI || ISEVICAIO )
-			{
-				VbatSampleSum += ADC_Read( 0 );
-			}
-			else
-			{
-				VbatSampleSum += ADC_Read( 18 );
-			}
+			VbatSampleSum += ReadBatterySample();
 			++VbatSampleCnt;
 
 			if ( !(gFlags.sample_vbat) )
@@ -338,25 +365,26 @@ __myevic__ int CheckBattery()
 
 	v0 = 0;
 
-	if ( dfMode == 6 )
+	if ( PreheatTimer )
+	{
+		pwr = PreheatPower;
+	}
+	else if ( dfMode == 6 )
+	{
 		pwr = dfSavedCfgPwr[ConfigIndex];
+	}
 	else
+	{
 		pwr = dfPower;
+	}
 
 	RTBatVolts = 0;
 
 	i = 0;
 	do
 	{
-		if ( ISVTWOMINI )
-		{
-			bv = ADC_Read( 0 ) >> 3;
-		}
-		else
-		{
-			bv = ADC_Read( 18 ) >> 3;
-		}
-		if ( bv > 280 )
+		bv = ReadBatterySample() >> 3;
+		if ( bv > BatteryCutOff )
 			break;
 		++i;
 	}
@@ -372,33 +400,116 @@ __myevic__ int CheckBattery()
 	RTBatVolts = bv;
 
 	if ( !( gFlags.firing )
-		|| ( !ISMODEVW(dfMode) && ( !ISMODETC(dfMode) || gFlags.check_mode) ) )
+		|| ( !ISMODEVW(dfMode) && ( !ISMODETC(dfMode) || gFlags.check_mode ) ) )
 	{
 		gFlags.decrease_voltage = 0;
 		return 0;
 	}
 
+	int limit_voltage = BatteryCutOff + 10;
+
 	if ( LowBatVolts
-		&& pwr > MAXPWRLIMIT
+		&& pwr > BatteryMaxPwr
 		&& PowerScale == 100
-		&& bv >= 290
-		&& 100 * ( bv - 290 ) / ( LowBatVolts - 290 ) < 10 )
+		&& bv >= limit_voltage
+		&& 100 * ( bv - limit_voltage ) / ( LowBatVolts - limit_voltage ) < 10
+		)
 	{
 		v0 = 1;
-		PowerScale = 100 * MAXPWRLIMIT / pwr;
+		PowerScale = 100 * BatteryMaxPwr / pwr;
 	}
 
-	if ( v0 || gFlags.limit_power || bv < 290 )
+	if ( v0 || gFlags.limit_power || bv < limit_voltage )
 	{
-		gFlags.decrease_voltage = 1;
-		ShowWeakBatFlag = 5;
-		if ( ISMODEVW(dfMode) && ( PowerScale > 5 ))
-			--PowerScale;
 		gFlags.limit_power = 0;
+		gFlags.decrease_voltage = 1;
+
+		if ( ISMODEVW(dfMode) && ( PowerScale > 5 ))
+		{
+			--PowerScale;
+		}
+
+		ShowWeakBatFlag = 5;
 	}
 	else
 	{
 		gFlags.decrease_voltage = 0;
+
+		if (( PowerScale < 100 ) && ( bv >= limit_voltage + 10 ))
+		{
+			++PowerScale;
+		}
 	}
 	return 0;
 }
+
+
+//=========================================================================
+// Read battery internal resistance
+//-------------------------------------------------------------------------
+__myevic__ void ReadInternalResistance()
+{
+	BatteryIntRez = Battery->intrez;
+
+	if ( dfBatteryModel == 0 )
+		return;
+	
+	while ( AtoStatus == 4 && AtoProbeCount < 12 )
+	{
+		ProbeAtomizer();
+		WaitOnTMR2( 10 );
+	}
+
+	if ( AtoError )
+		return;
+
+	// Needed by RegulateBuckBoost()
+	gFlags.probing_ato = 1;
+
+	// Ask for 500mA
+	TargetVolts = AtoRezMilli * 5 / 100;
+
+	SetADCState( 1, 1 );
+	SetADCState( 2, 1 );
+
+	AtoWarmUp();
+
+	gFlags.probing_ato = 0;
+
+	if ( AtoStatus != 4 )
+	{
+		StopFire();
+		return;
+	}
+
+	// Stabilize
+	WaitOnTMR2( 100 );
+	
+	int sample, i;
+	int current, volts, rez;
+
+	sample = 0;
+	for ( i = 0 ; i < 16 ; ++i )
+		sample += ADC_Read( 2 );
+	sample >>= 4;
+	current = 625 * sample / AtoShuntRez;
+
+	sample = 0;
+	for ( i = 0 ; i < 16 ; ++i )
+		sample += ReadBatterySample();
+	volts = sample >> 7;
+
+	StopFire();
+
+	rez = 10000 * ( BatteryVoltage - volts ) / current;
+//	myprintf( "BatteryIntRez = %d ( %d / %d )\n", rez, volts, current );
+
+	if ( rez > BatteryIntRez )
+	{
+		BatteryIntRez = rez;
+	}
+	
+	gFlags.read_bir = 0;
+}
+
+

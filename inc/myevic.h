@@ -98,6 +98,7 @@ typedef struct
 	int is_evicbasic:1;
 	int debug:1;
 	int noclock:1;
+	int read_bir:1;
 }
 gFlags_t;
 

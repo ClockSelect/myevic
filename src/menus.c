@@ -50,7 +50,7 @@ __myevic__ void VapingMenuIDraw( int it, int line, int sel )
 	switch ( it )
 	{
 		case 2:	//Protec
-			DrawFillRect( 36, line, 63, line+12, 0 );
+			DrawFillRect( 34, line, 63, line+12, 0 );
 			DrawImage( 58, line+2, 0x94 );
 			DrawValueRight( 56, line+2, dfProtec, 1, 0x0B, 0 );
 			if ( gFlags.edit_value )

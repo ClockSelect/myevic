@@ -137,7 +137,6 @@ __myevic__ void EventHandler()
 {
 	unsigned int pwr;
 
-	int v12;
 	unsigned int v21;
 	int v22;
 	int v23;
@@ -184,15 +183,6 @@ __myevic__ void EventHandler()
 				return;
 			}
 
-			if ( dfMode == 6 )
-			{
-				pwr = dfSavedCfgPwr[ConfigIndex];
-			}
-			else
-			{
-				pwr = dfPower;
-			}
-
 			if ( Screen == 83 )
 			{
 				fbStartGame();
@@ -223,7 +213,7 @@ __myevic__ void EventHandler()
 
 			if ( gFlags.low_battery )
 			{
-				if ( BatteryVoltage < 330 )
+				if ( BatteryVoltage < BatteryCutOff + 50 )
 				{
 					gFlags.refresh_display = 1;
 					Screen = 25;
@@ -237,7 +227,7 @@ __myevic__ void EventHandler()
 				}
 			}
 
-			if ( BatteryVoltage <= 310 )
+			if ( BatteryVoltage <= BatteryCutOff + 30 )
 			{
 				Event = 28;
 				gFlags.low_battery = 1;
@@ -276,18 +266,23 @@ __myevic__ void EventHandler()
 			if ( AtoError )
 				return;
 
+			if ( gFlags.read_bir )
+			{
+				ReadInternalResistance();
+			}
+
 			if ( byte_200000B3 == 1 )
 			{
 				byte_200000B3 = 0;
 				word_200000C0 = AtoRez;
 
-				v12 = 0;
-				if 		( dfMode == 0 ) v12 = dfRezLockedNI;
-				else if ( dfMode == 1 ) v12 = dfRezLockedTI;
-				else if ( dfMode == 2 ) v12 = dfRezLockedSS;
-				else if ( dfMode == 3 ) v12 = dfRezLockedTCR;
+				uint16_t rez = 0;
+				if 		( dfMode == 0 ) rez = dfRezLockedNI;
+				else if ( dfMode == 1 ) rez = dfRezLockedTI;
+				else if ( dfMode == 2 ) rez = dfRezLockedSS;
+				else if ( dfMode == 3 ) rez = dfRezLockedTCR;
 
-				if ( !v12 || dfMode == 4 || dfMode == 5 || dfMode == 6 )
+				if ( !rez || dfMode == 4 || dfMode == 5 || dfMode == 6 )
 				{
 					dfResistance = AtoRez;
 					UpdateDFTimer = 50;
@@ -584,6 +579,15 @@ __myevic__ void EventHandler()
 				}
 			}
 
+			if ( dfMode == 6 )
+			{
+				pwr = dfSavedCfgPwr[ConfigIndex];
+			}
+			else
+			{
+				pwr = dfPower;
+			}
+
 			if ( ISMODEVW(dfMode) )
 			{
 				if ( dfPreheatTime )
@@ -604,6 +608,8 @@ __myevic__ void EventHandler()
 						PreheatPower = AtoMaxPower;
 					}
 
+					pwr = PreheatPower;
+
 					TargetVolts = GetVoltsForPower( PreheatPower );
 				}
 				else if ( pwr <= 300 )
@@ -616,13 +622,15 @@ __myevic__ void EventHandler()
 				}
 
 				gFlags.limit_power = 0;
-				if ( pwr > MAXPWRLIMIT && BatteryVoltage <= 340 )
+			//	if ( pwr > MAXPWRLIMIT && BatteryVoltage <= BatteryCutOff + 60 )
+				if ( pwr > BatteryMaxPwr )
 				{
 					gFlags.limit_power = 1;
-					PowerScale = 100 * MAXPWRLIMIT / pwr;
+				//	PowerScale = 100 * MAXPWRLIMIT / pwr;
+					PowerScale = 100 * BatteryMaxPwr / pwr;
 				}
 
-				LowBatVolts = ( BatteryVoltage > 380 ) ? 0 : BatteryVoltage;
+				LowBatVolts = ( BatteryVoltage > BatteryCutOff + 100 ) ? 0 : BatteryVoltage;
 			}
 
 			if ( ISMODEBY(dfMode) )
@@ -803,7 +811,7 @@ __myevic__ void EventHandler()
 			{
 				gFlags.sample_vbat = 1;
 				ReadBatteryVoltage();
-				if ( BatteryVoltage > 300 || gFlags.usb_attached )
+				if ( ( BatteryVoltage > BatteryCutOff + 20 ) || gFlags.usb_attached )
 				{
 					dfStatus.off = 0;
 					MainView();
