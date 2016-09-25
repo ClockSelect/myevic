@@ -870,8 +870,8 @@ __myevic__ void ShowNoAtoFound()
 //----- (000077F4) --------------------------------------------------------
 __myevic__ void Show10sProtec()
 {
-	DrawStringCentered( String_Over10s, 88 );
-	DrawStringCentered( String_Protec, 102 );
+	DrawStringCentered( String_LongFire, 88 );
+	DrawStringCentered( String_Protection, 102 );
 }
 
 

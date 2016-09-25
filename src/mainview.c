@@ -386,7 +386,7 @@ __myevic__ void DrawTemp()
 
 			if ( dfTemp <= tempc )
 			{
-				DrawString( String_Protec, 2, 20 );
+				DrawString( String_Protection, 2, 20 );
 			}
 			else
 			{
@@ -398,7 +398,7 @@ __myevic__ void DrawTemp()
 		{
 			if ( dfTemp <= AtoTemp )
 			{
-				DrawString( String_Protec, 2, 20 );
+				DrawString( String_Protection, 2, 20 );
 			}
 			else
 			{

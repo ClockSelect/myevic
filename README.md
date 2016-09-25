@@ -88,7 +88,7 @@ There's many more to LOGO and Game menus now. See below.
 
          ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/protec_zpsx0jd4aok.png)
 
-         Configure main screen dim timeout and screen saver timing. After the time setup with the "Main" option, (default 30 seconds) of inactivity, the main screen switches to the screen saver animation (see below) for the duration configured with the "Saver" option, after what the box shuts down.
+         Configure main screen dim timeout and screen saver timing. After the time setup with the "Main" option, (default 30 seconds) of inactivity, the main screen switches to the screen saver animation (see below) for the duration configured with the "Saver" option, after what the box shuts down.  
          If the "Saver" item is set to "Off", the box will dim after "Main" second, then switch to a black screen for 3 minutes before being shut down.
 
   * Saver:
@@ -96,6 +96,23 @@ There's many more to LOGO and Game menus now. See below.
          ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/saver_zpsrfxibqb5.png)
 
          Select the screen saver animation. You may choose between None (blank screen), an analog clock or a 3D spinning cube. More to come. Content of this menu will vary from time to time; this document may not always be up to date. Have a look.
+
+  * Miscs  
+      Sub-menu
+      * LOGO
+
+            Guenuine menu
+      * Game
+
+            Flappy bird. Guenuine menu.
+      * 3D
+
+            ![3D cube](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/cube_zpsf9apfiun.png)
+
+            Cool 3D spinning cube.  
+            Come back to this menu and set it to "None" to cancel animation.  
+            Or reset the box.  
+
 
 ----------
 
@@ -118,16 +135,32 @@ There's many more to LOGO and Game menus now. See below.
 
             Self explanatory.
 
+    * TCR Set:
+      
+        Enters the TCR Set menu. This menu can also be accessed by switching off the box and pressing both Fire and Right regulatory button for 5 seconds.
+
+
+----------
+* Vaping
+
     * Preheat:
     
         ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/preheat_zpsrpcu0fml.png)
         
         Coil preheat function. Set at wich power and how long you want the coil to be preheated when you fire; after this delay, the atomizer will be powered by your regular setting. Set the delay to zero to switch preheating off. A small "P" icon will appear on the main screen next the the power setting to remind you the preheat function is enabled ("POWER" mode only). This function can only be active in "POWER" and "START" modes; it is ignored in all other modes.
 
-    * TCR Set:
-      
-        Enters the TCR Set menu. This menu can also be accessed by switching off the box and pressing both Fire and Right regulatory button for 5 seconds.
+    * Modes
 
+        ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/modes_zpslphwvqhh.png)
+
+         Configure used/useless modes.  
+         Click on each menu item to set 'Y' or 'N' if you want to see any given mode proposed while cycling between modes in menu mode.  
+         Typically, you'll set "START" mode to 'N'. Typically.
+
+    * Protec.
+
+         Set the long fire protection time. Default and Max is 10.0s.  
+         Admissible values are 2.0s to 10.0s.
 
 ----------
 
@@ -162,33 +195,6 @@ There's many more to LOGO and Game menus now. See below.
         * Once you have adjusted the time to the real time, click fire to save the new clock speed ratio. Your clock should now be as accurate as it can. If not, try to repeat the procedure. Accuracy of a few seconds per day can be achieved this way.
     
 
-----------
-
-
-* Modes
-
-    ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/modes_zpslphwvqhh.png)
-
-    Configure used/useless modes.
-    Click on each menu item to set 'Y' or 'N' if you want to see any given mode proposed while cycling between modes in menu mode.
-    Typically, you'll set "START" mode to 'N'. Typically.
-
-----------
-
-* Miscs
-  * LOGO
-
-        Guenuine menu
-  * Game
-
-        Flappy bird. Guenuine menu.
-  * 3D
-
-        ![3D cube](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/cube_zpsf9apfiun.png)
-
-        Cool 3D spinning cube.
-        Come back to this menu and set it to "None" to cancel animation.
-        Or reset the box.
 
 ----------
 
@@ -271,12 +277,19 @@ There's many more to LOGO and Game menus now. See below.
 
   * X32
 
-        Enables or disables usage of the X32 crystal of the PCB. If this setting is "OFF", the firmware won't try to drive the Real-Time Clock with the 32.768kHz crystal. This may solve freezing issues on some malfunctionning boxes (VTwo only).
+        Enables or disables usage of the X32 crystal of the PCB.  
+        If this setting is "OFF", the firmware won't try to drive the Real-Time Clock with the 32.768kHz crystal. This may solve freezing issues on some malfunctionning boxes (VTwo only). It may also diminish a bit startup time on non-X32 boxes (such as VTC).
 
   * NFE
  
-        Enables or disables the NFirmwareEditor 5.0 myEvic Configuration Editor compatibility. This option is enabled by default; if you have troubles using some firmware/dataflash utilities other than NFirmwareEditor, you may try to set this option to "OFF".
+        Enables or disables the NFirmwareEditor 5.0 myEvic Configuration Editor compatibility.  
+        This option is enabled by default; if you have troubles using some firmware/dataflash utilities other than NFirmwareEditor, you may try to set this option to "OFF".
  
+  * BAT
+
+        Battery model.  
+        You can specify your battery brand and model among several ones: 25R, 30Q, HG2, VTC4 and VTC5. "GEN" is the generic battery used by default and should be used for any other model of battery.  
+        At the moment, this information is used by the firmware to compute a more accurate state-of-charge than the generic setting.
 
 ----------
 

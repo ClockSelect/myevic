@@ -82,7 +82,7 @@ extern const uint16_t String_Low[];
 extern const uint16_t String_Off[];
 extern const uint16_t String_Lock[];
 extern const uint16_t String_UnLock[];
-extern const uint16_t String_Protec[];
+extern const uint16_t String_Protection[];
 extern const uint16_t String_Version[];
 extern const uint16_t String_Device[];
 extern const uint16_t String_TooHot[];
@@ -94,7 +94,7 @@ extern const uint16_t String_Battery[];
 extern const uint16_t String_Atomizer[];
 extern const uint16_t String_Found[];
 extern const uint16_t String_Short[];
-extern const uint16_t String_Over10s[];
+extern const uint16_t String_LongFire[];
 extern const uint16_t String_NewCoil[];
 extern const uint16_t String_SameCoil[];
 extern const uint16_t String_Right[];
@@ -203,6 +203,8 @@ extern const uint16_t String_HG2[];
 extern const uint16_t String_30Q[];
 extern const uint16_t String_VT4[];
 extern const uint16_t String_VT5[];
+extern const uint16_t String_Vaping[];
+extern const uint16_t String_Prot[];
 
 
 //==============================================================================

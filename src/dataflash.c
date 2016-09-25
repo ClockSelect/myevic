@@ -209,6 +209,7 @@ __myevic__ void ResetDataFlash()
 
 	dfMagic = DFMagicNumber;
 	dfMode = 4;
+	dfProtec = 100;
 	dfVWVolts = 330;
 	dfPower = 200;
 	dfTCPower = 200;
@@ -291,6 +292,9 @@ __myevic__ void DFCheckValuesValidity()
 
 	if ( dfMode >= 7 )
 		dfMode = 4;
+
+	if (( dfProtec < 30 ) || ( dfProtec > 100 ))
+		dfProtec = 100;
 
 	if ( dfVWVolts > MaxVolts || dfVWVolts < 50 )
 		dfVWVolts = 330;

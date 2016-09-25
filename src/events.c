@@ -433,7 +433,7 @@ __myevic__ void GetUserInput()
 				KeyPressTime = 1100;
 				gFlags.user_idle = 1;
 			}
-			else if ( FireDuration > 99 )
+			else if ( FireDuration >= dfProtec )
 			{
 				Event = 24;	// 10s protection
 			}

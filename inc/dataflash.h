@@ -73,7 +73,7 @@ typedef struct dfParams
 	uint8_t		Magic;
 	uint8_t		BootFlag;
 	uint8_t		Mode;
-//	1-byte pad
+	uint8_t		Protec;			//	1-byte pad
 	uint16_t	Power;
 	uint16_t	Temp;
 	uint16_t	TCPower;
@@ -87,7 +87,7 @@ typedef struct dfParams
 	uint16_t	RezNI;
 	uint8_t		RezLockedTI;
 	uint8_t		RezLockedNI;
-	uint8_t		TiOn;		// useless
+	uint8_t		TiOn;			//	useless
 	uint8_t		StealthOn;
 	uint16_t	TempCoefsNI[21];
 	uint16_t	TempCoefsTI[21];
@@ -98,7 +98,7 @@ typedef struct dfParams
 //	1-byte pad
 	uint16_t	RezSS;
 	uint8_t		RezLockedSS;
-	uint8_t		UIVersion;	// useless
+	uint8_t		UIVersion;		//	useless
 	uint8_t		TCRIndex;
 	uint8_t		ScrMainTime;	//	1-byte pad
 	uint16_t	TCRM[3];
@@ -111,7 +111,7 @@ typedef struct dfParams
 	uint16_t	SavedCfgPwr[10];
 	uint16_t	FBBest;
 	uint8_t		FBSpeed;
-	uint8_t		byte_2000033D;	// unused
+	uint8_t		byte_2000033D;	//	unused
 	uint8_t		Contrast;
 	uint8_t		ModesSel;
 	uint16_t	ClkRatio;
@@ -244,6 +244,7 @@ extern dfStruct_t DataFlash;
 #define dfMagic			DFP(Magic)
 #define dfBootFlag		DFP(BootFlag)
 #define dfMode			DFP(Mode)
+#define dfProtec		DFP(Protec)
 #define dfPower			DFP(Power)
 #define dfTemp			DFP(Temp)
 #define dfTCPower		DFP(TCPower)

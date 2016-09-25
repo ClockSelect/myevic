@@ -45,6 +45,75 @@ unsigned char CurrentMenuItem;
 
 //-----------------------------------------------------------------------------
 
+__myevic__ void VapingMenuIDraw( int it, int line, int sel )
+{
+	switch ( it )
+	{
+		case 2:	//Protec
+			DrawFillRect( 36, line, 63, line+12, 0 );
+			DrawImage( 58, line+2, 0x94 );
+			DrawValue( ( dfProtec < 100 ) ? 44 : 38, line+2, dfProtec, 1, 0x0B, 0 );
+			if ( gFlags.edit_value )
+			{
+				DrawFillRect( 0, line, 63, line+12, 2 );
+			}
+			break;
+	}
+}
+
+
+__myevic__ void VapingMenuOnClick()
+{
+	if ( CurrentMenuItem == 2 )
+	{
+		gFlags.edit_value ^= 1;
+		gFlags.refresh_display = 1;
+	}
+}
+
+
+__myevic__ int VapingMenuOnEvent( int event )
+{
+	int vret = 0;
+
+	if ( CurrentMenuItem != 2 )
+		return vret;
+
+	if ( !gFlags.edit_value )
+		return vret;
+
+	switch ( event )
+	{
+		case 2:
+			if ( ++dfProtec > 100 )
+			{
+				if ( KeyTicks < 5 ) dfProtec = 20;
+				else dfProtec = 100;
+			}
+			vret = 1;
+			break;
+		
+		case 3:
+			if ( --dfProtec < 20 )
+			{
+				if ( KeyTicks < 5 ) dfProtec = 100;
+				else dfProtec = 20;
+			}
+			vret = 1;
+			break;
+	}
+
+	if ( vret )
+	{
+		UpdateDFTimer = 50;
+		gFlags.refresh_display = 1;
+	}
+
+	return vret;
+}
+
+//-----------------------------------------------------------------------------
+
 __myevic__ void ClicksMenuIDraw( int it, int line, int sel )
 {
 	if ( it > CurrentMenu->nitems - 2 )
@@ -232,12 +301,12 @@ __myevic__ void PreheatIDraw( int it, int line, int sel )
 
 	switch ( it )
 	{
-		case 0:
+		case 0:	// Unit
 			DrawFillRect( 30, line, 63, line+12, 0 );
 			DrawImage( 54, line+2, dfStatus.phpct ? 0xC2 : 0x98 );
 			return;
 
-		case 1 :
+		case 1:	// Power
 			v = dfPreheatPwr;
 			nd = ( v < 100 ) ? 2 : 3;
 			dp = ( v < 1000 ) ? 1 : 0;
@@ -251,7 +320,7 @@ __myevic__ void PreheatIDraw( int it, int line, int sel )
 			}
 			break;
 
-		case 2 :
+		case 2:	// Time
 			v = dfPreheatTime / 10;
 			dp = 1;
 			nd = 2;
@@ -895,6 +964,7 @@ const menu_t ClockMenu;
 const menu_t ScreenMenu;
 const menu_t MiscsMenu;
 const menu_t IFMenu;
+const menu_t VapingMenu;
 
 //-----------------------------------------------------------------------------
 
@@ -957,7 +1027,7 @@ const menu_t ModesMenu =
 const menu_t PreheatMenu =
 {
 	String_Preheat,
-	&CoilsMenu,
+	&VapingMenu,
 	0,
 	PreheatIDraw+1,
 	0,
@@ -1001,10 +1071,9 @@ const menu_t CoilsMenu =
 	0,
 	0,
 	0,
-	4,
+	3,
 	{
 		{ String_Manage, &CoilsMgmtMenu, -1, 0 },
-		{ String_Preheat, &PreheatMenu, -1, 0 },
 		{ String_TCRSet, 0, 59, 10 },
 		{ String_Exit, 0, 1, 0 }
 	}
@@ -1029,7 +1098,7 @@ const menu_t Anim3dMenu =
 const menu_t MiscsMenu =
 {
 	String_Miscs,
-	&MainMenu,
+	&ScreenMenu,
 	0,
 	0,
 	0,
@@ -1128,11 +1197,12 @@ const menu_t ScreenMenu =
 	0,
 	ScreenIClick+1,
 	0,
-	4,
+	5,
 	{
 		{ String_Contrast, 0, 101, 10 },
-		{ String_Protec, &ScreenProtMenu, -1, 0 },
+		{ String_Protection, &ScreenProtMenu, -1, 0 },
 		{ String_Saver, &ScreenSaveMenu, -1, 0 },
+		{ String_Miscs, &MiscsMenu, -1, 0 },
 		{ String_Exit, 0, 1, 0 }
 	}
 };
@@ -1179,6 +1249,24 @@ const menu_t IFMenu =
 	}
 };
 
+const menu_t VapingMenu =
+{
+	String_Vaping,
+	&MainMenu,
+	0,
+	VapingMenuIDraw+1,
+	0,
+	VapingMenuOnClick+1,
+	VapingMenuOnEvent+1,
+	4,
+	{
+		{ String_Preheat, &PreheatMenu, -1, 0 },
+		{ String_Modes, &ModesMenu, -1, 0 },
+		{ String_Prot, 0, -1, 0 },
+		{ String_Exit, 0, 1, 0 }
+	}
+};
+
 const menu_t MainMenu =
 {
 	String_Menus,
@@ -1188,13 +1276,12 @@ const menu_t MainMenu =
 	0,
 	0,
 	0,
-	8,
+	7,
 	{
 		{ String_Screen, &ScreenMenu, -1, 0 },
 		{ String_Coils, &CoilsMenu, -1, 0 },
+		{ String_Vaping, &VapingMenu, -1, 0 },
 		{ String_Clock, &ClockMenu, -1, 0 },
-		{ String_Modes, &ModesMenu, -1, 0 },
-		{ String_Miscs, &MiscsMenu, -1, 0 },
 		{ String_Interface, &IFMenu, -1, 0 },
 		{ String_Expert, &ExpertMenu, -1, 0 },
 		{ String_Exit, 0, 1, 0 }
