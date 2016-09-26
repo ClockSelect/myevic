@@ -466,7 +466,6 @@ __myevic__ void DFCheckValuesValidity()
 
 	if ( dfBatteryModel >= GetNBatteries() )
 		dfBatteryModel = 0;
-	SetBatteryModel( dfBatteryModel );
 }
 
 

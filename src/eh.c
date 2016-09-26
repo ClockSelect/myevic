@@ -34,9 +34,16 @@ __myevic__ void PowerPlus( uint16_t *pwr, uint16_t min, uint16_t max )
 	}
 	else if ( KeyTicks < 105 )
 	{
-		*pwr += WattsInc;
+		if ( *pwr < 1000 )
+		{
+			*pwr += WattsInc;
+		}
+		else
+		{
+			*pwr += 10;
+		}
 
-		if ( *pwr >= max )
+		if ( *pwr > max )
 		{
 			*pwr = max;
 		}
@@ -65,9 +72,16 @@ __myevic__ void PowerMinus( uint16_t *pwr, uint16_t min, uint16_t max )
 	}
 	else if ( KeyTicks < 105 )
 	{
-		*pwr -= WattsInc;
+		if ( *pwr <= 1000 )
+		{
+			*pwr -= WattsInc;
+		}
+		else
+		{
+			*pwr -= 10;
+		}
 
-		if ( *pwr <= min )
+		if ( *pwr < min )
 		{
 			*pwr = min;
 		}
@@ -265,11 +279,6 @@ __myevic__ void EventHandler()
 
 			if ( AtoError )
 				return;
-
-			if ( gFlags.read_bir )
-			{
-				ReadInternalResistance();
-			}
 
 			if ( byte_200000B3 == 1 )
 			{
@@ -622,11 +631,9 @@ __myevic__ void EventHandler()
 				}
 
 				gFlags.limit_power = 0;
-			//	if ( pwr > MAXPWRLIMIT && BatteryVoltage <= BatteryCutOff + 60 )
 				if ( pwr > BatteryMaxPwr )
 				{
 					gFlags.limit_power = 1;
-				//	PowerScale = 100 * MAXPWRLIMIT / pwr;
 					PowerScale = 100 * BatteryMaxPwr / pwr;
 				}
 

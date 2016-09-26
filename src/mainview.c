@@ -161,17 +161,6 @@ __myevic__ void DrawCoilLine( int line )
 {
 	unsigned int rez;
 
-	if ( gFlags.debug & 1 )
-	{
-		if ( !EditModeTimer || EditItemIndex != 3 )
-		{
-			uint32_t flags;
-			MemCpy( &flags, (void*)&gFlags, sizeof( uint32_t ) );
-			DrawHexLong( 0, line, flags, 1 );
-			return;
-		}
-	}
-
 	if ( BLINKITEM(3) )
 		return;
 
@@ -300,6 +289,20 @@ __myevic__ void DrawAPTLine( int line )
 //=============================================================================
 __myevic__ void DrawInfoLines()
 {
+	if (( gFlags.debug & 1 ) && ( !gFlags.firing ) && ( !EditModeTimer ))
+	{
+		uint32_t flags;
+		MemCpy( &flags, (uint8_t*)&gFlags + 4, sizeof( uint32_t ) );
+		DrawHexLong( 0, 52, flags, 1 );
+
+		MemCpy( &flags, (void*)&gFlags, sizeof( uint32_t ) );
+		DrawHexLong( 0, 71, flags, 1 );
+
+		DrawValue( 0, 90, BatteryIntRez, 0, 0x1F, 3 );
+		DrawValueRight( 64, 90, BatteryMaxPwr, 0, 0x1F, 3 );
+		return;
+	}
+
 	if ( Screen == 2 )
 	{
 		switch ( dfMode )

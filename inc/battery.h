@@ -25,6 +25,7 @@ extern int GetNBatteries();
 extern void SetBatteryModel();
 extern const uint16_t *GetBatteryName();
 extern void ReadInternalResistance();
+extern void SetBatMaxPower();
 
 
 #endif /* __BATTERY_H__ */

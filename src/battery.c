@@ -19,7 +19,7 @@ BatV2P_t;
 
 const BatV2P_t GENB_VTable[] =
 {
-	{   0, 310 }, 
+	{   0, 310 },
 	{  10, 330 },
 	{  20, 342 },
 	{  30, 350 },
@@ -137,7 +137,7 @@ const Battery_t Batteries[] =
 		String_GEN,
 		GENB_VTable,
 		280,
-		10
+		25
 	},
 
 	{
@@ -245,6 +245,65 @@ __myevic__ int ReadBatterySample()
 
 
 //=========================================================================
+__myevic__ void SetBatMaxPower()
+{
+	// Assume 90% efficiency of the circuitry
+	int Pmax = 90	* ( BatteryCutOff + 10 )
+					* ( BatteryVoltage - ( BatteryCutOff + 10 ) )
+					/ BatteryIntRez;
+
+	BatteryMaxPwr = Pmax / 100;
+
+//	int Imax = 10000 * ( BatteryVoltage - ( BatteryCutOff + 10 ) ) / BatteryIntRez;
+//	myprintf( "Imax = %dA, Pmax = %dW\n", Imax / 1000, Pmax / 1000 );
+}
+
+
+//=========================================================================
+// Read battery internal resistance
+//-------------------------------------------------------------------------
+__myevic__ void ReadInternalResistance()
+{
+	int sample, i;
+	int iato, ibat, vato, vbat, rez;
+
+	if ( dfBatteryModel == 0 )
+		return;
+
+	sample = 0;
+	for ( i = 0 ; i < 16 ; ++i )
+		sample += ADC_Read( 1 );
+	// V * 16 * 100
+	vato = 13 * sample / 48;
+
+	sample = 0;
+	for ( i = 0 ; i < 16 ; ++i )
+		sample += ADC_Read( 2 );
+	// A * 16 * 1000
+	iato = 625 * sample / AtoShuntRez;
+
+	sample = 0;
+	for ( i = 0 ; i < 16 ; ++i )
+		sample += ReadBatterySample();
+	// V * 16 * 100
+	vbat = sample >> 3;
+
+	// Assume 90% efficiency of the circuitry
+	ibat = (( 10 * vato ) / ( 9 * vbat )) * iato;
+
+	rez = ( 10000 * ( BatteryVoltage * 16 - vbat ) / ibat );
+
+	if ( rez > BatteryIntRez )
+	{
+		BatteryIntRez = rez;
+		SetBatMaxPower();
+	}
+
+	gFlags.read_bir = 0;
+}
+
+
+//=========================================================================
 __myevic__ int BatteryVoltsToPercent( int bv )
 {
 	int bpc;
@@ -272,7 +331,7 @@ __myevic__ int BatteryVoltsToPercent( int bv )
 	bpc = ( v2p[i-1].percent )
 		+	( bv - v2p[i-1].voltage )
 		  * ( v2p[i].percent - v2p[i-1].percent ) / ( v2p[i].voltage - v2p[i-1].voltage );
-	
+
 	return bpc;
 }
 
@@ -320,16 +379,6 @@ __myevic__ void NewBatteryVoltage()
 
 	BatteryTenth = BatteryPercent / 10;
 
-	// Assume 90% efficiency of the circuitry (conservative)
-	int Pmax = 90	* ( BatteryCutOff + 10 )
-					* ( BatteryVoltage - ( BatteryCutOff + 10 ) )
-					/ BatteryIntRez;
-
-	BatteryMaxPwr = Pmax / 100;
-
-//	int Imax = 10000 * ( BatteryVoltage - ( BatteryCutOff + 10 ) ) / BatteryIntRez;
-//	myprintf( "Imax = %dA, Pmax = %dW\n", Imax / 1000, Pmax / 1000 );
-
 	return;
 }
 
@@ -364,6 +413,8 @@ __myevic__ void ReadBatteryVoltage()
 			&& (	( SavedBatVoltage > newbv && SavedBatVoltage - newbv > 3 )
 				||	( newbv > SavedBatVoltage && newbv - SavedBatVoltage > 3 ) ) )
 		{
+			gFlags.read_bir = 1;
+			SetBatMaxPower();
 			NewBatteryVoltage();
 		}
 
@@ -457,7 +508,7 @@ __myevic__ int CheckBattery()
 	{
 		gFlags.decrease_voltage = 0;
 
-		if (( PowerScale < 100 ) && ( bv >= limit_voltage + 10 ))
+		if (( PowerScale < 100 ) && ( bv > limit_voltage ))
 		{
 			++PowerScale;
 		}
@@ -465,73 +516,5 @@ __myevic__ int CheckBattery()
 	return 0;
 }
 
-
-//=========================================================================
-// Read battery internal resistance
-//-------------------------------------------------------------------------
-__myevic__ void ReadInternalResistance()
-{
-	BatteryIntRez = Battery->intrez;
-
-	if ( dfBatteryModel == 0 )
-		return;
-	
-	while ( AtoStatus == 4 && AtoProbeCount < 12 )
-	{
-		ProbeAtomizer();
-		WaitOnTMR2( 10 );
-	}
-
-	if ( AtoError )
-		return;
-
-	// Needed by RegulateBuckBoost()
-	gFlags.probing_ato = 1;
-
-	// Ask for 500mA
-	TargetVolts = AtoRezMilli * 5 / 100;
-
-	SetADCState( 1, 1 );
-	SetADCState( 2, 1 );
-
-	AtoWarmUp();
-
-	gFlags.probing_ato = 0;
-
-	if ( AtoStatus != 4 )
-	{
-		StopFire();
-		return;
-	}
-
-	// Stabilize
-	WaitOnTMR2( 100 );
-	
-	int sample, i;
-	int current, volts, rez;
-
-	sample = 0;
-	for ( i = 0 ; i < 16 ; ++i )
-		sample += ADC_Read( 2 );
-	sample >>= 4;
-	current = 625 * sample / AtoShuntRez;
-
-	sample = 0;
-	for ( i = 0 ; i < 16 ; ++i )
-		sample += ReadBatterySample();
-	volts = sample >> 7;
-
-	StopFire();
-
-	rez = 10000 * ( BatteryVoltage - volts ) / current;
-//	myprintf( "BatteryIntRez = %d ( %d / %d )\n", rez, volts, current );
-
-	if ( rez > BatteryIntRez )
-	{
-		BatteryIntRez = rez;
-	}
-	
-	gFlags.read_bir = 0;
-}
 
 

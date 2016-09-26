@@ -206,9 +206,9 @@ __myevic__ void InitVariables()
 	InitDataFlash();
 	KeyPressTime |= 0x8000;
 	LastInputs |= 0x80;
-	LastAtoRez = -1;
+	LastAtoRez = 0;
 	byte_200000B3 = 1;
-	NoEventTimer = -1;
+	NoEventTimer = 0;
 	gFlags.draw_edited_item = 1;
 	gFlags.refresh_battery = 1;
 	gFlags.read_battery = 1;
@@ -468,6 +468,8 @@ __myevic__ void Main()
 	myprintf( "\n\nJoyetech APROM\n" );
 	myprintf( "CPU @ %dHz(PLL@ %dHz)\n", SystemCoreClock, PllClock );
 
+	SetBatteryModel( dfBatteryModel );
+
 	gFlags.sample_vbat = 1;
 	ReadBatteryVoltage();
 
@@ -625,7 +627,14 @@ __myevic__ void Main()
 			DataFlashUpdateTick();
 
 			if ( gFlags.firing )
+			{
 				++FireDuration;
+
+				if ( ( FireDuration > 10 ) && gFlags.read_bir )
+				{
+					ReadInternalResistance();
+				}
+			}
 
 			if ( ShowWeakBatFlag )
 				--ShowWeakBatFlag;

@@ -38,8 +38,6 @@
 #define ISCUBOMINI	(gFlags.is_cuboid && gFlags.is_mini)
 #define ISEVICBASIC	(gFlags.is_evicbasic)
 
-#define MAXPWRLIMIT (gFlags.is_mini?600:700)
-
 
 //=============================================================================
 
