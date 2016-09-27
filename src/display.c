@@ -113,6 +113,7 @@ __myevic__ void DisplaySetContrast( const uint8_t c )
 __myevic__ void DrawTimeSmall( int x, int y, S_RTC_TIME_DATA_T *rtd, int colors )
 {
 	if ( gFlags.draw_edited_item ) colors = 0x1F;
+
 	if (colors&0x10) DrawValue( x   , y, rtd->u32Hour, 0, 0x0B, 2 );
 	if (colors&0x08) DrawImage( x+12, y, 0x103 );
 	if (colors&0x04) DrawValue( x+14, y, rtd->u32Minute, 0, 0x0B, 2 );
@@ -123,6 +124,7 @@ __myevic__ void DrawTimeSmall( int x, int y, S_RTC_TIME_DATA_T *rtd, int colors 
 __myevic__ void DrawTime( int x, int y, S_RTC_TIME_DATA_T *rtd, int colors )
 {
 	if ( gFlags.draw_edited_item ) colors = 0x1F;
+
 	if (colors&0x10) DrawValue( x   , y, rtd->u32Hour, 0, 0x1F, 2 );
 	if (colors&0x08) DrawImage( x+16, y, 0xDD );
 	if (colors&0x04) DrawValue( x+19, y, rtd->u32Minute, 0, 0x1F, 2 );
@@ -132,10 +134,14 @@ __myevic__ void DrawTime( int x, int y, S_RTC_TIME_DATA_T *rtd, int colors )
 
 __myevic__ void DrawDate( int x, int y, S_RTC_TIME_DATA_T *rtd, int colors )
 {
+	uint32_t a = dfStatus.mdy ? rtd->u32Month : rtd->u32Day;
+	uint32_t b = dfStatus.mdy ? rtd->u32Day : rtd->u32Month;
+
 	if ( gFlags.draw_edited_item ) colors = 0x1F;
-	if (colors&0x10) DrawValue( x   , y, rtd->u32Day, 0, 0x0B, 2 );
+
+	if (colors&0x10) DrawValue( x   , y, a, 0, 0x0B, 2 );
 	if (colors&0x08) DrawImage( x+12, y, 0x102 );
-	if (colors&0x04) DrawValue( x+16, y, rtd->u32Month, 0, 0x0B, 2 );
+	if (colors&0x04) DrawValue( x+16, y, b, 0, 0x0B, 2 );
 	if (colors&0x02) DrawImage( x+28, y, 0x102 );
 	if (colors&0x01) DrawValue( x+32, y, rtd->u32Year, 0, 0x0B, 4 );
 }

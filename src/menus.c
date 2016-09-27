@@ -166,15 +166,46 @@ __myevic__ void ClicksMenuOnClick()
 
 //-----------------------------------------------------------------------------
 
+__myevic__ void ClockMenuIDraw( int it, int line, int sel )
+{
+	switch ( it )
+	{
+		case 4:	// Format
+			DrawFillRect( 36, line, 63, line+12, 0 );
+			DrawString( dfStatus.mdy ? String_MDY : String_DMY, 40, line+2 );
+			break;
+
+		case 5:	// Dial
+			DrawFillRect( 36, line, 63, line+12, 0 );
+			DrawImage( 40, line+2, dfStatus.digclk ? 0x9F : 0x9C );
+			break;
+	}
+}
+
+
 __myevic__ void ClockMenuOnClick()
 {
-	if ( CurrentMenuItem == 0 )
+	switch ( CurrentMenuItem )
 	{
-		Event = EVENT_SETTIME;
-	}
-	else if ( CurrentMenuItem == 1 )
-	{
-		Event = EVENT_SETDATE;
+		case 0:
+			Event = EVENT_SETTIME;
+			break;
+
+		case 1:
+			Event = EVENT_SETDATE;
+			break;
+
+		case 4:	// Format
+			dfStatus.mdy ^= 1;
+			UpdateDFTimer = 50;
+			gFlags.refresh_display = 1;
+			break;
+
+		case 5:	// Dial
+			dfStatus.digclk ^= 1;
+			UpdateDFTimer = 50;
+			gFlags.refresh_display = 1;
+			break;
 	}
 }
 
@@ -210,15 +241,11 @@ __myevic__ void IFMenuIDraw( int it, int line, int sel )
 			DrawImage( 44, line+2, dfStatus.font ? 0x9D : 0x9C );
 			break;
 
-		case 5:	// Clock
-			DrawImage( 44, line+2, dfStatus.digclk ? 0x9F : 0x9C );
-			break;
-
-		case 6:	// Temp
+		case 5:	// Temp
 			DrawImage( 44, line+2, dfIsCelsius ? 0xC9 : 0xC8 );
 			break;
 
-		case 7:	// TDom
+		case 6:	// TDom
 			DrawString( dfStatus.priopwr ? String_On : String_Off, 44, line+2 );
 			break;
 
@@ -254,11 +281,7 @@ __myevic__ void IFMenuOnClick()
 			DisplaySetFont();
 			break;
 
-		case 5:	// Clock
-			dfStatus.digclk ^= 1;
-			break;
-
-		case 6:	// Temp
+		case 5:	// Temp
 			dfIsCelsius ^= 1;
 			if ( dfIsCelsius )
 			{
@@ -277,7 +300,7 @@ __myevic__ void IFMenuOnClick()
 			}
 			break;
 
-		case 7:	// TDom
+		case 6:	// TDom
 			dfStatus.priopwr ^= 1;
 			break;
 
@@ -1105,16 +1128,18 @@ const menu_t ClockMenu =
 	String_Clock,
 	&MainMenu,
 	0,
-	0,
+	ClockMenuIDraw+1,
 	0,
 	ClockMenuOnClick+1,
 	0,
-	5,
+	7,
 	{
 		{ String_SetTime, 0, -1, 0 },
 		{ String_SetDate, 0, -1, 0 },
 		{ String_ClkAdjust, 0, 104, 120 },
 		{ String_ClkSpeed, 0, 103, 120 },
+		{ String_Fmt, 0, -1, 0 },
+		{ String_Dial, 0, -1, 0 },
 		{ String_Exit, 0, 1, 0 }
 	}
 };
@@ -1222,14 +1247,13 @@ const menu_t IFMenu =
 	0,
 	IFMenuOnClick+1,
 	0,
-	10,
+	9,
 	{
 		{ String_BattPC, 0, -1, 0 },
 		{ String_1Watt, 0, -1, 0 },
 		{ String_Logo, 0, -1, 0 },
 		{ String_WakeMP, 0, -1, 0 },
 		{ String_Font, 0, -1, 0 },
-		{ String_Clock, 0, -1, 0 },
 		{ String_Temp, 0, -1, 0 },
 		{ String_PPwr, 0, -1, 0 },
 		{ String_Clicks, &ClicksMenu, -1, 0 },

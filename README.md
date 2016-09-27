@@ -165,7 +165,9 @@ There's many more to LOGO and Game menus now. See below.
 ----------
 
 * Clock
-  * Date/Time
+
+    ![Clock Menu](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/clock_zpsmrvulkdd.png)
+  * Set Date/Time
 
         Setup date and time.
         Fire change edited field, + and - set value, and long click on fire saves the setting. Since you need to click 2 seconds on the fire button to save, setup the time 2 seconds in advance if you want to achieve best accuracy. I know...
@@ -177,6 +179,13 @@ There's many more to LOGO and Game menus now. See below.
 
         Joyetech's official firmware updater also sets date & time when uploading a firmware.
         
+  * Fmt (date format)
+
+        Toggle date display format between day/month/year (default, logical, universal) format and month/day/year (US) format.
+
+  * Dial
+
+        Change the format of the clock displayed on the main screen between a hand dial clock (A) and a digital clock with date and time (D).
   
   * Clk Adjust
 
@@ -193,14 +202,12 @@ There's many more to LOGO and Game menus now. See below.
         * Awake the box and go into the "Clk Speed" menu; do not let the box enter sleep mode again in between, or you'll have to redo the whole thing.
         * Using + and - buttons, adjust the time shown on top of the screen to catch up the real time. The number shown in the center of the screen is the clock speed ratio; reasonable values should be around 32~34000.
         * Once you have adjusted the time to the real time, click fire to save the new clock speed ratio. Your clock should now be as accurate as it can. If not, try to repeat the procedure. Accuracy of a few seconds per day can be achieved this way.
-    
-
-
+  
 ----------
 
 * Interface
 
-    ![Interface menu screen](http://i345.photobucket.com/albums/p374/ClockSelect/interface_zps2inyhtfy.png)
+    ![Interface menu screen](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/interface_zpscxrcgysw.png)
 
   * Batt% On/Off
 
@@ -221,10 +228,6 @@ There's many more to LOGO and Game menus now. See below.
   * Font A/B
 
         Change the display font. The font A is the new bold cool-looking font, font B is the guenuine Joyetech's font.
-
-  * Clock A/D
-
-        Change the format of the clock displayed on the main screen between a hand dial clock (A) and a digital clock with date and time (D).
 
   * Temp °C/°F
 

@@ -220,6 +220,10 @@ extern const uint16_t String_VT5[];
 extern const uint16_t String_Vaping[];
 extern const uint16_t String_Prot[];
 extern const uint16_t String_Snow[];
+extern const uint16_t String_Fmt[];
+extern const uint16_t String_DMY[];
+extern const uint16_t String_MDY[];
+extern const uint16_t String_Dial[];
 
 
 //==============================================================================
