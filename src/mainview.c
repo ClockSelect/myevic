@@ -210,8 +210,8 @@ __myevic__ void DrawAPTLine( int line )
 
 	switch ( dfAPT )
 	{
-		case 0:
 		default:
+		case 0:	// Current
 		{
 			DrawString( String_AMP_s, 0, line+2 );
 			DrawValue( 27, line, ( gFlags.firing ) ? AtoCurrent : 0, 1, 0x1F, 3 );
@@ -219,21 +219,27 @@ __myevic__ void DrawAPTLine( int line )
 			break;
 		}
 
-		case 1:
+		case 1:	// Puff counter
 		{
 			DrawString( String_PUFF_s, 0, line+2 );
 			DrawValue( 24, line, dfPuffCount, 0, 0x1F, 5 );
 			break;
 		}
 
-		case 2:
+		case 2:	// Time counter
 		{
-			DrawString( String_TIME_s, 0, line+2 );
-			DrawValue( 24, line, dfTimeCount / 10, 0, 0x1F, 5 );
+		//	DrawString( String_TIME_s, 0, line+2 );
+		//	DrawValue( 24, line, dfTimeCount / 10, 0, 0x1F, 5 );
+			DrawString( String_PUFF_s, 0, line+2 );
+			DrawValueRight( 34, line+2, dfTimeCount / 36000, 0, 0x0B, 0 );
+			DrawImage( 34, line+2, 0x103 );
+			DrawValue( 37, line+2, dfTimeCount / 600 % 60, 0, 0x0B, 2 );
+			DrawImage( 49, line+2, 0x103 );
+			DrawValue( 52, line+2, dfTimeCount / 10 % 60, 0, 0x0B, 2 );
 			break;
 		}
 
-		case 3:
+		case 3:	// Battery voltage
 		{
 			DrawString( String_BATT_s, 0, line+2 );
 			DrawValue( 27, line, ((gFlags.firing)&&RTBatVolts)?RTBatVolts:BatteryVoltage, 2, 0x1F, 3 );
@@ -241,7 +247,7 @@ __myevic__ void DrawAPTLine( int line )
 			break;
 		}
 
-		case 4:
+		case 4:	// Atomizer voltage
 		{
 			DrawString( String_VOUT_s, 0, line+2 );
 			DrawValue( 27, line, (gFlags.firing)?AtoVolts:0, 2, 0x1F, 3 );
@@ -249,7 +255,7 @@ __myevic__ void DrawAPTLine( int line )
 			break;
 		}
 
-		case 5:
+		case 5:	// Board temperature
 		{
 			DrawString( String_BOARD_s, 0, line+2 );
 
@@ -260,7 +266,7 @@ __myevic__ void DrawAPTLine( int line )
 			break;
 		}
 
-		case 6:
+		case 6:	// Real-time atomizer resistance
 		{
 			DrawString( String_RES_s, 0, line+2 );
 			DrawValue( 19, line, AtoRezMilli, 3, 0x1F, 4 );
@@ -268,7 +274,7 @@ __myevic__ void DrawAPTLine( int line )
 			break;
 		}
 
-		case 7:
+		case 7:	// Real-time clock
 		{
 			S_RTC_TIME_DATA_T rtd;
 			GetRTC( &rtd );
