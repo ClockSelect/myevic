@@ -27,6 +27,16 @@ extern int IsClockOnScreen();
 extern void DrawClock();
 extern void DrawDigitClock();
 
+enum {
+	SSAVER_NONE = 0,
+	SSAVER_CLOCK,
+	SSAVER_CUBE,
+	SSAVER_LOGO,
+	SSAVER_QIX,
+	SSAVER_SNOW,
+	SSAVER_MAX
+};
+
 //==============================================================================
 
 extern void DrawScreen();
@@ -142,6 +152,7 @@ extern const uint16_t String_Edit[];
 extern const uint16_t String_ClkSpeed[];
 extern const uint16_t String_ClkAdjust[];
 extern const uint16_t String_myevic[];
+extern const uint16_t String_Build[];
 
 // from menus.c
 extern const uint16_t String_Menus[];
@@ -207,7 +218,7 @@ extern const uint16_t String_VT4[];
 extern const uint16_t String_VT5[];
 extern const uint16_t String_Vaping[];
 extern const uint16_t String_Prot[];
-extern const uint16_t String_Build[];
+extern const uint16_t String_Snow[];
 
 
 //==============================================================================

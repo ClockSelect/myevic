@@ -908,7 +908,7 @@ __myevic__ void ShowScreenSaver()
 {
 	switch ( dfScreenSaver )
 	{
-		case 1:
+		case SSAVER_CLOCK:
 			if ( dfStatus.digclk )
 			{
 				DrawDigitClock( 40 );
@@ -919,16 +919,20 @@ __myevic__ void ShowScreenSaver()
 			}
 			break;
 
-		case 2:
+		case SSAVER_CUBE:
 			anim3d( 1 );
 			break;
 
-		case 3:
+		case SSAVER_LOGO:
 			DrawLOGO( 0, 32 );
 			break;
 
-		case 4:
+		case SSAVER_QIX:
 			qix( 1 );
+			break;
+
+		case SSAVER_SNOW:
+			Snow( 1 );
 			break;
 
 		default:
@@ -942,12 +946,16 @@ __myevic__ void AnimateScreenSaver()
 {
 	switch ( dfScreenSaver )
 	{
-		case 2:
+		case SSAVER_CUBE:
 			anim3d( 0 );
 			break;
 
-		case 4:
+		case SSAVER_QIX:
 			qix( 0 );
+			break;
+
+		case SSAVER_SNOW:
+			Snow( 0 );
 			break;
 
 		default:

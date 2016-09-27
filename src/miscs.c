@@ -426,3 +426,25 @@ __myevic__ void qix_diddle(int16_t *ptr)
 	if (*ptr < 0) *ptr = -tmp; else *ptr = tmp;
 }
 
+//=========================================================================
+// Snow (screen burn-out recovery)
+//-------------------------------------------------------------------------
+
+__myevic__ void Snow( int redraw )
+{
+	static uint8_t tscaler = 0;
+
+	// Lets's say 50Hz
+	if ( ++tscaler < 2 ) return;
+	tscaler = 0;
+
+	for ( int i = 0; i < SCREEN_BUFFER_SIZE ; ++i )
+	{
+		ScreenBuffer[i] = Random() % 0xFF;
+	}
+	if ( !redraw )
+	{
+		DisplayRefresh();
+	}
+}
+

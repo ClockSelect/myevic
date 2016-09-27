@@ -367,8 +367,8 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfRezTCR > 150 )
 		dfRezTCR = 0;
 
-	if ( dfScreenSaver > 4 )
-		dfScreenSaver = 1;
+	if ( dfScreenSaver >= SSAVER_MAX )
+		dfScreenSaver = SSAVER_CLOCK;
 
 	if ( dfRezLockedTCR > 1 )
 		dfRezLockedTCR = 0;
@@ -425,7 +425,7 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfModesSel & 0x80 || ( dfModesSel & 0x7F ) == 0x7F )
 		dfModesSel = 0;
 
-	if ( dfClkRatio < 30000 || dfClkRatio > 35000 )
+	if ( dfClkRatio < RTC_MIN_CLOCK_RATIO || dfClkRatio > RTC_MAX_CLOCK_RATIO )
 		dfClkRatio = RTC_DEF_CLK_RATIO;
 
 	if ( dfStatus.phpct )

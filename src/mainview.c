@@ -298,8 +298,8 @@ __myevic__ void DrawInfoLines()
 		MemCpy( &flags, (void*)&gFlags, sizeof( uint32_t ) );
 		DrawHexLong( 0, 71, flags, 1 );
 
-		DrawValue( 0, 90, BatteryIntRez, 0, 0x1F, 3 );
-		DrawValueRight( 64, 90, BatteryMaxPwr, 0, 0x1F, 3 );
+		DrawValue( 0, 90, BatteryIntRez, 0, 0x1F, 0 );
+		DrawValueRight( 64, 90, BatteryMaxPwr / 10, 0, 0x1F, 0 );
 		return;
 	}
 

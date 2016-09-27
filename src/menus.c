@@ -542,6 +542,7 @@ __myevic__ void ExpertMenuOnClick()
 			SetBatteryModel();
 			gFlags.read_battery = 1;
 			NewBatteryVoltage();
+			SetBatMaxPower();
 			break;
 
 		case 5:	// Exit
@@ -1164,13 +1165,14 @@ const menu_t ScreenSaveMenu =
 	ScreenSaveOnSelect+1,
 	0,
 	0,
-	5,
+	6,
 	{
 		{ String_None, 0, 1, 0 },
 		{ String_Clock, 0, 1, 0 },
 		{ String_Cube, 0, 1, 0 },
 		{ String_Logo, 0, 1, 0 },
-		{ String_Qix, 0, 1, 0 }
+		{ String_Qix, 0, 1, 0 },
+		{ String_Snow, 0, 1, 0 }
 	}
 };
 

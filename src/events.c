@@ -629,7 +629,7 @@ __myevic__ int EvtPlusButton()
 			if ( !gFlags.has_x32 )
 			{
 				unsigned int cs = RTCGetClockSpeed();
-				if ( cs < 50000 )
+				if ( cs < RTC_MAX_CLOCK_RATIO )
 				{
 					if ( KeyTicks < 105 )
 					{
@@ -742,7 +742,7 @@ __myevic__ int EvtMinusButton()
 			if ( !gFlags.has_x32 )
 			{
 				unsigned int cs = RTCGetClockSpeed();
-				if ( cs > 20000 )
+				if ( cs > RTC_MIN_CLOCK_RATIO )
 				{
 					if ( KeyTicks < 105 )
 					{

@@ -273,27 +273,29 @@ __myevic__ void ReadInternalResistance()
 	sample = 0;
 	for ( i = 0 ; i < 16 ; ++i )
 		sample += ADC_Read( 1 );
-	// V * 16 * 100
-	vato = 13 * sample / 48;
+	// V * 100
+	vato = ( 13 * sample / 48 ) >> 4;
 
 	sample = 0;
 	for ( i = 0 ; i < 16 ; ++i )
 		sample += ADC_Read( 2 );
-	// A * 16 * 1000
-	iato = 625 * sample / AtoShuntRez;
+	// A * 1000
+	iato = ( 625 * sample / AtoShuntRez ) >> 4;
 
 	sample = 0;
 	for ( i = 0 ; i < 16 ; ++i )
 		sample += ReadBatterySample();
-	// V * 16 * 100
-	vbat = sample >> 3;
+	// V * 100
+	vbat = sample >> 7;
 
 	// Assume 90% efficiency of the circuitry
-	ibat = (( 10 * vato ) / ( 9 * vbat )) * iato;
+	ibat = ( 10 * vato * iato ) / ( 9 * vbat );
 
-	rez = ( 10000 * ( BatteryVoltage * 16 - vbat ) / ibat );
+	rez = ( 10000 * ( BatteryVoltage - vbat ) ) / ibat;
 
-	if ( rez > BatteryIntRez )
+	// There's no battery with internal resistance
+	// less than 20mOhm.
+	if ( rez >= 20 /* BatteryIntRez */ )
 	{
 		BatteryIntRez = rez;
 		SetBatMaxPower();

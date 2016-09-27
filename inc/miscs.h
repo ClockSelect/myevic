@@ -18,4 +18,6 @@ extern void qix( int );
 extern void qix_mvpoint(int16_t *tx, int16_t *ty, int16_t *v_x, int16_t *v_y );
 extern void qix_diddle(int16_t *ptr );
 
+extern void Snow( int );
+
 #endif /* __MISCS_H__ */
