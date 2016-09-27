@@ -77,6 +77,7 @@ extern uint16_t GetMainScreenDuration();
 //==============================================================================
 
 extern void MainView();
+extern void ChargeView();
 extern void AnimateScreenSaver();
 
 

@@ -21,8 +21,8 @@ __myevic__ void MainView()
 	{
 		HideLogo = 3;
 	}
-	gFlags.refresh_display = 1;
 	Screen = 1;
+	gFlags.refresh_display = 1;
 	ScreenDuration = GetMainScreenDuration();
 }
 

@@ -830,7 +830,7 @@ __myevic__ void EventHandler()
 				gFlags.refresh_display = 1;
 				if ( gFlags.battery_charging )
 				{
-					Screen = 5;
+					ChargeView();
 					BatAnimLevel = BatteryTenth;
 				}
 				else
@@ -896,7 +896,7 @@ __myevic__ void EventHandler()
 			gFlags.refresh_display = 1;
 			if ( dfStatus.off )
 			{
-				Screen = 5;
+				ChargeView();
 				BatAnimLevel = BatteryTenth;
 			}
 			else

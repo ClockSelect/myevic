@@ -252,7 +252,7 @@ __myevic__ void DrawScreen()
 				}
 				else
 				{
-					Screen = 5;
+					ChargeView();
 				}
 			}
 			else
@@ -262,6 +262,14 @@ __myevic__ void DrawScreen()
 			break;
 
 		case   5: // Black w/ Battery
+			if ( dfScreenSaver != SSAVER_NONE )
+			{
+				Screen = 60;
+				ScreenDuration = GetScreenProtection();
+				gFlags.refresh_display = 1;
+			}
+			break;
+
 		case  22: // Atomizer Low
 		case  23: // 10s Protection
 		case  24: // Battery Low
@@ -302,7 +310,7 @@ __myevic__ void DrawScreen()
 			}
 			else
 			{
-				Screen = 5;
+				ChargeView();
 			}
 			gFlags.refresh_display = 1;
 			break;
@@ -364,6 +372,17 @@ __myevic__ int convert_string1( uint16_t *strbuf, const char *s )
 	strbuf[i] = 0;
 	return i;
 }
+
+
+//=========================================================================
+
+__myevic__ void ChargeView()
+{
+	Screen = 5;
+	gFlags.refresh_display = 1;
+	ScreenDuration = GetMainScreenDuration();
+}
+
 
 //=========================================================================
 
