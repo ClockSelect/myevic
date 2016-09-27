@@ -357,7 +357,21 @@ __myevic__ void GetUserInput()
 	{
 		if ( UserInputs == 1 )
 		{
-			Event = EVENT_LONG_FIRE;
+			if ( EditModeTimer > 0 )
+			{
+				if (( Screen == 1 ) && ( EditItemIndex == 4 ))
+				{
+					EditModeTimer = 1000;
+					if ( dfAPT == 1 )
+						Event = 22;	// puff reset
+					if ( dfAPT == 2 )
+						Event = 23;	// time reset
+				}
+			}
+			else
+			{
+				Event = EVENT_LONG_FIRE;
+			}
 		}
 		else if ( UserInputs == 4 )
 		{
@@ -367,17 +381,6 @@ __myevic__ void GetUserInput()
 					Event = 18;	// flip display
 				else
 					Event = 4;	// key (un)lock
-			}
-			else
-			{
-				EditModeTimer = 1000;
-				if (( Screen == 1 ) && ( EditItemIndex == 4 ))
-				{
-					if ( dfAPT == 1 )
-						Event = 22;	// puff reset
-					if ( dfAPT == 2 )
-						Event = 23;	// time reset
-				}
 			}
 		}
 		else if ( UserInputs == 5 )
@@ -955,7 +958,7 @@ __myevic__ int EvtEnterMenus()
 	CurrentMenu = 0;
 	CurrentMenuItem = 0;
 	Screen = 102;
-	ScreenDuration = 10;
+	ScreenDuration = 30;
 	gFlags.refresh_display = 1;
 	return 1;
 }

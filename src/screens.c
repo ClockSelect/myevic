@@ -262,7 +262,13 @@ __myevic__ void DrawScreen()
 			break;
 
 		case   5: // Black w/ Battery
-			if ( dfScreenSaver != SSAVER_NONE )
+			if ( dfStealthOn )
+			{
+				Screen = 0;
+				gFlags.refresh_display = 1;
+				SleepTimer = 18000;
+			}
+			else if ( dfScreenSaver != SSAVER_NONE )
 			{
 				Screen = 60;
 				ScreenDuration = GetScreenProtection();

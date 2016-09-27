@@ -44,82 +44,85 @@
 
 typedef struct
 {
-	int	off:1;
-	int	keylock:1;
-	int	flipped:1;
-	int	nologo:1;
-	int clock:1;
-	int vcom:1;
-	int storage:1;
-	int dbgena:1;
+/* 00000001 */	int	off:1;
+/* 00000002 */	int	keylock:1;
+/* 00000004 */	int	flipped:1;
+/* 00000008 */	int	nologo:1;
+/* 00000010 */	int clock:1;
+/* 00000020 */	int vcom:1;
+/* 00000040 */	int storage:1;
+/* 00000080 */	int dbgena:1;
 
-	int x32off:1;
-	int priopwr:1;
-	int onewatt:1;
-	int digclk:1;
-	int battpc:1;
-	int phpct:1;
-	int wakeonpm:1;
-	int font:1;
+/* 00000100 */	int x32off:1;
+/* 00000200 */	int priopwr:1;
+/* 00000400 */	int onewatt:1;
+/* 00000800 */	int digclk:1;
+/* 00001000 */	int battpc:1;
+/* 00002000 */	int phpct:1;
+/* 00004000 */	int wakeonpm:1;
+/* 00008000 */	int font:1;
 
-	int nfeoff:1;
+/* 00010000 */	int nfeoff:1;
+
+// Do not exceed 32 bits;
+// if you may do so, create another bitfield.
 }
 dfStatus_t;
 
 typedef struct dfParams
 {
-	uint32_t	PCRC;
-	uint32_t	HWVersion;
-	uint8_t		Magic;
-	uint8_t		BootFlag;
-	uint8_t		Mode;
-	uint8_t		Protec;			//	1-byte pad
-	uint16_t	Power;
-	uint16_t	Temp;
-	uint16_t	TCPower;
-	uint16_t	VWVolts;
-	uint8_t		APT;
-	uint8_t		RezType;
-	uint8_t		TempAlgo;
-	uint8_t		IsCelsius;
-	uint16_t	Resistance;
-	uint16_t	RezTI;
-	uint16_t	RezNI;
-	uint8_t		RezLockedTI;
-	uint8_t		RezLockedNI;
-	uint8_t		TiOn;			//	useless
-	uint8_t		StealthOn;
-	uint16_t	TempCoefsNI[21];
-	uint16_t	TempCoefsTI[21];
-//	2-bytes pad
-	dfStatus_t	Status;
-	uint16_t	AtoRez;
-	uint8_t		AtoStatus;
-//	1-byte pad
-	uint16_t	RezSS;
-	uint8_t		RezLockedSS;
-	uint8_t		UIVersion;		//	useless
-	uint8_t		TCRIndex;
-	uint8_t		ScrMainTime;	//	1-byte pad
-	uint16_t	TCRM[3];
-	uint16_t	RezTCR;
-	uint8_t		RezLockedTCR;
-	uint8_t		ScreenSaver;	//	1-byte pad
-	uint8_t		TCMode;
-	uint8_t		ScreenProt;		//	1-byte pad
-	uint16_t	SavedCfgRez[10];
-	uint16_t	SavedCfgPwr[10];
-	uint16_t	FBBest;
-	uint8_t		FBSpeed;
-	uint8_t		byte_2000033D;	//	unused
-	uint8_t		Contrast;
-	uint8_t		ModesSel;
-	uint16_t	ClkRatio;
-	uint16_t	PreheatPwr;
-	uint8_t		PreheatTime;
-	uint8_t		Clicks[3];
-	uint8_t		DimTimeout;
-	uint8_t		BatteryModel;
+/* 0000 */	uint32_t	PCRC;
+/* 0004 */	uint32_t	HWVersion;
+/* 0008 */	uint8_t		Magic;
+/* 0009 */	uint8_t		BootFlag;
+/* 000A */	uint8_t		Mode;
+/* 000B */	uint8_t		Protec;			//	1-byte pad
+/* 000C */	uint16_t	Power;
+/* 000E */	uint16_t	Temp;
+/* 0010 */	uint16_t	TCPower;
+/* 0012 */	uint16_t	VWVolts;
+/* 0014 */	uint8_t		APT;
+/* 0015 */	uint8_t		RezType;
+/* 0016 */	uint8_t		TempAlgo;
+/* 0017 */	uint8_t		IsCelsius;
+/* 0018 */	uint16_t	Resistance;
+/* 001A */	uint16_t	RezTI;
+/* 001C */	uint16_t	RezNI;
+/* 001E */	uint8_t		RezLockedTI;
+/* 001F */	uint8_t		RezLockedNI;
+/* 0020 */	uint8_t		TiOn;			//	useless
+/* 0021 */	uint8_t		StealthOn;
+/* 0022 */	uint16_t	TempCoefsNI[21];
+/* 004C */	uint16_t	TempCoefsTI[21];
+/* 0076 */	//	2-bytes pad
+/* 0078 */	dfStatus_t	Status;
+/* 007C */	uint16_t	AtoRez;
+/* 007E */	uint8_t		AtoStatus;
+/* 007F */	//	1-byte pad
+/* 0080 */	uint16_t	RezSS;
+/* 0082 */	uint8_t		RezLockedSS;
+/* 0083 */	uint8_t		UIVersion;		//	useless
+/* 0084 */	uint8_t		TCRIndex;
+/* 0085 */	uint8_t		ScrMainTime;	//	1-byte pad
+/* 0086 */	uint16_t	TCRM[3];
+/* 008C */	uint16_t	RezTCR;
+/* 008E */	uint8_t		RezLockedTCR;
+/* 008F */	uint8_t		ScreenSaver;	//	1-byte pad
+/* 0090 */	uint8_t		TCMode;
+/* 0091 */	uint8_t		ScreenProt;		//	1-byte pad
+/* 0092 */	uint16_t	SavedCfgRez[10];
+/* 00A6 */	uint16_t	SavedCfgPwr[10];
+/* 00BA */	uint16_t	FBBest;
+/* 00BC */	uint8_t		FBSpeed;
+/* 00BD */	uint8_t		byte_2000033D;	//	unused
+/* 00BE */	uint8_t		Contrast;
+/* 00BF */	uint8_t		ModesSel;
+/* 00C0 */	uint16_t	ClkRatio;
+/* 00C2 */	uint16_t	PreheatPwr;
+/* 00C4 */	uint8_t		PreheatTime;
+/* 00C5 */	uint8_t		Clicks[3];
+/* 00C8 */	uint8_t		DimTimeout;
+/* 00C9 */	uint8_t		BatteryModel;
 }
 dfParams_t;
 

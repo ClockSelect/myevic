@@ -1343,11 +1343,11 @@ __myevic__ void DrawMenu()
 
 __myevic__ int MenuEvent( int event )
 {
-	int vret = 1;
+	int vret = 0;
 
 	if ( CurrentMenu && CurrentMenu->on_event )
 	{
-		ScreenDuration = 10;
+		ScreenDuration = 30;
 		vret = CurrentMenu->on_event( event );
 		if ( vret ) return 1;
 	}
@@ -1356,9 +1356,7 @@ __myevic__ int MenuEvent( int event )
 	{
 		case 1:
 		{
-			KeyPressTime |= 0x8000;
-
-			ScreenDuration = 10;
+			ScreenDuration = 30;
 			if ( CurrentMenu->on_clickitem ) CurrentMenu->on_clickitem();
 
 			mitem_t const *mi = &CurrentMenu->mitems[CurrentMenuItem];
@@ -1405,7 +1403,7 @@ __myevic__ int MenuEvent( int event )
 				CurrentMenuItem = 0;
 			}
 
-			ScreenDuration = 10;
+			ScreenDuration = 30;
 			gFlags.refresh_display = 1;
 
 			if ( CurrentMenu->on_selectitem ) CurrentMenu->on_selectitem();
@@ -1425,7 +1423,7 @@ __myevic__ int MenuEvent( int event )
 				CurrentMenuItem = CurrentMenu->nitems - 1;
 			}
 
-			ScreenDuration = 10;
+			ScreenDuration = 30;
 			gFlags.refresh_display = 1;
 
 			if ( CurrentMenu->on_selectitem ) CurrentMenu->on_selectitem();
@@ -1479,7 +1477,7 @@ __myevic__ int MenuEvent( int event )
 				CurrentMenuItem = 0;
 				if ( CurrentMenu->on_enter ) CurrentMenu->on_enter();
 				Screen = 102;
-				ScreenDuration = 10;
+				ScreenDuration = 30;
 				gFlags.refresh_display = 1;
 			}
 			else
@@ -1494,5 +1492,6 @@ __myevic__ int MenuEvent( int event )
 		default:
 			break;
 	}
+
 	return vret;
 }
