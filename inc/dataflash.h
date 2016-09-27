@@ -64,6 +64,7 @@ typedef struct
 
 /* 00010000 */	int nfeoff:1;
 /* 00020000 */	int mdy:1;
+/* 00040000 */	int invert:1;
 
 // Do not exceed 32 bits;
 // if you may do so, create another bitfield.

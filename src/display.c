@@ -90,6 +90,7 @@ __myevic__ void InitDisplay()
 			break;
 	}
 	DisplaySetContrast( dfContrast );
+	DisplaySetInverse( dfStatus.invert );
 	DisplaySetFont();
 }
 
@@ -104,6 +105,21 @@ __myevic__ void DisplaySetContrast( const uint8_t c )
 
 		case 1:
 			SSD1327_SetContrast( c );
+			break;
+	}
+}
+
+//=========================================================================
+__myevic__ void DisplaySetInverse( const uint8_t i )
+{
+	switch ( DisplayModel )
+	{
+		case 0:
+			SSD1306_SetInverse( i );
+			break;
+
+		case 1:
+			SSD1327_SetInverse( i );
 			break;
 	}
 }

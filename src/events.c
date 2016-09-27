@@ -357,16 +357,14 @@ __myevic__ void GetUserInput()
 	{
 		if ( UserInputs == 1 )
 		{
-			if ( EditModeTimer > 0 )
+			if (( Screen == 1 )
+			&& (( EditModeTimer > 0 ) && ( EditItemIndex == 4 )))
 			{
-				if (( Screen == 1 ) && ( EditItemIndex == 4 ))
-				{
-					EditModeTimer = 1000;
-					if ( dfAPT == 1 )
-						Event = 22;	// puff reset
-					if ( dfAPT == 2 )
-						Event = 23;	// time reset
-				}
+				EditModeTimer = 1000;
+				if ( dfAPT == 1 )
+					Event = 22;	// puff reset
+				if ( dfAPT == 2 )
+					Event = 23;	// time reset
 			}
 			else
 			{

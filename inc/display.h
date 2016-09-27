@@ -32,6 +32,7 @@ extern void DisplaySendCommand( const uint8_t );
 extern void DisplaySendData( const uint8_t*, const uint32_t );
 extern void ScreenOff();
 extern void DisplaySetContrast( const uint8_t c );
+extern void DisplaySetInverse( const uint8_t i );
 extern void ClearScreenBuffer();
 extern void DisplayRefresh();
 extern void Screen2Bitmap( uint8_t *pu8Bitmap );
@@ -72,6 +73,7 @@ extern void SSD1306_Plot( int x, int y, int color );
 extern uint32_t SSD1306_Image( int x, int y, uint16_t img, int color );
 extern uint32_t SSD1306_Bitmap( int x, int y, const image_t *image, int color );
 extern void SSD1306_Screen2Bitmap( uint8_t *pu8Bitmap );
+extern void SSD1327_SetInverse( const uint8_t i );
 
 extern void SSD1327_Init();
 extern void SSD1327_WriteBytes( const int isData, const uint8_t data[], const int len );
@@ -83,6 +85,7 @@ extern void SSD1327_Plot( int x, int y, int color );
 extern uint32_t SSD1327_Image( int x, int y, uint16_t img, int color );
 extern uint32_t SSD1327_Bitmap( int x, int y, const image_t *image, int color );
 extern void SSD1327_Screen2Bitmap( uint8_t *pu8Bitmap );
+extern void SSD1306_SetInverse( const uint8_t i );
 
 
 #endif /* __DISPLAY_H__ */

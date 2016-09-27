@@ -956,11 +956,30 @@ __myevic__ int CoilsMEvent( int event )
 
 //-----------------------------------------------------------------------------
 
-__myevic__ void ScreenIClick()
+__myevic__ void ScreenMenuOnClick()
 {
 	if ( CurrentMenu->mitems[CurrentMenuItem].screen == 101 )
 	{
 		gFlags.edit_capture_evt = 1;
+	}
+	else if ( CurrentMenuItem == 3 )
+	{
+		dfStatus.invert ^= 1;
+		DisplaySetInverse( dfStatus.invert );
+		UpdateDFTimer = 50;
+		gFlags.refresh_display = 1;
+	}
+}
+
+
+__myevic__ void ScreenMenuIDraw( int it, int line, int sel )
+{
+	switch ( it )
+	{
+		case 3:	// Invert
+			DrawFillRect( 40, line, 63, line+12, 0 );
+			DrawString( dfStatus.invert ? String_On : String_Off, 44, line+2 );
+			break;
 	}
 }
 
@@ -1206,15 +1225,16 @@ const menu_t ScreenMenu =
 	String_Screen,
 	&MainMenu,
 	0,
+	ScreenMenuIDraw+1,
 	0,
+	ScreenMenuOnClick+1,
 	0,
-	ScreenIClick+1,
-	0,
-	5,
+	6,
 	{
 		{ String_Contrast, 0, 101, 10 },
 		{ String_Protection, &ScreenProtMenu, -1, 0 },
 		{ String_Saver, &ScreenSaveMenu, -1, 0 },
+		{ String_Invert, 0, -1, 0 },
 		{ String_Miscs, &MiscsMenu, -1, 0 },
 		{ String_Exit, 0, 1, 0 }
 	}
