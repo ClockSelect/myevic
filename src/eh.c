@@ -894,15 +894,18 @@ __myevic__ void EventHandler()
 		case 12:	// Battery charging
 			gFlags.battery_charging = 1;
 			gFlags.refresh_display = 1;
-			if ( dfStatus.off )
+			BatAnimLevel = BatteryTenth;
+			if ( !dfStealthOn )
 			{
-				ChargeView();
-				BatAnimLevel = BatteryTenth;
-			}
-			else
-			{
-				if ( Screen != 5 )
-					MainView();
+				if ( dfStatus.off )
+				{
+					ChargeView();
+				}
+				else
+				{
+					if ( Screen != 5 )
+						MainView();
+				}
 			}
 			return;
 
@@ -911,7 +914,7 @@ __myevic__ void EventHandler()
 			gFlags.battery_charging = 0;
 			if ( Screen == 5 )
 			{
-				if ( dfStatus.off )
+				if ( dfStatus.off || dfStealthOn )
 				{
 					gFlags.refresh_display = 1;
 					Screen = 0;
@@ -928,7 +931,19 @@ __myevic__ void EventHandler()
 			gFlags.low_battery = 0;
 			gFlags.usb_attached = 1;
 			if ( !(dfStatus.off) )
-				MainView();
+			{
+				if ( Screen == 0 )
+				{
+					if ( !dfStealthOn )
+					{
+						ChargeView();
+					}
+				}
+				else
+				{
+					MainView();
+				}
+			}
 			return;
 
 		case 6:		// Stealth On/Off

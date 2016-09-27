@@ -427,7 +427,7 @@ __myevic__ void GetUserInput()
 			}
 		}
 	}
-	else if ( ( KeyPressTime & 0x8000 ) ||  ( KeyPressTime & 0x7fff ) >= 210 )
+	else if ( ( KeyPressTime & 0x8000 ) || ( KeyPressTime & 0x7fff ) >= 210 )
 	{
 		if ( UserInputs == 1 )
 		{

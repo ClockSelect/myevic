@@ -244,16 +244,9 @@ __myevic__ void DrawScreen()
 		case  40: // Stealth ON/OFF
 			if ( dfStealthOn )
 			{
+				Screen = 0;
+				SleepTimer = 18000;
 				gFlags.refresh_display = 1;
-				if ( !(gFlags.battery_charging) )
-				{
-					Screen = 0;
-					SleepTimer = 18000;
-				}
-				else
-				{
-					ChargeView();
-				}
 			}
 			else
 			{
@@ -262,18 +255,6 @@ __myevic__ void DrawScreen()
 			break;
 
 		case   5: // Black w/ Battery
-			if ( dfStealthOn )
-			{
-				Screen = 0;
-				gFlags.refresh_display = 1;
-				SleepTimer = 18000;
-			}
-			else if ( dfScreenSaver != SSAVER_NONE )
-			{
-				Screen = 60;
-				ScreenDuration = GetScreenProtection();
-				gFlags.refresh_display = 1;
-			}
 			break;
 
 		case  22: // Atomizer Low
@@ -309,7 +290,8 @@ __myevic__ void DrawScreen()
 		case  41: // Ti ON/OFF
 		case  54: // Battery Voltage
 		case 100: // Infos page
-			if ( !(gFlags.battery_charging) )
+			if (( dfScreenSaver && GetScreenProtection() )
+				|| ( !gFlags.battery_charging ))
 			{
 				Screen = 0;
 				SleepTimer = 18000;
@@ -323,7 +305,6 @@ __myevic__ void DrawScreen()
 
 		case  60: // Screen Saver
 			Screen = 0;
-			ScreenDuration = 0;
 			SleepTimer = 0;
 			gFlags.refresh_display = 1;
 			break;
@@ -386,7 +367,7 @@ __myevic__ void ChargeView()
 {
 	Screen = 5;
 	gFlags.refresh_display = 1;
-	ScreenDuration = GetMainScreenDuration();
+	ScreenDuration = 0;
 }
 
 
@@ -610,7 +591,7 @@ __myevic__ void ShowBatCharging()
 	int t = dfIsCelsius ? BoardTemp : CelsiusToF( BoardTemp );
 
 	DrawValue( 38, 105, t, 0, 0x0B, t > 99 ? 3 : 2 );
-	DrawImage( t > 99 ? 57 : 51, 104, dfIsCelsius ? 0x6A : 0x6D );
+	DrawImage( t > 99 ? 57 : 51, 104, dfIsCelsius ? 0xC9 : 0xC8 );
 }
 
 
