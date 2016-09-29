@@ -250,8 +250,8 @@ __myevic__ void ResetDataFlash()
 //	dfRezLockedTCR = 0;
 //	dfTCRIndex = 0;
 //	dfScrMainTime = 0;
-	dfTCRM[0] = 120;
-	dfTCRM[1] = 120;
+	dfTCRM[0] = 100;
+	dfTCRM[1] = 110;
 	dfTCRM[2] = 120;
 	dfScreenSaver = 1;
 //	dfTCMode = 0;
