@@ -535,6 +535,7 @@ __myevic__ void InitUSB()
 #define HID_CMD_RESET		0xB4
 #define HID_CMD_FMCREAD		0xC0
 #define HID_CMD_SCREENSHOT	0xC1
+#define HID_CMD_APUPDATE	0xC3
 
 
 typedef struct __attribute__((packed))

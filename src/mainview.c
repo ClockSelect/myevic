@@ -6,6 +6,7 @@
 #include "myrtc.h"
 #include "atomizer.h"
 #include "miscs.h"
+#include "timers.h"
 
 //=============================================================================
 
@@ -287,6 +288,14 @@ __myevic__ void DrawAPTLine( int line )
 				DrawTime( 5, line, &rtd, 0x1F );
 			}
 			break;
+		}
+
+		case 8:	// Vape Velocity
+		{
+			DrawString( String_mld, 42, line+2 );
+			uint32_t vv = 250 * ( MilliJoules / 1000 ) / 1000;
+			vv = vv * 86400 / ( TMR2Counter / 1000 ? : 1 );
+			DrawValueRight( 40, line, vv / 10, 2, 0x1F, 0 );
 		}
 	}
 }

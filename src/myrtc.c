@@ -2,6 +2,7 @@
 #include "dataflash.h"
 #include "screens.h"
 #include "myprintf.h"
+#include "timers.h"
 #include "myrtc.h"
 
 #include <time.h>
@@ -412,26 +413,42 @@ __myevic__ void RTCAdjustClock( int seconds )
 
 //=============================================================================
 
+__myevic__ void RTCGetEpoch( time_t *t )
+{
+	S_RTC_TIME_DATA_T rtd;
+
+	GetRTC( &rtd );
+	RTCTimeToEpoch( t, &rtd );
+}
+
+
+//=============================================================================
+
 __myevic__ void RTCSleep()
 {
 	if ( gFlags.noclock )
 		return;
 
 	if ( gFlags.has_x32 )
-		return;
+	{
+		S_RTC_TIME_DATA_T rtd;
+		time_t t;
 
-	RTC_DisableInt( RTC_INTEN_TICKIEN_Msk );
-
-	RTCAdjustClock( 0 );
+		GetRTC( &rtd );
+		RTCTimeToEpoch( &t, &rtd );
+		RTCSetReferenceDate( &t );
+	}
+	else
+	{
+		RTC_DisableInt( RTC_INTEN_TICKIEN_Msk );
+		RTCAdjustClock( 0 );
+	}
 }
 
 
 __myevic__ void RTCWakeUp()
 {
 	if ( gFlags.noclock )
-		return;
-
-	if ( gFlags.has_x32 )
 		return;
 
 	S_RTC_TIME_DATA_T rtd;
@@ -444,6 +461,15 @@ __myevic__ void RTCWakeUp()
 	sleep_ticks = ( t - ref );
 	int_cnt = 0;
 
-	RTC_EnableInt( RTC_INTEN_TICKIEN_Msk );
+	if ( gFlags.has_x32 )
+	{
+		TMR2Counter += sleep_ticks * 1000;
+	}
+	else
+	{
+		TMR2Counter += sleep_ticks * RTCGetClockSpeed() / 10;
+		RTC_EnableInt( RTC_INTEN_TICKIEN_Msk );
+	}
 }
+
 

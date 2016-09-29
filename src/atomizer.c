@@ -38,6 +38,7 @@ uint8_t		ConfigIndex;
 uint8_t		LastAtoError;
 uint8_t		PreheatTimer;
 uint16_t	PreheatPower;
+uint32_t	MilliJoules;
 
 uint8_t		byte_200000B3;
 uint16_t	LastAtoRez;
@@ -486,6 +487,12 @@ __myevic__ void ReadAtomizer()
 		AtoRezMilli = 1300 * AtoShuntRez / 100 * ADCAtoSum / ( 3 * ADCShuntSum );
 
 		GetAtoCurrent();
+
+		if ( gFlags.firing )
+		{
+			uint32_t pwr = AtoCurrent * AtoCurrent * AtoRezMilli / 100000;
+			MilliJoules += pwr;
+		}
 
 		if ( AtoRezMilli >= 5 )
 		{

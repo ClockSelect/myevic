@@ -51,6 +51,8 @@ extern void RTCAdjustClock( int seconds );
 extern void RTCSleep();
 extern void RTCWakeUp();
 
+extern void RTCGetEpoch( time_t *t );
+
 //=========================================================================
 
 #endif	/* __MERTC_H__ */

@@ -582,7 +582,7 @@ __myevic__ int EvtPlusButton()
 					KeyUpTimer = 5;
 					EditModeTimer = 1000;
 
-					if ( ++dfAPT > 7 ) dfAPT = 0;
+					if ( ++dfAPT > 8 ) dfAPT = 0;
 
 					UpdateDFTimer = 50;
 					gFlags.refresh_display = 1;

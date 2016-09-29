@@ -455,7 +455,7 @@ __myevic__ void ShowRTCSpeed()
 
 __myevic__ int IsClockOnScreen()
 {
-	return (  ((( Screen == 1 ) || ( Screen == 2 )) && ( dfAPT == 6 ))
+	return (  ((( Screen == 1 ) || ( Screen == 2 )) && ( dfAPT == 7 ))
 			|| (( Screen == 1 ) && ( dfStatus.clock ))
 			|| (( Screen == 60 ) && ( dfScreenSaver == 1 ))
 			||  ( Screen == 103 )

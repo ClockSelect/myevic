@@ -59,6 +59,7 @@ You may:
     - Board temperature
     - Real-time clock
     - Real-time atomizer resistance
+    - Estimate of vape velocity in ml/day
 
         ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/mainscreen2_zpsclbvvdah.png)
 
@@ -311,6 +312,9 @@ Follow [evic-sdk::Readme] (https://github.com/ReservedField/evic-sdk/blob/master
 ----------
 
 ### Known quirks/issues:
+
+  ![](http://imgs.xkcd.com/comics/fixing_problems.png)
+
   * Temperature Control on SS316
 
     Temperature Control on SS316 is different in this firmware when compared to the original one.

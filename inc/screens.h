@@ -154,6 +154,7 @@ extern const uint16_t String_ClkSpeed[];
 extern const uint16_t String_ClkAdjust[];
 extern const uint16_t String_myevic[];
 extern const uint16_t String_Build[];
+extern const uint16_t String_mld[];
 
 // from menus.c
 extern const uint16_t String_Menus[];

@@ -47,4 +47,13 @@
         <File name="src\myevic.s" />
         <File name="src\rodata.s" />
     </Project>
+    <Project name="ldrom">
+        <File name="H:\cygwin\home\Ferox\ldrom\Makefile" />
+        <File name="H:\cygwin\home\Ferox\ldrom\linker.ld" />
+        <File name="H:\cygwin\home\Ferox\ldrom\inc\myevic.h" />
+        <File name="H:\cygwin\home\Ferox\ldrom\src\myevic.s" />
+        <File name="H:\cygwin\home\Ferox\ldrom\src\main.c" />
+        <File name="H:\cygwin\home\Ferox\ldrom\inc\meusbd.h" />
+        <File name="H:\cygwin\home\Ferox\ldrom\src\meusbd.c" />
+    </Project>
 </NotepadPlus>
