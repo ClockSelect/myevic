@@ -614,7 +614,7 @@ __myevic__ void ShowVersion()
 	DrawStringCentered( String_myevic, 32 );
 
 	DrawStringCentered( String_Build, 55 );
-	Value2Str( buf, __BUILD1, 0, 0x01F, 0 );
+	Value2Str( buf, __BUILD1, 0, 0x1F, 0 );
 	DrawStringCentered( buf, 69 );
 
 	DrawStringCentered( String_Version, 88 );
