@@ -18,13 +18,28 @@ uint16_t	HideLogo = 0;
 //----- (00001654) --------------------------------------------------------
 __myevic__ void MainView()
 {
-	if ( Screen != 1 || !PD3 || !PD2 || !PE0 )
+	if ( !dfStatus.off )
 	{
-		HideLogo = 3;
+		if ( Screen != 1 || !PD3 || !PD2 || !PE0 )
+		{
+			HideLogo = 3;
+		}
+		Screen = 1;
+		ScreenDuration = GetMainScreenDuration();
 	}
-	Screen = 1;
+	else
+	{
+		if ( gFlags.battery_charging && !dfStealthOn )
+		{
+			ChargeView();
+		}
+		else
+		{
+			Screen = 0;
+			SleepTimer = 0;
+		}
+	}
 	gFlags.refresh_display = 1;
-	ScreenDuration = GetMainScreenDuration();
 }
 
 

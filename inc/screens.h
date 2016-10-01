@@ -23,7 +23,6 @@ extern uint8_t	EditTCRIndex;
 extern const uint8_t ScrSaveTimes[8];
 extern const uint8_t ScrMainTimes[6];
 
-extern int IsClockOnScreen();
 extern void DrawClock();
 extern void DrawDigitClock();
 
@@ -47,12 +46,9 @@ extern void ShowBattVolts();
 extern void ShowBoardTemp();
 extern void ShowVersion();
 extern void ShowNewCoil();
-extern void ShowLOGOMenu();
-extern void ShowGameMenu();
 extern void ShowTCRSet();
 extern void ShowStealthMode();
 extern void ShowDevTooHot();
-extern void ShowTiOnOff();
 extern void ShowAtoLow();
 extern void ShowAtoShort();
 extern void ShowBatLow();
@@ -79,6 +75,8 @@ extern uint16_t GetMainScreenDuration();
 extern void MainView();
 extern void ChargeView();
 extern void AnimateScreenSaver();
+extern int IsClockOnScreen();
+extern int IsMenuScreen();
 
 
 //==============================================================================

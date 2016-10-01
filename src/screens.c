@@ -121,10 +121,6 @@ __myevic__ void DrawScreen()
 				ShowStealthMode();
 				break;
 
-			case 41: // Ti ON/OFF
-				ShowTiOnOff();
-				break;
-
 			case 50: // FW Version
 				ShowVersion();
 				break;
@@ -143,14 +139,6 @@ __myevic__ void DrawScreen()
 
 			case 60: // Screen Saver
 				ShowScreenSaver();
-				break;
-				
-			case 82: // LOGO Menu
-				ShowLOGOMenu();
-				break;
-
-			case 83: // Game Menu
-				ShowGameMenu();
 				break;
 
 			case 100:
@@ -255,6 +243,12 @@ __myevic__ void DrawScreen()
 			break;
 
 		case   5: // Black w/ Battery
+			if ( dfStealthOn )
+			{
+				Screen = 0;
+				SleepTimer = dfStatus.off ? 0 : 18000;
+				gFlags.refresh_display = 1;
+			}
 			break;
 
 		case  22: // Atomizer Low
@@ -281,17 +275,14 @@ __myevic__ void DrawScreen()
 			gFlags.edit_capture_evt = 0;
 			// NOBREAK
 		case  59: // TCR Set Menu
-		case  82: // LOGO Menu
-		case  83: // Game Menu
 			UpdateDataFlash();
 			// NOBREAK
 		case   1: // Main view
 		case  37: // Board Temp
-		case  41: // Ti ON/OFF
 		case  54: // Battery Voltage
 		case 100: // Infos page
 			if (( dfScreenSaver && GetScreenProtection() )
-				|| ( !gFlags.battery_charging ))
+				|| ( !gFlags.battery_charging ) || dfStealthOn )
 			{
 				Screen = 0;
 				SleepTimer = 18000;
@@ -367,7 +358,7 @@ __myevic__ void ChargeView()
 {
 	Screen = 5;
 	gFlags.refresh_display = 1;
-	ScreenDuration = 0;
+	ScreenDuration = 5;
 }
 
 
@@ -411,7 +402,7 @@ __myevic__ void ShowContrast()
 	}
 
 	DrawStringCentered( String_Fireto, 57 );
-	DrawStringCentered( ( gFlags.edit_capture_evt ) ? String_Exit : String_Edit, 67 );
+	DrawStringCentered( String_Exit, 67 );
 
 	DrawLOGO( 0, 88 );
 }
@@ -670,73 +661,6 @@ __myevic__ void ShowNewCoil()
 
 
 //=========================================================================
-//----- (000071A4) --------------------------------------------------------
-__myevic__ void ShowLOGOMenu()
-{
-	int l;
-
-	DrawString( String_Logo, 4, 6 );
-	DrawHLine( 0, 16, 63, 1 );
-
-	l = dfStatus.nologo;
-
-	DrawFillRect( 0, 14 * l + 18, 63, 14 * l + 30, 1 );
-
-	if ( l )
-	{
-		DrawString( String_On, 4, 20 );
-		DrawStringInv( String_Off, 4, 34 );
-	}
-	else
-	{
-		DrawStringInv( String_On, 4, 20 );
-		DrawString( String_Off, 4, 34 );
-	}
-}
-
-
-//=========================================================================
-//----- (00007234) --------------------------------------------------------
-__myevic__ void ShowGameMenu()
-{
-	int line;
-	const uint16_t *str;
-
-	DrawString( String_Game, 4, 6 );
-	DrawHLine( 0, 16, 63, 1 );
-
-	DrawString( String_Easy, 4, 20 );
-	DrawString( String_Normal, 4, 34 );
-	DrawString( String_Hard, 4, 48 );
-	DrawString( String_Exit, 4, 62 );
-
-	DrawFillRect( 0, ( 18 + 14 * dfFBSpeed ), 63, ( 30 + 14 * dfFBSpeed ), 1);
-
-	line = 20 + 14 * dfFBSpeed;
-
-	if ( dfFBSpeed == 0 )
-	{
-		str = String_Easy;
-	}
-	else if ( dfFBSpeed == 1 )
-	{
-		str = String_Normal;
-	}
-	else if ( dfFBSpeed == 2 )
-	{
-		str = String_Hard;
-	}
-	else if ( dfFBSpeed == 3 )
-	{
-		str = String_Exit;
-	}
-	else return;
-
-	DrawStringInv( str, 4, line );
-}
-
-
-//=========================================================================
 //----- (000072EC) --------------------------------------------------------
 __myevic__ void ShowTCRSet()
 {
@@ -802,14 +726,6 @@ __myevic__ void ShowDevTooHot()
 {
 	DrawStringCentered( String_Device, 88 );
 	DrawStringCentered( String_TooHot, 102 );
-}
-
-
-//=========================================================================
-//----- (000076F8) --------------------------------------------------------
-__myevic__ void ShowTiOnOff()
-{
-	DrawStringCentered( dfTiOn ? String_TiON : String_TiOFF, 88 );
 }
 
 
@@ -994,3 +910,11 @@ __myevic__ void ShowSetDate()
 	DrawTime( 6, 46, &rtd, 0x1F );
 	DrawDate( 4, 64, &SetTimeRTD, 0x1F & ~( 1 << ( EditItemIndex << 1 ) ) );
 }
+
+
+//=========================================================================
+__myevic__ int IsMenuScreen()
+{
+	return (( Screen == 59 ) || ((Screen >= 101) && (Screen <= 106)));
+}
+

@@ -17,7 +17,6 @@
 volatile uint8_t Event;
 uint8_t	LastEvent;
 
-uint8_t	MenuPage;
 uint8_t	WattsInc;
 
 
@@ -170,11 +169,6 @@ __myevic__ void EventHandler()
 	switch ( LastEvent )
 	{
 
-		case 20:	// ?
-		case 21:	// ?
-			gFlags.refresh_display = 1;
-			return;
-
 		case 1:		// Fire
 		{
 			if ( Screen == 59 )
@@ -188,17 +182,6 @@ __myevic__ void EventHandler()
 			if ( dfStatus.off )
 			{
 				return;
-			}
-
-			if ( Screen == 83 )
-			{
-				fbStartGame();
-				return;
-			}
-
-			if ( Screen == 82 )
-			{
-				UpdateDataFlash();
 			}
 
 			if ( Screen == 1 )
@@ -656,22 +639,6 @@ __myevic__ void EventHandler()
 
 //------------------------------------------------------------------------------
 
-		case 41:	// Game menu select
-			if ( dfStatus.off )
-				return;
-			gFlags.refresh_display = 1;
-			Screen = 83;
-			ScreenDuration = 10;
-			return;
-
-		case 40:	// LOGO menu select
-			if ( dfStatus.off )
-				return;
-			gFlags.refresh_display = 1;
-			Screen = 82;
-			ScreenDuration = 10;
-			return;
-
 		case 39:	// TCR Set menu select
 			gFlags.edit_value = 0;
 			EditTCRIndex = 0;
@@ -680,32 +647,12 @@ __myevic__ void EventHandler()
 			ScreenDuration = 10;
 			return;
 
-		case 38:	// Change interface version (unused)
-			if ( !(dfStatus.off) )
-				return;
-			if ( ++dfUIVersion > 2 ) dfUIVersion = 0;
-			UpdateDataFlash();
-			gFlags.refresh_display = 1;
-			Screen = 1;
-			ScreenDuration = 3;
-			return;
-
 		case 34:	// Show battery voltage
 			if ( !(dfStatus.off) )
 				return;
 			gFlags.refresh_display = 1;
 			Screen = 54;
 			ScreenDuration = 5;
-			return;
-
-		case 33:	// Ti ON/OFF (unused)
-			if ( !(dfStatus.off) )
-				return;
-			dfTiOn = ( dfTiOn == 0 );
-			gFlags.refresh_display = 1;
-			Screen = 41;
-			ScreenDuration = 3;
-			UpdateDFTimer = 50;
 			return;
 
 		case 32:	// New coil
@@ -848,10 +795,6 @@ __myevic__ void EventHandler()
 				return;
 			if ( Screen == 59 )
 				return;
-			if ( Screen == 82 )
-				UpdateDataFlash();
-			if ( Screen == 83 )
-				UpdateDataFlash();
 			if ( gFlags.refresh_battery )
 			{
 				gFlags.refresh_battery = 0;
@@ -872,6 +815,7 @@ __myevic__ void EventHandler()
 			return;
 
 		case 13:	// Battery removed
+			gFlags.battery_charging = 0;
 			if ( Screen == 5 )
 			{
 				gFlags.refresh_display = 1;
@@ -881,24 +825,20 @@ __myevic__ void EventHandler()
 				else
 					SleepTimer = 18000;
 			}
-			gFlags.battery_charging = 0;
 			return;
 
 		case 12:	// Battery charging
 			gFlags.battery_charging = 1;
 			gFlags.refresh_display = 1;
 			BatAnimLevel = BatteryTenth;
-			if ( !dfStealthOn )
+			if ( dfStatus.off )
 			{
-				if ( dfStatus.off )
-				{
-					ChargeView();
-				}
-				else
-				{
-					if ( Screen != 5 )
-						MainView();
-				}
+				ChargeView();
+			}
+			else
+			{
+				if ( Screen != 5 )
+					MainView();
 			}
 			return;
 
@@ -911,6 +851,10 @@ __myevic__ void EventHandler()
 				{
 					gFlags.refresh_display = 1;
 					Screen = 0;
+					if ( dfStatus.off )
+						SleepTimer = 0;
+					else
+						SleepTimer = 18000;
 				}
 				else
 				{
@@ -919,7 +863,6 @@ __myevic__ void EventHandler()
 			}
 			return;
 
-
 		case 10:	// USB cable attach
 			gFlags.low_battery = 0;
 			gFlags.usb_attached = 1;
@@ -927,10 +870,7 @@ __myevic__ void EventHandler()
 			{
 				if ( Screen == 0 )
 				{
-					if ( !dfStealthOn )
-					{
-						ChargeView();
-					}
+					ChargeView();
 				}
 				else
 				{
@@ -1006,18 +946,6 @@ __myevic__ void EventHandler()
 				MainView();
 			}
 
-			if ( Screen == 82 )
-			{
-				dfStatus.nologo ^= 1;
-				gFlags.refresh_display = 1;
-				ScreenDuration = 10;
-			}
-			else if ( Screen == 83 )
-			{
-				if ( ++dfFBSpeed > 3 ) dfFBSpeed = 0;
-				gFlags.refresh_display = 1;
-				ScreenDuration = 10;
-			}
 			else if ( Screen == 51 )
 			{
 				switch ( dfMode )
@@ -1164,23 +1092,7 @@ __myevic__ void EventHandler()
 				MainView();
 			}
 
-			if (( Screen >= 80 ) && ( Screen < 100 ))
-			{
-				if ( ++MenuPage > 2 )
-				{
-					MenuPage = 1;
-				}
-
-				if ( MenuPage == 1 )
-				{
-					Event = 40;
-				}
-				else if ( MenuPage == 2 )
-				{
-					Event = 41;
-				}
-			}
-			else if ( Screen == 51 )
+			if ( Screen == 51 )
 			{
 				switch ( dfMode )
 				{
@@ -1245,7 +1157,7 @@ __myevic__ void EventHandler()
 							break;
 
 						case 4:
-							if ( ++dfAPT > 7 ) dfAPT = 0;
+							if ( ++dfAPT > 8 ) dfAPT = 0;
 							break;
 					}
 

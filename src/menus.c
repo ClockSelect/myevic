@@ -976,16 +976,14 @@ __myevic__ int CoilsMEvent( int event )
 
 __myevic__ void ScreenMenuOnClick()
 {
-	if ( CurrentMenu->mitems[CurrentMenuItem].screen == 101 )
+	switch ( CurrentMenuItem )
 	{
-		gFlags.edit_capture_evt = 1;
-	}
-	else if ( CurrentMenuItem == 3 )
-	{
-		dfStatus.invert ^= 1;
-		DisplaySetInverse( dfStatus.invert );
-		UpdateDFTimer = 50;
-		gFlags.refresh_display = 1;
+		case 3:	// Invert
+			dfStatus.invert ^= 1;
+			DisplaySetInverse( dfStatus.invert );
+			UpdateDFTimer = 50;
+			gFlags.refresh_display = 1;
+			break;
 	}
 }
 
@@ -1499,7 +1497,16 @@ __myevic__ int MenuEvent( int event )
 			break;
 
 		case EVENT_EXITMENUS:
-			MainView();
+			if ( dfStatus.off )
+			{
+				Screen = 0;
+				ScreenDuration = 0;
+				gFlags.refresh_display = 1;
+			}
+			else
+			{
+				MainView();
+			}
 			vret = 1;
 			break;
 
@@ -1534,17 +1541,26 @@ __myevic__ int MenuEvent( int event )
 					break;
 			}
 
-			if ( CurrentMenu )
+			if ( !dfStatus.off )
 			{
-				CurrentMenuItem = 0;
-				if ( CurrentMenu->on_enter ) CurrentMenu->on_enter();
-				Screen = 102;
-				ScreenDuration = 30;
-				gFlags.refresh_display = 1;
+				if ( CurrentMenu )
+				{
+					CurrentMenuItem = 0;
+					if ( CurrentMenu->on_enter ) CurrentMenu->on_enter();
+					Screen = 102;
+					ScreenDuration = 30;
+					gFlags.refresh_display = 1;
+				}
+				else
+				{
+					MainView();
+				}
 			}
 			else
 			{
-				MainView();
+				Screen = 0;
+				ScreenDuration = 0;
+				gFlags.refresh_display = 1;
 			}
 
 			vret = 1;

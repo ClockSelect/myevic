@@ -21,10 +21,6 @@
 
 @ ===========================================================================
 
-@		.include "rodata.s"
-
-@ ===========================================================================
-
 		.section .isr_vectors
 
 		.long Stack_Top
@@ -85,7 +81,7 @@
 		.long Default_Handler+1		@ 39 : I2C1
 		.long Default_Handler+1		@ 40 : Peripheral DMA
 		.long Default_Handler+1		@ 41 : DAC
-		.long ADC00_IRQHandler+1 	@ 42 :	ADC0 interrupt source 0
+		.long ADC00_IRQHandler+1 	@ 42 : ADC0 interrupt source 0
 		.long Default_Handler+1		@ 43 : ADC0 interrupt source 1
 		.long Default_Handler+1		@ 44 : ACMP0 and ACMP1
 		.long Default_Handler+1		@ 45 : Reserved

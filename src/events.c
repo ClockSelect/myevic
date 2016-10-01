@@ -44,7 +44,7 @@ __myevic__ void KeyRepeat()
 
 	if ( dfStatus.keylock && !EditModeTimer )
 	{
-		if (( Screen != 59 ) && ( Screen < 101 ))
+		if ( !IsMenuScreen() )
 			return;
 	}
 
@@ -242,12 +242,18 @@ __myevic__ void GetUserInput()
 			FireClicksEvent = 0;
 			Event = 0;
 
+			// Disable multi-click features in menus
+			if ( IsMenuScreen() )
+			{
+				FireClickCount = 1;
+			}
+
 			switch ( FireClickCount )
 			{
 				case 1:
 					FireClicksEvent = 15;	// single click
 
-					if ( !EditModeTimer || EditItemIndex != 4 )
+					if ( Screen != 1 || !EditModeTimer || EditItemIndex != 4 )
 					{
 						Event = 1;	// fire
 					}
@@ -306,8 +312,8 @@ __myevic__ void GetUserInput()
 		else if ( UserInputs == 2 )
 		{
 			if ( dfStatus.keylock && !EditModeTimer
-				&& Screen != 51 && Screen != 59 && Screen != 82 && Screen != 83
-				&& Screen < 101 )
+				&& Screen != 51
+				&& !IsMenuScreen() )
 			{
 				Event = 30;	// key lock violation
 			}
@@ -319,8 +325,8 @@ __myevic__ void GetUserInput()
 		else if ( UserInputs == 3 )
 		{
 			if ( dfStatus.keylock && !EditModeTimer
-				&& Screen != 51 && Screen != 59 && Screen != 82 && Screen != 83
-				&& Screen < 101 )
+				&& Screen != 51
+				&& !IsMenuScreen() )
 			{
 				Event = 30;	// key lock violation
 			}
@@ -341,14 +347,14 @@ __myevic__ void GetUserInput()
 	{
 		if ( UserInputs == 4 )
 		{
-			if ( Screen == 59 || ( Screen >= 101 && Screen <= 106 ) )
+			if ( IsMenuScreen() )
 			{
 				Event = EVENT_PARENTMENU;
 			}
 		}
 		else if ( UserInputs == 5 )
 		{
-			if ( Screen == 59 || ( Screen >= 101 && Screen <= 106 ) )
+			if ( IsMenuScreen() )
 			{
 				Event = EVENT_EXITMENUS;
 			}
@@ -386,13 +392,11 @@ __myevic__ void GetUserInput()
 		}
 		else if ( UserInputs == 5 )
 		{
-			MenuPage = 1;
 			if ( !(dfStatus.off) )
 			{
 				if ( !(gFlags.playing_fb) )
 				{
-					Event = EVENT_ENTER_MENUS;	// new menus
-				//	Event =  40;	// old menus
+					Event = EVENT_ENTER_MENUS;
 				}
 				else
 				{
@@ -462,22 +466,12 @@ __myevic__ int EvtFire()
 	{
 		case 101:
 		{
-			gFlags.edit_capture_evt ^= 1;
-			if ( gFlags.edit_capture_evt )
-			{
-				gFlags.refresh_display = 1;
-				ScreenDuration = 10;
-			}
-			else
-			{
-				UpdateDFTimer = 1;
-				UpdateDataFlash();
-				MainView();
-			}
+			UpdateDataFlash();
+			MainView();
 			vret = 1;
 		}
 		break;
-		
+
 		case 102:
 		{
 			vret = MenuEvent( LastEvent );
@@ -580,45 +574,19 @@ __myevic__ int EvtPlusButton()
 						vret = 1;
 					}
 				}
-				else if ( EditItemIndex == 4 )
-				{
-					KeyUpTimer = 5;
-					EditModeTimer = 1000;
-
-					if ( ++dfAPT > 8 ) dfAPT = 0;
-
-					UpdateDFTimer = 50;
-					gFlags.refresh_display = 1;
-					vret = 1;
-				}
 			}
-		}
-		break;
-
-		case 83:
-		{
-			Event = EVENT_EDIT_CONTRAST;
-			vret = 1;
 		}
 		break;
 
 		case 101:
 		{
-			if ( gFlags.edit_capture_evt )
-			{
-				if ( dfContrast <= 240 ) dfContrast += 15;
-				else dfContrast = 255;
-				UpdateDFTimer = 50;
-				DisplaySendCommand( 0x81 );
-				DisplaySendCommand( dfContrast );
-				gFlags.refresh_display = 1;
-				ScreenDuration = 10;
-				vret = 1;
-			}
-			else
-			{
-				Event = 40;
-			}
+			if ( dfContrast <= 240 ) dfContrast += 15;
+			else dfContrast = 255;
+			UpdateDFTimer = 50;
+			DisplaySetContrast( dfContrast );
+			gFlags.refresh_display = 1;
+			ScreenDuration = 10;
+			vret = 1;
 		}
 		break;
 
@@ -633,16 +601,24 @@ __myevic__ int EvtPlusButton()
 			if ( !gFlags.has_x32 )
 			{
 				unsigned int cs = RTCGetClockSpeed();
-				if ( cs < RTC_MAX_CLOCK_RATIO )
+				if ( KeyTicks < 105 )
 				{
-					if ( KeyTicks < 105 )
+					++cs;
+				}
+				else
+				{
+					cs -= cs % 10;
+					cs += 10;
+				}
+				if ( cs > RTC_MAX_CLOCK_RATIO )
+				{
+					if ( KeyTicks < 5 )
 					{
-						++cs;
+						cs = RTC_MIN_CLOCK_RATIO;
 					}
 					else
 					{
-						cs -= cs % 50;
-						cs += 50;
+						cs = RTC_MAX_CLOCK_RATIO;
 					}
 				}
 				RTCSetClockSpeed( cs );
@@ -725,12 +701,10 @@ __myevic__ int EvtMinusButton()
 	{
 		case 101:
 		{
-			gFlags.edit_capture_evt = 1;
 			if ( dfContrast >= 15 ) dfContrast -= 15;
 			else dfContrast = 0;
 			UpdateDFTimer = 50;
-			DisplaySendCommand( 0x81 );
-			DisplaySendCommand( dfContrast );
+			DisplaySetContrast( dfContrast );
 			gFlags.refresh_display = 1;
 			ScreenDuration = 10;
 			vret = 1;
@@ -748,16 +722,24 @@ __myevic__ int EvtMinusButton()
 			if ( !gFlags.has_x32 )
 			{
 				unsigned int cs = RTCGetClockSpeed();
-				if ( cs > RTC_MIN_CLOCK_RATIO )
+				if ( KeyTicks < 105 )
 				{
-					if ( KeyTicks < 105 )
+					--cs;
+				}
+				else
+				{
+					if ( cs % 10 ) cs -= cs % 10;
+					else cs -= 10;
+				}
+				if ( cs < RTC_MIN_CLOCK_RATIO )
+				{
+					if ( KeyTicks < 5 )
 					{
-						--cs;
+						cs = RTC_MAX_CLOCK_RATIO;
 					}
 					else
 					{
-						if ( cs % 50 ) cs -= cs % 50;
-						else cs -= 50;
+						cs = RTC_MIN_CLOCK_RATIO;
 					}
 				}
 				RTCSetClockSpeed( cs );
@@ -904,50 +886,6 @@ __myevic__ int EvtLongFire()
 
 //-------------------------------------------------------------------------
 
-__myevic__ int EvtExitMenus()
-{
-	int vret = 0;
-
-	switch ( Screen )
-	{
-		case  59:
-		case 101:
-		case 102:
-		case 103:
-		case 104:
-		case 105:
-		case 106:
-			vret = MenuEvent( LastEvent );
-			break;
-	}
-
-	return vret;
-}
-
-//-------------------------------------------------------------------------
-
-__myevic__ int EvtParentMenu()
-{
-	int vret = 0;
-
-	switch ( Screen )
-	{
-		case  59:
-		case 101:
-		case 102:
-		case 103:
-		case 104:
-		case 105:
-		case 106:
-			vret = MenuEvent( LastEvent );
-			break;
-	}
-
-	return vret;
-}
-
-//-------------------------------------------------------------------------
-
 __myevic__ int EvtContrastMenu()
 {
 	Screen = 101;
@@ -1041,11 +979,11 @@ __myevic__ int CustomEvents()
 			break;
 
 		case EVENT_EXITMENUS:
-			vret = EvtExitMenus();
+			vret = MenuEvent( LastEvent );
 			break;
 
 		case EVENT_PARENTMENU:
-			vret = EvtParentMenu();
+			vret = MenuEvent( LastEvent );
 			break;
 
 		case EVENT_SETTIME:
