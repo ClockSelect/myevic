@@ -41,13 +41,46 @@ You may:
 
 
 ----------
+### Changes in behavior ###
+Some changes has been made to the overall behavior of the firmware from the original. This paragraph may be read by any new user not to think something is a "bug".
+
+* Stealth mode:  
+  The stealth mode has been extended to some more screens.  
+  The battery charging screen does no longer show up in stealth mode; only for a few seconds when plugging in the USB cable, just to show it's been correctly plugged.  
+  The Key Lock/UnLock screen reverts to black screen if keys are locked.  
+  The Stealth On/Off screen goes to black when setting stealth On.
+
+* Right (+) and Left (-) buttons:  
+  While editing some values, the speed of change has been made more progressive before reaching the insane terminal velocity.  
+  Pressing those buttons does no longer wake up the box from screen saving, except if configured to do so in the Interface menu (see below). This makes the box more pocket-proof.
+
+* Temperature setting in TEMP mode:  
+  The temperature no longer wraps-around by switching between °C and °F; the temperature unit has to be chosen once and for all in the Interface menu. Default is °C.  
+  The temperature setting vary by +/1 °C or +/-5 °F when edited.
+
+* Fire button Multi-Clicks:  
+  Clicking rapidly 2, 3 or 4 times on the fire button may now have some effect - see below in the Interface menu description to see those effects and how to set (or unset) them up.  
+  Clicking 10 times for board temperature, or 20 times for version screen does no longer require to switch off the box.  
+
+* Coils memory:  
+  In POWER mode, the box now reminds of the power setting for any given resistance, up to 10 different (just like in SMART mode). Thus, when swapping between your tanks, the box will automatically set up the power setting you previously entered for that particular coil.  
+  Coils may vary by +/-10% in resistance to still be recognized, and two different coils within 10% won't be distinguished.
+  The coils memory can be erased in the Coils >> Manage >> Zero All menu item (see below).
+
+* SS316 Temperature Control:  
+  TCR value of TEMP SS mode has been changed. This may mess up your usual temperature setting while vaping on SS316 coils. See at the end of this document for more information.
+
+* Menus:  
+  Menus accessed by pressing Fire and Right button have been completely revamped. See below for new menus description.
+
+----------
 
 ### Main Screen
 * Double-click:
 
-    A double fire click switches between standard view and clock screen.
-    The clock screen is close to the one viewed on the VTwo box; just better.
-    See below to know how to configure clock.
+    A double fire click switches between standard view and clock screen.  
+    The clock screen is close to the one viewed on the VTwo box; just better, imo.  
+    See below the Clock menu to know how to configure clock.
 
     ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/mainscreen_zpsvjfqgoub.png)
 
@@ -59,7 +92,7 @@ You may:
     - Board temperature
     - Real-time clock
     - Real-time atomizer resistance
-    - Estimate of vape velocity in ml/day
+    - Estimate of vape velocity in ml/day *(experimental)*
 
         ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/mainscreen2_zpsclbvvdah.png)
 
@@ -98,6 +131,10 @@ There's many more to LOGO and Game menus now. See below.
 
          Select the screen saver animation. You may choose between None (blank screen), an analog clock or a 3D spinning cube. More to come. Content of this menu will vary from time to time; this document may not always be up to date. Have a look.
 
+  * Invert  
+  
+         Toggle display mode between white on black and black on white.
+
   * Miscs  
       Sub-menu
       * LOGO
@@ -131,10 +168,7 @@ There's many more to LOGO and Game menus now. See below.
             You may also fire two seconds to zero the resistance.
       * Zero All:
 
-            Zeroes all resistances; also zeroes all "SMART" mode saved resistance settings.
-      * Exit:
-
-            Self explanatory.
+            Zeroes all resistances; also zeroes all "SMART" and "POWER" modes saved resistance settings.
 
     * TCR Set:
       
@@ -186,7 +220,7 @@ There's many more to LOGO and Game menus now. See below.
 
   * Dial
 
-        Change the format of the clock displayed on the main screen between a hand dial clock (A) and a digital clock with date and time (D).
+        Change the format of the clock display between a hand dial clock (A) and a digital clock with date and time (D). This will change the clock display on the main screen as well as on the screen saver, if the clock is chosen as screen saver.
   
   * Clk Adjust
 
@@ -224,7 +258,7 @@ There's many more to LOGO and Game menus now. See below.
 
   * Wake < > On/Off
 
-        Enable/Disable bow wake up from sleep mode when pressing the + or - button.
+        Enable/Disable box wake up from sleep mode when pressing the + or - button.
 
   * Font A/B
 
