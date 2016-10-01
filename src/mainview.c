@@ -292,9 +292,12 @@ __myevic__ void DrawAPTLine( int line )
 
 		case 8:	// Vape Velocity
 		{
+			uint32_t vv;
 			DrawString( String_mld, 42, line+2 );
-			uint32_t vv = 250 * ( MilliJoules / 1000 ) / 1000;
+			vv = 250 * ( MilliJoules / 1000 ) / 1000;
 			vv = vv * 86400 / ( TMR2Counter / 1000 ? : 1 );
+			vv /= 10;
+			if ( vv > 9999 ) vv = 9999;
 			DrawValueRight( 40, line, vv / 10, 2, 0x1F, 0 );
 		}
 	}

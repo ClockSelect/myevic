@@ -8,6 +8,7 @@
 #include "atomizer.h"
 #include "battery.h"
 #include "flappy.h"
+#include "timers.h"
 
 #include "events.h"
 
@@ -365,6 +366,8 @@ __myevic__ void GetUserInput()
 					Event = 22;	// puff reset
 				if ( dfAPT == 2 )
 					Event = 23;	// time reset
+				if ( dfAPT == 8 )
+					Event = EVENT_RESET_VVEL;	// vvel reset
 			}
 			else
 			{
@@ -1063,6 +1066,11 @@ __myevic__ int CustomEvents()
 			dfStatus.priopwr ^= 1;
 			UpdateDFTimer = 50;
 			gFlags.refresh_display = 1;
+			break;
+
+		case EVENT_RESET_VVEL:
+			MilliJoules = 0;
+			TMR2Counter = 0;
 			break;
 
 		default:

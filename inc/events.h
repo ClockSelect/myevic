@@ -69,6 +69,7 @@ extern uint8_t	LastEvent;
 #define EVENT_SETDATE		108
 #define EVENT_NEXT_MODE		109
 #define EVENT_TOGGLE_TDOM	110
+#define EVENT_RESET_VVEL	111
 
 
 //==============================================================================
