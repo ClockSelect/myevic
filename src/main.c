@@ -132,7 +132,7 @@ void InitDevices()
 	CLK_EnableModuleClock( UART0_MODULE );
 	CLK_SetModuleClock( UART0_MODULE, CLK_CLKSEL1_UARTSEL_HXT, CLK_CLKDIV0_UART( 1 ) );
 
-	// USB CLK = PLL/3
+	// USB CLK = PLL/3 (48MHz)
 	CLK_EnableModuleClock( USBD_MODULE );
 	CLK_SetModuleClock( USBD_MODULE, 0, CLK_CLKDIV0_USB( 3 ) );
 	SYS->USBPHY = SYS_USBPHY_LDO33EN_Msk;
@@ -144,7 +144,7 @@ void InitDevices()
 	// SPI0 CLK = PCLK0/1
 	CLK_EnableModuleClock( SPI0_MODULE );
 
-	// EADC CLK = PCLK1/8
+	// EADC CLK = PCLK1/8 (9MHz)
 	CLK_EnableModuleClock( EADC_MODULE );
 	CLK_SetModuleClock( EADC_MODULE, 0, CLK_CLKDIV0_EADC( 8 ) );
 

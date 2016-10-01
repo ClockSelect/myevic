@@ -1,4 +1,5 @@
 #include "myevic.h"
+#include "myprintf.h"
 #include "M451Series.h"
 
 
@@ -96,10 +97,13 @@ __myevic__ void SetADCState( int module, int onoff )
 }
 
 
-//=============================================================================
+//=========================================================================
 //----- (0000184C) --------------------------------------------------------
+// Average total conversion time: 329 ticks (4.57us)
+//-------------------------------------------------------------------------
 __myevic__ uint32_t ADC_Read( uint32_t module )
 {
+	// Total conversion time 15+6=21 ADC_CLK = 2.33us
 	EADC_Open( EADC, EADC_CTL_DIFFEN_SINGLE_END );
 	EADC_SetInternalSampleTime( EADC, 6 );	// 0.67 us
 	EADC_ConfigSampleModule( EADC, module, EADC_SOFTWARE_TRIGGER, module );

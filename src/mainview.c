@@ -215,6 +215,19 @@ __myevic__ void DrawCoilLine( int line )
 	{
 		DrawImage( 56, line+2, 0xC0 );
 	}
+
+	if ( rez )
+	{
+		if (   ( ISMODETC(dfMode) && ( rez > 150 ) )
+			|| ( ISMODEVW(dfMode) && ( rez <  10 ) ) )
+		{
+			if ( gFlags.osc_1hz )
+			{
+				DrawFillRect( 26, line-1, 63, line+10, 2 );
+			}
+			ScreenRefreshTimer = 5;
+		}
+	}
 }
 
 //=============================================================================

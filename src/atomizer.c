@@ -281,7 +281,7 @@ __myevic__ void GetAtoCurrent()
 	if ( gFlags.firing || gFlags.probing_ato )
 	{
 		adcShunt = ADC_Read( 2 );
-		CLK_SysTickDelay( 10 );
+	//	CLK_SysTickDelay( 10 );			// 0.138us
 		adcAtoVolts = ADC_Read( 1 );
 
 		// Shunt current, in 10th of an Amp
@@ -705,7 +705,9 @@ __myevic__ void AtoWarmUp()
 	BBCNextMode = 2;
 	BBCMode = 0;
 	WarmUpCounter = 0;
-
+	
+	// Loop time around 19us on atomizer probing
+	//  and around 26.4us (37.86kHz) on firing.
 	do
 	{
 		if ( !(gFlags.probing_ato) && !(gFlags.firing) )
@@ -929,18 +931,21 @@ __myevic__ void SetAtoSMARTParams()
 	uint16_t r;
 	uint16_t p;
 
-	for ( i = 0 ; i < 10 ; ++i )
+	for ( i = 9 ; i > 0 ; --i )
 	{
 		r = dfSavedCfgRez[i];
 
-		if ( 	(( r - r / 10 ) <= AtoRez || r - 1 <= AtoRez )
-			&& 	(( r + r / 10 ) >= AtoRez || r + 1 >= AtoRez ) )
+		if ( r )
 		{
-			break;
+			if ( 	(( r - r / 10 ) <= AtoRez || r - 1 <= AtoRez )
+				&& 	(( r + r / 10 ) >= AtoRez || r + 1 >= AtoRez ) )
+			{
+				break;
+			}
 		}
 	}
 
-	if ( i < 10 )
+	if ( i > 0 )
 	{
 		ConfigIndex = i;
 
@@ -960,6 +965,17 @@ __myevic__ void SetAtoSMARTParams()
 		if ( dfMode == 4 )
 		{
 			dfPower = dfSavedCfgPwr[i];
+		}
+		if ( dfSavedCfgRez[9] )
+		{
+			// Most recently used at end of list
+			r = dfSavedCfgRez[9];
+			p = dfSavedCfgPwr[9];
+			dfSavedCfgRez[9] = dfSavedCfgRez[i];
+			dfSavedCfgPwr[9] = dfSavedCfgPwr[i];
+			dfSavedCfgRez[i] = r;
+			dfSavedCfgPwr[i] = p;
+			ConfigIndex = 9;
 		}
 	}
 	else
@@ -1009,24 +1025,27 @@ __myevic__ void SetAtoLimits()
 	SetMinMaxVolts();
 	SetMinMaxPower();
 
-	if ( !AtoError && AtoRez )
+	if ( ISMODEVW(dfMode) )
 	{
-		SetAtoSMARTParams();
+		if ( !AtoError && AtoRez )
+		{
+			SetAtoSMARTParams();
 
-		if ( dfMode == 6 )
-			pwr = dfSavedCfgPwr[ConfigIndex];
-		else
-			pwr = dfPower;
+			if ( dfMode == 6 )
+				pwr = dfSavedCfgPwr[ConfigIndex];
+			else
+				pwr = dfPower;
 
-		if ( pwr < AtoMinPower ) pwr = AtoMinPower;
-		if ( pwr > AtoMaxPower ) pwr = AtoMaxPower;
+			if ( pwr < AtoMinPower ) pwr = AtoMinPower;
+			if ( pwr > AtoMaxPower ) pwr = AtoMaxPower;
 
-		dfVWVolts = GetAtoVWVolts( pwr );
+			dfVWVolts = GetAtoVWVolts( pwr );
 
-		if ( dfMode == 6 )
-			dfPower = ClampPower( dfVWVolts, 1 );
-		else
-			dfPower = pwr;
+			if ( dfMode == 6 )
+				dfPower = ClampPower( dfVWVolts, 1 );
+			else
+				dfPower = pwr;
+		}
 	}
 }
 
