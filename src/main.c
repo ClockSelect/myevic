@@ -206,14 +206,11 @@ __myevic__ void InitVariables()
 	InitDataFlash();
 	KeyPressTime |= 0x8000;
 	LastInputs |= 0x80;
-	LastAtoRez = 0;
 	byte_200000B3 = 1;
-	NoEventTimer = 0;
 	gFlags.draw_edited_item = 1;
 	gFlags.refresh_battery = 1;
 	gFlags.read_battery = 1;
 	gFlags.read_bir = 1;
-	EditItemIndex = 0;
 	WattsInc = dfStatus.onewatt ? 10 : 1;
 }
 

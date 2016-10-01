@@ -150,19 +150,12 @@ __myevic__ void TempMinus()
 __myevic__ void EventHandler()
 {
 	unsigned int pwr;
+	unsigned int spwr;
 
 	unsigned int v21;
 	int v22;
 	int v23;
 	int tempf;
-	unsigned int v44;
-	unsigned int v45;
-	unsigned int v46;
-	unsigned int v47;
-	unsigned int v57;
-	unsigned int v58;
-	unsigned int v59;
-	int v60;
 
 	if ( Event == 0 )
 		return;
@@ -1008,13 +1001,22 @@ __myevic__ void EventHandler()
 				}
 			}
 
+			if ( Screen == 2 )
+			{
+				MainView();
+			}
+
 			if ( Screen == 82 )
 			{
 				dfStatus.nologo ^= 1;
+				gFlags.refresh_display = 1;
+				ScreenDuration = 10;
 			}
 			else if ( Screen == 83 )
 			{
 				if ( ++dfFBSpeed > 3 ) dfFBSpeed = 0;
+				gFlags.refresh_display = 1;
+				ScreenDuration = 10;
 			}
 			else if ( Screen == 51 )
 			{
@@ -1040,7 +1042,6 @@ __myevic__ void EventHandler()
 						break;
 				}
 				MainView();
-				return;
 			}
 			else if ( Screen == 1 )
 			{
@@ -1088,31 +1089,23 @@ __myevic__ void EventHandler()
 					{
 						if ( ConfigIndex < 10 )
 						{
-							v58 = dfSavedCfgPwr[ConfigIndex];
-							if ( v58 % 10 )
-							{
-								v59 = 5 * ( v58 / 10 );
-								v58 = 10 * ( v58 / 10 );
-								dfSavedCfgPwr[ConfigIndex] = 2 * v59;
-							}
+							spwr = dfSavedCfgPwr[ConfigIndex];
+							spwr -= spwr % 10;
+							spwr -= 10;
+							if ( spwr < AtoMinPower ) spwr = AtoMinPower;
 
-							v60 = v58 - 10;
-
-							if ( v60 <= 0 )
-								dfSavedCfgPwr[ConfigIndex] = AtoMinPower;
-							else
-								dfSavedCfgPwr[ConfigIndex] = v60;
-
-							if ( dfSavedCfgPwr[ConfigIndex] <= AtoMinPower )
-								dfSavedCfgPwr[ConfigIndex] = AtoMinPower;
+							dfSavedCfgPwr[ConfigIndex] = spwr;
+							dfVWVolts = GetAtoVWVolts( spwr );
 						}
-						v57 = dfSavedCfgPwr[ConfigIndex];
-						dfVWVolts = GetAtoVWVolts(v57);
 					}
 					else if ( dfMode == 4 )
 					{
 						PowerMinus( &dfPower, AtoMinPower, AtoMaxPower );
 						dfVWVolts = GetAtoVWVolts( dfPower );
+						if ( ConfigIndex < 10 && !AtoError && AtoRez )
+						{
+							dfSavedCfgPwr[ConfigIndex] = dfPower;
+						}
 					}
 				}
 
@@ -1123,12 +1116,9 @@ __myevic__ void EventHandler()
 	                DrawScreen();
 	            }
 	            UpdateDFTimer = 50;
-	            return;
 			}
 
-			gFlags.refresh_display = 1;
-			ScreenDuration = 10;
-			return;
+			break;
 		}
 
 //------------------------------------------------------------------------------
@@ -1169,13 +1159,18 @@ __myevic__ void EventHandler()
 				}
 			}
 
+			if ( Screen == 2 )
+			{
+				MainView();
+			}
+
 			if (( Screen >= 80 ) && ( Screen < 100 ))
 			{
 				if ( ++MenuPage > 2 )
 				{
 					MenuPage = 1;
 				}
-	
+
 				if ( MenuPage == 1 )
 				{
 					Event = 40;
@@ -1223,7 +1218,7 @@ __myevic__ void EventHandler()
 						case 0:
 							NextMode();
 							break;
-						
+
 						case 1:
 							if ( dfMode == 3 )
 							{
@@ -1248,7 +1243,7 @@ __myevic__ void EventHandler()
 						case 3:
 							SwitchRezLock();
 							break;
-						
+
 						case 4:
 							if ( ++dfAPT > 7 ) dfAPT = 0;
 							break;
@@ -1269,25 +1264,23 @@ __myevic__ void EventHandler()
 						case 4:
 							PowerPlus( &dfPower, AtoMinPower, AtoMaxPower );
 							dfVWVolts = GetAtoVWVolts( dfPower );
+							if ( ConfigIndex < 10 && !AtoError && AtoRez )
+							{
+								dfSavedCfgPwr[ConfigIndex] = dfPower;
+							}
 							break;
 
 						case 6:
 							if ( ConfigIndex < 10 && !AtoError && AtoRez )
 							{
-								v45 = dfSavedCfgPwr[ConfigIndex];
-								if ( v45 % 10 )
-								{
-									v46 = 5 * ( v45 / 10 );
-									v45 = 10 * ( v45 / 10 );
-									dfSavedCfgPwr[ConfigIndex] = 2 * v46;
-								}
-								v47 = ( v45 + 10 );
-								dfSavedCfgPwr[ConfigIndex] = v47;
-								if ( v47 > AtoMaxPower )
-									dfSavedCfgPwr[ConfigIndex] = AtoMaxPower;
+								spwr = dfSavedCfgPwr[ConfigIndex];
+								spwr -= spwr % 10;
+								spwr += 10;
+								if ( spwr > AtoMaxPower ) spwr = AtoMaxPower;
+
+								dfSavedCfgPwr[ConfigIndex] = spwr;
+								dfVWVolts = GetAtoVWVolts( spwr );
 							}
-							v44 = dfSavedCfgPwr[ConfigIndex];
-							dfVWVolts = GetAtoVWVolts(v44);
 							break;
 
 						case 5:
@@ -1304,8 +1297,9 @@ __myevic__ void EventHandler()
 	                DrawScreen();
 	            }
 	            UpdateDFTimer = 50;
-	            return;
 			}
+
+			break;
 		}
 	}
 }

@@ -131,7 +131,7 @@ There's many more to LOGO and Game menus now. See below.
             You may also fire two seconds to zero the resistance.
       * Zero All:
 
-            Zeroes all resistances; also zeroes all "START" mode saved resistance settings.
+            Zeroes all resistances; also zeroes all "SMART" mode saved resistance settings.
       * Exit:
 
             Self explanatory.
@@ -148,7 +148,7 @@ There's many more to LOGO and Game menus now. See below.
     
         ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/preheat_zpsrpcu0fml.png)
         
-        Coil preheat function. Set at wich power and how long you want the coil to be preheated when you fire; after this delay, the atomizer will be powered by your regular setting. Set the delay to zero to switch preheating off. A small "P" icon will appear on the main screen next the the power setting to remind you the preheat function is enabled ("POWER" mode only). This function can only be active in "POWER" and "START" modes; it is ignored in all other modes.
+        Coil preheat function. Set at wich power and how long you want the coil to be preheated when you fire; after this delay, the atomizer will be powered by your regular setting. Set the delay to zero to switch preheating off. A small "P" icon will appear on the main screen next the the power setting to remind you the preheat function is enabled ("POWER" mode only). This function can only be active in "POWER" and "SMART" modes; it is ignored in all other modes.
 
     * Modes
 
@@ -156,7 +156,7 @@ There's many more to LOGO and Game menus now. See below.
 
          Configure used/useless modes.  
          Click on each menu item to set 'Y' or 'N' if you want to see any given mode proposed while cycling between modes in menu mode.  
-         Typically, you'll set "START" mode to 'N'. Typically.
+         Typically, you'll set "SMART" mode to 'N'. Typically.
 
     * Protec.
 
@@ -212,7 +212,7 @@ There's many more to LOGO and Game menus now. See below.
 
   * Batt% On/Off
 
-        Display battery charge percentage next to the battery picture on main screen. Resolution is 10% atm.
+        Display battery charge percentage next to the battery picture on main screen.
 
   * 1Watt On/Off
 
@@ -292,7 +292,7 @@ There's many more to LOGO and Game menus now. See below.
   * BAT
 
         Battery model.  
-        You can specify your battery brand and model among several ones: 25R, 30Q, HG2, VTC4 and VTC5. "GEN" is the generic battery used by default and should be used for any other model of battery.  
+        You can specify your battery brand and model among several ones: 25R, 30Q, HG2, HE4, VTC4 and VTC5. "GEN" is the generic battery used by default and should be used for any other model of battery.  
         At the moment, this information is used by the firmware to compute a more accurate state-of-charge than the generic setting.
 
 ----------

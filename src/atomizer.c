@@ -116,7 +116,7 @@ __myevic__ void BBC_Configure( uint32_t chan, uint32_t mode )
 
 //=============================================================================
 //----- (00008F00) --------------------------------------------------------
-__myevic__ void ClampPowers()
+__myevic__ void ClampAtoPowers()
 {
 	if ( AtoMinPower < 10 ) AtoMinPower = 10;
 	if ( AtoMaxPower > MaxPower ) AtoMaxPower = MaxPower;
@@ -137,7 +137,7 @@ __myevic__ uint16_t ClampPower( uint16_t volts, int clampmax )
 	{
 		pwr = volts * volts / ( 10 * AtoRez );
 
-		ClampPowers();
+		ClampAtoPowers();
 
 		if ( pwr < AtoMinPower )
 			pwr = AtoMinPower;
@@ -865,7 +865,7 @@ __myevic__ void SetMinMaxPower()
 		if ( u > MaxVolts ) u = MaxVolts;
 		AtoMaxPower = (( u * u ) / AtoRez + 5 ) / 10;
 		AtoMinPower = 2500 / AtoRez / 10;
-		ClampPowers();
+		ClampAtoPowers();
 	}
 }
 
@@ -889,12 +889,12 @@ __myevic__ void SetMinMaxVolts()
 
 
 //=============================================================================
-// START mode resistances values
-const uint16_t STARTRezValues[] =
+// SMART mode resistances values
+const uint16_t SMARTRezValues[] =
 		{	50, 60, 100, 150	};
 
-// START mode power ranges
-const uint16_t STARTPowers[] =
+// SMART mode power ranges
+const uint16_t SMARTPowers[] =
 		{	250, 300,
 			200, 280,
 			180, 250,
@@ -904,7 +904,7 @@ const uint16_t STARTPowers[] =
 
 //=============================================================================
 //----- (00008F5C) --------------------------------------------------------
-__myevic__ int SearchSTARTRez( uint16_t rez )
+__myevic__ int SearchSMARTRez( uint16_t rez )
 {
 	int i;
 	uint16_t r;
@@ -912,7 +912,7 @@ __myevic__ int SearchSTARTRez( uint16_t rez )
 	i = 0;
 	while ( 1 )
 	{
-		r = STARTRezValues[i];
+		r = SMARTRezValues[i];
 		if ( ( r + r / 10 >= rez ) && ( r - r / 10 <= rez ) ) break;
 		if ( ++i == 4 ) break;
 	}
@@ -922,7 +922,7 @@ __myevic__ int SearchSTARTRez( uint16_t rez )
 
 //=============================================================================
 //----- (000038FC) --------------------------------------------------------
-__myevic__ void SetAtoSTARTParams()
+__myevic__ void SetAtoSMARTParams()
 {
 	int i, j, k;
 
@@ -933,8 +933,8 @@ __myevic__ void SetAtoSTARTParams()
 	{
 		r = dfSavedCfgRez[i];
 
-		if ( 	(( r - r / 20 ) <= AtoRez || r - 1 <= AtoRez )
-			&& 	(( r + r / 20 ) >= AtoRez || r + 1 >= AtoRez ) )
+		if ( 	(( r - r / 10 ) <= AtoRez || r - 1 <= AtoRez )
+			&& 	(( r + r / 10 ) >= AtoRez || r + 1 >= AtoRez ) )
 		{
 			break;
 		}
@@ -944,11 +944,22 @@ __myevic__ void SetAtoSTARTParams()
 	{
 		ConfigIndex = i;
 
-		j = SearchSTARTRez( r );
 		p = dfSavedCfgPwr[i];
 		if ( p > MaxPower || p < 10 )
 		{
-			dfSavedCfgPwr[i] = STARTPowers[ j << 1 ];
+			if ( dfMode == 6 )
+			{
+				j = SearchSMARTRez( r );
+				dfSavedCfgPwr[i] = SMARTPowers[ j << 1 ];
+			}
+			else
+			{
+				dfSavedCfgPwr[i] = dfPower;
+			}
+		}
+		if ( dfMode == 4 )
+		{
+			dfPower = dfSavedCfgPwr[i];
 		}
 	}
 	else
@@ -974,7 +985,15 @@ __myevic__ void SetAtoSTARTParams()
 		}
 
 		dfSavedCfgRez[ConfigIndex] = AtoRez;
-		dfSavedCfgPwr[ConfigIndex] = STARTPowers[ SearchSTARTRez( AtoRez ) << 1 ];
+
+		if ( dfMode == 6 )
+		{
+			dfSavedCfgPwr[ConfigIndex] = SMARTPowers[ SearchSMARTRez( AtoRez ) << 1 ];
+		}
+		else
+		{
+			dfSavedCfgPwr[ConfigIndex] = dfPower;
+		}
 	}
 
 	UpdateDFTimer = 50;
@@ -989,9 +1008,10 @@ __myevic__ void SetAtoLimits()
 
 	SetMinMaxVolts();
 	SetMinMaxPower();
+
 	if ( !AtoError && AtoRez )
 	{
-		SetAtoSTARTParams();
+		SetAtoSMARTParams();
 
 		if ( dfMode == 6 )
 			pwr = dfSavedCfgPwr[ConfigIndex];
@@ -1000,6 +1020,7 @@ __myevic__ void SetAtoLimits()
 
 		if ( pwr < AtoMinPower ) pwr = AtoMinPower;
 		if ( pwr > AtoMaxPower ) pwr = AtoMaxPower;
+
 		dfVWVolts = GetAtoVWVolts( pwr );
 
 		if ( dfMode == 6 )

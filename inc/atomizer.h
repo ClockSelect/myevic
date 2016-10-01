@@ -60,7 +60,7 @@ extern uint16_t AtoPowerLimit( uint16_t pwr );
 extern uint16_t AtoPower( uint16_t volts );
 extern uint16_t GetVoltsForPower( uint16_t pwr );
 extern uint16_t GetAtoVWVolts( uint16_t pwr );
-extern void ClampPowers();
+extern void ClampAtoPowers();
 extern void ClampAtoVolts();
 extern void SetMinMaxPower();
 extern void SetMinMaxVolts();
@@ -80,14 +80,14 @@ extern void Overtemp();
 
 extern void SwitchRezLock();
 
-extern int SearchSTARTRez( uint16_t rez );
-extern void SetAtoSTARTParams();
+extern int SearchSMARTRez( uint16_t rez );
+extern void SetAtoSMARTParams();
 
 extern uint16_t CelsiusToF( uint16_t tc );
 extern uint16_t FarenheitToC( uint16_t tf );
 
-extern const uint16_t STARTRezValues[];
-extern const uint16_t STARTPowers[];
+extern const uint16_t SMARTRezValues[];
+extern const uint16_t SMARTPowers[];
 
 //=============================================================================
 

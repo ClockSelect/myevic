@@ -333,6 +333,24 @@ __myevic__ void PreheatIDraw( int it, int line, int sel )
 			v = dfPreheatPwr;
 			if ( dfStatus.phpct )
 			{
+				int p = dfPower * dfPreheatPwr / 100;
+				if ( p > AtoMaxPower ) p = AtoMaxPower;
+				if ( p < 10 ) p = 10;
+				if ( p < 1000 )
+				{
+					dp = 1;
+				}
+				else
+				{
+					p = p / 10;
+					dp = 0;
+				}
+				DrawImage(  4, 90, 0xAB );
+				DrawHLine(  12, 93, 14, 1 );
+				DrawHLine(  12, 96, 14, 1 );
+				DrawValueRight( 37, 90, p, dp, 0x0B, 0 );
+				DrawImage( 39, 90, 0x98 );
+
 				dp = 0;
 				img = 0xC2;
 			}
@@ -1048,7 +1066,7 @@ const menu_t ModesMenu =
 		{ String_TCR_s, 0, -1, 0 },
 		{ String_POWER_s, 0, -1, 0 },
 		{ String_BYPASS_s, 0, -1, 0 },
-		{ String_START_s, 0, -1, 0 },
+		{ String_SMART_s, 0, -1, 0 },
 		{ String_Exit, 0, 1, 0 }
 	}
 };

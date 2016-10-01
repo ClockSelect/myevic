@@ -76,7 +76,7 @@ __myevic__ void DrawMode()
 			DrawString( String_BYPASS, 0, 2 );
 			break;
 		case 6:
-			DrawString( String_START, 13, 4 );
+			DrawString( String_SMART, 13, 4 );
 			break;
 		default:
 			break;
@@ -571,7 +571,7 @@ __myevic__ void ShowMainView()
 		DrawHLine( 0, 100, 21, 1 );
 		DrawHLine( 43, 100, 63, 1 );
 
-		v15 = SearchSTARTRez( dfSavedCfgRez[(int)ConfigIndex] );
+		v15 = SearchSMARTRez( dfSavedCfgRez[(int)ConfigIndex] );
 		if ( v15 > 3 )
 		{
 			for ( i = 0;
@@ -584,7 +584,7 @@ __myevic__ void ShowMainView()
 		}
 		else
 		{
-			v20 = STARTPowers[ 2 * v15 + 1 ] / (MaxPower / 15);
+			v20 = SMARTPowers[ 2 * v15 + 1 ] / (MaxPower / 15);
 			v17 = 99 - 5 * v20;
 			for ( j = 0; ; ++j )
 			{

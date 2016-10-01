@@ -136,7 +136,7 @@ extern const uint16_t String_TIME_s[];
 extern const uint16_t String_PUFF_s[];
 extern const uint16_t String_BOARD_s[];
 extern const uint16_t String_RES_s[];
-extern const uint16_t String_START[];
+extern const uint16_t String_SMART[];
 extern const uint16_t String_End[];
 
 //-------------------------------------------------------------------------
@@ -165,7 +165,7 @@ extern const uint16_t String_TEMP_SS_s[];
 extern const uint16_t String_TCR_s[];
 extern const uint16_t String_POWER_s[];
 extern const uint16_t String_BYPASS_s[]; 
-extern const uint16_t String_START_s[];
+extern const uint16_t String_SMART_s[];
 extern const uint16_t String_Coils[];
 extern const uint16_t String_Zero_All[];
 extern const uint16_t String_Miscs[];
