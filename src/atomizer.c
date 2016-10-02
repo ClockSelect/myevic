@@ -281,7 +281,7 @@ __myevic__ void GetAtoCurrent()
 	if ( gFlags.firing || gFlags.probing_ato )
 	{
 		adcShunt = ADC_Read( 2 );
-	//	CLK_SysTickDelay( 10 );			// 0.138us
+		CLK_SysTickDelay( 10 );
 		adcAtoVolts = ADC_Read( 1 );
 
 		// Shunt current, in 10th of an Amp
@@ -705,7 +705,7 @@ __myevic__ void AtoWarmUp()
 	BBCNextMode = 2;
 	BBCMode = 0;
 	WarmUpCounter = 0;
-	
+
 	// Loop time around 19us on atomizer probing
 	//  and around 26.4us (37.86kHz) on firing.
 	do

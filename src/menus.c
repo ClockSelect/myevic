@@ -890,11 +890,21 @@ __myevic__ void CoilsIClick()
 			dfRezTI  = 0; dfRezLockedTI  = 0;
 			dfRezSS  = 0; dfRezLockedSS  = 0;
 			dfRezTCR = 0; dfRezLockedTCR = 0;
+			for ( int i = 0 ; i < 10 ; ++i )
+			{
+				dfSavedCfgRez[i] = 0;
+				dfSavedCfgPwr[i] = 0;
+			}
 			break;
 	}
 	if (( CurrentMenuItem == dfMode ) || ( CurrentMenuItem == 4 ))
 	{
-		dfResistance = AtoRez;
+		dfResistance = 0;
+		AtoRezMilli = 0;
+		AtoRez = 0;
+		AtoStatus = 0;
+		byte_200000B3 = 2;
+		AtoProbeCount = 0;
 	}
 	if ( CurrentMenuItem == CurrentMenu->nitems - 1 )
 	{
