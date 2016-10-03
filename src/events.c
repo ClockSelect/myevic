@@ -9,6 +9,7 @@
 #include "battery.h"
 #include "flappy.h"
 #include "timers.h"
+#include "meusbd.h"
 
 #include "events.h"
 
@@ -123,7 +124,7 @@ __myevic__ void GetUserInput()
 {
 	UserInputs = 14;
 
-	if ( !PE0 && PD2 && PD3 )
+	if ( ( !PE0 || gFlags.autopuff ) && PD2 && PD3 )
 	{
 		UserInputs = 1;
 	}
@@ -1009,6 +1010,24 @@ __myevic__ int CustomEvents()
 		case EVENT_RESET_VVEL:
 			MilliJoules = 0;
 			TMR2Counter = 0;
+			break;
+
+		case EVENT_FORCE_VCOM:
+			dfStatus.storage = 0;
+			dfStatus.vcom = 1;
+			InitUSB();
+			break;
+
+		case EVENT_AUTO_PUFF:
+			MainView();
+			if ( AutoPuffTimer > 0 )
+			{
+				gFlags.autopuff = 1;
+			}
+			else
+			{
+				StopFire();
+			}
 			break;
 
 		default:

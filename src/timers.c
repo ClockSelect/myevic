@@ -4,18 +4,21 @@
 #include "events.h"
 #include "myrtc.h"
 #include "battery.h"
+#include "atomizer.h"
 #include "flappy.h"
 
 //=========================================================================
 
 volatile uint32_t	TMR0Counter;
-volatile uint32_t	WarmUpCounter;
 volatile uint32_t	TMR1Counter;
 volatile uint32_t	TMR2Counter;
 volatile uint32_t	TMR3Counter;
+
+volatile uint32_t	WarmUpCounter;
 volatile uint32_t	TickCount;
 
 uint16_t	SleepTimer;
+uint16_t	AutoPuffTimer;
 
 
 //=========================================================================
@@ -188,6 +191,12 @@ __myevic__ void TimedItems()
 	{
 		if ( !--FireClickTimer )
 			FireClickCount = 0;
+	}
+
+	if ( AutoPuffTimer )
+	{
+		if ( !--AutoPuffTimer )
+			StopFire();
 	}
 
 	if ( ++BatAnimTimer >= 100 )

@@ -3,6 +3,8 @@
 #include "myrtc.h"
 #include "dataflash.h"
 #include "display.h"
+#include "events.h"
+#include "timers.h"
 #include "meusbd.h"
 #include "dtmacros.h"
 
@@ -529,6 +531,9 @@ __myevic__ void InitUSB()
 #define HID_CMD_NONE		0x00
 #define HID_CMD_GETINFO		0x35
 #define HID_CMD_LDUPDATE	0x3C
+#define HID_CMD_FORCE_VCOM	0x42
+#define HID_CMD_MONITORING	0x43
+#define HID_CMD_AUTO_PUFF	0x44
 #define HID_CMD_SETPARAMS	0x53
 #define HID_CMD_RESETPARAMS	0x7C
 #define HID_CMD_SETLOGO		0xA5
@@ -911,6 +916,25 @@ int32_t hidProcessCommand( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 		case HID_CMD_SCREENSHOT:
 		{
 			hidScreenshot( &hidCmd );
+			break;
+		}
+		case HID_CMD_FORCE_VCOM:
+		{
+			Event = EVENT_FORCE_VCOM;
+			break;
+		}
+		case HID_CMD_MONITORING:
+		{
+			gFlags.monitoring = hidCmd.u32Arg1 ? 1 : 0;
+			break;
+		}
+		case HID_CMD_AUTO_PUFF:
+		{
+			if ( hidCmd.u32Arg1 < 10 )
+			{
+				AutoPuffTimer = hidCmd.u32Arg1 * 100;
+				Event = EVENT_AUTO_PUFF;
+			}
 			break;
 		}
 		default:

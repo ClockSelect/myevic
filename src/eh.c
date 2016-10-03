@@ -845,6 +845,7 @@ __myevic__ void EventHandler()
 		case 11:	// USB cable detach
 			gFlags.usb_attached = 0;
 			gFlags.battery_charging = 0;
+			gFlags.monitoring = 0;
 			if ( Screen == 5 )
 			{
 				if ( dfStatus.off || dfStealthOn )

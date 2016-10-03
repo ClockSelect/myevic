@@ -327,6 +327,10 @@ __myevic__ void VCOM_ClassRequest( uint8_t *token )
 					gCtrlSignal = token[3];
 					gCtrlSignal = ( gCtrlSignal << 8 ) | token[2];
 					myprintf( "RTS=%d  DTR=%d\n", (gCtrlSignal >> 1) & 1, gCtrlSignal & 1 );
+					if ( !(gCtrlSignal & 1) )
+					{
+						gFlags.monitoring = 0;
+					}
 				}
 
 				/* Status stage */

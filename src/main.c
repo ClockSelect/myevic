@@ -446,6 +446,82 @@ __myevic__ void SleepIfIdle()
 
 
 //=============================================================================
+// Monitoring
+//-----------------------------------------------------------------------------
+__myevic__ void Monitor()
+{
+	if ( gFlags.firing )
+	{
+		myprintf( "FIRING "
+					"RESM=%d BATT=%d VOUT=%d CUR=%d",
+					AtoRezMilli,
+					RTBatVolts,
+					AtoVolts,
+					AtoCurrent
+				);
+
+		if ( ISMODETC(dfMode) )
+		{
+			myprintf( " SPWR=%d RPWR=%d CELS=%d STEMP=%d RTEMP=%d\n",
+						dfTCPower,
+						AtoPower( AtoVolts ),
+						dfIsCelsius ? 1 : 0,
+						dfTemp,
+						AtoTemp
+					);
+		}
+		else if ( ISMODEBY(dfMode) )
+		{
+			myprintf( " RPWR=%d\n",
+						AtoPower( AtoVolts )
+					);
+		}
+		else
+		{
+			myprintf( " SPWR=%d RPWR=%d\n",
+						dfPower,
+						AtoPower( AtoVolts )
+					);
+		}
+	}
+	else
+	{
+		myprintf( "STANDBY "
+					"BATT=%d CHG=%d BRD=%d ATO=%d "
+					"RES=%d RESM=%d MODE=%d",
+					BatteryVoltage,
+					gFlags.battery_charging ? 1 : 0,
+					BoardTemp,
+					AtoStatus,
+					AtoRez,
+					AtoRezMilli,
+					dfMode
+				);
+
+		if ( ISMODETC(dfMode) )
+		{
+			myprintf( " SPWR=%d CELS=%d STEMP=%d RTEMP=%d\n",
+						dfTCPower,
+						dfIsCelsius ? 1 : 0,
+						dfTemp,
+						AtoTemp
+					);
+		}
+		else if ( ISMODEBY(dfMode) )
+		{
+			myprintf( "\n" );
+		}
+		else
+		{
+			myprintf( " SPWR=%d\n",
+						dfPower
+					);
+		}
+	}
+}
+
+
+//=============================================================================
 //----- (00000148) ------------------------------------------------------------
 __myevic__ void Main()
 {
@@ -631,6 +707,11 @@ __myevic__ void Main()
 				{
 					ReadInternalResistance();
 				}
+				
+				if ( gFlags.monitoring )
+				{
+					Monitor();
+				}
 			}
 
 			if ( ShowWeakBatFlag )
@@ -695,6 +776,10 @@ __myevic__ void Main()
 				{
 					DrawScreen();
 				}
+			}
+			else if ( gFlags.monitoring )
+			{
+				Monitor();
 			}
 		}
 

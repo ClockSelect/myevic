@@ -172,25 +172,19 @@ __myevic__ void UpdatePTCounters()
 
 //=============================================================================
 //----- (0000388C) --------------------------------------------------------
-const uint16_t TempCoefsNI[] =
-		{	10, 20, 35, 60, 80, 110, 120, 130, 140, 150, 160,
-			170, 170, 170, 170, 170, 170, 170, 170, 170, 170	};
-
 __myevic__ void CpyTmpCoefsNI()
 {
-	MemCpy( dfTempCoefsNI, TempCoefsNI, sizeof( TempCoefsNI ) );
+	for ( int i = 0 ; i <= 20 ; ++i )
+		dfTempCoefsNI[i] = TempCoefsNI[i];
 }
 
 
 //=============================================================================
 //----- (000038D8) --------------------------------------------------------
-const uint16_t TempCoefsTI[] =
-		{	53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 54,
-			55, 55, 55, 55, 56, 56, 56, 56, 56, 56		};
-
 __myevic__ void CpyTmpCoefsTI()
 {
-	MemCpy( dfTempCoefsTI, TempCoefsTI, sizeof( TempCoefsTI ) );
+	for ( int i = 0 ; i <= 20 ; ++i )
+		dfTempCoefsTI[i] = TempCoefsTI[i];
 }
 
 

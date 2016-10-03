@@ -104,6 +104,8 @@ typedef struct
 /* 00040000 */	int debug:1;
 /* 00080000 */	int noclock:1;
 /* 00100000 */	int read_bir:1;
+/* 00200000 */	int monitoring:1;
+/* 00400000 */	int autopuff:1;
 }
 gFlags_t;
 

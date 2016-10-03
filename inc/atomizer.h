@@ -46,6 +46,8 @@ extern uint16_t	word_200000BC;
 extern uint16_t	word_200000BE;
 extern uint16_t	word_200000C0;
 
+extern const uint8_t TempCoefsNI[];
+extern const uint8_t TempCoefsTI[];
 
 //-------------------------------------------------------------------------
 

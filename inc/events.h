@@ -69,6 +69,8 @@ extern uint8_t	LastEvent;
 #define EVENT_NEXT_MODE		109
 #define EVENT_TOGGLE_TDOM	110
 #define EVENT_RESET_VVEL	111
+#define EVENT_FORCE_VCOM	112
+#define EVENT_AUTO_PUFF		113
 
 
 //==============================================================================
