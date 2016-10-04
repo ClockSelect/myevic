@@ -715,16 +715,15 @@ __myevic__ uint32_t hidGetInfoCmd( CMD_T *pCmd )
 		{
 			dfMagic = DATAFLASH_NFE_MAGIC;
 
-		//	// Build number is the BDC coding of the date
-		//	dfBuild[0] = __DAY__ % 10 + __DAY__ / 10 * 16;
-		//	dfBuild[1] = __MONTH__ % 10 + __MONTH__ / 10 * 16;
-		//	dfBuild[2] = __YEAR__ % 10 + __YEAR__ / 10 % 10 * 16;
-
-			// The build # comparison is skewed in the NFE,
-			// so let's take a # that we know works.
-			dfBuild[0] = 0x10;
-			dfBuild[1] = 0x09;
-			dfBuild[2] = 0x16;
+		//	// The build # comparison is skewed in the NFE,
+		//	// so let's take a # that we know works.
+		//	dfBuild[0] = 0x02; //0x10;
+		//	dfBuild[1] = 0x10; //0x09;
+		//	dfBuild[2] = 0x16;
+		
+			dfBuild[0] =   __BUILD2         & 0xFF;
+			dfBuild[1] = ( __BUILD2 >>  8 ) & 0xFF;
+			dfBuild[2] = ( __BUILD2 >> 16 ) & 0xFF;
 		}
 		else
 		{

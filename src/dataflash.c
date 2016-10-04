@@ -278,6 +278,8 @@ __myevic__ void ResetDataFlash()
 	dfPuffCount = 0;
 	dfTimeCount = 0;
 	UpdatePTCounters();
+
+	SetShuntRezValue();
 }
 
 
@@ -351,11 +353,14 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfRezLockedNI > 1 )
 		dfRezLockedNI = 0;
 
+	if ( dfTiOn > 1 )
+		dfTiOn = 1;
+
 	if ( dfStealthOn > 1 )
 		dfStealthOn = 0;
 
-	if ( dfTiOn > 1 )
-		dfTiOn = 1;
+	if ( dfShuntRez < SHUNT_MIN_VALUE || dfShuntRez > SHUNT_MAX_VALUE )
+		dfShuntRez = 0;
 
 	if ( dfRezSS > 150 )
 		dfRezSS = 0;
@@ -760,6 +765,136 @@ __myevic__ void InitDataFlash()
 		}
 	}
 
+	SetShuntRezValue();
+
+	dfFWVersion	= FWVERSION;
+
+	MaxVolts	= 900;
+
+	if ( ISEVICBASIC )
+	{
+		MaxPower	= 600;
+		MaxTCPower	= 600;
+	}
+	else if ( gFlags.is_mini )
+	{
+		MaxPower	= 750;
+		MaxTCPower	= 750;
+	}
+	else
+	{
+		MaxPower	= 800;
+		MaxTCPower	= 800;
+	}
+
+	myprintf( "  APROM Version ......................... [%d.%d%d]\n",
+				FWVERSION / 100,
+				FWVERSION / 10 % 10,
+				FWVERSION % 10 );
+	myprintf( "  Hardware Version ...................... [%d.%d%d]\n",
+				dfHWVersion / 100,
+				dfHWVersion / 10 % 10,
+				dfHWVersion % 10 );
+
+	if ( dfMagic == DATAFLASH_NFE_MAGIC )
+	{
+		dfMagic = DFMagicNumber;
+	}
+
+	if ( dfMagic == DFMagicNumber && CalcPageCRC( DataFlash.params ) == dfCRC )
+	{
+		DFCheckValuesValidity();
+	}
+	else
+	{
+		myprintf( "Data Flash Re-Initialization\n" );
+		ResetDataFlash();
+	}
+
+	dfStatus.off = 0;
+	dfUIVersion = 2;
+
+	MemCpy( ParamsBackup, DataFlash.params, DATAFLASH_PARAMS_SIZE );
+
+	if ( dfShuntRez != 0 )
+	{
+		AtoShuntRez = dfShuntRez;
+	}
+
+	if ( dfBootFlag )
+	{
+		dfBootFlag = 0;
+		UpdateDFTimer = 1;
+	}
+}
+
+
+//=============================================================================
+//----- (0000169C) --------------------------------------------------------
+// Writes 2kB from RAM R1 to DF R0
+__myevic__ void FMCWritePage( uint32_t u32Addr, uint32_t *pu32Data )
+{
+	for ( uint32_t idx = 0 ; idx < FMC_FLASH_PAGE_SIZE / 4 ; ++idx )
+	{
+		FMC_Write( u32Addr + 4 * idx, pu32Data[ idx ] );
+	}
+}
+
+//=============================================================================
+//----- (000016D0) --------------------------------------------------------
+// Compares 2kB (0x800) DF @R0 with RAM @R1
+__myevic__ uint32_t FMCVerifyPage( uint32_t u32Addr, uint32_t *pu32Data )
+{
+	for ( uint32_t idx = 0 ; idx < FMC_FLASH_PAGE_SIZE / 4 ; ++idx )
+	{
+		if ( FMC_Read( u32Addr + 4 * idx ) != pu32Data[ idx ] )
+		{
+			return idx + 1;
+		}
+	}
+	return 0;
+}
+
+
+//=========================================================================
+//----- (0000170C) --------------------------------------------------------
+// Erase & writes 2kB from RAM R1 to DF R0
+__myevic__ int FMCEraseWritePage( uint32_t u32Addr, uint32_t *src )
+{
+	if ( FMC_Erase( u32Addr ) == -1 )
+	{
+		return 1;
+	}
+	else
+	{
+		FMCWritePage( u32Addr, src );
+		return 0;
+	}
+}
+
+
+//=========================================================================
+//----- (00002030) --------------------------------------------------------
+__myevic__ void DataFlashUpdateTick()
+{
+	if ( UpdateDFTimer )
+	{
+		if ( !--UpdateDFTimer )
+		UpdateDataFlash();
+	}
+	if ( UpdatePTTimer )
+	{
+		if ( !--UpdatePTTimer )
+		UpdatePTCounters();
+	}
+}
+
+
+//=========================================================================
+// Set the shunt resistance value
+//-------------------------------------------------------------------------
+__myevic__ void SetShuntRezValue()
+{
 	if ( ISPRESA75W || ISEVICAIO )
 	{
 		AtoShuntRez = 100;
@@ -832,120 +967,5 @@ __myevic__ void InitDataFlash()
 				break;
 		}
 	}
-
-	dfFWVersion	= FWVERSION;
-
-	MaxVolts	= 900;
-
-	if ( ISEVICBASIC )
-	{
-		MaxPower	= 600;
-		MaxTCPower	= 600;
-	}
-	else if ( gFlags.is_mini )
-	{
-		MaxPower	= 750;
-		MaxTCPower	= 750;
-	}
-	else
-	{
-		MaxPower	= 800;
-		MaxTCPower	= 800;
-	}
-
-	myprintf( "  APROM Version ......................... [%d.%d%d]\n",
-				FWVERSION / 100,
-				FWVERSION / 10 % 10,
-				FWVERSION % 10 );
-	myprintf( "  Hardware Version ...................... [%d.%d%d]\n",
-				dfHWVersion / 100,
-				dfHWVersion / 10 % 10,
-				dfHWVersion % 10 );
-
-	if ( dfMagic == DATAFLASH_NFE_MAGIC )
-	{
-		dfMagic = DFMagicNumber;
-	}
-
-	if ( dfMagic == DFMagicNumber && CalcPageCRC( DataFlash.params ) == dfCRC )
-	{
-		DFCheckValuesValidity();
-	}
-	else
-	{
-		myprintf( "Data Flash Re-Initialization\n" );
-		ResetDataFlash();
-	}
-
-	dfStatus.off = 0;
-	dfUIVersion = 2;
-
-	MemCpy( ParamsBackup, DataFlash.params, DATAFLASH_PARAMS_SIZE );
-
-	if ( dfBootFlag )
-	{
-		dfBootFlag = 0;
-		UpdateDFTimer = 1;
-	}
 }
 
-
-//=============================================================================
-//----- (0000169C) --------------------------------------------------------
-// Writes 2kB from RAM R1 to DF R0
-__myevic__ void FMCWritePage( uint32_t u32Addr, uint32_t *pu32Data )
-{
-	for ( uint32_t idx = 0 ; idx < FMC_FLASH_PAGE_SIZE / 4 ; ++idx )
-	{
-		FMC_Write( u32Addr + 4 * idx, pu32Data[ idx ] );
-	}
-}
-
-//=============================================================================
-//----- (000016D0) --------------------------------------------------------
-// Compares 2kB (0x800) DF @R0 with RAM @R1
-__myevic__ uint32_t FMCVerifyPage( uint32_t u32Addr, uint32_t *pu32Data )
-{
-	for ( uint32_t idx = 0 ; idx < FMC_FLASH_PAGE_SIZE / 4 ; ++idx )
-	{
-		if ( FMC_Read( u32Addr + 4 * idx ) != pu32Data[ idx ] )
-		{
-			return idx + 1;
-		}
-	}
-	return 0;
-}
-
-
-//=============================================================================
-//----- (0000170C) --------------------------------------------------------
-// Erase & writes 2kB from RAM R1 to DF R0
-__myevic__ int FMCEraseWritePage( uint32_t u32Addr, uint32_t *src )
-{
-	if ( FMC_Erase( u32Addr ) == -1 )
-	{
-		return 1;
-	}
-	else
-	{
-		FMCWritePage( u32Addr, src );
-		return 0;
-	}
-}
-
-
-//=============================================================================
-//----- (00002030) --------------------------------------------------------
-__myevic__ void DataFlashUpdateTick()
-{
-	if ( UpdateDFTimer )
-	{
-		if ( !--UpdateDFTimer )
-		UpdateDataFlash();
-	}
-	if ( UpdatePTTimer )
-	{
-		if ( !--UpdatePTTimer )
-		UpdatePTCounters();
-	}
-}

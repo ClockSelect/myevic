@@ -345,14 +345,14 @@ __myevic__ void GetUserInput()
 		{
 			if ( IsMenuScreen() )
 			{
-				Event = EVENT_PARENTMENU;
+				Event = EVENT_PARENT_MENU;
 			}
 		}
 		else if ( UserInputs == 5 )
 		{
 			if ( IsMenuScreen() )
 			{
-				Event = EVENT_EXITMENUS;
+				Event = EVENT_EXIT_MENUS;
 			}
 		}
 	}
@@ -973,19 +973,19 @@ __myevic__ int CustomEvents()
 			vret = EvtLongFire();
 			break;
 
-		case EVENT_EXITMENUS:
+		case EVENT_EXIT_MENUS:
 			vret = MenuEvent( LastEvent );
 			break;
 
-		case EVENT_PARENTMENU:
+		case EVENT_PARENT_MENU:
 			vret = MenuEvent( LastEvent );
 			break;
 
-		case EVENT_SETTIME:
+		case EVENT_SET_TIME:
 			vret = EvtSetTime();
 			break;
 
-		case EVENT_SETDATE:
+		case EVENT_SET_DATE:
 			vret = EvtSetDate();
 			break;
 
@@ -1020,6 +1020,20 @@ __myevic__ int CustomEvents()
 				MainView();
 			else
 				StopFire();
+			vret = 1;
+			break;
+
+		case EVENT_CLK_ADJUST:
+			Screen = 104;
+			ScreenDuration = 120;
+			gFlags.refresh_display = 1;
+			vret = 1;
+			break;
+
+		case EVENT_CLK_SPEED:
+			Screen = 103;
+			ScreenDuration = 120;
+			gFlags.refresh_display = 1;
 			vret = 1;
 			break;
 

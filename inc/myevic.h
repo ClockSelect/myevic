@@ -16,9 +16,9 @@
 
 #define __BUILD1	( __DAY__ + __MONTH__ * 100 + ( __YEAR__ % 100 ) * 10000 )
 
-#define __BUILD2	(	__DAY__ % 10 + __DAY__ / 10 << 4 \
-					+	__MONTH__ % 10 << 8 + __MONTH__ / 10 << 12 \
-					+	__YEAR__ % 10 << 16 + __YEAR__ / 10 % 10 << 20 )
+#define __BUILD2	(	__DAY__ % 10 + ( __DAY__ / 10 << 4 ) \
+					+	( __MONTH__ % 10 << 8 ) + ( __MONTH__ / 10 << 12 ) \
+					+	( __YEAR__ % 10 << 16 ) + ( __YEAR__ / 10 % 10 << 20 ) )
 
 #define PID_VTCMINI		(*(uint32_t*)"E052")
 #define PID_VTWOMINI	(*(uint32_t*)"E115")

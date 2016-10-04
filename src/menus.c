@@ -22,8 +22,8 @@ struct mitem_s
 {
 	const uint16_t *caption;
 	const menu_t *submenu;
-	const char screen;
-	const char sduration;
+	const char event;
+	const char rffe;
 };
 
 struct menu_s
@@ -55,7 +55,7 @@ __myevic__ void VapingMenuIDraw( int it, int line, int sel )
 			DrawValueRight( 56, line+2, dfProtec, 1, 0x0B, 0 );
 			if ( gFlags.edit_value )
 			{
-				DrawFillRect( 0, line, 63, line+12, 2 );
+				InvertRect( 0, line, 63, line+12 );
 			}
 			break;
 	}
@@ -92,7 +92,7 @@ __myevic__ int VapingMenuOnEvent( int event )
 			}
 			vret = 1;
 			break;
-		
+
 		case 3:
 			if ( --dfProtec < 20 )
 			{
@@ -188,11 +188,11 @@ __myevic__ void ClockMenuOnClick()
 	switch ( CurrentMenuItem )
 	{
 		case 0:
-			Event = EVENT_SETTIME;
+			Event = EVENT_SET_TIME;
 			break;
 
 		case 1:
-			Event = EVENT_SETDATE;
+			Event = EVENT_SET_DATE;
 			break;
 
 		case 4:	// Format
@@ -385,7 +385,7 @@ __myevic__ void PreheatIDraw( int it, int line, int sel )
 
 	if ( gFlags.edit_value && sel )
 	{
-		DrawFillRect( 0, line, 63, line+12, 2 );
+		InvertRect( 0, line, 63, line+12 );
 	}
 }
 
@@ -538,6 +538,12 @@ __myevic__ void ExpertMenuIDraw( int it, int line, int sel )
 			DrawString( GetBatteryName(), 36, line+2 );
 			break;
 
+		case 5:	// SHR
+			DrawValue( 36, line+2, AtoShuntRez, 0, 0x0B, 3 );
+			if ( gFlags.edit_value && sel )
+				InvertRect( 0, line, 63, line+12 );
+			break;
+
 		default:
 			break;
 	}
@@ -586,7 +592,12 @@ __myevic__ void ExpertMenuOnClick()
 			SetBatMaxPower();
 			break;
 
-		case 5:	// Exit
+		case 5:	// Shunt Rez Value
+			if ( !(gFlags.edit_value ^= 1) )
+				dfShuntRez = AtoShuntRez;
+			break;
+
+		case 6:	// Exit
 			UpdateDataFlash();
 			MainView();
 			break;
@@ -594,6 +605,69 @@ __myevic__ void ExpertMenuOnClick()
 
 	gFlags.refresh_display = 1;
 }
+
+__myevic__ int ExpertMenuOnEvent( int event )
+{
+	int vret = 0;
+
+	switch ( event )
+	{
+		case 2:	// +
+			if ( !gFlags.edit_value )
+				break;
+			switch ( CurrentMenuItem )
+			{
+				case 5:	// Shunt Rez
+					if ( ++AtoShuntRez > SHUNT_MAX_VALUE )
+					{
+						AtoShuntRez = ( KeyTicks == 1 ) ? SHUNT_MIN_VALUE : SHUNT_MAX_VALUE;
+					}
+					vret = 1;
+					break;
+			}
+			break;
+
+		case 3:	// -
+			if ( !gFlags.edit_value )
+				break;
+			switch ( CurrentMenuItem )
+			{
+				case 5:	// Shunt Rez
+					if ( --AtoShuntRez < SHUNT_MIN_VALUE )
+					{
+						AtoShuntRez = ( KeyTicks == 1 ) ? SHUNT_MAX_VALUE : SHUNT_MIN_VALUE;
+					}
+					vret = 1;
+					break;
+			}
+			break;
+
+		case EVENT_LONG_FIRE:
+			switch ( CurrentMenuItem )
+			{
+				case 5:	// Shunt Rez
+					SetShuntRezValue();
+					dfShuntRez = 0;
+					vret = 1;
+					break;
+			}
+			break;
+	}
+
+	if ( vret )
+	{
+		byte_200000B3 = 2;
+		AtoProbeCount = 0;
+		AtoRezMilli = 0;
+
+		dfShuntRez = AtoShuntRez;
+		UpdateDFTimer = 50;
+		gFlags.refresh_display = 1;
+	}
+
+	return vret;
+}
+
 
 //-----------------------------------------------------------------------------
 
@@ -648,7 +722,7 @@ __myevic__ void ScreenProtMenuIDraw( int it, int line, int sel )
 
 	if ( gFlags.edit_value && CurrentMenuItem == it )
 	{
-		DrawFillRect( 0, line, 63, line+12, 2 );
+		InvertRect( 0, line, 63, line+12 );
 	}
 }
 
@@ -724,7 +798,7 @@ __myevic__ int ScreenProtMenuOnEvent( int event )
 		UpdateDFTimer = 50;
 		gFlags.refresh_display = 1;
 	}
-	
+
 	return vret;
 }
 
@@ -864,7 +938,7 @@ __myevic__ void CoilsIDraw( int it, int line, int sel )
 	DrawImage( 56, line+2, img );
 	if ( gFlags.edit_value && sel )
 	{
-		DrawFillRect( 0, line, 63, line+12, 2 );
+		InvertRect( 0, line, 63, line+12 );
 	}
 	CoilsSelectRez( CurrentMenuItem );
 }
@@ -1035,8 +1109,8 @@ const menu_t LOGOMenu =
 	0,
 	2,
 	{
-		{ String_On, 0, 1, 0 },
-		{ String_Off, 0, 1, 0 }
+		{ String_On, 0, EVENT_EXIT_MENUS, 0 },
+		{ String_Off, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
 
@@ -1054,7 +1128,7 @@ const menu_t GameMenu =
 		{ String_Easy, 0, 0, 0 },
 		{ String_Normal, 0, 0, 0 },
 		{ String_Hard, 0, 0, 0 },
-		{ String_Exit, 0, 1, 0 }
+		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
 
@@ -1069,14 +1143,14 @@ const menu_t ModesMenu =
 	0,
 	8,
 	{
-		{ String_TEMP_NI_s, 0, -1, 0 },
-		{ String_TEMP_TI_s, 0, -1, 0 },
-		{ String_TEMP_SS_s, 0, -1, 0 },
-		{ String_TCR_s, 0, -1, 0 },
-		{ String_POWER_s, 0, -1, 0 },
-		{ String_BYPASS_s, 0, -1, 0 },
-		{ String_SMART_s, 0, -1, 0 },
-		{ String_Exit, 0, 1, 0 }
+		{ String_TEMP_NI_s, 0, 0, 0 },
+		{ String_TEMP_TI_s, 0, 0, 0 },
+		{ String_TEMP_SS_s, 0, 0, 0 },
+		{ String_TCR_s, 0, 0, 0 },
+		{ String_POWER_s, 0, 0, 0 },
+		{ String_BYPASS_s, 0, 0, 0 },
+		{ String_SMART_s, 0, 0, 0 },
+		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
 
@@ -1091,10 +1165,10 @@ const menu_t PreheatMenu =
 	PreheatMEvent+1,
 	4,
 	{
-		{ String_Unit, 0, -1, 0 },
-		{ String_Pwr, 0, -1, 0 },
-		{ String_Time, 0, -1, 0 },
-		{ String_Exit, 0, 1, 0 },
+		{ String_Unit, 0, 0, 0 },
+		{ String_Pwr, 0, 0, 0 },
+		{ String_Time, 0, 0, 0 },
+		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 },
 	}
 };
 
@@ -1109,12 +1183,12 @@ const menu_t CoilsMgmtMenu =
 	CoilsMEvent+1,
 	6,
 	{
-		{ String_NI, 0, -1, 0 },
-		{ String_TI, 0, -1, 0 },
-		{ String_SS, 0, -1, 0 },
-		{ String_TCR, 0, -1, 0 },
-		{ String_Zero_All, 0, -1, 0 },
-		{ String_Exit, 0, 1, 0 }
+		{ String_NI, 0, 0, 0 },
+		{ String_TI, 0, 0, 0 },
+		{ String_SS, 0, 0, 0 },
+		{ String_TCR, 0, 0, 0 },
+		{ String_Zero_All, 0, 0, 0 },
+		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
 
@@ -1129,9 +1203,9 @@ const menu_t CoilsMenu =
 	0,
 	3,
 	{
-		{ String_Manage, &CoilsMgmtMenu, -1, 0 },
-		{ String_TCRSet, 0, 59, 10 },
-		{ String_Exit, 0, 1, 0 }
+		{ String_Manage, &CoilsMgmtMenu, 0, 0 },
+		{ String_TCRSet, 0, 39, 0 },
+		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
 
@@ -1146,8 +1220,8 @@ const menu_t Anim3dMenu =
 	0,
 	2,
 	{
-		{ String_Cube, &Anim3dMenu, -1, 0 },
-		{ String_None, 0, 1, 0 }
+		{ String_Cube, &Anim3dMenu, 0, 0 },
+		{ String_None, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
 
@@ -1162,10 +1236,10 @@ const menu_t MiscsMenu =
 	0,
 	4,
 	{
-		{ String_Logo, &LOGOMenu, -1, 0 },
-		{ String_Game, &GameMenu, -1, 0 },
-		{ String_3D, &Anim3dMenu, -1, 0 },
-		{ String_Exit, 0, 1, 0 }
+		{ String_Logo, &LOGOMenu, 0, 0 },
+		{ String_Game, &GameMenu, 0, 0 },
+		{ String_3D, &Anim3dMenu, 0, 0 },
+		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
 
@@ -1180,13 +1254,13 @@ const menu_t ClockMenu =
 	0,
 	7,
 	{
-		{ String_SetTime, 0, -1, 0 },
-		{ String_SetDate, 0, -1, 0 },
-		{ String_ClkAdjust, 0, 104, 120 },
-		{ String_ClkSpeed, 0, 103, 120 },
-		{ String_Fmt, 0, -1, 0 },
-		{ String_Dial, 0, -1, 0 },
-		{ String_Exit, 0, 1, 0 }
+		{ String_SetTime, 0, 0, 0 },
+		{ String_SetDate, 0, 0, 0 },
+		{ String_ClkAdjust, 0, EVENT_CLK_ADJUST, 0 },
+		{ String_ClkSpeed, 0, EVENT_CLK_SPEED, 0 },
+		{ String_Fmt, 0, 0, 0 },
+		{ String_Dial, 0, 0, 0 },
+		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
 
@@ -1201,9 +1275,9 @@ const menu_t ScreenProtMenu =
 	ScreenProtMenuOnEvent+1,
 	3,
 	{
-		{ String_Saver, 0, -1, 0 },
-		{ String_Main, 0, -1, 0 },
-		{ String_Exit, 0, 1, 30 }
+		{ String_Saver, 0, 0, 0 },
+		{ String_Main, 0, 0, 0 },
+		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
 
@@ -1215,15 +1289,16 @@ const menu_t ExpertMenu =
 	ExpertMenuIDraw+1,
 	0,
 	ExpertMenuOnClick+1,
-	0,
-	6,
+	ExpertMenuOnEvent+1,
+	7,
 	{
-		{ String_USB, 0, -1, 0 },
-		{ String_DBG, 0, -1, 0 },
-		{ String_X32, 0, -1, 0 },
-		{ String_NFE, 0, -1, 0 },
-		{ String_BAT, 0, -1, 0 },
-		{ String_Exit, 0, 1, 30 }
+		{ String_USB, 0, 0, 0 },
+		{ String_DBG, 0, 0, 0 },
+		{ String_X32, 0, 0, 0 },
+		{ String_NFE, 0, 0, 0 },
+		{ String_BAT, 0, 0, 0 },
+		{ String_SHR, 0, 0, 0 },
+		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
 
@@ -1238,12 +1313,12 @@ const menu_t ScreenSaveMenu =
 	0,
 	6,
 	{
-		{ String_None, 0, 1, 0 },
-		{ String_Clock, 0, 1, 0 },
-		{ String_Cube, 0, 1, 0 },
-		{ String_Logo, 0, 1, 0 },
-		{ String_Qix, 0, 1, 0 },
-		{ String_Snow, 0, 1, 0 }
+		{ String_None, 0, EVENT_EXIT_MENUS, 0 },
+		{ String_Clock, 0, EVENT_EXIT_MENUS, 0 },
+		{ String_Cube, 0, EVENT_EXIT_MENUS, 0 },
+		{ String_Logo, 0, EVENT_EXIT_MENUS, 0 },
+		{ String_Qix, 0, EVENT_EXIT_MENUS, 0 },
+		{ String_Snow, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
 
@@ -1258,12 +1333,12 @@ const menu_t ScreenMenu =
 	0,
 	6,
 	{
-		{ String_Contrast, 0, 101, 10 },
-		{ String_Protection, &ScreenProtMenu, -1, 0 },
-		{ String_Saver, &ScreenSaveMenu, -1, 0 },
-		{ String_Invert, 0, -1, 0 },
-		{ String_Miscs, &MiscsMenu, -1, 0 },
-		{ String_Exit, 0, 1, 0 }
+		{ String_Contrast, 0, EVENT_EDIT_CONTRAST, 0 },
+		{ String_Protection, &ScreenProtMenu, 0, 0 },
+		{ String_Saver, &ScreenSaveMenu, 0, 0 },
+		{ String_Invert, 0, 0, 0 },
+		{ String_Miscs, &MiscsMenu, 0, 0 },
+		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
 
@@ -1278,10 +1353,10 @@ const menu_t ClicksMenu =
 	0,
 	4,
 	{
-		{ String_2, 0, -1, 0 },
-		{ String_3, 0, -1, 0 },
-		{ String_4, 0, -1, 0 },
-		{ String_Exit, 0, 1, 0 },
+		{ String_2, 0, 0, 0 },
+		{ String_3, 0, 0, 0 },
+		{ String_4, 0, 0, 0 },
+		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 },
 	}
 };
 
@@ -1296,15 +1371,15 @@ const menu_t IFMenu =
 	0,
 	9,
 	{
-		{ String_BattPC, 0, -1, 0 },
-		{ String_1Watt, 0, -1, 0 },
-		{ String_Logo, 0, -1, 0 },
-		{ String_WakeMP, 0, -1, 0 },
-		{ String_Font, 0, -1, 0 },
-		{ String_Temp, 0, -1, 0 },
-		{ String_PPwr, 0, -1, 0 },
-		{ String_Clicks, &ClicksMenu, -1, 0 },
-		{ String_Exit, 0, 1, 0 }
+		{ String_BattPC, 0, 0, 0 },
+		{ String_1Watt, 0, 0, 0 },
+		{ String_Logo, 0, 0, 0 },
+		{ String_WakeMP, 0, 0, 0 },
+		{ String_Font, 0, 0, 0 },
+		{ String_Temp, 0, 0, 0 },
+		{ String_PPwr, 0, 0, 0 },
+		{ String_Clicks, &ClicksMenu, 0, 0 },
+		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
 
@@ -1319,10 +1394,10 @@ const menu_t VapingMenu =
 	VapingMenuOnEvent+1,
 	4,
 	{
-		{ String_Preheat, &PreheatMenu, -1, 0 },
-		{ String_Modes, &ModesMenu, -1, 0 },
-		{ String_Prot, 0, -1, 0 },
-		{ String_Exit, 0, 1, 0 }
+		{ String_Preheat, &PreheatMenu, 0, 0 },
+		{ String_Modes, &ModesMenu, 0, 0 },
+		{ String_Prot, 0, 0, 0 },
+		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
 
@@ -1337,13 +1412,13 @@ const menu_t MainMenu =
 	0,
 	7,
 	{
-		{ String_Screen, &ScreenMenu, -1, 0 },
-		{ String_Coils, &CoilsMenu, -1, 0 },
-		{ String_Vaping, &VapingMenu, -1, 0 },
-		{ String_Clock, &ClockMenu, -1, 0 },
-		{ String_Interface, &IFMenu, -1, 0 },
-		{ String_Expert, &ExpertMenu, -1, 0 },
-		{ String_Exit, 0, 1, 0 }
+		{ String_Screen, &ScreenMenu, 0, 0 },
+		{ String_Coils, &CoilsMenu, 0, 0 },
+		{ String_Vaping, &VapingMenu, 0, 0 },
+		{ String_Clock, &ClockMenu, 0, 0 },
+		{ String_Interface, &IFMenu, 0, 0 },
+		{ String_Expert, &ExpertMenu, 0, 0 },
+		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
 
@@ -1441,22 +1516,9 @@ __myevic__ int MenuEvent( int event )
 
 				gFlags.refresh_display = 1;
 			}
-			else if ( (signed char)mi->screen > 0 )
+			else if ( mi->event > 0 )
 			{
-				CurrentMenu = 0;
-				CurrentMenuItem = 0;
-
-				if ( mi->screen == 1 )
-				{
-					MainView();
-				}
-				else
-				{
-					Screen = mi->screen;
-					ScreenDuration = mi->sduration;
-				}
-
-				gFlags.refresh_display = 1;
+				Event = mi->event;
 			}
 
 			vret = 1;
@@ -1507,21 +1569,13 @@ __myevic__ int MenuEvent( int event )
 			vret = 1;
 			break;
 
-		case EVENT_EXITMENUS:
-			if ( dfStatus.off )
-			{
-				Screen = 0;
-				ScreenDuration = 0;
-				gFlags.refresh_display = 1;
-			}
-			else
-			{
-				MainView();
-			}
+		case EVENT_EXIT_MENUS:
+			EditModeTimer = 0;
+			MainView();
 			vret = 1;
 			break;
 
-		case EVENT_PARENTMENU:
+		case EVENT_PARENT_MENU:
 		{
 			switch ( Screen )
 			{
@@ -1552,28 +1606,20 @@ __myevic__ int MenuEvent( int event )
 					break;
 			}
 
-			if ( !dfStatus.off )
+			if ( !dfStatus.off && CurrentMenu )
 			{
-				if ( CurrentMenu )
-				{
-					CurrentMenuItem = 0;
-					if ( CurrentMenu->on_enter ) CurrentMenu->on_enter();
-					Screen = 102;
-					ScreenDuration = 30;
-					gFlags.refresh_display = 1;
-				}
-				else
-				{
-					MainView();
-				}
+				CurrentMenuItem = 0;
+				if ( CurrentMenu->on_enter ) CurrentMenu->on_enter();
+				Screen = 102;
+				ScreenDuration = 30;
+				gFlags.refresh_display = 1;
 			}
 			else
 			{
-				Screen = 0;
-				ScreenDuration = 0;
-				gFlags.refresh_display = 1;
+				MainView();
 			}
 
+			EditModeTimer = 0;
 			vret = 1;
 			break;
 		}

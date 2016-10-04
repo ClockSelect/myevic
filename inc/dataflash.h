@@ -100,7 +100,7 @@ typedef struct dfParams
 /* 0078 */	dfStatus_t	Status;
 /* 007C */	uint16_t	AtoRez;
 /* 007E */	uint8_t		AtoStatus;
-/* 007F */	//	1-byte pad
+/* 007F */	uint8_t		ShuntRez;		//	1-byte pad
 /* 0080 */	uint16_t	RezSS;
 /* 0082 */	uint8_t		RezLockedSS;
 /* 0083 */	uint8_t		UIVersion;		//	useless
@@ -270,6 +270,7 @@ extern dfStruct_t DataFlash;
 #define dfStatus		DFP(Status)
 #define dfAtoRez		DFP(AtoRez)
 #define dfAtoStatus		DFP(AtoStatus)
+#define dfShuntRez		DFP(ShuntRez)
 #define dfRezSS			DFP(RezSS)
 #define dfRezLockedSS	DFP(RezLockedSS)
 #define dfUIVersion		DFP(UIVersion)
@@ -333,6 +334,7 @@ extern void DFCheckValuesValidity();
 extern void UpdateDataFlash();
 extern void UpdatePTCounters();
 extern void DataFlashUpdateTick();
+extern void SetShuntRezValue();
 
 //-------------------------------------------------------------------------
 

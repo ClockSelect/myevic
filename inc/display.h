@@ -3,14 +3,25 @@
 
 #include "M451Series.h"
 
+//=========================================================================
+// DISPLAY
+//-------------------------------------------------------------------------
 
 #define SCREEN_BUFFER_SIZE 0x400
+
+//-------------------------------------------------------------------------
+
+#define InvertRect(a,b,c,d) DrawFillRect((a),(b),(c),(d),2)
+
+//-------------------------------------------------------------------------
 
 typedef struct {
 	uint8_t	width;
 	uint8_t	height;
 	uint8_t	bitmap[];
 } image_t;
+
+//-------------------------------------------------------------------------
 
 extern const uint8_t ByteMaskRight[];
 extern const uint8_t ByteMaskLeft[];
@@ -25,6 +36,8 @@ extern const image_t const *font0_1306[];
 extern const image_t const *font0_1327[];
 extern const image_t const *font1_1306[];
 extern const image_t const *font1_1327[];
+
+//-------------------------------------------------------------------------
 
 extern void InitSPI0();
 extern void InitDisplay();
@@ -88,4 +101,5 @@ extern void SSD1327_Screen2Bitmap( uint8_t *pu8Bitmap );
 extern void SSD1306_SetInverse( const uint8_t i );
 
 
+//=========================================================================
 #endif /* __DISPLAY_H__ */

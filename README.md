@@ -300,7 +300,8 @@ There's many more to LOGO and Game menus now. See below.
 
 * Expert
 
-    Some advanced options:
+    Some advanced options.  
+    Normal users should barely have anything to do with those options, and can live perfectly well without ever knowing they exist. I do not recommend "testing" those options just to "see what it does". Deny responsability of everything etc. You're supposed to have 18+, after all^^
 
   * USB:
 
@@ -333,6 +334,13 @@ There's many more to LOGO and Game menus now. See below.
         Battery model.  
         You can specify your battery brand and model among several ones: 25R, 30Q, HG2, HE4, VTC4 and VTC5. "GEN" is the generic battery used by default and should be used for any other model of battery.  
         At the moment, this information is used by the firmware to compute a more accurate state-of-charge than the generic setting.
+
+  * SHR
+  
+        Shunt Resistance.  
+        *Warning: This item is dangerous to your box. Messing with this parameter may cause overcurrent in the atomizer circuitry and lead to definitive box failure.*  
+        This item let you edit the value of the Atomizer's circuit shunt resistance. This resistance is involved in every resistance/current/power measures and computation in the whole firmware. This value should only be changed if you know exactly what you are doing.  
+        To reset the shunt value, select the SHR menu item and press the fire button during 2 seconds. This will revert the value to the default hardware setting.
 
 ----------
 

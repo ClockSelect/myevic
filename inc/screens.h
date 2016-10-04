@@ -223,6 +223,7 @@ extern const uint16_t String_DMY[];
 extern const uint16_t String_MDY[];
 extern const uint16_t String_Dial[];
 extern const uint16_t String_Invert[];
+extern const uint16_t String_SHR[];
 
 
 //==============================================================================
