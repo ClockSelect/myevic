@@ -162,18 +162,22 @@ There's many more to LOGO and Game menus now. See below.
         ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/coils_zpsn29ef1h5.png)
      * On each line of the four TC modes:
 
-            Click fire to switch to edit mode on the resistance.
-            While the resistance value is highlighted, click + and - to edit its value.
-            Setting the resistance to any non-zero value automaticaly locks it.
-            Bring the resistance to zero with - to unlock and reset it.
-            You may also fire two seconds to zero the resistance.
+            Click fire to toggle edit mode on the resistance.  
+            While the resistance value is highlighted, click (+) and (-) to edit its value.  
+            If you click fire again without editing the resistance value, this will toggle its locked/unlocked status.  
+            Editing the resistance to any non-zero value automaticaly locks it.  
+            Setting the resistance to zero with (-) will unlock and reset it.  
+               
+            You may also fire two seconds on one of the four resistances to reset its value; if the selected resistance corresponds to the current vaping mode, this will force an immediate reading of the atomizer, setting and lock of the new value.  
+              
+            When entering the Coils Management menu, the resistance corresponfing to the current vaping mode (if applicable) will be pre-selected.
       * Zero All:
 
             Zeroes all resistances; also zeroes all "SMART" and "POWER" modes saved resistance settings.
 
     * TCR Set:
       
-        Enters the TCR Set menu. This menu can also be accessed by switching off the box and pressing both Fire and Right regulatory button for 5 seconds.
+        Enters the TCR Set menu. This is a guenuine menu from the original firmware and is described in your box's manual. This menu can also be accessed by switching off the box and pressing both Fire and Right regulatory button for 5 seconds.
 
 
 ----------

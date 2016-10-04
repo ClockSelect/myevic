@@ -1307,7 +1307,7 @@ __myevic__ void ReadBoardTemp()
 }
 
 
-//=============================================================================
+//=========================================================================
 //----- (00006004) --------------------------------------------------------
 __myevic__ void Overtemp()
 {
@@ -1316,5 +1316,24 @@ __myevic__ void Overtemp()
 	Screen = 29;
 	ScreenDuration = 2;
 	KeyPressTime |= 0x8000;
+}
+
+//=========================================================================
+// Force re-read of the resistance
+//-------------------------------------------------------------------------
+__myevic__ void ResetResistance()
+{
+	dfResistance = 0;
+	AtoRezMilli = 0;
+	AtoRez = 0;
+	byte_200000B3 = 2;
+	AtoProbeCount = 0;
+	AtoStatus = 4;
+
+	while ( AtoStatus == 4 && AtoProbeCount < 12 )
+	{
+		ProbeAtomizer();
+		WaitOnTMR2( 10 );
+	}
 }
 

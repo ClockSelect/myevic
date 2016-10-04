@@ -79,6 +79,7 @@ extern void GetTempCoef( const uint16_t tc[] );
 extern void CheckMode();
 extern void ReadBoardTemp();
 extern void Overtemp();
+extern void ResetResistance();
 
 extern void SwitchRezLock();
 
