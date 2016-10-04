@@ -105,6 +105,14 @@ __myevic__ void SetProductID()
 			gFlags.is_evicbasic = 1;
 			break;
 		}
+		else if ( u32Data == PID_WRX75TC )
+		{
+			dfProductID = u32Data;
+			dfMaxHWVersion = 0x00010001;
+			DFMagicNumber = 0x32;
+			gFlags.is_reuleaux = 1;
+			break;
+		}
 	}
 
 	FMC_DISABLE_ISP();
@@ -717,7 +725,7 @@ __myevic__ void InitDataFlash()
 				break;
 		}
 	}
-	else if ( ISVTWOMINI || ISEGRIPII )
+	else if ( ISVTWOMINI || ISEGRIPII || ISWRX75TC )
 	{
 		DisplayModel = 0;
 	}
@@ -776,6 +784,20 @@ __myevic__ void InitDataFlash()
 
 			case 102:
 				AtoShuntRez = 105;
+				break;
+		}
+	}
+	else if ( ISWRX75TC )
+	{
+		switch ( dfHWVersion )
+		{
+			case 100:
+			default:
+				AtoShuntRez = 123;
+				break;
+
+			case 101:
+				AtoShuntRez = 107;
 				break;
 		}
 	}

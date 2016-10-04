@@ -34,14 +34,14 @@ uint8_t		BatAnimLevel;
 
 __myevic__ void DrawScreen()
 {
-	static uint8_t	ShowFDTimer = 0;
+	static uint8_t	TenthOfSecs = 0;
 	static uint16_t	CurrentFD = 0;
 
 	if ( Screen == 2 && FireDuration && FireDuration != CurrentFD )
 	{
 		CurrentFD = FireDuration;
-		ScreenDuration = 1;
-		ShowFDTimer = 0;
+		ScreenDuration = ISMODETC(dfMode) ? 1 : 2;
+		TenthOfSecs = 0;
 		gFlags.refresh_display = 1;
 	}
 	else
@@ -175,8 +175,7 @@ __myevic__ void DrawScreen()
 
 		if ( gFlags.debug & 1 )
 		{
-			int nd = (Screen<100?Screen<10?1:2:3);
-			DrawValue( 64-6*nd, 120, Screen, 0, 0x01, nd );
+			DrawValueRight( 64, 120, Screen, 0, 0x01, 0 );
 			DrawValue( 0, 120, ScreenDuration, 0, 0x01, 0 );
 		}
 
@@ -185,17 +184,17 @@ __myevic__ void DrawScreen()
 
 	if (( gFlags.firing ) && ISMODETC(dfMode))
 	{
-		ShowFDTimer += 5;
+		TenthOfSecs += 5;
 	}
 	else
 	{
-		ShowFDTimer += 1;
+		TenthOfSecs += 1;
 	}
 
-	if ( ShowFDTimer < 10 )
+	if ( TenthOfSecs < 10 )
 		return;
 
-	ShowFDTimer = 0;
+	TenthOfSecs = 0;
 
 	if (  10 * ScreenDuration < EditModeTimer )
 	{

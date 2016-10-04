@@ -230,9 +230,7 @@ __myevic__ void StopFire()
 		}
 	}
 
-	gFlags.autopuff = 0;
 	AutoPuffTimer = 0;
-
 	PreheatTimer = 0;
 
 	PC1 = 0;

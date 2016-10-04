@@ -194,10 +194,7 @@ __myevic__ void TimedItems()
 	}
 
 	if ( AutoPuffTimer )
-	{
-		if ( !--AutoPuffTimer )
-			StopFire();
-	}
+		--AutoPuffTimer;
 
 	if ( ++BatAnimTimer >= 100 )
 	{

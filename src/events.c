@@ -124,8 +124,9 @@ __myevic__ void GetUserInput()
 {
 	UserInputs = 14;
 
-	if ( ( !PE0 || gFlags.autopuff ) && PD2 && PD3 )
+	if ( ( !PE0 || AutoPuffTimer ) && PD2 && PD3 )
 	{
+		if ( !PE0 ) AutoPuffTimer = 0;
 		UserInputs = 1;
 	}
 	else
@@ -135,12 +136,6 @@ __myevic__ void GetUserInput()
 			if ( LastInputs == 1 )
 			{
 				StopFire();
-				if ( !ISMODETC(dfMode) )
-				{
-					// Display last puff duration
-					// a little longer
-					ScreenDuration = 2;
-				}
 			}
 			gFlags.user_idle = 1;
 			LastInputs = -1;
@@ -270,7 +265,7 @@ __myevic__ void GetUserInput()
 
 						case CLICK_ACTION_NONE:
 							if ( FireClickCount == 4 )
-								FireClicksEvent = EVENT_QUAD_FIRE;	// debug mode
+								FireClicksEvent = EVENT_DEBUG_MODE;	// debug mode
 							break;
 
 						case CLICK_ACTION_EDIT:
@@ -278,15 +273,15 @@ __myevic__ void GetUserInput()
 							break;
 
 						case CLICK_ACTION_TDOM:
-							FireClicksEvent = EVENT_TOGGLE_TDOM; // show clock
+							FireClicksEvent = EVENT_TOGGLE_TDOM;	// priority power
 							break;
 
 						case CLICK_ACTION_CLOCK:
-							FireClicksEvent = EVENT_DOUBLE_FIRE; // show clock
+							FireClicksEvent = EVENT_TOGGLE_CLOCK;	// toggle clock display
 							break;
 
 						case CLICK_ACTION_NEXT_MODE:
-							FireClicksEvent = EVENT_NEXT_MODE; // show clock
+							FireClicksEvent = EVENT_NEXT_MODE;	// change mode
 							break;
 
 						case CLICK_ACTION_ON_OFF:
@@ -812,18 +807,17 @@ __myevic__ int EvtMinusButton()
 
 //-------------------------------------------------------------------------
 
-__myevic__ int EvtDoubleFire()
+__myevic__ int EvtToggleClock()
 {
-//	ShowDateFlag = 3;
 	dfStatus.clock ^= 1;
 	UpdateDFTimer = 50;
-	gFlags.refresh_display = 1;
+	MainView();
 	return 1;
 }
 
 //-------------------------------------------------------------------------
 
-__myevic__ int EvtQuadFire()
+__myevic__ int EvtDebugMode()
 {
 	if ( dfStatus.dbgena )
 	{
@@ -959,8 +953,8 @@ __myevic__ int CustomEvents()
 			vret = EvtSingleFire();
 			break;
 
-		case EVENT_DOUBLE_FIRE:	// Double Fire
-			vret = EvtDoubleFire();
+		case EVENT_TOGGLE_CLOCK:	// Double Fire
+			vret = EvtToggleClock();
 			break;
 
 		case EVENT_EDIT_CONTRAST:	// Contrast screen
@@ -971,8 +965,8 @@ __myevic__ int CustomEvents()
 			vret = EvtEnterMenus();
 			break;
 
-		case EVENT_QUAD_FIRE:
-			vret = EvtQuadFire();
+		case EVENT_DEBUG_MODE:
+			vret = EvtDebugMode();
 			break;
 
 		case EVENT_LONG_FIRE:
@@ -1005,29 +999,28 @@ __myevic__ int CustomEvents()
 			dfStatus.priopwr ^= 1;
 			UpdateDFTimer = 50;
 			gFlags.refresh_display = 1;
+			vret = 1;
 			break;
 
 		case EVENT_RESET_VVEL:
 			MilliJoules = 0;
 			TMR2Counter = 0;
+			vret = 1;
 			break;
 
 		case EVENT_FORCE_VCOM:
 			dfStatus.storage = 0;
 			dfStatus.vcom = 1;
 			InitUSB();
+			vret = 1;
 			break;
 
 		case EVENT_AUTO_PUFF:
-			MainView();
 			if ( AutoPuffTimer > 0 )
-			{
-				gFlags.autopuff = 1;
-			}
+				MainView();
 			else
-			{
 				StopFire();
-			}
+			vret = 1;
 			break;
 
 		default:

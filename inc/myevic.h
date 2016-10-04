@@ -24,19 +24,21 @@
 #define PID_VTWOMINI	(*(uint32_t*)"E115")
 #define PID_VTWO		(*(uint32_t*)"E043")
 #define PID_PRESA75W	(*(uint32_t*)"W007")
+#define PID_WRX75TC		(*(uint32_t*)"W026")
 #define PID_EVICAIO		(*(uint32_t*)"E092")
 #define PID_EGRIPII		(*(uint32_t*)"E083")
 #define PID_CUBOMINI	(*(uint32_t*)"E056")
 #define PID_EVICBASIC	(*(uint32_t*)"E150")
 
-#define ISVTCMINI	(!gFlags.is_vtwo && gFlags.is_mini)
-#define ISVTWOMINI	(gFlags.is_vtwo && gFlags.is_mini)
-#define ISVTWO		(gFlags.is_vtwo && !gFlags.is_mini)
-#define ISPRESA75W	(gFlags.is_presa && gFlags.is_mini)
-#define ISEVICAIO	(gFlags.is_evicaio)
-#define ISEGRIPII	(gFlags.is_egrip2)
-#define ISCUBOMINI	(gFlags.is_cuboid && gFlags.is_mini)
-#define ISEVICBASIC	(gFlags.is_evicbasic)
+#define ISVTCMINI		(!gFlags.is_vtwo && gFlags.is_mini)
+#define ISVTWOMINI		(gFlags.is_vtwo && gFlags.is_mini)
+#define ISVTWO			(gFlags.is_vtwo && !gFlags.is_mini)
+#define ISPRESA75W		(gFlags.is_presa && gFlags.is_mini)
+#define ISWRX75TC		(gFlags.is_reuleaux && gFlags.is_mini)
+#define ISEVICAIO		(gFlags.is_evicaio)
+#define ISEGRIPII		(gFlags.is_egrip2)
+#define ISCUBOMINI		(gFlags.is_cuboid && gFlags.is_mini)
+#define ISEVICBASIC		(gFlags.is_evicbasic)
 
 
 //=========================================================================
@@ -101,11 +103,11 @@ typedef struct
 
 /* 00010000 */	int is_cuboid:1;
 /* 00020000 */	int is_evicbasic:1;
-/* 00040000 */	int debug:1;
-/* 00080000 */	int noclock:1;
-/* 00100000 */	int read_bir:1;
-/* 00200000 */	int monitoring:1;
-/* 00400000 */	int autopuff:1;
+/* 00040000 */	int is_reuleaux:1;
+/* 00080000 */	int debug:1;
+/* 00100000 */	int noclock:1;
+/* 00200000 */	int read_bir:1;
+/* 00400000 */	int monitoring:1;
 }
 gFlags_t;
 

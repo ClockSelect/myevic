@@ -10,6 +10,7 @@ This is My eVic VTC Mini.
 * eGrip II (75W limit)
 * Cuboid Mini (75W limit)
 * Wismec Presa 75W
+* Wismec Releaux RX75
 
 
 ### Based on:
@@ -26,7 +27,7 @@ You may:
 - Use evic-usb to upload unencrypted [bin/myevic.bin](https://github.com/ClockSelect/myevic/blob/master/bin/myevic.bin) to your box, using command line:
 
     ```evic-usb upload -u bin/myevic.bin```
-- Use [NFirmwareEditor](https://github.com/TBXin/NFirmwareEditor/releases) to upload any of those files to your box.
+- Use  [NFirmwareEditor](https://github.com/TBXin/NFirmwareEditor/releases) or [FWUpdater](https://www.dropbox.com/s/ze0z9isrmaegva4/FWUpdater.zip?dl=1) to upload any of those files to your box.
 
 ### Thanks to:
 

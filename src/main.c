@@ -788,8 +788,6 @@ __myevic__ void Main()
 			// 1Hz
 			gFlags.tick_1hz = 0;
 
-			if ( ShowDateFlag ) --ShowDateFlag;
-
 			if ( !(gFlags.firing) && !(dfStatus.off) && !EditModeTimer )
 			{
 				if ( HideLogo )

@@ -10,7 +10,6 @@
 
 //=============================================================================
 
-uint8_t		ShowDateFlag = 0;
 uint16_t	HideLogo = 0;
 
 
@@ -307,14 +306,7 @@ __myevic__ void DrawAPTLine( int line )
 		{
 			S_RTC_TIME_DATA_T rtd;
 			GetRTC( &rtd );
-			if ( ShowDateFlag )
-			{
-				DrawDate( 4, line, &rtd, 0x1F );
-			}
-			else
-			{
-				DrawTime( 5, line, &rtd, 0x1F );
-			}
+			DrawTime( 5, line, &rtd, 0x1F );
 			break;
 		}
 
