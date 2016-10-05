@@ -62,7 +62,7 @@ typedef struct
 /* 00004000 */	int wakeonpm:1;
 /* 00008000 */	int font:1;
 
-/* 00010000 */	int nfeoff:1;
+/* 00010000 */	int nfe:1;
 /* 00020000 */	int mdy:1;
 /* 00040000 */	int invert:1;
 

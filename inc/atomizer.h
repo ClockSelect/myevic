@@ -75,7 +75,7 @@ extern void AtoWarmUp();
 extern void TweakTargetVoltsVW();
 extern void TweakTargetVoltsTC();
 extern void ProbeAtomizer();
-extern void GetAtoCurrent();
+extern void ReadAtoCurrent();
 extern void ReadAtoTemp();
 extern void ReadAtomizer();
 extern void GetTempCoef( const uint16_t tc[] );

@@ -66,6 +66,8 @@ extern void ShowScreenSaver();
 extern void ShowSetTime();
 extern void ShowSetDate();
 
+extern void ShowFireDuration( int line );
+
 extern uint16_t GetScreenProtection();
 extern uint16_t GetMainScreenDuration();
 

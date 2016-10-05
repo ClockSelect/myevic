@@ -581,7 +581,7 @@ __myevic__ void Main()
 
 		if ( gFlags.firing )
 		{
-			GetAtoCurrent();
+			ReadAtoCurrent();
 		}
 
 		if ( gFlags.tick_5khz )

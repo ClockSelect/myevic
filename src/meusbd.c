@@ -711,7 +711,7 @@ __myevic__ uint32_t hidGetInfoCmd( CMD_T *pCmd )
 
 	if ( u32ParamLen )
 	{
-		if ( !dfStatus.nfeoff )
+		if ( dfStatus.nfe )
 		{
 			dfMagic = DATAFLASH_NFE_MAGIC;
 			dfBuild = __BUILD3;
@@ -730,7 +730,7 @@ __myevic__ uint32_t hidGetInfoCmd( CMD_T *pCmd )
 
 		MemCpy( hidData, ((uint8_t *)&DataFlash) + u32StartAddr, u32ParamLen );
 
-		if ( !dfStatus.nfeoff )
+		if ( dfStatus.nfe )
 		{
 			dfMagic = DFMagicNumber;
 		}

@@ -285,7 +285,7 @@ __myevic__ uint16_t AtoPowerLimit( uint16_t pwr )
 
 //=============================================================================
 //----- (00003564) --------------------------------------------------------
-__myevic__ void GetAtoCurrent()
+__myevic__ void ReadAtoCurrent()
 {
 	unsigned int adcShunt;
 	unsigned int adcAtoVolts;
@@ -500,7 +500,7 @@ __myevic__ void ReadAtomizer()
 		if ( !ADCShuntSum ) ADCShuntSum = 1;
 		AtoRezMilli = 1300 * AtoShuntRez / 100 * ADCAtoSum / ( 3 * ADCShuntSum );
 
-		GetAtoCurrent();
+		ReadAtoCurrent();
 
 		if ( gFlags.firing )
 		{
@@ -728,7 +728,7 @@ __myevic__ void AtoWarmUp()
 			break;
 
 		RegulateBuckBoost();
-		GetAtoCurrent();
+		ReadAtoCurrent();
 
 		if ( AtoVolts == TargetVolts )
 			break;
@@ -819,7 +819,13 @@ __myevic__ void TweakTargetVoltsTC()
 
 		pwr = AtoPowerLimit( pwr );
 
-		if ( FireDuration <= 2 && pwr > 300 ) pwr = 300;
+		if ( gFlags.check_mode )
+		{
+			if ( FireDuration <= 2 )
+			{
+				if ( pwr > 300 ) pwr = 300;
+			}
+		}
 
 		volts = GetVoltsForPower( pwr );
 

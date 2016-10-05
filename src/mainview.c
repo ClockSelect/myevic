@@ -330,6 +330,19 @@ __myevic__ void DrawAPTLine( int line )
 
 
 //=============================================================================
+__myevic__ void ShowFireDuration( int line )
+{
+	int x;
+	DrawFillRect( 0, line, 63, line+15, 1 );
+	DrawFillRect( 1, line+1, 62, line+14, 0 );
+	x = ( FireDuration > dfProtec / 2 ) ? 5 : 37;
+	DrawValue( x, line+4, FireDuration, 1, 0xB, 2 );
+	DrawImage( x + 15, line+4, 0xAE );
+	InvertRect( 2, line+2, 2 + 59 * FireDuration / dfProtec, line+13 );
+}
+
+
+//=============================================================================
 __myevic__ void DrawInfoLines()
 {
 	if (( gFlags.debug & 1 ) && ( !gFlags.firing ) && ( !EditModeTimer ))
@@ -360,17 +373,17 @@ __myevic__ void DrawInfoLines()
 				}
 				else
 				{
-					DrawPwrLine( AtoPower( TargetVolts ), 52 );
+					DrawPwrLine( AtoPower( AtoVolts ), 52 );
 				}
 				break;
 			case 4:
-				DrawValue( 10, 49, FireDuration, 1, 0x29, 2 );
-				DrawImage( 40, 49, 0xB7 );
-				break;
 			case 5:
-				DrawValue( 10, 49, FireDuration, 1, 0x29, 2 );
-				DrawImage( 40, 49, 0xB7 );
+			{
+				ShowFireDuration( 49 );
+			//	DrawValue( 10, 49, FireDuration, 1, 0x29, 2 );
+			//	DrawImage( 40, 49, 0xB7 );
 				break;
+			}
 			default:
 				break;
 		}

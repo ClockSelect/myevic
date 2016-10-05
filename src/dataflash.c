@@ -246,7 +246,7 @@ __myevic__ void ResetDataFlash()
 //	dfStatus.phpct = 0;
 //	dfStatus.wakeonpm = 0;
 //	dfStatus.font = 0;
-//	dfStatus.nfeoff = 0;
+//	dfStatus.nfe = 0;
 //	dfRezSS = 0;
 //	dfRezLockedSS = 0;
 //	dfRezTCR = 0;

@@ -83,6 +83,9 @@ Events (20000043)
   4 Key Lock/UnLock
   5 (fire+ buttons)
   6 Stealth ON/OFF
+  7 Menu button
+  8 Menu +
+  9 Menu -
  10 USB cable attach
  11 USB cable detach
  12 Battery charging

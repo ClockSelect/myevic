@@ -528,10 +528,10 @@ __myevic__ void ExpertMenuIDraw( int it, int line, int sel )
 			break;
 
 		case 3:	// NFE
-			if ( dfStatus.nfeoff )
-				DrawString( String_OFF, 36, line+2 );
-			else
+			if ( dfStatus.nfe )
 				DrawString( String_ON, 36, line+2 );
+			else
+				DrawString( String_OFF, 36, line+2 );
 			break;
 
 		case 4:	// BAT
@@ -580,7 +580,7 @@ __myevic__ void ExpertMenuOnClick()
 			break;
 
 		case 3:	// NFE
-			dfStatus.nfeoff ^= 1;
+			dfStatus.nfe ^= 1;
 			break;
 
 		case 4:	// BAT
