@@ -32,15 +32,28 @@
 #define PID_CUBOMINI	(*(uint32_t*)"E056")
 #define PID_EVICBASIC	(*(uint32_t*)"E150")
 
-#define ISVTCMINI		(!gFlags.is_vtwo && gFlags.is_mini)
-#define ISVTWOMINI		(gFlags.is_vtwo && gFlags.is_mini)
-#define ISVTWO			(gFlags.is_vtwo && !gFlags.is_mini)
-#define ISPRESA75W		(gFlags.is_presa && gFlags.is_mini)
-#define ISWRX75TC		(gFlags.is_reuleaux && gFlags.is_mini)
-#define ISEVICAIO		(gFlags.is_evicaio)
-#define ISEGRIPII		(gFlags.is_egrip2)
-#define ISCUBOMINI		(gFlags.is_cuboid && gFlags.is_mini)
-#define ISEVICBASIC		(gFlags.is_evicbasic)
+enum
+{
+	BOX_VTCMINI,
+    BOX_VTWOMINI,
+    BOX_VTWO,
+    BOX_PRESA75W,
+    BOX_WRX75TC,
+    BOX_EVICAIO,
+    BOX_EGRIPII,
+    BOX_CUBOMINI,
+    BOX_EVICBASIC
+};
+
+#define ISVTCMINI		(BoxModel==BOX_VTCMINI)
+#define ISVTWOMINI		(BoxModel==BOX_VTWOMINI)
+#define ISVTWO			(BoxModel==BOX_VTWO)
+#define ISPRESA75W		(BoxModel==BOX_PRESA75W)
+#define ISWRX75TC		(BoxModel==BOX_WRX75TC)
+#define ISEVICAIO		(BoxModel==BOX_EVICAIO)
+#define ISEGRIPII		(BoxModel==BOX_EGRIPII)
+#define ISCUBOMINI		(BoxModel==BOX_CUBOMINI)
+#define ISEVICBASIC		(BoxModel==BOX_EVICBASIC)
 
 
 //=========================================================================
@@ -98,22 +111,16 @@ typedef struct
 /* 00000200 */	int	playing_fb:1;
 /* 00000400 */	int has_x32:1;
 /* 00000800 */	int is_mini:1;
-/* 00001000 */	int is_vtwo:1;
-/* 00002000 */	int is_presa:1;
-/* 00004000 */	int is_evicaio:1;
-/* 00008000 */	int is_egrip2:1;
-
-/* 00010000 */	int is_cuboid:1;
-/* 00020000 */	int is_evicbasic:1;
-/* 00040000 */	int is_reuleaux:1;
-/* 00080000 */	int debug:1;
-/* 00100000 */	int noclock:1;
-/* 00200000 */	int read_bir:1;
-/* 00400000 */	int monitoring:1;
+/* 00001000 */	int debug:1;
+/* 00002000 */	int noclock:1;
+/* 00004000 */	int read_bir:1;
+/* 00008000 */	int monitoring:1;
 }
 gFlags_t;
 
 extern volatile gFlags_t gFlags;
+extern uint8_t BoxModel;
+
 
 //=========================================================================
 // Functions from assembly language part

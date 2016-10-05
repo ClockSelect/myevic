@@ -7,8 +7,8 @@ This is My eVic VTC Mini.
 * eVic VTwo
 * eVic AIO
 * eVic Basic
-* eGrip II (75W limit)
-* Cuboid Mini (75W limit)
+* eGrip II
+* Cuboid Mini
 * Wismec Presa 75W
 * Wismec Releaux RX75
 
@@ -326,8 +326,9 @@ There's many more to LOGO and Game menus now. See below.
 
   * NFE
  
-        Enables or disables the NFirmwareEditor 5.0 myEvic Configuration Editor compatibility.  
-        This option is enabled by default; if you have troubles using some firmware/dataflash utilities other than NFirmwareEditor, you may try to set this option to "OFF".
+        *Warning: You can't use Joyetech's firmware updater while this option is "ON".*  
+        Enables or disables partial compatibility with the [NFirmwareEditor 5.0+](https://github.com/TBXin/NFirmwareEditor/releases) myEvic Configuration Editor.  
+        This option is disabled by default; set it to "ON" if you plan to use developpement features of the NFE. You'll have access to monitoring, screenshot, and COM terminal.  
  
   * BAT
 

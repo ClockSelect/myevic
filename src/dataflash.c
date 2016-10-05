@@ -42,9 +42,7 @@ __myevic__ void SetProductID()
 	dfProductID = PID_VTCMINI;
 	dfMaxHWVersion = 0x00010101;
 	DFMagicNumber = 0x36;
-	gFlags.is_mini  = 1;
-	gFlags.is_vtwo  = 0;
-	gFlags.is_presa = 0;
+	BoxModel = BOX_VTCMINI;
 
 	for ( uint32_t offset = 0 ; offset < LDROM_SIZE ; offset += 4 )
 	{
@@ -54,7 +52,7 @@ __myevic__ void SetProductID()
 			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00000001;
 			DFMagicNumber = 0x10;
-			gFlags.is_vtwo = 1;
+			BoxModel = BOX_VTWOMINI;
 			break;
 		}
 		else if ( u32Data == PID_VTWO )
@@ -62,8 +60,7 @@ __myevic__ void SetProductID()
 			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00010001;
 			DFMagicNumber = 0x40;
-			gFlags.is_vtwo = 1;
-			gFlags.is_mini = 0;
+			BoxModel = BOX_VTWO;
 			break;
 		}
 		else if ( u32Data == PID_PRESA75W )
@@ -71,7 +68,7 @@ __myevic__ void SetProductID()
 			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00030001;
 			DFMagicNumber = 0x30;
-			gFlags.is_presa = 1;
+			BoxModel = BOX_PRESA75W;
 			break;
 		}
 		else if ( u32Data == PID_EVICAIO )
@@ -79,7 +76,7 @@ __myevic__ void SetProductID()
 			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00010001;
 			DFMagicNumber = 0x50;
-			gFlags.is_evicaio = 1;
+			BoxModel = BOX_EVICAIO;
 			break;
 		}
 		else if ( u32Data == PID_EGRIPII )
@@ -87,7 +84,7 @@ __myevic__ void SetProductID()
 			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00000001;
 			DFMagicNumber = 0x15;
-			gFlags.is_egrip2 = 1;
+			BoxModel = BOX_EGRIPII;
 			break;
 		}
 		else if ( u32Data == PID_CUBOMINI )
@@ -95,7 +92,7 @@ __myevic__ void SetProductID()
 			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00020001;
 			DFMagicNumber = 0x50;
-			gFlags.is_cuboid = 1;
+			BoxModel = BOX_CUBOMINI;
 			break;
 		}
 		else if ( u32Data == PID_EVICBASIC )
@@ -103,7 +100,7 @@ __myevic__ void SetProductID()
 			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00010001;
 			DFMagicNumber = 0x13;
-			gFlags.is_evicbasic = 1;
+			BoxModel = BOX_EVICBASIC;
 			break;
 		}
 		else if ( u32Data == PID_WRX75TC )
@@ -111,7 +108,7 @@ __myevic__ void SetProductID()
 			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00010001;
 			DFMagicNumber = 0x32;
-			gFlags.is_reuleaux = 1;
+			BoxModel = BOX_WRX75TC;
 			break;
 		}
 	}
@@ -775,18 +772,17 @@ __myevic__ void InitDataFlash()
 	if ( ISEVICBASIC )
 	{
 		MaxPower	= 600;
-		MaxTCPower	= 600;
 	}
-	else if ( gFlags.is_mini )
+	else if ( ISVTWO || ISEGRIPII || ISCUBOMINI )
 	{
-		MaxPower	= 750;
-		MaxTCPower	= 750;
+		MaxPower	= 800;
 	}
 	else
 	{
-		MaxPower	= 800;
-		MaxTCPower	= 800;
+		MaxPower	= 750;
 	}
+
+	MaxTCPower = MaxPower;
 
 	myprintf( "  APROM Version ......................... [%d.%d%d]\n",
 				FWVERSION / 100,
