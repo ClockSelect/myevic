@@ -337,7 +337,7 @@ There's many more to LOGO and Game menus now. See below.
 
   * SHR
   
-        Shunt Resistance.  
+        Shunt Resistance (in mΩ).  
         *Warning: This item is dangerous to your box. Messing with this parameter may cause overcurrent in the atomizer circuitry and lead to definitive box failure.*  
         This item let you edit the value of the Atomizer's circuit shunt resistance. This resistance is involved in every resistance/current/power measures and computation in the whole firmware. This value should only be changed if you know exactly what you are doing.  
         To reset the shunt value, select the SHR menu item and press the fire button during 2 seconds. This will revert the value to the default hardware setting.

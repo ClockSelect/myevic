@@ -20,6 +20,8 @@
 					+	( __MONTH__ % 10 << 8 ) + ( __MONTH__ / 10 << 12 ) \
 					+	( __YEAR__ % 10 << 16 ) + ( __YEAR__ / 10 % 10 << 20 ) )
 
+#define __BUILD3	( ( __YEAR__ % 100 ) + ( __MONTH__ << 8 ) + ( __DAY__ << 16 ) )
+
 #define PID_VTCMINI		(*(uint32_t*)"E052")
 #define PID_VTWOMINI	(*(uint32_t*)"E115")
 #define PID_VTWO		(*(uint32_t*)"E043")

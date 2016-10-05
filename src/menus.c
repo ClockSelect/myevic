@@ -646,7 +646,7 @@ __myevic__ int ExpertMenuOnEvent( int event )
 			switch ( CurrentMenuItem )
 			{
 				case 5:	// Shunt Rez
-					SetShuntRezValue();
+					AtoShuntRez = GetShuntRezValue();
 					dfShuntRez = 0;
 					vret = 1;
 					break;

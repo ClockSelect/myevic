@@ -45,55 +45,60 @@ __myevic__ void MainView()
 //=============================================================================
 __myevic__ void DrawMode()
 {
-	if ( BLINKITEM(0) )
-		return;
-
-	switch ( dfMode )
+	if ( !BLINKITEM(0) )
 	{
-		case 0:
-			DrawString( String_TEMP, 0, 2 );
-			if ( !BLINKITEM(1) )
-			{
+		switch ( dfMode )
+		{
+			case 0:
+				DrawString( String_TEMP, 0, 2 );
+				break;
+			case 1:
+				DrawString( String_TEMP, 0, 2 );
+				break;
+			case 2:
+				DrawString( String_TEMP, 0, 2 );
+				break;
+			case 3:
+				DrawString( String_TCR, 0, 2 );
+				break;
+			case 4:
+				DrawString( String_POWER, 0, 2 );
+				break;
+			case 5:
+				DrawString( String_BYPASS, 0, 2 );
+				break;
+			case 6:
+				DrawString( String_SMART, 13, 4 );
+				break;
+			default:
+				break;
+		}
+	}
+
+	if ( !BLINKITEM(1) )
+	{
+		switch ( dfMode )
+		{
+			case 0:
 				DrawString( String_NI, 32, 2 );
-			}
-			break;
-		case 1:
-			DrawString( String_TEMP, 0, 2 );
-			if ( !BLINKITEM(1) )
-			{
+				break;
+			case 1:
 				DrawString( String_TI, 32, 2 );
-			}
-			break;
-		case 2:
-			DrawString( String_TEMP, 0, 2 );
-			if ( !BLINKITEM(1) )
-			{
+				break;
+			case 2:
 				DrawString( String_SS, 32, 2 );
 				DrawImage( 48, 3, 0x04 );
 				DrawImage( 54, 3, 0x02 );
 				DrawImage( 59, 3, 0x07 );
-			}
-			break;
-		case 3:
-			DrawString( String_TCR, 0, 2 );
-			DrawValue( 25, 2, dfTCRM[dfTCRIndex], 0, 0x0B, 3 );
-			if ( !BLINKITEM(1) )
-			{
+				break;
+			case 3:
+				DrawValue( 25, 2, dfTCRM[dfTCRIndex], 0, 0x0B, 3 );
 				DrawImage( 49, 2, 0xA8 );
 				DrawValue( 57, 2, dfTCRIndex + 1, 0, 0x0B, 1 );
-			}
-			break;
-		case 4:
-			DrawString( String_POWER, 0, 2 );
-			break;
-		case 5:
-			DrawString( String_BYPASS, 0, 2 );
-			break;
-		case 6:
-			DrawString( String_SMART, 13, 4 );
-			break;
-		default:
-			break;
+				break;
+			default:
+				break;
+		}
 	}
 }
 

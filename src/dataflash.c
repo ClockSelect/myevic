@@ -6,6 +6,7 @@
 #include "display.h"
 #include "events.h"
 #include "battery.h"
+#include "atomizer.h"
 
 #include "dataflash.h"
 
@@ -279,7 +280,7 @@ __myevic__ void ResetDataFlash()
 	dfTimeCount = 0;
 	UpdatePTCounters();
 
-	SetShuntRezValue();
+	AtoShuntRez = GetShuntRezValue();
 }
 
 
@@ -765,7 +766,7 @@ __myevic__ void InitDataFlash()
 		}
 	}
 
-	SetShuntRezValue();
+	AtoShuntRez = GetShuntRezValue();
 
 	dfFWVersion	= FWVERSION;
 
@@ -893,19 +894,21 @@ __myevic__ void DataFlashUpdateTick()
 //=========================================================================
 // Set the shunt resistance value
 //-------------------------------------------------------------------------
-__myevic__ void SetShuntRezValue()
+__myevic__ uint16_t GetShuntRezValue()
 {
+	uint16_t rez;
+
 	if ( ISPRESA75W || ISEVICAIO )
 	{
-		AtoShuntRez = 100;
+		rez = 100;
 	}
 	else if ( ISVTWOMINI || ISVTWO )
 	{
-		AtoShuntRez = 115;
+		rez = 115;
 	}
 	else if ( ISEGRIPII || ISEVICBASIC )
 	{
-		AtoShuntRez = 120;
+		rez = 120;
 	}
 	else if ( ISCUBOMINI )
 	{
@@ -914,11 +917,11 @@ __myevic__ void SetShuntRezValue()
 			case 100:
 			case 101:
 			default:
-				AtoShuntRez = 100;
+				rez = 100;
 				break;
 
 			case 102:
-				AtoShuntRez = 105;
+				rez = 105;
 				break;
 		}
 	}
@@ -928,11 +931,11 @@ __myevic__ void SetShuntRezValue()
 		{
 			case 100:
 			default:
-				AtoShuntRez = 123;
+				rez = 123;
 				break;
 
 			case 101:
-				AtoShuntRez = 107;
+				rez = 107;
 				break;
 		}
 	}
@@ -943,29 +946,31 @@ __myevic__ void SetShuntRezValue()
 			case 100:
 			case 102:
 			default:
-				AtoShuntRez = 115;
+				rez = 115;
 				break;
 			case 101:
-				AtoShuntRez = 125;
+				rez = 125;
 				break;
 			case 108:
-				AtoShuntRez = 125;
+				rez = 125;
 				break;
 			case 103:
 			case 104:
 			case 105:
 			case 106:
-				AtoShuntRez = 110;
+				rez = 110;
 				break;
 			case 107:
 			case 109:
-				AtoShuntRez = 120;
+				rez = 120;
 				break;
 			case 110:
 			case 111:
-				AtoShuntRez = 105;
+				rez = 105;
 				break;
 		}
 	}
+
+	return rez;
 }
 

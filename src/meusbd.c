@@ -714,20 +714,11 @@ __myevic__ uint32_t hidGetInfoCmd( CMD_T *pCmd )
 		if ( !dfStatus.nfeoff )
 		{
 			dfMagic = DATAFLASH_NFE_MAGIC;
-
-		//	// The build # comparison is skewed in the NFE,
-		//	// so let's take a # that we know works.
-		//	dfBuild[0] = 0x02; //0x10;
-		//	dfBuild[1] = 0x10; //0x09;
-		//	dfBuild[2] = 0x16;
-		
-			dfBuild[0] =   __BUILD2         & 0xFF;
-			dfBuild[1] = ( __BUILD2 >>  8 ) & 0xFF;
-			dfBuild[2] = ( __BUILD2 >> 16 ) & 0xFF;
+			dfBuild = __BUILD3;
 		}
 		else
 		{
-			MemClear( dfBuild, 3 );
+			dfBuild = 0;
 		}
 
 		dfChecksum = Checksum( (uint8_t *)DataFlash.params, FMC_FLASH_PAGE_SIZE - 4 );
@@ -1002,10 +993,22 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 					myprintf( "\tu8UpdateAPRom ......................... [0x%08x]\n",
 								df->p.BootFlag );
 
-					MemCpy( DataFlash.params, df->params, DATAFLASH_PARAMS_SIZE );
+					if ( df->p.Magic == DFMagicNumber )
+					{
+						MemCpy( DataFlash.params, df->params, DATAFLASH_PARAMS_SIZE );
 
-					DFCheckValuesValidity();
-					UpdateDataFlash();
+						DFCheckValuesValidity();
+						UpdateDataFlash();
+					}
+					else
+					{
+						myprintf( "Incompatible parameters format.\n" );
+						
+						if ( df->p.Magic == DATAFLASH_NFE_MAGIC )
+						{
+							dfBootFlag = df->p.BootFlag;
+						}
+					}
 
 					if ( df->i.Year >= 2000 && df->i.Year <= 2099 )
 					{

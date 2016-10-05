@@ -166,7 +166,7 @@ dfInfos_t;
 
 typedef struct
 {
-	uint8_t	Build[3];
+	uint32_t	Build;
 }
 dfNFEBlock_t;
 
@@ -334,7 +334,7 @@ extern void DFCheckValuesValidity();
 extern void UpdateDataFlash();
 extern void UpdatePTCounters();
 extern void DataFlashUpdateTick();
-extern void SetShuntRezValue();
+extern uint16_t GetShuntRezValue();
 
 //-------------------------------------------------------------------------
 
