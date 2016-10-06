@@ -38,8 +38,6 @@ __myevic__ void RTC_IRQHandler()
 		{
 			adj_10k += ClockCorrection * 2 - 32768;
 		}
-
-		myprintf( "CC=%d\n", ClockCorrection );
 		
 		ClockCorrection = 0;
 	}

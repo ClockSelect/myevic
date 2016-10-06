@@ -319,16 +319,25 @@ __myevic__ void DrawAPTLine( int line )
 		case 8:	// Vape Velocity
 		{
 			uint32_t vv, t;
-			DrawString( String_mld, 42, line+2 );
 			// Elasped seconds since last VV reset
 			t = RTCGetEpoch( 0 );
 			t -= RTCReadRegister( RTCSPARE_VV_BASE );
 			// Base: 0.320 mL/J
 			vv = 320 * ( MilliJoules / 1000 ) / 1000;
-			vv = vv * 86400 / ( t ? : 1 );
 			vv /= 10;
 			if ( vv > 9999 ) vv = 9999;
-			DrawValueRight( 40, line, vv, 2, 0x1F, 0 );
+			if ( dfStatus.vapedml )
+			{
+				DrawString( String_LIQ_s, 0, line+2 );
+				DrawString( String_ml, 52, line+2 );
+				DrawValueRight( 50, line, vv, 2, 0x1F, 0 );
+			}
+			else
+			{
+				vv = vv * 86400 / ( t ? : 1 );
+				DrawString( String_mld, 42, line+2 );
+				DrawValueRight( 40, line, vv, 2, 0x1F, 0 );
+			}
 		}
 	}
 }
@@ -695,7 +704,7 @@ __myevic__ void ShowMainView()
 		{
 			if ( Anim3d )
 			{
-				anim3d( 1 );
+				anim3d( Anim3d, 1 );
 			}
 			else if ( dfStatus.clock )
 			{

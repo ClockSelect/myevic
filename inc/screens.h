@@ -135,6 +135,7 @@ extern const uint16_t String_TIME_s[];
 extern const uint16_t String_PUFF_s[];
 extern const uint16_t String_BOARD_s[];
 extern const uint16_t String_RES_s[];
+extern const uint16_t String_LIQ_s[];
 extern const uint16_t String_SMART[];
 extern const uint16_t String_End[];
 
@@ -154,6 +155,7 @@ extern const uint16_t String_ClkAdjust[];
 extern const uint16_t String_myevic[];
 extern const uint16_t String_Build[];
 extern const uint16_t String_mld[];
+extern const uint16_t String_ml[];
 
 // from menus.c
 extern const uint16_t String_Menus[];
@@ -226,6 +228,8 @@ extern const uint16_t String_MDY[];
 extern const uint16_t String_Dial[];
 extern const uint16_t String_Invert[];
 extern const uint16_t String_SHR[];
+extern const uint16_t String_Tetra[];
+extern const uint16_t String_Vaped[];
 
 
 //==============================================================================

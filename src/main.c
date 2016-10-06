@@ -669,7 +669,7 @@ __myevic__ void Main()
 
 			if (( Anim3d ) && ( Screen == 1 ) && ( !EditModeTimer ))
 			{
-				anim3d( 0 );
+				anim3d( Anim3d, 0 );
 			}
 
 			if ( Screen == 60 )

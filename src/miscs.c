@@ -162,6 +162,7 @@ typedef struct {
 
 typedef struct {
 	const uint8_t	scale;
+	const uint8_t	scalediv;
 	const uint8_t	npoints;
 	const uint8_t	nlines;
 	const pt3d_t	*points;
@@ -170,7 +171,7 @@ typedef struct {
 
 const pt3d_t cube_points[] = 
 	{
-		{  1,  1,  1 },	// 0
+		{  1,  1,  1 }, // 0
 		{ -1,  1,  1 }, // 1
 		{  1, -1,  1 }, // 2
 		{ -1, -1,  1 }, // 3
@@ -198,12 +199,47 @@ const line3d_t cube_lines[] =
 	
 const obj3d_t cube =
 {
-	16,
+	16, 1,
 	8,
 	12,
 	cube_points,
 	cube_lines
 };
+
+const pt3d_t tetra_points[] = 
+	{
+		{  1,  1,  1 }, // 0
+		{  1, -1, -1 }, // 1
+		{ -1,  1, -1 }, // 2
+		{ -1, -1,  1 }  // 3
+	};
+
+const line3d_t tetra_lines[] = 
+	{
+		{ 0, 1 },
+		{ 0, 2 },
+		{ 0, 3 },
+		{ 1, 2 },
+		{ 1, 3 },
+		{ 2, 3 }
+	};
+	
+const obj3d_t tetra =
+{
+	16, 1,
+	4,
+	6,
+	tetra_points,
+	tetra_lines
+};
+
+const obj3d_t const *objects3d[] =
+	{
+		&tetra,
+		&cube
+	};
+
+#define N3DOBJECTS (sizeof(objects3d)/sizeof(obj3d_t*))
 
 typedef int32_t matrix3d_t[3][3];
 
@@ -242,15 +278,16 @@ __myevic__ void compute_matrix( matrix3d_t mat, const angles_t *a )
 
 __myevic__ void rotate_object( pt3d_t *dst, const obj3d_t *src, const matrix3d_t mat )
 {
-	int32_t s, x, y, z;
+	int32_t s, d, x, y, z;
 
 	s = src->scale;
+	d = src->scalediv;
 
 	for ( int i = 0 ; i < src->npoints ; ++i )
 	{
-		x = s * src->points[i].x;
-		y = s * src->points[i].y;
-		z = s * src->points[i].z;
+		x = s * src->points[i].x / d;
+		y = s * src->points[i].y / d;
+		z = s * src->points[i].z / d;
 
 		dst[i].x = ( mat[0][0] * x + mat[0][1] * y + mat[0][2] * z ) >> 16;
 		dst[i].y = ( mat[1][0] * x + mat[1][1] * y + mat[1][2] * z ) >> 16;
@@ -267,11 +304,21 @@ __myevic__ void next_angle()
 }
 
 
-__myevic__ void anim3d( int refresh )
+__myevic__ void anim3d( int obj, int redraw_last )
 {
 	static uint8_t tscaler = 0;
+	const obj3d_t *object;
 
-	if ( !refresh )
+	if (( obj > 0 ) && ( obj <= N3DOBJECTS ))
+	{
+		object = objects3d[Anim3d-1];
+	}
+	else
+	{
+		return;
+	}
+
+	if ( !redraw_last )
 	{
 		if ( ++tscaler < 4 ) return;
 		tscaler = 0;
@@ -279,10 +326,10 @@ __myevic__ void anim3d( int refresh )
 		next_angle();
 
 		compute_matrix( rot_matrix, &angles );
-		rotate_object( points, &cube, rot_matrix );
+		rotate_object( points, object, rot_matrix );
 
 		int f = 256;
-		for ( int i = 0 ; i < cube.npoints ; ++i )
+		for ( int i = 0 ; i < object->npoints ; ++i )
 		{
 			points[i].x = f * points[i].x / ( f + points[i].z );
 			points[i].y = f * points[i].y / ( f + points[i].z );
@@ -291,19 +338,19 @@ __myevic__ void anim3d( int refresh )
 
 	DrawFillRect( 0, 44, 63, 106, 0 );
 
-	for ( int i = 0 ; i < cube.nlines ; ++i )
+	for ( int i = 0 ; i < object->nlines ; ++i )
 	{
 		DrawLine(
-			points[cube.lines[i].pt1].x + 32,
-			points[cube.lines[i].pt1].y + 75,
-			points[cube.lines[i].pt2].x + 32,
-			points[cube.lines[i].pt2].y + 75,
+			points[object->lines[i].pt1].x + 32,
+			points[object->lines[i].pt1].y + 75,
+			points[object->lines[i].pt2].x + 32,
+			points[object->lines[i].pt2].y + 75,
 			1,
 			1
 		);
 	}
 
-	if ( !refresh )
+	if ( !redraw_last )
 	{
 		DisplayRefresh();
 	}

@@ -49,7 +49,7 @@ __myevic__ void VapingMenuIDraw( int it, int line, int sel )
 {
 	switch ( it )
 	{
-		case 2:	//Protec
+		case 2:	// Protec
 			DrawFillRect( 34, line, 63, line+12, 0 );
 			DrawImage( 58, line+2, 0x94 );
 			DrawValueRight( 56, line+2, dfProtec, 1, 0x0B, 0 );
@@ -58,16 +58,29 @@ __myevic__ void VapingMenuIDraw( int it, int line, int sel )
 				InvertRect( 0, line, 63, line+12 );
 			}
 			break;
+		
+		case 3:	// Vaped
+			DrawFillRect( 38, line, 63, line+12, 0 );
+			DrawString( dfStatus.vapedml ? String_ml : String_mld, 43, line+2 );
+			break;
 	}
 }
 
 
 __myevic__ void VapingMenuOnClick()
 {
-	if ( CurrentMenuItem == 2 )
+	switch ( CurrentMenuItem )
 	{
-		gFlags.edit_value ^= 1;
-		gFlags.refresh_display = 1;
+		case 2:	// Protec
+			gFlags.edit_value ^= 1;
+			gFlags.refresh_display = 1;
+			break;
+
+		case 3:	// Vaped
+			dfStatus.vapedml ^= 1;
+			UpdateDFTimer = 50;
+			gFlags.refresh_display = 1;
+			break;
 	}
 }
 
@@ -799,20 +812,12 @@ __myevic__ int ScreenProtMenuOnEvent( int event )
 
 __myevic__ void Anim3dOnEnter()
 {
-	if ( Anim3d ) CurrentMenuItem = ( Anim3d - 1 );
-	else CurrentMenuItem = CurrentMenu->nitems - 1;
+	CurrentMenuItem = Anim3d;
 }
 
 __myevic__ void Anim3dOnClick()
 {
-	if ( CurrentMenuItem < CurrentMenu->nitems - 1 )
-	{
-		Anim3d = CurrentMenuItem + 1;
-	}
-	else
-	{
-		Anim3d = 0;
-	}
+	Anim3d = CurrentMenuItem;
 	MainView();
 }
 
@@ -1191,10 +1196,11 @@ const menu_t Anim3dMenu =
 	0,
 	Anim3dOnClick+1,
 	0,
-	2,
+	3,
 	{
-		{ String_Cube, &Anim3dMenu, 0, 0 },
-		{ String_None, 0, EVENT_EXIT_MENUS, 0 }
+		{ String_None, 0, EVENT_EXIT_MENUS, 0 },
+		{ String_Tetra, 0, EVENT_EXIT_MENUS, 0 },
+		{ String_Cube, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
 
@@ -1364,11 +1370,12 @@ const menu_t VapingMenu =
 	0,
 	VapingMenuOnClick+1,
 	VapingMenuOnEvent+1,
-	4,
+	5,
 	{
 		{ String_Preheat, &PreheatMenu, 0, 0 },
 		{ String_Modes, &ModesMenu, 0, 0 },
 		{ String_Prot, 0, 0, 0 },
+		{ String_Vaped, 0, 0, 0 },
 		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
@@ -1543,6 +1550,7 @@ __myevic__ int MenuEvent( int event )
 
 		case EVENT_EXIT_MENUS:
 			EditModeTimer = 0;
+			UpdateDataFlash();
 			MainView();
 			vret = 1;
 			break;
