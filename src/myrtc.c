@@ -154,20 +154,30 @@ __myevic__ void RTCFullAccess()
 	}
 }
 
+__myevic__ void RTCWriteRegister( uint32_t r, uint32_t v )
+{
+	RTCFullAccess();
+	RTC_WRITE_SPARE_REGISTER( r, v );
+}
+
+__myevic__ uint32_t RTCReadRegister( uint32_t r )
+{
+	RTCFullAccess();
+	return RTC_READ_SPARE_REGISTER( r );
+}
+
 __myevic__ void RTCSetReferenceDate( time_t *t )
 {
 	ref_date = *t;
 
-	RTCFullAccess();
-	RTC_WRITE_SPARE_REGISTER( 0, ref_date );
+	RTCWriteRegister( RTCSPARE_REF_DATE, ref_date );
 }
 
 __myevic__ time_t RTCGetReferenceDate()
 {
 	if ( !ref_date )
 	{
-		RTCFullAccess();
-		ref_date = (time_t)RTC_READ_SPARE_REGISTER( 0 );
+		ref_date = RTCReadRegister( RTCSPARE_REF_DATE );
 	}
 	return ref_date;
 }
@@ -282,10 +292,6 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 	if ( d )
 	{
 		SetRTC( d );
-	}
-	else
-	{
-		RTCWakeUp();
 	}
 
 	if ( !gFlags.has_x32 )
@@ -413,12 +419,15 @@ __myevic__ void RTCAdjustClock( int seconds )
 
 //=============================================================================
 
-__myevic__ void RTCGetEpoch( time_t *t )
+__myevic__ time_t RTCGetEpoch( time_t *t )
 {
+	time_t e;
 	S_RTC_TIME_DATA_T rtd;
 
 	GetRTC( &rtd );
-	RTCTimeToEpoch( t, &rtd );
+	RTCTimeToEpoch( &e, &rtd );
+	if ( t ) *t = e;
+	return e;
 }
 
 

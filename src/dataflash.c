@@ -716,6 +716,11 @@ __myevic__ void InitDataFlash()
 
 	SetProductID();
 
+	if ( ISVTCMINI )
+	{
+		BVOffset = 5;
+	}
+
 	if ( ISVTWO || ISEVICAIO || ISCUBOMINI || ISEVICBASIC )
 	{
 		switch ( dfHWVersion )

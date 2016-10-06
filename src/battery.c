@@ -198,6 +198,7 @@ uint8_t		BatteryPercent;
 uint8_t		BatteryTenth;
 uint8_t		NoEventTimer;
 uint8_t		BatReadTimer;
+uint8_t		BVOffset;
 
 uint8_t		byte_20000048;
 
@@ -216,7 +217,15 @@ __myevic__ void SetBatteryModel()
 {
 	Battery = &Batteries[dfBatteryModel];
 	BatteryCutOff = Battery->cutoff;
-	BatteryIntRez = Battery->intrez;
+	if ( !BatteryIntRez )
+	{
+		BatteryIntRez = 100;
+
+		if ( Battery->intrez > BatteryIntRez )
+		{
+			BatteryIntRez = Battery->intrez;
+		}
+	}
 }
 
 
@@ -406,7 +415,7 @@ __myevic__ void ReadBatteryVoltage()
 		}
 
 		gFlags.sample_vbat = 0;
-		newbv = ( VbatSampleSum >> 7 ) + 5;
+		newbv = ( VbatSampleSum >> 7 ) + BVOffset;
 
 		VbatSampleSum = newbv;
 		BatteryVoltage = newbv;
@@ -458,7 +467,7 @@ __myevic__ int CheckBattery()
 	i = 0;
 	do
 	{
-		bv = ( ReadBatterySample() >> 3 ) + 5;
+		bv = ( ReadBatterySample() >> 3 ) + BVOffset;
 		if ( bv > BatteryCutOff )
 			break;
 		++i;
@@ -496,6 +505,11 @@ __myevic__ int CheckBattery()
 
 	if ( v0 || gFlags.limit_power || bv < limit_voltage )
 	{
+		if ( !gFlags.limit_power )
+		{
+			ShowWeakBatFlag = 5;
+		}
+
 		gFlags.limit_power = 0;
 		gFlags.decrease_voltage = 1;
 
@@ -503,8 +517,6 @@ __myevic__ int CheckBattery()
 		{
 			--PowerScale;
 		}
-
-		ShowWeakBatFlag = 5;
 	}
 	else
 	{

@@ -1,4 +1,5 @@
 #include "myevic.h"
+#include "myprintf.h"
 #include "dataflash.h"
 #include "screens.h"
 #include "display.h"
@@ -317,13 +318,18 @@ __myevic__ void DrawAPTLine( int line )
 
 		case 8:	// Vape Velocity
 		{
-			uint32_t vv;
+			uint32_t vv, t;
 			DrawString( String_mld, 42, line+2 );
-			vv = 250 * ( MilliJoules / 1000 ) / 1000;
-			vv = vv * 86400 / ( TMR2Counter / 1000 ? : 1 );
+			// Elasped seconds since last VV reset
+			t = RTCGetEpoch( 0 );
+			t -= RTCReadRegister( RTCSPARE_VV_BASE );
+			// Base: 0.320 mL/J
+			vv = 320 * ( MilliJoules / 1000 ) / 1000;
+			vv = vv * 86400 / ( t ? : 1 );
+			myprintf( "mJ=%d t=%d vv=%d\n", MilliJoules, t, vv );
 			vv /= 10;
 			if ( vv > 9999 ) vv = 9999;
-			DrawValueRight( 40, line, vv / 10, 2, 0x1F, 0 );
+			DrawValueRight( 40, line, vv, 2, 0x1F, 0 );
 		}
 	}
 }

@@ -7,6 +7,7 @@
 #include "timers.h"
 #include "meadc.h"
 #include "megpio.h"
+#include "myrtc.h"
 
 
 //=============================================================================
@@ -228,6 +229,8 @@ __myevic__ void StopFire()
 			if ( ++dfPuffCount > 99999 ) dfPuffCount = 0;
 			UpdatePTTimer = 80;
 		}
+		
+		RTCWriteRegister( RTCSPARE_VV_MJOULES, MilliJoules );
 	}
 
 	AutoPuffTimer = 0;

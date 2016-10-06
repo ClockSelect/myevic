@@ -537,6 +537,8 @@ __myevic__ void Main()
 
 	InitRTC( 0 );
 
+	MilliJoules = RTCReadRegister( RTCSPARE_VV_MJOULES );
+	
 	InitUSB();
 
 	myprintf( "\n\nJoyetech APROM\n" );

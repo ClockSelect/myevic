@@ -24,6 +24,13 @@
 #define RTC_MIN_CLOCK_RATIO	30000
 #define RTC_MAX_CLOCK_RATIO	35000
 
+//-------------------------------------------------------------------------
+// Spare registers usage
+//-------------------------------------------------------------------------
+
+#define RTCSPARE_REF_DATE	0
+#define RTCSPARE_VV_BASE	1
+#define RTCSPARE_VV_MJOULES	2
 
 //=========================================================================
 // When the RTC is driven by the LIRC, a "second" of the RTC is approx
@@ -41,6 +48,9 @@ extern void InitRTC( S_RTC_TIME_DATA_T *d );
 extern void GetRTC( S_RTC_TIME_DATA_T *rtd );
 extern void SetRTC( S_RTC_TIME_DATA_T *rtd );
 
+extern void RTCWriteRegister( uint32_t r, uint32_t v );
+extern uint32_t RTCReadRegister( uint32_t r );
+
 extern void RTCTimeToEpoch( time_t *t, const S_RTC_TIME_DATA_T *d );
 extern void RTCEpochToTime( S_RTC_TIME_DATA_T *d, const time_t *t );
 
@@ -51,7 +61,7 @@ extern void RTCAdjustClock( int seconds );
 extern void RTCSleep();
 extern void RTCWakeUp();
 
-extern void RTCGetEpoch( time_t *t );
+extern time_t RTCGetEpoch( time_t *t );
 
 //=========================================================================
 

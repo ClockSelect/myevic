@@ -611,6 +611,7 @@ __myevic__ void EventHandler()
 				{
 					gFlags.limit_power = 1;
 					PowerScale = 100 * BatteryMaxPwr / pwr;
+					TargetVolts = GetVoltsForPower( BatteryMaxPwr );
 				}
 
 				LowBatVolts = ( BatteryVoltage > BatteryCutOff + 100 ) ? 0 : BatteryVoltage;

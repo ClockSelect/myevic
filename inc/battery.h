@@ -14,6 +14,7 @@ extern uint8_t	SavedBatPercent;
 extern uint8_t	BatteryTenth;
 extern uint8_t	NoEventTimer;
 extern uint8_t	BatReadTimer;
+extern uint8_t	BVOffset;
 
 extern uint8_t	byte_20000048;
 

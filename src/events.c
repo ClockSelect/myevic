@@ -1004,7 +1004,9 @@ __myevic__ int CustomEvents()
 
 		case EVENT_RESET_VVEL:
 			MilliJoules = 0;
-			TMR2Counter = 0;
+			RTCWriteRegister( RTCSPARE_VV_BASE, RTCGetEpoch( 0 ) );
+			EditModeTimer = 0;
+			gFlags.refresh_display = 1;
 			vret = 1;
 			break;
 
