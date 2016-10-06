@@ -228,7 +228,7 @@ __myevic__ void USBD_IRQHandler(void)
 			/* USB Un-plug */
 			USBD_DISABLE_USB();
 		}
-		
+
 		gCtrlSignal = 0;
 	}
 
@@ -784,12 +784,12 @@ __myevic__ uint32_t hidFMCReadCmd( CMD_T *pCmd )
 	u32ParamLen  = pCmd->u32Arg2;
 
 	myprintf( "FMC Read command - Start Addr: %d    Param Len: %d\n", pCmd->u32Arg1, pCmd->u32Arg2 );
-	
+
 	if ( ! u32ParamLen % EP2_MAX_PKT_SIZE )
 	{
 		return -1;
 	}
-	
+
 	if ( u32ParamLen )
 	{
 		if ( u32ParamLen > FMC_FLASH_PAGE_SIZE )
@@ -1003,10 +1003,11 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 					else
 					{
 						myprintf( "Incompatible parameters format.\n" );
-						
+
 						if ( df->p.Magic == DATAFLASH_NFE_MAGIC )
 						{
 							dfBootFlag = df->p.BootFlag;
+							UpdateDataFlash();
 						}
 					}
 
@@ -1023,7 +1024,7 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 						rtd.u32TimeScale = RTC_CLOCK_24;
 						SetRTC( &rtd );
 					}
-					
+
 					gFlags.refresh_display = 1;
 				}
 				else
@@ -1131,7 +1132,7 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 				u8Cmd = HID_CMD_NONE;
 				myprintf( "Update LDROM command complete.\n" );
 			}
-			
+
 			break;
 		}
 

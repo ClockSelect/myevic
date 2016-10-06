@@ -17,17 +17,35 @@ This is My eVic VTC Mini.
 *Original VTC Mini 3.03 firmware*
 
 ### Main Features:
-My custom firmware is more or less identical to the official firmware - Just added some missing features.
+The look-and-feel of the myevic firmware is more-or-less identical to the original firmware, so you shouldn't be lost.  
+Many new features and options are made available through the menu system; I strongly encourage you to fully read the present documentation.
 
 ### Usage:
 
-You may:
+The binary firmware file is included in the **bin/** subdirectory of the project.  
+If you are only interested in installing and using the firmware, download it here : [bin/myevic](https://github.com/ClockSelect/myevic/blob/master/bin/myevic.bin)
+  
+Once you've downloaded the firmware binary, you may:
 
-- Use [official firmware updater](http://www.joyetech.com/mvr-software/) to upload [bin/myevic_enc.bin](https://github.com/ClockSelect/myevic/blob/master/bin/myevic_enc.bin)
-- Use evic-usb to upload unencrypted [bin/myevic.bin](https://github.com/ClockSelect/myevic/blob/master/bin/myevic.bin) to your box, using command line:
+- Use the manufacturer's firmware updater to upload [myevic.bin](https://github.com/ClockSelect/myevic/blob/master/bin/myevic.bin) like you would with a usual firmware update from Joyetech or Wismec:
+  - Download the firmware updater package from the manufacturer [Wismec](http://www.wismec.com/software/) or [Joyetech](http://www.joyetech.com/mvr-software/), depending of the brand and model of your box. Be sure to pick the right software for the right box brand and model.
+  - Unzip the update package and launch the UpdateFirmware.exe (Joyetech) or UpdateWismec.exe (Wismec) found in the package.
+  - Plug your box into your PC via USB  
+    Be sure you use a data-capable USB cable. Some cheap cables coming with some boxes only ensures box charging. If unsure, use the cable that came with your box. Once done, the updater window should show the model and version of your box.
+  - Click the "Update" button; a file selection dialog will open. Select the "myevic.bin" file.
+  - Wait for the update process to complete.  
+    If something goes wrong, retry to update. Update fails sometimes; this shouldn't be a concern.
+  - Enjoy.  
+  
+OR  
 
-    ```evic-usb upload -u bin/myevic.bin```
-- Use  [NFirmwareEditor](https://github.com/TBXin/NFirmwareEditor/releases) or [FWUpdater](https://www.dropbox.com/s/ze0z9isrmaegva4/FWUpdater.zip?dl=1) to upload any of those files to your box.
+- For linux/Cygwin users, use evic-usb to upload [myevic.bin](https://github.com/ClockSelect/myevic/blob/master/bin/myevic.bin) to your box, using command line:
+
+    ```evic-usb upload myevic.bin```
+
+OR  
+
+- Use  [NFirmwareEditor](https://github.com/TBXin/NFirmwareEditor/releases) or [FWUpdater](https://www.dropbox.com/s/ze0z9isrmaegva4/FWUpdater.zip?dl=1) to upload [myevic.bin](https://github.com/ClockSelect/myevic/blob/master/bin/myevic.bin) to your box.
 
 ### Thanks to:
 

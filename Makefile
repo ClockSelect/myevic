@@ -188,11 +188,13 @@ $(OBJS_FIXPATH): %.o: %.c
 %.o: %.s $(INCLUDES)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(TARGET).bin: $(OBJS_FIXPATH) $(MYEVIC_OBJS)
+$(TARGET)_dec.bin: $(OBJS_FIXPATH) $(MYEVIC_OBJS)
 	test -d $(OUTDIR) || mkdir $(OUTDIR)
 	$(LD) --start-group $(LIBS) $(OBJS_FIXPATH) $(MYEVIC_OBJS) --end-group $(LDFLAGS) -o $(OUTDIR)/$(TARGET).elf
-	$(OBJCOPY) -O binary -j .text -j .data $(OUTDIR)/$(TARGET).elf $(OUTDIR)/$(TARGET).bin
-	evic convert $(OUTDIR)/$(TARGET).bin -o $(OUTDIR)/$(TARGET)_enc.bin
+	$(OBJCOPY) -O binary -j .text -j .data $(OUTDIR)/$(TARGET).elf $(OUTDIR)/$(TARGET)_dec.bin
+
+$(TARGET).bin: $(TARGET)_dec.bin
+	evic convert $(OUTDIR)/$(TARGET)_dec.bin -o $(OUTDIR)/$(TARGET).bin
 
 docs:
 	doxygen
