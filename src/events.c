@@ -291,17 +291,16 @@ __myevic__ void GetUserInput()
 					break;
 
 				case 5:
-				case 6:
-				case 7:
-					FireClicksEvent = 17;	// Switch On/Off
+					Event = 17;	// Switch On/Off
 					break;
 
 				case 10:
+					Event = 17;	// Switch Back
 					FireClicksEvent = 31;	// board temp screen
 					break;
 
 				case 20:
-					Event = 29;	// firmware version screen
+					FireClicksEvent = 29;	// firmware version screen
 					break;
 			}
 		}

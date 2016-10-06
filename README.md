@@ -273,7 +273,11 @@ There's many more to LOGO and Game menus now. See below.
 
   * 1Watt On/Off
 
-        Enable increment of power setting by plus or minus 1 Watt instead of plus or minus 0.1 Watts.
+        Enable increment of power setting by plus ±1.0 Watt instead of ±0.1 Watts.
+
+  * 1C5F On/Off
+
+        Enable increment of temperature setting by ±1°C and ±5°F instead of ±5°C and ±10°F
 
   * Logo On/Off
   

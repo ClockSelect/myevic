@@ -58,7 +58,7 @@ __myevic__ void VapingMenuIDraw( int it, int line, int sel )
 				InvertRect( 0, line, 63, line+12 );
 			}
 			break;
-		
+
 		case 3:	// Vaped
 			DrawFillRect( 38, line, 63, line+12, 0 );
 			DrawString( dfStatus.vapedml ? String_ml : String_mld, 43, line+2 );
@@ -242,19 +242,23 @@ __myevic__ void IFMenuIDraw( int it, int line, int sel )
 			DrawString( dfStatus.onewatt ? String_On : String_Off, 44, line+2 );
 			break;
 
-		case 2:	// Wake -+
+		case 2:	// 1C5F
+			DrawString( dfStatus.onedegree ? String_On : String_Off, 44, line+2 );
+			break;
+
+		case 3:	// Wake -+
 			DrawString( dfStatus.wakeonpm ? String_On : String_Off, 44, line+2 );
 			break;
 
-		case 3:	// Font
+		case 4:	// Font
 			DrawImage( 44, line+2, dfStatus.font ? 0x9D : 0x9C );
 			break;
 
-		case 4:	// Temp
+		case 5:	// Temp
 			DrawImage( 44, line+2, dfIsCelsius ? 0xC9 : 0xC8 );
 			break;
 
-		case 5:	// TDom
+		case 6:	// TDom
 			DrawString( dfStatus.priopwr ? String_On : String_Off, 44, line+2 );
 			break;
 
@@ -274,19 +278,37 @@ __myevic__ void IFMenuOnClick()
 
 		case 1:	// 1Watt
 			dfStatus.onewatt ^= 1;
-			WattsInc = dfStatus.onewatt ? 10 : 1;
+			if ( dfStatus.onewatt )
+			{
+				WattsInc = 10;
+				dfPower -= dfPower % 10;
+				dfTCPower -= dfTCPower % 10;
+				dfPreheatPwr -= dfPreheatPwr % 10;
+			}
+			else
+			{
+				WattsInc = 1;
+			}
 			break;
 
-		case 2:	// Wake -+
+		case 2:	// 1C5F
+			dfStatus.onedegree ^= 1;
+			if ( !dfStatus.onedegree )
+			{
+				dfTemp -= dfTemp % ( dfIsCelsius ? 5 : 10 );
+			}
+			break;
+
+		case 3:	// Wake -+
 			dfStatus.wakeonpm ^= 1;
 			break;
 
-		case 3:	// Font
+		case 4:	// Font
 			dfStatus.font ^= 1;
 			DisplaySetFont();
 			break;
 
-		case 4:	// Temp
+		case 5:	// Temp
 			dfIsCelsius ^= 1;
 			if ( dfIsCelsius )
 			{
@@ -305,7 +327,7 @@ __myevic__ void IFMenuOnClick()
 			}
 			break;
 
-		case 5:	// TDom
+		case 6:	// TDom
 			dfStatus.priopwr ^= 1;
 			break;
 
@@ -1348,10 +1370,11 @@ const menu_t IFMenu =
 	0,
 	IFMenuOnClick+1,
 	0,
-	8,
+	9,
 	{
 		{ String_BattPC, 0, 0, 0 },
 		{ String_1Watt, 0, 0, 0 },
+		{ String_1C5F, 0, 0, 0 },
 		{ String_WakeMP, 0, 0, 0 },
 		{ String_Font, 0, 0, 0 },
 		{ String_Temp, 0, 0, 0 },
