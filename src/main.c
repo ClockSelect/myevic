@@ -23,10 +23,29 @@ uint8_t BoxModel;
 
 
 //=============================================================================
-// Useless function - testing purpose
+// Additional initialisations
 //------------------------------------------------------------------------------
 __myevic__ void CustomStartup()
 {
+	time_t vvbase;
+
+	vvbase = RTCReadRegister( RTCSPARE_VV_BASE );
+
+	if ( ( vvbase == 0 ) || ( vvbase % 86400 ) )
+	{
+		vvbase = RTCGetEpoch( 0 );
+		vvbase -= vvbase % 86400;
+		RTCWriteRegister( RTCSPARE_VV_BASE, vvbase );
+		RTCWriteRegister( RTCSPARE_VV_MJOULES, 0 );
+	}
+	else
+	{
+		MilliJoules = RTCReadRegister( RTCSPARE_VV_MJOULES );
+	}
+	
+//------------------------------------------------------------------------------
+// Timer test 1
+
 	if ( 0 )
 	{
 		TIMER_Stop( TIMER3 );
@@ -44,6 +63,7 @@ __myevic__ void CustomStartup()
 
 
 //------------------------------------------------------------------------------
+// Timer test 2
 
 	if ( 0 )
 	{
@@ -537,8 +557,6 @@ __myevic__ void Main()
 
 	InitRTC( 0 );
 
-	MilliJoules = RTCReadRegister( RTCSPARE_VV_MJOULES );
-	
 	InitUSB();
 
 	myprintf( "\n\nJoyetech APROM\n" );

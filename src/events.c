@@ -1003,12 +1003,17 @@ __myevic__ int CustomEvents()
 			break;
 
 		case EVENT_RESET_VVEL:
+		{
+			time_t t;
+			RTCGetEpoch( &t );
+			t = t - ( t% 86400 );
 			MilliJoules = 0;
-			RTCWriteRegister( RTCSPARE_VV_BASE, RTCGetEpoch( 0 ) );
+			RTCWriteRegister( RTCSPARE_VV_BASE, t );
 			EditModeTimer = 0;
 			gFlags.refresh_display = 1;
 			vret = 1;
 			break;
+		}
 
 		case EVENT_FORCE_VCOM:
 			dfStatus.storage = 0;

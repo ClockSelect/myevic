@@ -326,7 +326,6 @@ __myevic__ void DrawAPTLine( int line )
 			// Base: 0.320 mL/J
 			vv = 320 * ( MilliJoules / 1000 ) / 1000;
 			vv = vv * 86400 / ( t ? : 1 );
-			myprintf( "mJ=%d t=%d vv=%d\n", MilliJoules, t, vv );
 			vv /= 10;
 			if ( vv > 9999 ) vv = 9999;
 			DrawValueRight( 40, line, vv, 2, 0x1F, 0 );
