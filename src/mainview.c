@@ -295,6 +295,7 @@ __myevic__ void DrawAPTLine( int line )
 				DrawString( String_mld, 42, line+2 );
 				DrawValueRight( 40, line, vv, 2, 0x1F, 0 );
 			}
+			break;
 		}
 
 		case 4:	// Atomizer voltage
