@@ -39,6 +39,8 @@ __myevic__ void RTC_IRQHandler()
 			adj_10k += ClockCorrection * 2 - 32768;
 		}
 
+		myprintf( "CC=%d\n", ClockCorrection );
+		
 		ClockCorrection = 0;
 	}
 }
@@ -296,6 +298,7 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 
 	if ( !gFlags.has_x32 )
 	{
+		RTC_EnableInt( RTC_INTEN_TICKIEN_Msk );
 		NVIC_EnableIRQ( RTC_IRQn );
 	}
 }

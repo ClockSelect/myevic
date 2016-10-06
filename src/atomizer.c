@@ -228,9 +228,9 @@ __myevic__ void StopFire()
 			if ( dfTimeCount > 999999 ) dfTimeCount = 0;
 			if ( ++dfPuffCount > 99999 ) dfPuffCount = 0;
 			UpdatePTTimer = 80;
+
+			RTCWriteRegister( RTCSPARE_VV_MJOULES, MilliJoules );
 		}
-		
-		RTCWriteRegister( RTCSPARE_VV_MJOULES, MilliJoules );
 	}
 
 	AutoPuffTimer = 0;

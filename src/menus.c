@@ -229,23 +229,19 @@ __myevic__ void IFMenuIDraw( int it, int line, int sel )
 			DrawString( dfStatus.onewatt ? String_On : String_Off, 44, line+2 );
 			break;
 
-		case 2:	// Logo
-			DrawString( dfStatus.nologo ? String_Off : String_On, 44, line+2 );
-			break;
-
-		case 3:	// Wake -+
+		case 2:	// Wake -+
 			DrawString( dfStatus.wakeonpm ? String_On : String_Off, 44, line+2 );
 			break;
 
-		case 4:	// Font
+		case 3:	// Font
 			DrawImage( 44, line+2, dfStatus.font ? 0x9D : 0x9C );
 			break;
 
-		case 5:	// Temp
+		case 4:	// Temp
 			DrawImage( 44, line+2, dfIsCelsius ? 0xC9 : 0xC8 );
 			break;
 
-		case 6:	// TDom
+		case 5:	// TDom
 			DrawString( dfStatus.priopwr ? String_On : String_Off, 44, line+2 );
 			break;
 
@@ -268,20 +264,16 @@ __myevic__ void IFMenuOnClick()
 			WattsInc = dfStatus.onewatt ? 10 : 1;
 			break;
 
-		case 2:	// Logo
-			dfStatus.nologo ^= 1;
-			break;
-
-		case 3:	// Wake -+
+		case 2:	// Wake -+
 			dfStatus.wakeonpm ^= 1;
 			break;
 
-		case 4:	// Font
+		case 3:	// Font
 			dfStatus.font ^= 1;
 			DisplaySetFont();
 			break;
 
-		case 5:	// Temp
+		case 4:	// Temp
 			dfIsCelsius ^= 1;
 			if ( dfIsCelsius )
 			{
@@ -300,7 +292,7 @@ __myevic__ void IFMenuOnClick()
 			}
 			break;
 
-		case 6:	// TDom
+		case 5:	// TDom
 			dfStatus.priopwr ^= 1;
 			break;
 
@@ -827,19 +819,6 @@ __myevic__ void Anim3dOnClick()
 
 //-----------------------------------------------------------------------------
 
-__myevic__ void LogoMEnter()
-{
-	CurrentMenuItem = dfStatus.nologo ? 1 : 0;
-}
-
-__myevic__ void LogoISelect()
-{
-	dfStatus.nologo = CurrentMenuItem & 1;
-	UpdateDFTimer = 50;
-}
-
-//-----------------------------------------------------------------------------
-
 __myevic__ void GameMEnter()
 {
 	CurrentMenuItem = dfFBSpeed;
@@ -1063,13 +1042,18 @@ __myevic__ void ScreenMenuOnClick()
 {
 	switch ( CurrentMenuItem )
 	{
-		case 3:	// Invert
+		case 3:	// Logo
+			dfStatus.nologo ^= 1;
+			break;
+
+		case 4:	// Invert
 			dfStatus.invert ^= 1;
 			DisplaySetInverse( dfStatus.invert );
-			UpdateDFTimer = 50;
-			gFlags.refresh_display = 1;
 			break;
 	}
+
+	UpdateDFTimer = 50;
+	gFlags.refresh_display = 1;
 }
 
 
@@ -1077,7 +1061,12 @@ __myevic__ void ScreenMenuIDraw( int it, int line, int sel )
 {
 	switch ( it )
 	{
-		case 3:	// Invert
+		case 3:	// Logo
+			DrawFillRect( 40, line, 63, line+12, 0 );
+			DrawString( dfStatus.nologo ? String_Off : String_On, 44, line+2 );
+			break;
+
+		case 4:	// Invert
 			DrawFillRect( 40, line, 63, line+12, 0 );
 			DrawString( dfStatus.invert ? String_On : String_Off, 44, line+2 );
 			break;
@@ -1097,22 +1086,6 @@ const menu_t IFMenu;
 const menu_t VapingMenu;
 
 //-----------------------------------------------------------------------------
-
-const menu_t LOGOMenu =
-{
-	String_Logo,
-	&MiscsMenu,
-	LogoMEnter+1,
-	0,
-	LogoISelect+1,
-	UpdateDataFlash+1,
-	0,
-	2,
-	{
-		{ String_On, 0, EVENT_EXIT_MENUS, 0 },
-		{ String_Off, 0, EVENT_EXIT_MENUS, 0 }
-	}
-};
 
 const menu_t GameMenu =
 {
@@ -1234,9 +1207,8 @@ const menu_t MiscsMenu =
 	0,
 	0,
 	0,
-	4,
+	3,
 	{
-		{ String_Logo, &LOGOMenu, 0, 0 },
 		{ String_Game, &GameMenu, 0, 0 },
 		{ String_3D, &Anim3dMenu, 0, 0 },
 		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
@@ -1331,11 +1303,12 @@ const menu_t ScreenMenu =
 	0,
 	ScreenMenuOnClick+1,
 	0,
-	6,
+	7,
 	{
 		{ String_Contrast, 0, EVENT_EDIT_CONTRAST, 0 },
 		{ String_Protection, &ScreenProtMenu, 0, 0 },
 		{ String_Saver, &ScreenSaveMenu, 0, 0 },
+		{ String_Logo, 0, 0, 0 },
 		{ String_Invert, 0, 0, 0 },
 		{ String_Miscs, &MiscsMenu, 0, 0 },
 		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
@@ -1369,11 +1342,10 @@ const menu_t IFMenu =
 	0,
 	IFMenuOnClick+1,
 	0,
-	9,
+	8,
 	{
 		{ String_BattPC, 0, 0, 0 },
 		{ String_1Watt, 0, 0, 0 },
-		{ String_Logo, 0, 0, 0 },
 		{ String_WakeMP, 0, 0, 0 },
 		{ String_Font, 0, 0, 0 },
 		{ String_Temp, 0, 0, 0 },
