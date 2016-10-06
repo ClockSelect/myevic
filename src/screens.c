@@ -460,10 +460,17 @@ __myevic__ void ShowBattery()
 {
 	if ( dfStatus.battpc )
 	{
-		DrawValue(	BatteryPercent < 10  ? 12 :
-					BatteryPercent < 100 ? 6 :
-					0, 118, BatteryPercent, 0, 0x0B, 0 );
-		DrawImage( 19, 118, 0xC2 );
+		if ( dfStatus.battv )
+		{
+			uint16_t bv = gFlags.firing ? RTBatVolts : BatteryVoltage;
+			DrawValueRight(	20, 118, bv, 2, 0x0B, 0 );
+			DrawImage( 21, 118, 0x7D );
+		}
+		else
+		{
+			DrawValueRight(	18, 118, BatteryPercent, 0, 0x0B, 0 );
+			DrawImage( 19, 118, 0xC2 );
+		}
 	}
 
 	if ( gFlags.battery_10pc && !(gFlags.battery_charging) )

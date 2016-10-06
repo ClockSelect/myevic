@@ -273,12 +273,28 @@ __myevic__ void DrawAPTLine( int line )
 			break;
 		}
 
-		case 3:	// Battery voltage
+		case 3:	// Vape Velocity
 		{
-			DrawString( String_BATT_s, 0, line+2 );
-			DrawValue( 27, line, ((gFlags.firing)&&RTBatVolts)?RTBatVolts:BatteryVoltage, 2, 0x1F, 3 );
-			DrawImage( 57, line+2, 0x97 );
-			break;
+			uint32_t vv, t;
+			// Elasped seconds since last VV reset
+			t = RTCGetEpoch( 0 );
+			t -= RTCReadRegister( RTCSPARE_VV_BASE );
+			// Base: 360 mL/kJ
+			vv = 360 * ( MilliJoules / 1000 ) / 1000;
+			vv /= 10;
+			if ( vv > 9999 ) vv = 9999;
+			if ( dfStatus.vapedml )
+			{
+				DrawString( String_LIQ_s, 0, line+2 );
+				DrawString( String_ml, 52, line+2 );
+				DrawValueRight( 50, line, vv, 2, 0x1F, 0 );
+			}
+			else
+			{
+				vv = vv * 86400 / ( t ? : 1 );
+				DrawString( String_mld, 42, line+2 );
+				DrawValueRight( 40, line, vv, 2, 0x1F, 0 );
+			}
 		}
 
 		case 4:	// Atomizer voltage
@@ -314,30 +330,6 @@ __myevic__ void DrawAPTLine( int line )
 			GetRTC( &rtd );
 			DrawTime( 5, line, &rtd, 0x1F );
 			break;
-		}
-
-		case 8:	// Vape Velocity
-		{
-			uint32_t vv, t;
-			// Elasped seconds since last VV reset
-			t = RTCGetEpoch( 0 );
-			t -= RTCReadRegister( RTCSPARE_VV_BASE );
-			// Base: 360 mL/kJ
-			vv = 360 * ( MilliJoules / 1000 ) / 1000;
-			vv /= 10;
-			if ( vv > 9999 ) vv = 9999;
-			if ( dfStatus.vapedml )
-			{
-				DrawString( String_LIQ_s, 0, line+2 );
-				DrawString( String_ml, 52, line+2 );
-				DrawValueRight( 50, line, vv, 2, 0x1F, 0 );
-			}
-			else
-			{
-				vv = vv * 86400 / ( t ? : 1 );
-				DrawString( String_mld, 42, line+2 );
-				DrawValueRight( 40, line, vv, 2, 0x1F, 0 );
-			}
 		}
 	}
 }

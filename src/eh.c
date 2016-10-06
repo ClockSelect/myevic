@@ -1159,7 +1159,7 @@ __myevic__ void EventHandler()
 							break;
 
 						case 4:
-							if ( ++dfAPT > 8 ) dfAPT = 0;
+							if ( ++dfAPT > 7 ) dfAPT = 0;
 							break;
 					}
 

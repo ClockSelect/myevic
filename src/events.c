@@ -367,7 +367,7 @@ __myevic__ void GetUserInput()
 					Event = 22;	// puff reset
 				if ( dfAPT == 2 )
 					Event = 23;	// time reset
-				if ( dfAPT == 8 )
+				if ( dfAPT == 3 )
 					Event = EVENT_RESET_VVEL;	// vvel reset
 			}
 			else

@@ -235,7 +235,21 @@ __myevic__ void IFMenuIDraw( int it, int line, int sel )
 	switch ( it )
 	{
 		case 0:	// Batt%
-			DrawString( dfStatus.battpc ? String_On : String_Off, 44, line+2 );
+			if ( !dfStatus.battpc )
+			{
+				DrawString( String_Off, 44, line+2 );
+			}
+			else
+			{
+				if ( dfStatus.battv )
+				{
+					DrawImage( 44, line+2, 0xB1 );
+				}
+				else
+				{
+					DrawImage( 44, line+2, 0xC2 );
+				}
+			}
 			break;
 
 		case 1:	// 1Watt
@@ -273,7 +287,20 @@ __myevic__ void IFMenuOnClick()
 	switch ( CurrentMenuItem )
 	{
 		case 0:	// Batt%
-			dfStatus.battpc ^= 1;
+			if ( !dfStatus.battpc )
+			{
+				dfStatus.battpc = 1;
+				dfStatus.battv = 0;
+			}
+			else if ( !dfStatus.battv )
+			{
+				dfStatus.battv = 1;
+			}
+			else
+			{
+				dfStatus.battv = 0;
+				dfStatus.battpc = 0;
+			}
 			break;
 
 		case 1:	// 1Watt

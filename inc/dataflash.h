@@ -67,6 +67,7 @@ typedef struct
 /* 00040000 */	int invert:1;
 /* 00080000 */	int vapedml:1;
 /* 00100000 */	int onedegree:1;
+/* 00200000 */	int battv:1;
 
 // Do not exceed 32 bits;
 // if you may do so, create another bitfield.
