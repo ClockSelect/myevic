@@ -848,8 +848,8 @@ __myevic__ void ShowScreenSaver()
 			}
 			break;
 
-		case SSAVER_CUBE:
-			anim3d( 0, 1 );
+		case SSAVER_3D:
+			anim3d( 1 );
 			break;
 
 		case SSAVER_LOGO:
@@ -875,8 +875,8 @@ __myevic__ void AnimateScreenSaver()
 {
 	switch ( dfScreenSaver )
 	{
-		case SSAVER_CUBE:
-			anim3d( 0, 0 );
+		case SSAVER_3D:
+			anim3d( 0 );
 			break;
 
 		case SSAVER_QIX:

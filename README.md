@@ -106,7 +106,6 @@ Some changes has been made to the overall behavior of the firmware from the orig
 * Third info line:
 
     The third info line of the main screen, used to display amps,  puffs or time counters now have a few more options:
-    - Battery voltage
     - Atomizer voltage
     - Board temperature
     - Real-time clock
@@ -267,9 +266,9 @@ There's many more to LOGO and Game menus now. See below.
 
     ![Interface menu screen](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/interface_zpscxrcgysw.png)
 
-  * Batt% On/Off
+  * BatV% Off / % / V
 
-        Display battery charge percentage next to the battery picture on main screen.
+        Display battery charge percentage or voltage next to the battery picture on main screen.
 
   * 1Watt On/Off
 

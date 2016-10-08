@@ -31,6 +31,7 @@
 #define PID_EGRIPII		(*(uint32_t*)"E083")
 #define PID_CUBOMINI	(*(uint32_t*)"E056")
 #define PID_EVICBASIC	(*(uint32_t*)"E150")
+#define PID_VTCDUAL		(*(uint32_t*)"E079")
 
 enum
 {
@@ -42,7 +43,8 @@ enum
     BOX_EVICAIO,
     BOX_EGRIPII,
     BOX_CUBOMINI,
-    BOX_EVICBASIC
+    BOX_EVICBASIC,
+	BOX_VTCDUAL
 };
 
 #define ISVTCMINI		(BoxModel==BOX_VTCMINI)
@@ -54,6 +56,7 @@ enum
 #define ISEGRIPII		(BoxModel==BOX_EGRIPII)
 #define ISCUBOMINI		(BoxModel==BOX_CUBOMINI)
 #define ISEVICBASIC		(BoxModel==BOX_EVICBASIC)
+#define ISVTCDUAL		(BoxModel==BOX_VTCDUAL)
 
 
 //=========================================================================
@@ -115,7 +118,10 @@ typedef struct
 /* 00002000 */	int noclock:1;
 /* 00004000 */	int read_bir:1;
 /* 00008000 */	int monitoring:1;
+
+/* 00010000 */	int anim3d:1;
 }
+
 gFlags_t;
 
 extern volatile gFlags_t gFlags;

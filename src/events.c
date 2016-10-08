@@ -306,7 +306,15 @@ __myevic__ void GetUserInput()
 		}
 		else if ( UserInputs == 2 )
 		{
-			if ( dfStatus.keylock && !EditModeTimer
+			if ( Screen == 60 )
+			{
+				if ( dfScreenSaver == SSAVER_3D )
+				{
+					Next3DObject();
+					Event = 0;
+				}
+			}
+			else if ( dfStatus.keylock && !EditModeTimer
 				&& Screen != 51
 				&& !IsMenuScreen() )
 			{
@@ -319,7 +327,15 @@ __myevic__ void GetUserInput()
 		}
 		else if ( UserInputs == 3 )
 		{
-			if ( dfStatus.keylock && !EditModeTimer
+			if ( Screen == 60 )
+			{
+				if ( dfScreenSaver == SSAVER_3D )
+				{
+					Previous3DObject();
+					Event = 0;
+				}
+			}
+			else if ( dfStatus.keylock && !EditModeTimer
 				&& Screen != 51
 				&& !IsMenuScreen() )
 			{

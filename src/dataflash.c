@@ -63,6 +63,14 @@ __myevic__ void SetProductID()
 			BoxModel = BOX_VTWO;
 			break;
 		}
+//		else if ( u32Data == PID_VTCDUAL )
+//		{
+//			dfProductID = u32Data;
+//			dfMaxHWVersion = 0x00010001;
+//			DFMagicNumber = 0x12;
+//			BoxModel = BOX_VTCDUAL;
+//			break;
+//		}
 		else if ( u32Data == PID_PRESA75W )
 		{
 			dfProductID = u32Data;
@@ -733,7 +741,7 @@ __myevic__ void InitDataFlash()
 				break;
 		}
 	}
-	else if ( ISVTWOMINI || ISEGRIPII || ISWRX75TC )
+	else if ( ISVTWOMINI || ISVTCDUAL || ISEGRIPII || ISWRX75TC )
 	{
 		DisplayModel = 0;
 	}
@@ -781,6 +789,10 @@ __myevic__ void InitDataFlash()
 	else if ( ISVTWO || ISEGRIPII || ISCUBOMINI )
 	{
 		MaxPower	= 800;
+	}
+	else if ( ISVTCDUAL )
+	{
+		MaxPower	= 1500;
 	}
 	else
 	{
@@ -937,6 +949,20 @@ __myevic__ uint16_t GetShuntRezValue()
 
 			case 101:
 				rez = 107;
+				break;
+		}
+	}
+	else if ( ISVTCDUAL )
+	{
+		switch ( dfHWVersion )
+		{
+			case 100:
+			default:
+				rez = 107;
+				break;
+
+			case 101:
+				rez = 105;
 				break;
 		}
 	}

@@ -695,9 +695,9 @@ __myevic__ void ShowMainView()
 		}
 		else
 		{
-			if ( Anim3d )
+			if ( gFlags.anim3d )
 			{
-				anim3d( Anim3d, 1 );
+				anim3d( 1 );
 			}
 			else if ( dfStatus.clock )
 			{

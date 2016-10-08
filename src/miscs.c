@@ -249,7 +249,19 @@ static angles_t speeds = { 3, 5, 1 };
 static matrix3d_t rot_matrix;
 static pt3d_t points[8];
 
-uint8_t Anim3d = 0;
+uint8_t Object3D = 0;
+
+
+__myevic__ void Next3DObject()
+{
+	if ( ++Object3D > N3DOBJECTS ) Object3D = 1;
+}
+
+
+__myevic__ void Previous3DObject()
+{
+	if ( --Object3D < 1 ) Object3D = N3DOBJECTS;
+}
 
 
 __myevic__ void compute_matrix( matrix3d_t mat, const angles_t *a )
@@ -304,14 +316,14 @@ __myevic__ void next_angle()
 }
 
 
-__myevic__ void anim3d( int obj, int redraw_last )
+__myevic__ void anim3d( int redraw_last )
 {
 	static uint8_t tscaler = 0;
 	const obj3d_t *object;
 
-	if (( obj > 0 ) && ( obj <= N3DOBJECTS ))
+	if (( Object3D > 0 ) && ( Object3D <= N3DOBJECTS ))
 	{
-		object = objects3d[Anim3d-1];
+		object = objects3d[Object3D-1];
 	}
 	else
 	{

@@ -28,7 +28,7 @@ extern void DrawDigitClock();
 enum {
 	SSAVER_NONE = 0,
 	SSAVER_CLOCK,
-	SSAVER_CUBE,
+	SSAVER_3D,
 	SSAVER_LOGO,
 	SSAVER_QIX,
 	SSAVER_SNOW,

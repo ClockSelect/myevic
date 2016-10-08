@@ -859,14 +859,19 @@ __myevic__ int ScreenProtMenuOnEvent( int event )
 
 //-----------------------------------------------------------------------------
 
-__myevic__ void Anim3dOnEnter()
+__myevic__ void Object3DOnEnter()
 {
-	CurrentMenuItem = Anim3d;
+	if ( gFlags.anim3d )
+		CurrentMenuItem = Object3D;
+	else
+		CurrentMenuItem = 0;
 }
 
-__myevic__ void Anim3dOnClick()
+__myevic__ void Object3DOnClick()
 {
-	Anim3d = CurrentMenuItem;
+	Object3D = CurrentMenuItem;
+	if ( CurrentMenuItem ) gFlags.anim3d = 1;
+	else gFlags.anim3d = 0;
 	MainView();
 }
 
@@ -1236,14 +1241,14 @@ const menu_t CoilsMenu =
 	}
 };
 
-const menu_t Anim3dMenu =
+const menu_t Object3DMenu =
 {
 	String_3D,
 	&MiscsMenu,
-	Anim3dOnEnter+1,
+	Object3DOnEnter+1,
 	0,
 	0,
-	Anim3dOnClick+1,
+	Object3DOnClick+1,
 	0,
 	3,
 	{
@@ -1265,7 +1270,7 @@ const menu_t MiscsMenu =
 	3,
 	{
 		{ String_Game, &GameMenu, 0, 0 },
-		{ String_3D, &Anim3dMenu, 0, 0 },
+		{ String_3D, &Object3DMenu, 0, 0 },
 		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
@@ -1342,7 +1347,7 @@ const menu_t ScreenSaveMenu =
 	{
 		{ String_None, 0, EVENT_EXIT_MENUS, 0 },
 		{ String_Clock, 0, EVENT_EXIT_MENUS, 0 },
-		{ String_Cube, 0, EVENT_EXIT_MENUS, 0 },
+		{ String_3D, 0, EVENT_EXIT_MENUS, 0 },
 		{ String_Logo, 0, EVENT_EXIT_MENUS, 0 },
 		{ String_Qix, 0, EVENT_EXIT_MENUS, 0 },
 		{ String_Snow, 0, EVENT_EXIT_MENUS, 0 }

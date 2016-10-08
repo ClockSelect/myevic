@@ -43,6 +43,8 @@ __myevic__ void CustomStartup()
 		MilliJoules = RTCReadRegister( RTCSPARE_VV_MJOULES );
 	}
 	
+	Object3D = 1;
+	
 //------------------------------------------------------------------------------
 // Timer test 1
 
@@ -667,9 +669,9 @@ __myevic__ void Main()
 				Overtemp();
 			}
 
-			if (( Anim3d ) && ( Screen == 1 ) && ( !EditModeTimer ))
+			if (( gFlags.anim3d ) && ( Screen == 1 ) && ( !EditModeTimer ))
 			{
-				anim3d( Anim3d, 0 );
+				anim3d( 0 );
 			}
 
 			if ( Screen == 60 )

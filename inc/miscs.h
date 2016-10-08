@@ -5,9 +5,11 @@
 extern void ModeChange();
 extern void NextMode();
 
-extern uint8_t Anim3d;
-extern void anim3d( int, int );
-
+extern uint8_t Object3D;
+extern void anim3d( int );
+extern void Next3DObject();
+extern void Previous3DObject();
+					
 extern int32_t sine( int32_t x );
 extern int32_t cosine( int32_t x );
 
