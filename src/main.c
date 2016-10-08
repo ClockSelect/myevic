@@ -42,7 +42,7 @@ __myevic__ void CustomStartup()
 	{
 		MilliJoules = RTCReadRegister( RTCSPARE_VV_MJOULES );
 	}
-	
+
 	Object3D = 1;
 	
 //------------------------------------------------------------------------------

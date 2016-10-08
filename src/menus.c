@@ -869,7 +869,7 @@ __myevic__ void Object3DOnEnter()
 
 __myevic__ void Object3DOnClick()
 {
-	Object3D = CurrentMenuItem;
+	Object3D = CurrentMenuItem ? : 1;
 	if ( CurrentMenuItem ) gFlags.anim3d = 1;
 	else gFlags.anim3d = 0;
 	MainView();
