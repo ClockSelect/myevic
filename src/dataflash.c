@@ -69,6 +69,7 @@ __myevic__ void SetProductID()
 //			dfMaxHWVersion = 0x00010001;
 //			DFMagicNumber = 0x12;
 //			BoxModel = BOX_VTCDUAL;
+//			gFlags.pwm_pll = 1;
 //			break;
 //		}
 		else if ( u32Data == PID_PRESA75W )

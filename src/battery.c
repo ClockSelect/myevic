@@ -236,17 +236,35 @@ __myevic__ const uint16_t *GetBatteryName()
 
 
 //=========================================================================
-__myevic__ int ReadBatterySample()
+__myevic__ int ReadBatterySample( int nbat )
 {
 	int sample;
 
-	if ( ISVTWOMINI || ISEVICAIO )
+	if ( nbat == 0 )
 	{
-		sample = ADC_Read( 0 );
+		if ( ISVTWOMINI || ISEVICAIO )
+		{
+			sample = ADC_Read( 0 );
+		}
+		else
+		{
+			sample = ADC_Read( 18 );
+		}
+	}
+	else if ( nbat == 1 )
+	{
+		if ( ISVTCDUAL )
+		{
+			sample = ADC_Read( 4 );
+		}
+		else
+		{
+			sample = 0;
+		}
 	}
 	else
 	{
-		sample = ADC_Read( 18 );
+		sample = 0;
 	}
 
 	return sample;
@@ -290,7 +308,7 @@ __myevic__ void ReadInternalResistance()
 
 	sample = 0;
 	for ( i = 0 ; i < 16 ; ++i )
-		sample += ReadBatterySample();
+		sample += ReadBatterySample( 0 );
 	// V * 100
 	vbat = sample >> 7;
 
@@ -404,7 +422,7 @@ __myevic__ void ReadBatteryVoltage()
 	{
 		while ( VbatSampleCnt < 16 )
 		{
-			VbatSampleSum += ReadBatterySample();
+			VbatSampleSum += ReadBatterySample( 0 );
 			++VbatSampleCnt;
 
 			if ( !(gFlags.sample_vbat) )
@@ -464,7 +482,7 @@ __myevic__ int CheckBattery()
 	i = 0;
 	do
 	{
-		bv = ( ReadBatterySample() >> 3 ) + BVOffset;
+		bv = ( ReadBatterySample( 0 ) >> 3 ) + BVOffset;
 		if ( bv > BatteryCutOff )
 			break;
 		++i;
