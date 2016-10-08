@@ -276,9 +276,6 @@ __myevic__ void ReadInternalResistance()
 	int sample, i;
 	int iato, ibat, vato, vbat, rez;
 
-	if ( dfBatteryModel == 0 )
-		return;
-
 	sample = 0;
 	for ( i = 0 ; i < 16 ; ++i )
 		sample += ADC_Read( 1 );
