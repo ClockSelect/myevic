@@ -598,6 +598,13 @@ __myevic__ void ExpertMenuIDraw( int it, int line, int sel )
 				InvertRect( 0, line, 63, line+12 );
 			break;
 
+		case 6:	// PWM
+			if ( gFlags.pwm_pll )
+				DrawString( String_PLL, 36, line+2 );
+			else
+				DrawString( String_CCK, 36, line+2 );
+			break;
+
 		default:
 			break;
 	}
@@ -651,7 +658,12 @@ __myevic__ void ExpertMenuOnClick()
 				dfShuntRez = AtoShuntRez;
 			break;
 
-		case 6:	// Exit
+		case 6:	// PWM
+			gFlags.pwm_pll ^= 1;
+			InitPWM();
+			break;
+
+		case 7:	// Exit
 			UpdateDataFlash();
 			MainView();
 			break;
@@ -1322,7 +1334,7 @@ const menu_t ExpertMenu =
 	0,
 	ExpertMenuOnClick+1,
 	ExpertMenuOnEvent+1,
-	7,
+	8,
 	{
 		{ String_USB, 0, 0, 0 },
 		{ String_DBG, 0, 0, 0 },
@@ -1330,6 +1342,7 @@ const menu_t ExpertMenu =
 		{ String_NFE, 0, 0, 0 },
 		{ String_BAT, 0, 0, 0 },
 		{ String_SHR, 0, 0, 0 },
+		{ String_PWM, 0, 0, 0 },
 		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };

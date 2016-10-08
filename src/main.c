@@ -143,13 +143,8 @@ void InitDevices()
 	FMC_EnableFreqOptimizeMode( FMC_FTCTL_OPTIMIZE_72MHZ );
 
 	// Setup PLL to 144MHz and HCLK source to PLL/2
-	CLK_SetCoreClock( 72000000 );
+	CLK_SetCoreClock( CPU_FREQ );
 	CLK_WaitClockReady( CLK_STATUS_PLLSTB_Msk );
-
-	// PWM0 CLK = PCLK0/1
-	CLK_EnableModuleClock( PWM0_MODULE );
-	CLK_SetModuleClock( PWM0_MODULE, CLK_CLKSEL2_PWM0SEL_PCLK0, 0 );
-	SYS_ResetModule( PWM0_RST );
 
 	// UART0 CLK = HXT/1
 	CLK_EnableModuleClock( UART0_MODULE );
@@ -392,6 +387,7 @@ __myevic__ void DevicesOnOff( int off )
 
 		PB7 = 1;
 
+		EADC_Open( EADC, EADC_CTL_DIFFEN_SINGLE_END );
 		SetADCState( 1, 1 );
 		SetADCState( 2, 1 );
 		SetADCState( 14, 1 );
@@ -550,6 +546,8 @@ __myevic__ void Main()
 {
 	InitHardware();
 	InitVariables();
+
+	InitPWM();
 
 	if ( dfStatus.x32off )
 	{

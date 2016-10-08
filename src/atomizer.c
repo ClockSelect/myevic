@@ -9,6 +9,7 @@
 #include "megpio.h"
 #include "myrtc.h"
 
+//=============================================================================
 
 //=============================================================================
 
@@ -56,6 +57,10 @@ uint8_t		BBCNextMode;
 uint8_t		BBCMode;
 uint16_t	BuckDuty;
 uint16_t	BoostDuty;
+uint16_t	MaxDuty;
+uint16_t	MinBuck;
+uint16_t	MaxBoost;
+uint16_t	ProbeDuty;
 
 
 //=========================================================================
@@ -75,8 +80,30 @@ const uint8_t TempCoefsTI[] =
 //----- (00005C4C) --------------------------------------------------------
 __myevic__ void InitPWM()
 {
-	PWM_ConfigOutputChannel( PWM0, BBC_PWMCH_BUCK, 150000, 0 );
-	PWM_ConfigOutputChannel( PWM0, BBC_PWMCH_BOOST, 150000, 0 );
+	uint32_t clk, cycles;
+
+	if ( gFlags.pwm_pll )
+	{
+		clk = CLK_CLKSEL2_PWM0SEL_PLL;
+		cycles = CLK_GetPLLClockFreq() / BBC_PWM_FREQ;
+	}
+	else
+	{
+		clk = CLK_CLKSEL2_PWM0SEL_PCLK0;
+		cycles = CLK_GetPCLK0Freq() / BBC_PWM_FREQ;
+	}
+
+	MaxDuty   = cycles - 1;
+	MinBuck   = cycles / 48;
+	MaxBoost  = cycles / 6;
+	ProbeDuty = cycles / 10;
+
+	CLK_EnableModuleClock( PWM0_MODULE );
+	CLK_SetModuleClock( PWM0_MODULE, clk, 0 );
+	SYS_ResetModule( PWM0_RST );
+
+	PWM_ConfigOutputChannel( PWM0, BBC_PWMCH_BUCK, BBC_PWM_FREQ, 0 );
+	PWM_ConfigOutputChannel( PWM0, BBC_PWMCH_BOOST, BBC_PWM_FREQ, 0 );
 
 	PWM_EnableOutput( PWM0, 1 << BBC_PWMCH_BUCK );
 	PWM_EnablePeriodInt( PWM0, BBC_PWMCH_BUCK, 0 );
@@ -298,7 +325,6 @@ __myevic__ void ReadAtoCurrent()
 	if ( gFlags.firing || gFlags.probing_ato )
 	{
 		adcShunt = ADC_Read( 2 );
-		CLK_SysTickDelay( 10 );
 		adcAtoVolts = ADC_Read( 1 );
 
 		// Shunt current, in 10th of an Amp
@@ -633,7 +659,7 @@ __myevic__ void RegulateBuckBoost()
 
 					BBC_Configure( BBC_PWMCH_BUCK, 1 );
 
-					BuckDuty = ( BBCMode == 0 ) ? 10 : 479;
+					BuckDuty = ( BBCMode == 0 ) ? MinBuck : MaxDuty;
 					PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, BuckDuty );
 
 					PC1 = 1;
@@ -643,7 +669,7 @@ __myevic__ void RegulateBuckBoost()
 
 				if ( AtoVolts < TargetVolts )
 				{
-					if ( BuckDuty < 479 )
+					if ( BuckDuty < MaxDuty )
 					{
 						++BuckDuty;
 					}
@@ -657,14 +683,14 @@ __myevic__ void RegulateBuckBoost()
 				}
 				else if ( AtoVolts > TargetVolts )
 				{
-					if ( BuckDuty > 10 ) --BuckDuty;
+					if ( BuckDuty > MinBuck ) --BuckDuty;
 					else BuckDuty = 0;
 				}
 
 				if (	( AtoStatus == 0 || AtoStatus == 1 )
 					||	( !(gFlags.firing) && AtoProbeCount >= 12 ) )
 				{
-					if ( BuckDuty >= 45 ) BuckDuty = 45;
+					if ( BuckDuty >= ProbeDuty ) BuckDuty = ProbeDuty;
 				}
 
 				PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, BuckDuty );
@@ -683,19 +709,19 @@ __myevic__ void RegulateBuckBoost()
 
 					BBC_Configure( BBC_PWMCH_BOOST, 1 );
 
-					BoostDuty = 479;
+					BoostDuty = MaxDuty;
 					PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, BoostDuty );
 
 					PC3 = 1;
 				}
 
-				if ( AtoVolts < TargetVolts && BoostDuty > 80 )
+				if ( AtoVolts < TargetVolts && BoostDuty > MaxBoost )
 				{
 					--BoostDuty;
 				}
 				else if ( AtoVolts > TargetVolts )
 				{
-					if ( BoostDuty < 479 )
+					if ( BoostDuty < MaxDuty )
 					{
 						++BoostDuty;
 					}
@@ -725,6 +751,7 @@ __myevic__ void AtoWarmUp()
 
 	// Loop time around 19us on atomizer probing
 	//  and around 26.4us (37.86kHz) on firing.
+	// With fast ADC modifs: 16.7us (59.85kHz)
 	do
 	{
 		if ( !(gFlags.probing_ato) && !(gFlags.firing) )
@@ -737,7 +764,7 @@ __myevic__ void AtoWarmUp()
 			break;
 
 		if (( AtoStatus == 0 || AtoStatus == 1 || ( !gFlags.firing && AtoProbeCount >= 12 ))
-			&& BuckDuty >= 45 )
+			&& BuckDuty >= ProbeDuty )
 		{
 			break;
 		}

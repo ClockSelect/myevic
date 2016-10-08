@@ -103,7 +103,7 @@ Events (20000043)
  26 Ato Open
  27 Ato Low
  28 Battery < 3.1V idle or < 2.8V firing
- 29 FW Version screen select / (Game menu?)
+ 29 FW Version screen select
  30 Key lock violation
  31 Board temp screen select
  32 New coil detected

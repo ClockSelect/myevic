@@ -505,7 +505,7 @@ __myevic__ int CheckBattery()
 
 	if ( v0 || gFlags.limit_power || bv < limit_voltage )
 	{
-		if ( !gFlags.limit_power )
+		if ( !gFlags.limit_power || !gFlags.read_bir )
 		{
 			ShowWeakBatFlag = 5;
 		}
