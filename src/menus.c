@@ -53,15 +53,20 @@ __myevic__ void VapingMenuIDraw( int it, int line, int sel )
 			DrawFillRect( 34, line, 63, line+12, 0 );
 			DrawImage( 58, line+2, 0x94 );
 			DrawValueRight( 56, line+2, dfProtec, 1, 0x0B, 0 );
-			if ( gFlags.edit_value )
-			{
+			if ( sel && gFlags.edit_value )
 				InvertRect( 0, line, 63, line+12 );
-			}
 			break;
 
 		case 3:	// Vaped
-			DrawFillRect( 38, line, 63, line+12, 0 );
+			DrawFillRect( 39, line, 63, line+12, 0 );
 			DrawString( dfStatus.vapedml ? String_ml : String_mld, 43, line+2 );
+			break;
+		
+		case 4: // mL/kJ
+			DrawFillRect( 39, line, 63, line+12, 0 );
+			DrawValueRight( 61, line+2, dfVVRatio, 0, 0x0B, 0 );
+			if ( sel && gFlags.edit_value )
+				InvertRect( 0, line, 63, line+12 );
 			break;
 	}
 }
@@ -73,15 +78,19 @@ __myevic__ void VapingMenuOnClick()
 	{
 		case 2:	// Protec
 			gFlags.edit_value ^= 1;
-			gFlags.refresh_display = 1;
 			break;
 
 		case 3:	// Vaped
 			dfStatus.vapedml ^= 1;
 			UpdateDFTimer = 50;
-			gFlags.refresh_display = 1;
+			break;
+
+		case 4: // mL/kJ
+			gFlags.edit_value ^= 1;
 			break;
 	}
+
+	gFlags.refresh_display = 1;
 }
 
 
@@ -89,30 +98,55 @@ __myevic__ int VapingMenuOnEvent( int event )
 {
 	int vret = 0;
 
-	if ( CurrentMenuItem != 2 )
-		return vret;
-
 	if ( !gFlags.edit_value )
 		return vret;
 
 	switch ( event )
 	{
 		case 2:
-			if ( ++dfProtec > 100 )
+			switch ( CurrentMenuItem )
 			{
-				if ( KeyTicks < 5 ) dfProtec = 20;
-				else dfProtec = 100;
+				case 2: // Protec
+					if ( ++dfProtec > 100 )
+					{
+						if ( KeyTicks < 5 ) dfProtec = 20;
+						else dfProtec = 100;
+					}
+					vret = 1;
+					break;
+				
+				case 4: // mL/kJ
+					if ( ++dfVVRatio > VVEL_MAX_RATIO )
+					{
+						if ( KeyTicks < 5 ) dfVVRatio = VVEL_MIN_RATIO;
+						else dfVVRatio = VVEL_MAX_RATIO;
+					}
+					vret = 1;
+					break;
 			}
-			vret = 1;
 			break;
 
 		case 3:
-			if ( --dfProtec < 20 )
+			switch ( CurrentMenuItem )
 			{
-				if ( KeyTicks < 5 ) dfProtec = 100;
-				else dfProtec = 20;
+				case 2: // Protec
+					if ( --dfProtec < 20 )
+					{
+						if ( KeyTicks < 5 ) dfProtec = 100;
+						else dfProtec = 20;
+					}
+					vret = 1;
+					break;
+
+				case 4: // mL/kJ
+					if ( --dfVVRatio < VVEL_MIN_RATIO )
+					{
+						if ( KeyTicks < 5 ) dfVVRatio = VVEL_MAX_RATIO;
+						else dfVVRatio = VVEL_MIN_RATIO;
+					}
+					vret = 1;
+					break;
 			}
-			vret = 1;
 			break;
 	}
 
@@ -600,8 +634,9 @@ __myevic__ void ExpertMenuIDraw( int it, int line, int sel )
 
 		case 6:	// BVO
 		{
-			uint16_t bvo = ( dfBVOffset >= 0 ) ? dfBVOffset : -dfBVOffset;
-			DrawImage( 36, line+2, ( dfBVOffset >= 0 ) ? 0xFC : 0xFD );
+			int i = 0;
+			uint16_t bvo = ( dfBVOffset[i] >= 0 ) ? dfBVOffset[i] : -dfBVOffset[i];
+			DrawImage( 36, line+2, ( dfBVOffset[i] >= 0 ) ? 0xFC : 0xFD );
 			DrawValue( 44, line+2, bvo * 10, 0, 0x0B, 2 );
 			if ( gFlags.edit_value && sel )
 				InvertRect( 0, line, 63, line+12 );
@@ -694,12 +729,15 @@ __myevic__ int ExpertMenuOnEvent( int event )
 					break;
 				
 				case 6:	// BVO
-					if ( ++dfBVOffset > 5 )
+				{
+					int i = 0;
+					if ( ++dfBVOffset[i] > 5 )
 					{
-						dfBVOffset = ( KeyTicks == 0 ) ? -5 : 5;
+						dfBVOffset[i] = ( KeyTicks == 0 ) ? -5 : 5;
 					}
 					vret = 1;
 					break;
+				}
 			}
 			break;
 
@@ -717,12 +755,15 @@ __myevic__ int ExpertMenuOnEvent( int event )
 					break;
 				
 				case 6:	// BVO
-					if ( --dfBVOffset < -5 )
+				{
+					int i = 0;
+					if ( --dfBVOffset[i] < -5 )
 					{
-						dfBVOffset = ( KeyTicks == 0 ) ? 5 : -5;
+						dfBVOffset[i] = ( KeyTicks == 0 ) ? 5 : -5;
 					}
 					vret = 1;
 					break;
+				}
 			}
 			break;
 
@@ -1456,12 +1497,13 @@ const menu_t VapingMenu =
 	0,
 	VapingMenuOnClick+1,
 	VapingMenuOnEvent+1,
-	5,
+	6,
 	{
 		{ String_Preheat, &PreheatMenu, 0, 0 },
 		{ String_Modes, &ModesMenu, 0, 0 },
 		{ String_Prot, 0, 0, 0 },
 		{ String_Vaped, 0, 0, 0 },
+		{ String_mlkJ, 0, 0, 0 },
 		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };

@@ -232,6 +232,7 @@ extern const uint16_t String_SHR[];
 extern const uint16_t String_Tetra[];
 extern const uint16_t String_Vaped[];
 extern const uint16_t String_BVO[];
+extern const uint16_t String_mlkJ[];
 
 
 //==============================================================================

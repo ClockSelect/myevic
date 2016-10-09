@@ -443,19 +443,8 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfClkRatio < RTC_MIN_CLOCK_RATIO || dfClkRatio > RTC_MAX_CLOCK_RATIO )
 		dfClkRatio = RTC_DEF_CLK_RATIO;
 
-	if ( dfStatus.phpct )
-	{
-		if ( dfPreheatPwr > 200 )
-			dfPreheatPwr = 100;
-	}
-	else
-	{
-		if ( dfPreheatPwr > MaxPower )
-			dfPreheatPwr = 200;
-	}
-
-	if ( dfPreheatTime > 200 )
-		dfPreheatTime = 0;
+	if ( dfVVRatio < VVEL_MIN_RATIO || dfVVRatio > VVEL_MAX_RATIO )
+		dfVVRatio = VVEL_DEF_RATIO;
 
 	v = 0;
 	for ( i = 0 ; i < 3 ; ++i )
@@ -482,8 +471,23 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfBatteryModel >= GetNBatteries() )
 		dfBatteryModel = 0;
 
-	if ( dfBVOffset < -5 || dfBVOffset > 5 )
-		dfBVOffset = 0;
+	for ( i = 0 ; i < 3 ; ++i )
+		if ( dfBVOffset[i] < -5 || dfBVOffset[i] > 5 )
+			dfBVOffset[i] = 0;
+
+	if ( dfStatus.phpct )
+	{
+		if ( dfPreheatPwr > 200 )
+			dfPreheatPwr = 100;
+	}
+	else
+	{
+		if ( dfPreheatPwr > MaxPower )
+			dfPreheatPwr = 200;
+	}
+
+	if ( dfPreheatTime > 200 )
+		dfPreheatTime = 0;
 }
 
 

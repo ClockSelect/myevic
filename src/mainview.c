@@ -279,8 +279,8 @@ __myevic__ void DrawAPTLine( int line )
 			// Elasped seconds since last VV reset
 			t = RTCGetEpoch( 0 );
 			t -= RTCReadRegister( RTCSPARE_VV_BASE );
-			// Base: 360 mL/kJ
-			vv = 360 * ( MilliJoules / 1000 ) / 1000;
+
+			vv = dfVVRatio * ( MilliJoules / 1000 ) / 1000;
 			vv /= 10;
 			if ( vv > 9999 ) vv = 9999;
 			if ( dfStatus.vapedml )

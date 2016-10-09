@@ -429,7 +429,7 @@ __myevic__ void ReadBatteryVoltage()
 		}
 
 		gFlags.sample_vbat = 0;
-		newbv = ( VbatSampleSum >> 7 ) + dfBVOffset;
+		newbv = ( VbatSampleSum >> 7 ) + dfBVOffset[0];
 
 		VbatSampleSum = newbv;
 		BatteryVoltage = newbv;
@@ -481,7 +481,7 @@ __myevic__ int CheckBattery()
 	i = 0;
 	do
 	{
-		bv = ( ReadBatterySample( 0 ) >> 3 ) + dfBVOffset;
+		bv = ( ReadBatterySample( 0 ) >> 3 ) + dfBVOffset[0];
 		if ( bv > BatteryCutOff )
 			break;
 		++i;

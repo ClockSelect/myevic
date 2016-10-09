@@ -123,12 +123,15 @@ typedef struct dfParams
 /* 00BE */	uint8_t		Contrast;
 /* 00BF */	uint8_t		ModesSel;
 /* 00C0 */	uint16_t	ClkRatio;
-/* 00C2 */	uint16_t	PreheatPwr;
-/* 00C4 */	uint8_t		PreheatTime;
+/* 00C2 */	uint16_t	VVRatio;
+/* 00C4 */	uint8_t		unused[1];		//	unused
 /* 00C5 */	uint8_t		Clicks[3];
 /* 00C8 */	uint8_t		DimTimeout;
 /* 00C9 */	uint8_t		BatteryModel;
-/* 00CA */	int8_t		BVOffset;
+/* 00CA */	int8_t		BVOffset[3];
+/* 00CD */	uint8_t		PreheatTime;
+/* 00CE */	uint16_t	PreheatPwr;
+/* 00D0 */	uint16_t	AtoPreheatPwr;
 }
 dfParams_t;
 
@@ -294,12 +297,14 @@ extern dfStruct_t DataFlash;
 #define dfContrast		DFP(Contrast)
 #define dfModesSel		DFP(ModesSel)
 #define dfClkRatio		DFP(ClkRatio)
-#define dfPreheatPwr	DFP(PreheatPwr)
-#define dfPreheatTime	DFP(PreheatTime)
+#define dfVVRatio		DFP(VVRatio)
 #define dfClick			DFP(Clicks)
 #define dfDimTimeout	DFP(DimTimeout)
 #define dfBatteryModel	DFP(BatteryModel)
 #define dfBVOffset		DFP(BVOffset)
+#define dfPreheatTime	DFP(PreheatTime)
+#define dfPreheatPwr	DFP(PreheatPwr)
+#define dfAtoPreheatPwr	DFP(AtoPreheatPwr)
 
 #define dfFWVersion		DFI(FWVersion)
 #define dffmcCID        DFI(fmcCID)

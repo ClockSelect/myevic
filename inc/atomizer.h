@@ -11,6 +11,10 @@
 #define SHUNT_MIN_VALUE	75
 #define SHUNT_MAX_VALUE	150
 
+#define VVEL_DEF_RATIO	360
+#define VVEL_MIN_RATIO	200
+#define VVEL_MAX_RATIO	500
+
 //-------------------------------------------------------------------------
 
 extern uint32_t	AtoVolts;
