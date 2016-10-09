@@ -47,6 +47,7 @@ __myevic__ void SetProductID()
 	for ( uint32_t offset = 0 ; offset < LDROM_SIZE ; offset += 4 )
 	{
 		uint32_t u32Data = FMC_Read( LDROM_BASE + offset );
+
 		if ( u32Data == PID_VTWOMINI )
 		{
 			dfProductID = u32Data;
@@ -480,6 +481,9 @@ __myevic__ void DFCheckValuesValidity()
 
 	if ( dfBatteryModel >= GetNBatteries() )
 		dfBatteryModel = 0;
+
+	if ( dfBVOffset < -5 || dfBVOffset > 5 )
+		dfBVOffset = 0;
 }
 
 
@@ -724,11 +728,6 @@ __myevic__ void InitDataFlash()
 	FMCReadCounters();
 
 	SetProductID();
-
-	if ( ISVTCMINI )
-	{
-		BVOffset = 5;
-	}
 
 	if ( ISVTWO || ISEVICAIO || ISCUBOMINI || ISEVICBASIC )
 	{

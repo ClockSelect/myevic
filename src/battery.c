@@ -198,7 +198,6 @@ uint8_t		BatteryPercent;
 uint8_t		BatteryTenth;
 uint8_t		NoEventTimer;
 uint8_t		BatReadTimer;
-uint8_t		BVOffset;
 
 uint8_t		byte_20000048;
 
@@ -430,7 +429,7 @@ __myevic__ void ReadBatteryVoltage()
 		}
 
 		gFlags.sample_vbat = 0;
-		newbv = ( VbatSampleSum >> 7 ) + BVOffset;
+		newbv = ( VbatSampleSum >> 7 ) + dfBVOffset;
 
 		VbatSampleSum = newbv;
 		BatteryVoltage = newbv;
@@ -482,7 +481,7 @@ __myevic__ int CheckBattery()
 	i = 0;
 	do
 	{
-		bv = ( ReadBatterySample( 0 ) >> 3 ) + BVOffset;
+		bv = ( ReadBatterySample( 0 ) >> 3 ) + dfBVOffset;
 		if ( bv > BatteryCutOff )
 			break;
 		++i;

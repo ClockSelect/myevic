@@ -128,6 +128,7 @@ typedef struct dfParams
 /* 00C5 */	uint8_t		Clicks[3];
 /* 00C8 */	uint8_t		DimTimeout;
 /* 00C9 */	uint8_t		BatteryModel;
+/* 00CA */	int8_t		BVOffset;
 }
 dfParams_t;
 
@@ -298,6 +299,7 @@ extern dfStruct_t DataFlash;
 #define dfClick			DFP(Clicks)
 #define dfDimTimeout	DFP(DimTimeout)
 #define dfBatteryModel	DFP(BatteryModel)
+#define dfBVOffset		DFP(BVOffset)
 
 #define dfFWVersion		DFI(FWVersion)
 #define dffmcCID        DFI(fmcCID)

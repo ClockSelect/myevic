@@ -364,6 +364,13 @@ There's many more to LOGO and Game menus now. See below.
         This item let you edit the value of the Atomizer's circuit shunt resistance. This resistance is involved in every resistance/current/power measures and computation in the whole firmware. This value should only be changed if you know exactly what you are doing.  
         To reset the shunt value, select the SHR menu item and press the fire button during 2 seconds. This will revert the value to the default hardware setting.
 
+  * BVO
+
+        Battery Voltage Offset  
+        Corrective offset value of the battery voltage. Depending on your box, the displayed battery voltage may be off by a few tens of millivolts. It's usually not a concern, but it may make the box locking the vape too early (wasting some battery capacity) or too late (box resets due to low voltage when firing).  
+        Use an external accurate voltmeter (your battery charger may do the job) to compare the displayed voltage on the box to the actual battery voltage, then adjust the displayed voltage with this item.  
+        Range is -50 to +50 milliVolts.
+
 ----------
 
 ### Build:

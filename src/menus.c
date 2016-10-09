@@ -598,12 +598,15 @@ __myevic__ void ExpertMenuIDraw( int it, int line, int sel )
 				InvertRect( 0, line, 63, line+12 );
 			break;
 
-		case 6:	// PWM
-			if ( gFlags.pwm_pll )
-				DrawString( String_PLL, 36, line+2 );
-			else
-				DrawString( String_CCK, 36, line+2 );
+		case 6:	// BVO
+		{
+			uint16_t bvo = ( dfBVOffset >= 0 ) ? dfBVOffset : -dfBVOffset;
+			DrawImage( 36, line+2, ( dfBVOffset >= 0 ) ? 0xFC : 0xFD );
+			DrawValue( 44, line+2, bvo * 10, 0, 0x0B, 2 );
+			if ( gFlags.edit_value && sel )
+				InvertRect( 0, line, 63, line+12 );
 			break;
+		}
 
 		default:
 			break;
@@ -658,9 +661,8 @@ __myevic__ void ExpertMenuOnClick()
 				dfShuntRez = AtoShuntRez;
 			break;
 
-		case 6:	// PWM
-			gFlags.pwm_pll ^= 1;
-			InitPWM();
+		case 6:	// BVO
+			gFlags.edit_value ^= 1;
 			break;
 
 		case 7:	// Exit
@@ -686,7 +688,15 @@ __myevic__ int ExpertMenuOnEvent( int event )
 				case 5:	// Shunt Rez
 					if ( ++AtoShuntRez > SHUNT_MAX_VALUE )
 					{
-						AtoShuntRez = ( KeyTicks == 1 ) ? SHUNT_MIN_VALUE : SHUNT_MAX_VALUE;
+						AtoShuntRez = ( KeyTicks == 0 ) ? SHUNT_MIN_VALUE : SHUNT_MAX_VALUE;
+					}
+					vret = 1;
+					break;
+				
+				case 6:	// BVO
+					if ( ++dfBVOffset > 5 )
+					{
+						dfBVOffset = ( KeyTicks == 0 ) ? -5 : 5;
 					}
 					vret = 1;
 					break;
@@ -701,7 +711,15 @@ __myevic__ int ExpertMenuOnEvent( int event )
 				case 5:	// Shunt Rez
 					if ( --AtoShuntRez < SHUNT_MIN_VALUE )
 					{
-						AtoShuntRez = ( KeyTicks == 1 ) ? SHUNT_MAX_VALUE : SHUNT_MIN_VALUE;
+						AtoShuntRez = ( KeyTicks == 0 ) ? SHUNT_MAX_VALUE : SHUNT_MIN_VALUE;
+					}
+					vret = 1;
+					break;
+				
+				case 6:	// BVO
+					if ( --dfBVOffset < -5 )
+					{
+						dfBVOffset = ( KeyTicks == 0 ) ? 5 : -5;
 					}
 					vret = 1;
 					break;
@@ -1342,7 +1360,7 @@ const menu_t ExpertMenu =
 		{ String_NFE, 0, 0, 0 },
 		{ String_BAT, 0, 0, 0 },
 		{ String_SHR, 0, 0, 0 },
-		{ String_PWM, 0, 0, 0 },
+		{ String_BVO, 0, 0, 0 },
 		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };

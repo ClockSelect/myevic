@@ -231,9 +231,7 @@ extern const uint16_t String_Invert[];
 extern const uint16_t String_SHR[];
 extern const uint16_t String_Tetra[];
 extern const uint16_t String_Vaped[];
-extern const uint16_t String_PWM[];
-extern const uint16_t String_CCK[];
-extern const uint16_t String_PLL[];
+extern const uint16_t String_BVO[];
 
 
 //==============================================================================
