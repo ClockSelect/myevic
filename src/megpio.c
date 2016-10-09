@@ -23,11 +23,25 @@ __myevic__ void GPD_IRQHandler()
 			}
 		}
 	}
+	else if ( GPIO_GET_INT_FLAG( PD, GPIO_PIN_PIN1_Msk ) )
+	{
+		GPIO_CLR_INT_FLAG( PD, GPIO_PIN_PIN1_Msk );
+
+		if ( gFlags.usb_attached && ( NumBatteries == 1 ) && ( BatteryVoltage >= 414 ) )
+		{
+			byte_20000048 = 1;
+
+			if ( gFlags.battery_charging )
+			{
+				Event = 13;
+			}
+		}
+	}
 	else if ( GPIO_GET_INT_FLAG( PD, GPIO_PIN_PIN0_Msk ) )
 	{
 		GPIO_CLR_INT_FLAG( PD, GPIO_PIN_PIN0_Msk );
 
-		if ( ISPRESA75W )
+		if ( ISPRESA75W || ISVTCDUAL )
 		{
 			if ( Event != 28 )
 			{
@@ -62,6 +76,21 @@ __myevic__ void InitGPIO()
 	// PD1 = Data transmitter output pin for UART0
 	SYS->GPD_MFPL = SYS_GPD_MFPL_PD1MFP_UART0_TXD;
 
+	if ( ISVTCDUAL )
+	{
+		PA3 = 0;
+		GPIO_SetMode( PA, GPIO_PIN_PIN3_Msk, GPIO_MODE_OUTPUT );
+
+		PD7 = 0;
+		BBC_Configure( BBC_PWMCH_CHARGER, 0 );
+
+		PA2 = 0;
+		GPIO_SetMode( PA, GPIO_PIN_PIN2_Msk, GPIO_MODE_OUTPUT );
+
+		PF2 = 0;
+		GPIO_SetMode( PF, GPIO_PIN_PIN2_Msk, GPIO_MODE_OUTPUT );
+	}
+
 	// PC0 = PWM0 CH0
 	BBC_Configure( BBC_PWMCH_BUCK, 1 );
 	// PC2 = PWM0 CH2
@@ -86,12 +115,21 @@ __myevic__ void InitGPIO()
 	PC4 = 0;
 	GPIO_SetMode( PC, GPIO_PIN_PIN4_Msk, GPIO_MODE_OUTPUT );
 
-	// BATTERY (What is PD.0?)
+	// BATTERY
 	GPIO_SetMode( PD, GPIO_PIN_PIN0_Msk, GPIO_MODE_INPUT );
 	GPIO_EnableInt( PD, 0, GPIO_INT_FALLING );
-	GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_INPUT );
-	GPIO_EnableInt( PD, 7, GPIO_INT_RISING );
-	GPIO_ENABLE_DEBOUNCE( PD, GPIO_PIN_PIN7_Msk );
+	if ( ISVTCDUAL )
+	{
+		GPIO_SetMode( PD, GPIO_PIN_PIN1_Msk, GPIO_MODE_INPUT );
+		GPIO_EnableInt( PD, 1, GPIO_INT_RISING );
+		GPIO_ENABLE_DEBOUNCE( PD, GPIO_PIN_PIN1_Msk );
+	}
+	else
+	{
+		GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_INPUT );
+		GPIO_EnableInt( PD, 7, GPIO_INT_RISING );
+		GPIO_ENABLE_DEBOUNCE( PD, GPIO_PIN_PIN7_Msk );
+	}
 
 	// SPI0 (Display control)
 	PE10 = 0;

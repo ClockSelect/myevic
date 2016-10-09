@@ -43,6 +43,7 @@ __myevic__ void SetProductID()
 	dfMaxHWVersion = 0x00010101;
 	DFMagicNumber = 0x36;
 	BoxModel = BOX_VTCMINI;
+	NumBatteries = 1;
 
 	for ( uint32_t offset = 0 ; offset < LDROM_SIZE ; offset += 4 )
 	{
@@ -64,15 +65,15 @@ __myevic__ void SetProductID()
 			BoxModel = BOX_VTWO;
 			break;
 		}
-//		else if ( u32Data == PID_VTCDUAL )
-//		{
-//			dfProductID = u32Data;
-//			dfMaxHWVersion = 0x00010001;
-//			DFMagicNumber = 0x12;
-//			BoxModel = BOX_VTCDUAL;
-//			gFlags.pwm_pll = 1;
-//			break;
-//		}
+	//	else if ( u32Data == PID_VTCDUAL )
+	//	{
+	//		dfProductID = u32Data;
+	//		dfMaxHWVersion = 0x00010001;
+	//		DFMagicNumber = 0x12;
+	//		BoxModel = BOX_VTCDUAL;
+	//		gFlags.pwm_pll = 1;
+	//		break;
+	//	}
 		else if ( u32Data == PID_PRESA75W )
 		{
 			dfProductID = u32Data;
@@ -327,7 +328,7 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfUIVersion != 2 )
 		dfUIVersion = 2;
 
-	if ( dfAPT > 7 )
+	if ( dfAPT > 8 )
 		dfAPT = 0;
 
 	if ( dfTempAlgo != 1 && dfTempAlgo != 2 && dfTempAlgo != 3 && dfTempAlgo != 4 )

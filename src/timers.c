@@ -63,8 +63,8 @@ __myevic__ void TMR0_IRQHandler()
 
 		++TMR0Counter;
 
-		if ( WarmUpCounter < 2000 )
-			++WarmUpCounter;
+		if ( WarmUpCounter )
+			--WarmUpCounter;
 	}
 }
 
@@ -156,8 +156,16 @@ __myevic__ void TimedItems()
 	if ( !Screen && SleepTimer )
 		--SleepTimer;
 
-	if ( !PD7 && ( byte_20000048 >= 2 ) && ( byte_20000048 < 50 ) )
-		++byte_20000048;
+	if ( ISVTCDUAL )
+	{
+		if ( !PD1 && ( byte_20000048 >= 2 ) && ( byte_20000048 < 50 ) && ( NumBatteries == 1 ) )
+			++byte_20000048;
+	}
+	else
+	{
+		if ( !PD7 && ( byte_20000048 >= 2 ) && ( byte_20000048 < 50 ) )
+			++byte_20000048;
+	}
 
 	if ( NoEventTimer )
 		--NoEventTimer;

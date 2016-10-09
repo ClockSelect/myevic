@@ -57,10 +57,13 @@ uint8_t		BBCNextMode;
 uint8_t		BBCMode;
 uint16_t	BuckDuty;
 uint16_t	BoostDuty;
+uint16_t	PWMCycles;
 uint16_t	MaxDuty;
 uint16_t	MinBuck;
 uint16_t	MaxBoost;
+uint16_t	BoostWindow;
 uint16_t	ProbeDuty;
+uint16_t	SavedBoost;
 
 
 //=========================================================================
@@ -80,23 +83,24 @@ const uint8_t TempCoefsTI[] =
 //----- (00005C4C) --------------------------------------------------------
 __myevic__ void InitPWM()
 {
-	uint32_t clk, cycles;
+	uint32_t clk;
 
 	if ( gFlags.pwm_pll )
 	{
 		clk = CLK_CLKSEL2_PWM0SEL_PLL;
-		cycles = CLK_GetPLLClockFreq() / BBC_PWM_FREQ;
+		PWMCycles = CLK_GetPLLClockFreq() / BBC_PWM_FREQ;
 	}
 	else
 	{
 		clk = CLK_CLKSEL2_PWM0SEL_PCLK0;
-		cycles = CLK_GetPCLK0Freq() / BBC_PWM_FREQ;
+		PWMCycles = CLK_GetPCLK0Freq() / BBC_PWM_FREQ;
 	}
 
-	MaxDuty   = cycles - 1;
-	MinBuck   = cycles / 48;
-	MaxBoost  = cycles / 6;
-	ProbeDuty = cycles / 10;
+	MaxDuty		= PWMCycles - 1;
+	MinBuck		= PWMCycles / 48;
+	MaxBoost	= PWMCycles / 12;
+	ProbeDuty	= PWMCycles / 8;
+	BoostWindow	= PWMCycles / 19;
 
 	CLK_EnableModuleClock( PWM0_MODULE );
 	CLK_SetModuleClock( PWM0_MODULE, clk, 0 );
@@ -150,6 +154,19 @@ __myevic__ void BBC_Configure( uint32_t chan, uint32_t mode )
 		else
 		{
 			GPIO_SetMode( PC, GPIO_PIN_PIN2_Msk, GPIO_MODE_OUTPUT );
+		}
+	}
+	else if ( chan == BBC_PWMCH_CHARGER )
+	{
+		SYS->GPD_MFPL &= ~SYS_GPD_MFPL_PD7MFP_Msk;
+
+		if ( mode )
+		{
+			SYS->GPD_MFPL |= SYS_GPD_MFPL_PD7MFP_PWM0_CH5;
+		}
+		else
+		{
+			GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_OUTPUT );
 		}
 	}
 }
@@ -447,7 +464,7 @@ __myevic__ void CheckMode()
 	unsigned int v1; // r1@4
 
 	static uint8_t CheckModeCounter;
-	
+
 	if ( AtoRezMilli / 10 <= AtoRez )
 		v0 = 0;
 	else
@@ -602,6 +619,8 @@ __myevic__ void ReadAtomizer()
 __myevic__ void RegulateBuckBoost()
 {
 	static uint8_t BBCNumCmps;
+	static uint16_t bd = 0;
+	static uint16_t av = 0;
 
 	if ( gFlags.firing )
 	{
@@ -613,6 +632,8 @@ __myevic__ void RegulateBuckBoost()
 		if ( !gFlags.probing_ato )
 			return;
 	}
+
+	ProbeDuty = PWMCycles / NumBatteries / 8;
 
 	AtoVoltsADC = ADC_Read( 1 );
 	AtoVolts = ( 1109 * AtoVoltsADC ) >> 12;
@@ -713,11 +734,35 @@ __myevic__ void RegulateBuckBoost()
 					PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, BoostDuty );
 
 					PC3 = 1;
+
+					bd = 0;
 				}
 
 				if ( AtoVolts < TargetVolts && BoostDuty > MaxBoost )
 				{
-					--BoostDuty;
+					if ( gFlags.firing && ISMODEVW(dfMode) )
+					{
+						if ( !bd )
+						{
+							bd = BoostDuty;
+							av = AtoVolts;
+						}
+
+						if (( BoostDuty + BoostWindow >= bd ) || ( AtoVolts > av + 2 ))
+						{
+							--BoostDuty;
+
+							if ( AtoVolts > av + 2 )
+							{
+								bd = BoostDuty;
+								av = AtoVolts;
+							}
+						}
+					}
+					else
+					{
+						--BoostDuty;
+					}
 				}
 				else if ( AtoVolts > TargetVolts )
 				{
@@ -747,7 +792,8 @@ __myevic__ void AtoWarmUp()
 {
 	BBCNextMode = 2;
 	BBCMode = 0;
-	WarmUpCounter = 0;
+
+	WarmUpCounter = ( NumBatteries > 1 ) ? 2000 : 3000;
 
 	// Loop time around 19us on atomizer probing
 	//  and around 26.4us (37.86kHz) on firing.
@@ -757,7 +803,11 @@ __myevic__ void AtoWarmUp()
 		if ( !(gFlags.probing_ato) && !(gFlags.firing) )
 			break;
 
-		RegulateBuckBoost();
+		if ( gFlags.firing || !( WarmUpCounter % 20 ) )
+		{
+			RegulateBuckBoost();
+		}
+
 		ReadAtoCurrent();
 
 		if ( AtoVolts == TargetVolts )
@@ -772,7 +822,7 @@ __myevic__ void AtoWarmUp()
 		if ( ISMODEBY(dfMode) && BBCMode == 1 ) break;
 
 	}
-	while ( WarmUpCounter < 2000 );
+	while ( WarmUpCounter );
 }
 
 
@@ -1256,15 +1306,15 @@ __myevic__ void SwitchRezLock()
 		case 1:
 			_SwitchRezLock( &dfRezLockedTI, &dfRezTI );
 			break;
-			
+
 		case 2:
 			_SwitchRezLock( &dfRezLockedSS, &dfRezSS );
 			break;
-			
+
 		case 3:
 			_SwitchRezLock( &dfRezLockedTCR, &dfRezTCR );
 			break;
-		
+
 		default:
 			break;
 	}
@@ -1274,10 +1324,10 @@ __myevic__ void SwitchRezLock()
 //=============================================================================
 
 const uint32_t BoardTempTable[] =
-	{	34800, 26670, 20620, 16070, 12630, 10000, 
-		7976, 6407, 5182, 4218, 3455, 2847, 2360, 
+	{	34800, 26670, 20620, 16070, 12630, 10000,
+		7976, 6407, 5182, 4218, 3455, 2847, 2360,
 		1967, 1648, 1388, 1175, 999, 853, 732, 630	};
- 
+
 
 //=============================================================================
 //----- (00007BE0) --------------------------------------------------------
@@ -1309,7 +1359,24 @@ __myevic__ void ReadBoardTemp()
 
 	if ( sample != 4096 && sample )
 	{
-		tdr = ( 20000 * sample / ( 5280 - sample ));
+		if ( NumBatteries == 1 )
+		{
+			uint16_t v;
+
+			if ( BatteryVoltage <= 360 )
+			{
+				v = BatteryVoltage - 33;
+			}
+			else
+			{
+				v = 320;
+			}
+			tdr = ( 20000 * sample / ( 16 * v - sample ));
+		}
+		else
+		{
+			tdr = ( 20000 * sample / ( 5280 - sample ));
+		}
 
 		if ( tdr <= 630 )
 		{

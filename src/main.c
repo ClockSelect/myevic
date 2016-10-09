@@ -320,6 +320,20 @@ __myevic__ void DevicesOnOff( int off )
 		SetADCState( 2, 0 );
 		SetADCState( 14, 0 );
 
+		if ( ISVTCDUAL )
+		{
+			SetADCState( 3, 0 );
+			SetADCState( 13, 0 );
+
+			PD7 = 0;
+			BBC_Configure( BBC_PWMCH_CHARGER, 0 );
+			
+			PA3 = 0;
+			PC3 = 0;
+			PF2 = 0;
+			PA2 = 0;
+		}
+
 		PC1 = 0;
 		PC0 = 0;
 		BBC_Configure( BBC_PWMCH_BUCK, 0 );
@@ -332,9 +346,19 @@ __myevic__ void DevicesOnOff( int off )
 		GPIO_DisableInt( PD, 0 );
 		PD0 = 0;
 		GPIO_SetMode( PD, GPIO_PIN_PIN0_Msk, GPIO_MODE_OUTPUT );
-		GPIO_DisableInt( PD, 7 );
-		PD7 = 0;
-		GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_OUTPUT );
+
+		if ( ISVTCDUAL )
+		{
+			GPIO_DisableInt( PD, 1 );
+			PD1 = 0;
+			GPIO_SetMode( PD, GPIO_PIN_PIN1_Msk, GPIO_MODE_OUTPUT );
+		}
+		else
+		{
+			GPIO_DisableInt( PD, 7 );
+			PD7 = 0;
+			GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_OUTPUT );
+		}
 
 		SYS->GPE_MFPH &= ~(SYS_GPE_MFPH_PE11MFP_Msk|SYS_GPE_MFPH_PE12MFP_Msk|SYS_GPE_MFPH_PE13MFP_Msk);
 		PE11 = 0;
@@ -381,9 +405,19 @@ __myevic__ void DevicesOnOff( int off )
 
 		GPIO_SetMode( PD, GPIO_PIN_PIN0_Msk, GPIO_MODE_INPUT );
 		GPIO_EnableInt( PD, 0, GPIO_INT_FALLING );
-		GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_INPUT );
-		GPIO_EnableInt( PD, 7, GPIO_INT_RISING );
-		GPIO_ENABLE_DEBOUNCE( PD, GPIO_PIN_PIN7_Msk );
+
+		if ( ISVTCDUAL )
+		{
+			GPIO_SetMode( PD, GPIO_PIN_PIN1_Msk, GPIO_MODE_INPUT );
+			GPIO_EnableInt( PD, 1, GPIO_INT_RISING );
+			GPIO_ENABLE_DEBOUNCE( PD, GPIO_PIN_PIN1_Msk );
+		}
+		else
+		{
+			GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_INPUT );
+			GPIO_EnableInt( PD, 7, GPIO_INT_RISING );
+			GPIO_ENABLE_DEBOUNCE( PD, GPIO_PIN_PIN7_Msk );
+		}
 
 		PB7 = 1;
 
@@ -391,6 +425,12 @@ __myevic__ void DevicesOnOff( int off )
 		SetADCState( 1, 1 );
 		SetADCState( 2, 1 );
 		SetADCState( 14, 1 );
+
+		if ( ISVTCDUAL )
+		{
+			SetADCState( 3, 1 );
+			SetADCState( 13, 1 );
+		}
 
 		TIMER_EnableInt( TIMER0 );
 		TIMER_EnableInt( TIMER1 );
@@ -666,6 +706,8 @@ __myevic__ void Main()
 			{
 				Overtemp();
 			}
+
+			BatteryCharge();
 
 			if (( gFlags.anim3d ) && ( Screen == 1 ) && ( !EditModeTimer ))
 			{

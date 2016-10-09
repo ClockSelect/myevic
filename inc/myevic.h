@@ -40,38 +40,38 @@
 #define PID_VTCMINI		(*(uint32_t*)"E052")
 #define PID_VTWOMINI	(*(uint32_t*)"E115")
 #define PID_VTWO		(*(uint32_t*)"E043")
+#define PID_VTCDUAL		(*(uint32_t*)"E079")
 #define PID_PRESA75W	(*(uint32_t*)"W007")
 #define PID_WRX75TC		(*(uint32_t*)"W026")
 #define PID_EVICAIO		(*(uint32_t*)"E092")
 #define PID_EGRIPII		(*(uint32_t*)"E083")
 #define PID_CUBOMINI	(*(uint32_t*)"E056")
 #define PID_EVICBASIC	(*(uint32_t*)"E150")
-#define PID_VTCDUAL		(*(uint32_t*)"E079")
 
 enum
 {
 	BOX_VTCMINI,
     BOX_VTWOMINI,
     BOX_VTWO,
+	BOX_VTCDUAL,
     BOX_PRESA75W,
     BOX_WRX75TC,
     BOX_EVICAIO,
     BOX_EGRIPII,
     BOX_CUBOMINI,
-    BOX_EVICBASIC,
-	BOX_VTCDUAL
+    BOX_EVICBASIC
 };
 
 #define ISVTCMINI		(BoxModel==BOX_VTCMINI)
 #define ISVTWOMINI		(BoxModel==BOX_VTWOMINI)
 #define ISVTWO			(BoxModel==BOX_VTWO)
+#define ISVTCDUAL		(BoxModel==BOX_VTCDUAL)
 #define ISPRESA75W		(BoxModel==BOX_PRESA75W)
 #define ISWRX75TC		(BoxModel==BOX_WRX75TC)
 #define ISEVICAIO		(BoxModel==BOX_EVICAIO)
 #define ISEGRIPII		(BoxModel==BOX_EGRIPII)
 #define ISCUBOMINI		(BoxModel==BOX_CUBOMINI)
 #define ISEVICBASIC		(BoxModel==BOX_EVICBASIC)
-#define ISVTCDUAL		(BoxModel==BOX_VTCDUAL)
 
 
 //=========================================================================
@@ -136,6 +136,7 @@ typedef struct
 
 /* 00010000 */	int anim3d:1;
 /* 00020000 */	int pwm_pll:1;
+/* 00040000 */	int batteries_ooe:1;
 }
 
 gFlags_t;

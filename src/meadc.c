@@ -47,6 +47,21 @@ __myevic__ void SetADCState( int module, int onoff )
 
 	switch ( module )
 	{
+		case 0:
+			pin = GPIO_PIN_PIN0_Msk;
+
+			SYS->GPB_MFPL &= ~SYS_GPB_MFPL_PB0MFP_Msk;
+
+			if ( onoff )
+			{
+				SYS->GPB_MFPL |= SYS_GPB_MFPL_PB0MFP_EADC_CH0;
+			}
+			else
+			{
+				PB0 = 0;
+			}
+			break;
+
 		case 1:
 			pin = GPIO_PIN_PIN1_Msk;
 
@@ -74,6 +89,51 @@ __myevic__ void SetADCState( int module, int onoff )
 			else
 			{
 				PB2 = 0;
+			}
+			break;
+
+		case 3:
+			pin = GPIO_PIN_PIN3_Msk;
+
+			SYS->GPB_MFPL &= ~SYS_GPB_MFPL_PB3MFP_Msk;
+
+			if ( onoff )
+			{
+				SYS->GPB_MFPL |= SYS_GPB_MFPL_PB3MFP_EADC_CH3;
+			}
+			else
+			{
+				PB3 = 0;
+			}
+			break;
+
+		case 4:
+			pin = GPIO_PIN_PIN4_Msk;
+
+			SYS->GPB_MFPL &= ~SYS_GPB_MFPL_PB4MFP_Msk;
+
+			if ( onoff )
+			{
+				SYS->GPB_MFPL |= SYS_GPB_MFPL_PB4MFP_EADC_CH4;
+			}
+			else
+			{
+				PB4 = 0;
+			}
+			break;
+
+		case 13:
+			pin = GPIO_PIN_PIN5_Msk;
+
+			SYS->GPB_MFPL &= ~SYS_GPB_MFPL_PB5MFP_Msk;
+
+			if ( onoff )
+			{
+				SYS->GPB_MFPL |= SYS_GPB_MFPL_PB5MFP_EADC_CH13;
+			}
+			else
+			{
+				PB5 = 0;
 			}
 			break;
 
@@ -117,32 +177,32 @@ __myevic__ uint32_t ADC_Read( uint32_t module )
 {
 	uint32_t result;
 	// Total conversion time 15+6=21 ADC_CLK = 2.33us
-//	EADC_Open( EADC, EADC_CTL_DIFFEN_SINGLE_END );
-//	EADC_SetInternalSampleTime( EADC, 6 );	// 0.67 us
-//	EADC_ConfigSampleModule( EADC, module, EADC_SOFTWARE_TRIGGER, module );
-//
-//	EADC_CLR_INT_FLAG( EADC, 1 << 0 );
-//	EADC_ENABLE_INT( EADC, 1 << 0 );
-//	EADC_ENABLE_SAMPLE_MODULE_INT( EADC, 0, 1 << module );
-//	NVIC_EnableIRQ( ADC00_IRQn );
-//
-//	ADC00_IRQ_Flag = 0;
-//	EADC_START_CONV( EADC, 1 << module );
-//	while ( !ADC00_IRQ_Flag )
-//		;
+	EADC_Open( EADC, EADC_CTL_DIFFEN_SINGLE_END );
+	EADC_SetInternalSampleTime( EADC, 6 );	// 0.67 us
+	EADC_ConfigSampleModule( EADC, module, EADC_SOFTWARE_TRIGGER, module );
 
+	EADC_CLR_INT_FLAG( EADC, 1 << 0 );
+	EADC_ENABLE_INT( EADC, 1 << 0 );
+	EADC_ENABLE_SAMPLE_MODULE_INT( EADC, 0, 1 << module );
+	NVIC_EnableIRQ( ADC00_IRQn );
+
+	ADC00_IRQ_Flag = 0;
 	EADC_START_CONV( EADC, 1 << module );
+	while ( !ADC00_IRQ_Flag )
+		;
 
-	do
-	{
-		result = EADC->DAT[module];
-	}
-	while ( !( result & EADC_DAT_VALID_Msk ) );
+	EADC_DISABLE_INT( EADC, 1 << 0 );
+	result = EADC_GET_CONV_DATA( EADC, module );
 
-	result &= EADC_DAT_RESULT_Msk;
-
-//	EADC_DISABLE_INT( EADC, 1 << 0 );
-//	result = EADC_GET_CONV_DATA( EADC, module );
+//	EADC_START_CONV( EADC, 1 << module );
+//
+//	do
+//	{
+//		result = EADC->DAT[module];
+//	}
+//	while ( !( result & EADC_DAT_VALID_Msk ) );
+//
+//	result &= EADC_DAT_RESULT_Msk;
 
 	return result;
 }
