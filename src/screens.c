@@ -133,6 +133,22 @@ __myevic__ void DrawScreen()
 				ShowBattVolts();
 				break;
 
+			case 55: // Imbalanced Batteries
+				ShowImbBatts();
+				break;
+
+			case 56: // Check Battery
+				ShowCheckBattery();
+				break;
+
+			case 57: // Check USB Adapter
+				ShowCheckUSB();
+				break;
+
+			case 58: // Charge Error
+				ShowChargeError();
+				break;
+
 			case 59: // TCR Set Menu
 				ShowTCRSet();
 				break;
@@ -262,6 +278,10 @@ __myevic__ void DrawScreen()
 		case  29: // Device too hot
 		case  31: // Key UnLock
 		case  51: // New Coil
+		case  55: // Imbalanced Batteries
+		case  56: // Check Battery
+		case  57: // Check USB Adapter
+		case  58: // Charge Error
 			MainView();
 			break;
 
@@ -923,5 +943,38 @@ __myevic__ void ShowSetDate()
 __myevic__ int IsMenuScreen()
 {
 	return (( Screen == 59 ) || ((Screen >= 101) && (Screen <= 106)));
+}
+
+
+//=========================================================================
+__myevic__ void ShowCheckBattery()
+{
+  DrawStringCentered( String_Check, 88 );
+  DrawStringCentered( String_Battery, 102 );
+}
+
+
+//=========================================================================
+__myevic__ void ShowCheckUSB()
+{
+	DrawStringCentered( String_Check, 80 );
+	DrawStringCentered( String_USB, 92 );
+	DrawStringCentered( String_Adapter, 102 );
+}
+
+
+//=========================================================================
+__myevic__ void ShowChargeError()
+{
+	DrawStringCentered( String_Charge, 88 );
+	DrawStringCentered( String_Error, 102 );
+}
+
+
+//=========================================================================
+__myevic__ void ShowImbBatts()
+{
+	DrawStringCentered( String_Imbalanced, 88 );
+	DrawStringCentered( String_Batteries, 102 );
 }
 

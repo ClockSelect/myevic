@@ -20,8 +20,13 @@ extern uint8_t	BatteryTenth;
 extern uint8_t	NoEventTimer;
 extern uint8_t	BatReadTimer;
 extern uint8_t	NumBatteries;
+extern uint16_t	ChargerDuty;
 
-extern uint8_t	byte_20000048;
+extern uint8_t	BattProbeCount;
+
+extern uint8_t	byte_20000055;
+extern uint8_t	byte_20000056;
+extern uint8_t	byte_20000057;
 
 //-------------------------------------------------------------------------
 

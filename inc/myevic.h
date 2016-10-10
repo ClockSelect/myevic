@@ -113,7 +113,7 @@ typedef struct
 /* 08000000 */	int check_rez_ti:1;
 /* 10000000 */	int check_rez_ni:1;
 /* 20000000 */	int limit_power:1;
-/* 40000000 */	int unused3:1;
+/* 40000000 */	int batteries_ooe:1;
 /* 80000000 */	int check_rez_ss:1;
 
 /* 00000001 */	int edit_value:1;
@@ -123,7 +123,7 @@ typedef struct
 /* 00000010 */	int edit_capture_evt:1;
 /* 00000020 */	int osc_1hz:1;
 /* 00000040 */	int unused7:1;
-/* 00000080 */	int unused8:1;
+/* 00000080 */	int batt_unk:1;
 
 /* 00000100 */	int	tick_1hz:1;
 /* 00000200 */	int	playing_fb:1;
@@ -136,7 +136,8 @@ typedef struct
 
 /* 00010000 */	int anim3d:1;
 /* 00020000 */	int pwm_pll:1;
-/* 00040000 */	int batteries_ooe:1;
+/* 00040000 */	int light_sleep:1;
+/* 00080000 */	int wake_up:1;
 }
 
 gFlags_t;

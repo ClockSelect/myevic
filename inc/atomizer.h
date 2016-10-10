@@ -73,6 +73,7 @@ extern void ClampAtoPowers();
 extern void ClampAtoVolts();
 extern void SetMinMaxPower();
 extern void SetMinMaxVolts();
+extern void SetAtoLimits();
 
 extern void RegulateBuckBoost();
 extern void AtoWarmUp();

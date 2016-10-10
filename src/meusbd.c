@@ -5,6 +5,8 @@
 #include "display.h"
 #include "events.h"
 #include "timers.h"
+#include "atomizer.h"
+#include "battery.h"
 #include "meusbd.h"
 #include "dtmacros.h"
 
@@ -336,6 +338,14 @@ __myevic__ void USBD_IRQHandler(void)
 			/* Clear event flag */
 			USBD_CLR_INT_FLAG(USBD_INTSTS_EP7);
 		}
+	}
+
+	//------------------------------------------------------------------
+	if(u32IntSts & USBD_INTSTS_WAKEUP)
+	{
+		/* Clear event flag */
+		USBD_CLR_INT_FLAG(USBD_INTSTS_WAKEUP);
+		gFlags.wake_up = 1;
 	}
 
 	/* clear unknown event */
@@ -690,6 +700,17 @@ __myevic__ uint32_t hidResetSysCmd( CMD_T *pCmd )
 
 	if ( UpdateDFTimer ) UpdateDataFlash();
 	if ( UpdatePTTimer ) UpdatePTCounters();
+
+	if ( ISVTCDUAL )
+	{
+		PD7 = 0;
+		BBC_Configure( 5, 0 );
+		PD7 = 0;
+		ChargerDuty = 0;
+		PA3 = 0;
+		PC3 = 0;
+		PA2 = 0;
+	}
 
 	SYS_UnlockReg();
 	SYS_ResetChip();

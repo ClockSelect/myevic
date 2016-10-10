@@ -615,24 +615,31 @@ __myevic__ void ExpertMenuIDraw( int it, int line, int sel )
 				DrawString( String_ON, 36, line+2 );
 			break;
 
-		case 3:	// NFE
+		case 3:	// LSL
+			if ( dfStatus.lsloff )
+				DrawString( String_OFF, 36, line+2 );
+			else
+				DrawString( String_ON, 36, line+2 );
+			break;
+
+		case 4:	// NFE
 			if ( dfStatus.nfe )
 				DrawString( String_ON, 36, line+2 );
 			else
 				DrawString( String_OFF, 36, line+2 );
 			break;
 
-		case 4:	// BAT
+		case 5:	// BAT
 			DrawString( GetBatteryName(), 36, line+2 );
 			break;
 
-		case 5:	// SHR
+		case 6:	// SHR
 			DrawValue( 36, line+2, AtoShuntRez, 0, 0x0B, 3 );
 			if ( gFlags.edit_value && sel )
 				InvertRect( 0, line, 63, line+12 );
 			break;
 
-		case 6:	// BVO
+		case 7:	// BVO
 		{
 			int i = 0;
 			uint16_t bvo = ( dfBVOffset[i] >= 0 ) ? dfBVOffset[i] : -dfBVOffset[i];
@@ -678,11 +685,15 @@ __myevic__ void ExpertMenuOnClick()
 			dfStatus.x32off ^= 1;
 			break;
 
-		case 3:	// NFE
+		case 3:	// LSL
+			dfStatus.lsloff ^= 1;
+			break;
+
+		case 4:	// NFE
 			dfStatus.nfe ^= 1;
 			break;
 
-		case 4:	// BAT
+		case 5:	// BAT
 			if ( ++dfBatteryModel >= GetNBatteries() )
 				dfBatteryModel = 0;
 			SetBatteryModel();
@@ -691,16 +702,16 @@ __myevic__ void ExpertMenuOnClick()
 			SetBatMaxPower();
 			break;
 
-		case 5:	// Shunt Rez Value
+		case 6:	// Shunt Rez Value
 			if ( !(gFlags.edit_value ^= 1) )
 				dfShuntRez = AtoShuntRez;
 			break;
 
-		case 6:	// BVO
+		case 7:	// BVO
 			gFlags.edit_value ^= 1;
 			break;
 
-		case 7:	// Exit
+		case 8:	// Exit
 			UpdateDataFlash();
 			MainView();
 			break;
@@ -720,7 +731,7 @@ __myevic__ int ExpertMenuOnEvent( int event )
 				break;
 			switch ( CurrentMenuItem )
 			{
-				case 5:	// Shunt Rez
+				case 6:	// Shunt Rez
 					if ( ++AtoShuntRez > SHUNT_MAX_VALUE )
 					{
 						AtoShuntRez = ( KeyTicks == 0 ) ? SHUNT_MIN_VALUE : SHUNT_MAX_VALUE;
@@ -728,7 +739,7 @@ __myevic__ int ExpertMenuOnEvent( int event )
 					vret = 1;
 					break;
 				
-				case 6:	// BVO
+				case 7:	// BVO
 				{
 					int i = 0;
 					if ( ++dfBVOffset[i] > 5 )
@@ -746,7 +757,7 @@ __myevic__ int ExpertMenuOnEvent( int event )
 				break;
 			switch ( CurrentMenuItem )
 			{
-				case 5:	// Shunt Rez
+				case 6:	// Shunt Rez
 					if ( --AtoShuntRez < SHUNT_MIN_VALUE )
 					{
 						AtoShuntRez = ( KeyTicks == 0 ) ? SHUNT_MAX_VALUE : SHUNT_MIN_VALUE;
@@ -754,7 +765,7 @@ __myevic__ int ExpertMenuOnEvent( int event )
 					vret = 1;
 					break;
 				
-				case 6:	// BVO
+				case 7:	// BVO
 				{
 					int i = 0;
 					if ( --dfBVOffset[i] < -5 )
@@ -770,7 +781,7 @@ __myevic__ int ExpertMenuOnEvent( int event )
 		case EVENT_LONG_FIRE:
 			switch ( CurrentMenuItem )
 			{
-				case 5:	// Shunt Rez
+				case 6:	// Shunt Rez
 					AtoShuntRez = GetShuntRezValue();
 					dfShuntRez = 0;
 					vret = 1;
@@ -1393,11 +1404,12 @@ const menu_t ExpertMenu =
 	0,
 	ExpertMenuOnClick+1,
 	ExpertMenuOnEvent+1,
-	8,
+	9,
 	{
 		{ String_USB, 0, 0, 0 },
 		{ String_DBG, 0, 0, 0 },
 		{ String_X32, 0, 0, 0 },
+		{ String_LSL, 0, 0, 0 },
 		{ String_NFE, 0, 0, 0 },
 		{ String_BAT, 0, 0, 0 },
 		{ String_SHR, 0, 0, 0 },

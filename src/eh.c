@@ -201,6 +201,30 @@ __myevic__ void EventHandler()
 				return;
 			}
 
+			if ( byte_20000057 == 2 )
+			{
+				Screen = 56;
+				ScreenDuration = 2;
+				gFlags.refresh_display = 1;
+				return;
+			}
+
+			if ( byte_20000057 == 3 )
+			{
+				Screen = 57;
+				ScreenDuration = 2;
+				gFlags.refresh_display = 1;
+				return;
+			}
+
+			if ( byte_20000057 == 4 )
+			{
+				Screen = 58;
+				ScreenDuration = 2;
+				gFlags.refresh_display = 1;
+				return;
+			}
+
 			if ( gFlags.low_battery )
 			{
 				if ( BatteryVoltage < BatteryCutOff + 50 )
@@ -482,13 +506,21 @@ __myevic__ void EventHandler()
 
 //------------------------------------------------------------------------------
 
-			GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_OUTPUT );
-			PD7 = 0;
+			if ( ISVTCDUAL )
+			{
+				GPIO_SetMode( PD, GPIO_PIN_PIN1_Msk, GPIO_MODE_OUTPUT );
+				PD1 = 0;
+			}
+			else
+			{
+				GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_OUTPUT );
+				PD7 = 0;
+			}
 
 			gFlags.firing = 1;
 			FireDuration = 0;
 
-			if ( byte_20000048 == 1 ) byte_20000048 = 2;
+			if ( BattProbeCount == 1 ) BattProbeCount = 2;
 
 			switch ( dfTempAlgo )
 			{
@@ -832,7 +864,12 @@ __myevic__ void EventHandler()
 			gFlags.battery_charging = 1;
 			gFlags.refresh_display = 1;
 			BatAnimLevel = BatteryTenth;
-			if ( dfStatus.off )
+			if ( byte_20000057 == 1 )
+			{
+				Screen = 55;
+				ScreenDuration = 2;
+			}
+			else if ( dfStatus.off )
 			{
 				ChargeView();
 			}
@@ -844,6 +881,13 @@ __myevic__ void EventHandler()
 			return;
 
 		case 11:	// USB cable detach
+			PF2 = 0;
+			PA2 = 0;
+			byte_20000056 = 0;
+			if ( byte_20000057 == 3 || byte_20000057 == 4 )
+			{
+				byte_20000057 = 0;
+			}
 			gFlags.usb_attached = 0;
 			gFlags.battery_charging = 0;
 			gFlags.monitoring = 0;
@@ -866,6 +910,8 @@ __myevic__ void EventHandler()
 			return;
 
 		case 10:	// USB cable attach
+			byte_20000056 = 1;
+			byte_20000055 = 1;
 			gFlags.low_battery = 0;
 			gFlags.usb_attached = 1;
 			if ( !(dfStatus.off) )

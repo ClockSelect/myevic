@@ -15,7 +15,7 @@ __myevic__ void GPD_IRQHandler()
 
 		if ( gFlags.usb_attached )
 		{
-			byte_20000048 = 1;
+			BattProbeCount = 1;
 
 			if ( gFlags.battery_charging )
 			{
@@ -29,7 +29,7 @@ __myevic__ void GPD_IRQHandler()
 
 		if ( gFlags.usb_attached && ( NumBatteries == 1 ) && ( BatteryVoltage >= 414 ) )
 		{
-			byte_20000048 = 1;
+			BattProbeCount = 1;
 
 			if ( gFlags.battery_charging )
 			{
@@ -50,6 +50,16 @@ __myevic__ void GPD_IRQHandler()
 			}
 		}
 	}
+	else if ( GPIO_GET_INT_FLAG( PD, GPIO_PIN_PIN2_Msk ) )
+	{
+		GPIO_CLR_INT_FLAG( PD, GPIO_PIN_PIN2_Msk );
+		gFlags.wake_up = 1;
+	}
+	else if ( GPIO_GET_INT_FLAG( PD, GPIO_PIN_PIN3_Msk ) )
+	{
+		GPIO_CLR_INT_FLAG( PD, GPIO_PIN_PIN3_Msk );
+		gFlags.wake_up = 1;
+	}
 	else
 	{
 		PD->INTSRC = PD->INTSRC;
@@ -59,7 +69,15 @@ __myevic__ void GPD_IRQHandler()
 //----- (00002334) --------------------------------------------------------
 __myevic__ void GPE_IRQHandler()
 {
-	PE->INTSRC = PE->INTSRC;
+	if ( GPIO_GET_INT_FLAG( PE, GPIO_PIN_PIN0_Msk ) )
+	{
+		GPIO_CLR_INT_FLAG( PE, GPIO_PIN_PIN0_Msk );
+		gFlags.wake_up = 1;
+	}
+	else
+	{
+		PE->INTSRC = PE->INTSRC;
+	}
 }
 
 //----- (00002342) --------------------------------------------------------
@@ -80,21 +98,19 @@ __myevic__ void InitGPIO()
 	{
 		PA3 = 0;
 		GPIO_SetMode( PA, GPIO_PIN_PIN3_Msk, GPIO_MODE_OUTPUT );
-
-		PD7 = 0;
-		BBC_Configure( BBC_PWMCH_CHARGER, 0 );
-
-		PA2 = 0;
-		GPIO_SetMode( PA, GPIO_PIN_PIN2_Msk, GPIO_MODE_OUTPUT );
-
-		PF2 = 0;
-		GPIO_SetMode( PF, GPIO_PIN_PIN2_Msk, GPIO_MODE_OUTPUT );
 	}
 
 	// PC0 = PWM0 CH0
 	BBC_Configure( BBC_PWMCH_BUCK, 1 );
 	// PC2 = PWM0 CH2
 	BBC_Configure( BBC_PWMCH_BOOST, 1 );
+
+	if ( ISVTCDUAL )
+	{
+		PD7 = 0;
+		BBC_Configure( BBC_PWMCH_CHARGER, 0 );
+		PD7 = 0;
+	}
 
 	// BUTTONS
 	GPIO_SetMode( PE, GPIO_PIN_PIN0_Msk, GPIO_MODE_INPUT );
@@ -120,6 +136,11 @@ __myevic__ void InitGPIO()
 	GPIO_EnableInt( PD, 0, GPIO_INT_FALLING );
 	if ( ISVTCDUAL )
 	{
+		PA2 = 0;
+		GPIO_SetMode( PA, GPIO_PIN_PIN2_Msk, GPIO_MODE_OUTPUT );
+		PF2 = 0;
+		GPIO_SetMode( PF, GPIO_PIN_PIN2_Msk, GPIO_MODE_OUTPUT );
+
 		GPIO_SetMode( PD, GPIO_PIN_PIN1_Msk, GPIO_MODE_INPUT );
 		GPIO_EnableInt( PD, 1, GPIO_INT_RISING );
 		GPIO_ENABLE_DEBOUNCE( PD, GPIO_PIN_PIN1_Msk );

@@ -36,9 +36,9 @@ __myevic__ void RTC_IRQHandler()
 		}
 		else
 		{
-			adj_10k += ClockCorrection * 2 - 32768;
+			adj_10k += ClockCorrection - 32768;
 		}
-		
+
 		ClockCorrection = 0;
 	}
 }
@@ -354,7 +354,7 @@ __myevic__ void GetRTC( S_RTC_TIME_DATA_T *rtd )
 			cs  = RTCGetClockSpeed();
 
 			d  = 32768ull * ( t - ref - sleep_ticks );
-			d += (int64_t)ClockCorrection * 2 + adj_10k;
+			d += (int64_t)ClockCorrection + adj_10k;
 			d += (int64_t)sleep_ticks * cs;
 			d /= 10000;
 
@@ -390,7 +390,7 @@ __myevic__ void RTCAdjustClock( int seconds )
 		ref = RTCGetReferenceDate();
 
 		GetRTC( &rtd );
-		adj_frac = ( adj_10k + 2 * ClockCorrection ) % 10000;
+		adj_frac = ( adj_10k + ClockCorrection ) % 10000;
 		SetRTC( &rtd );
 		adj_10k = adj_frac;
 
@@ -450,8 +450,11 @@ __myevic__ void RTCSleep()
 	}
 	else
 	{
-		RTC_DisableInt( RTC_INTEN_TICKIEN_Msk );
-		RTCAdjustClock( 0 );
+		if ( !gFlags.light_sleep )
+		{
+			RTC_DisableInt( RTC_INTEN_TICKIEN_Msk );
+			RTCAdjustClock( 0 );
+		}
 	}
 }
 
@@ -459,6 +462,9 @@ __myevic__ void RTCSleep()
 __myevic__ void RTCWakeUp()
 {
 	if ( gFlags.noclock )
+		return;
+
+	if ( gFlags.light_sleep )
 		return;
 
 	S_RTC_TIME_DATA_T rtd;
@@ -471,15 +477,9 @@ __myevic__ void RTCWakeUp()
 	sleep_ticks = ( t - ref );
 	int_cnt = 0;
 
-	if ( gFlags.has_x32 )
+	if ( !gFlags.has_x32 )
 	{
-		TMR2Counter += sleep_ticks * 1000;
-	}
-	else
-	{
-		TMR2Counter += sleep_ticks * RTCGetClockSpeed() / 10;
 		RTC_EnableInt( RTC_INTEN_TICKIEN_Msk );
 	}
 }
-
 

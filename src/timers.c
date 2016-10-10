@@ -79,10 +79,10 @@ __myevic__ void TMR1_IRQHandler()
 	{
 		TIMER_ClearIntFlag( TIMER1 );
 
-		if ( !gFlags.has_x32 )
-		{
-			++ClockCorrection;
-		}
+	//	if ( !gFlags.has_x32 )
+	//	{
+	//		ClockCorrection += 2;
+	//	}
 
 		gFlags.tick_5khz = 1;
 		++TMR1Counter;
@@ -133,6 +133,11 @@ __myevic__ void TMR3_IRQHandler()
 
 		gFlags.tick_10hz = 1;
 
+		if ( !gFlags.has_x32 )
+		{
+			ClockCorrection += 1000;
+		}
+
 		if ( !(++TMR3Counter & 1) )
 			gFlags.tick_5hz = 1;
 
@@ -158,13 +163,13 @@ __myevic__ void TimedItems()
 
 	if ( ISVTCDUAL )
 	{
-		if ( !PD1 && ( byte_20000048 >= 2 ) && ( byte_20000048 < 50 ) && ( NumBatteries == 1 ) )
-			++byte_20000048;
+		if ( !PD1 && ( BattProbeCount >= 2 ) && ( BattProbeCount < 50 ) && ( NumBatteries == 1 ) )
+			++BattProbeCount;
 	}
 	else
 	{
-		if ( !PD7 && ( byte_20000048 >= 2 ) && ( byte_20000048 < 50 ) )
-			++byte_20000048;
+		if ( !PD7 && ( BattProbeCount >= 2 ) && ( BattProbeCount < 50 ) )
+			++BattProbeCount;
 	}
 
 	if ( NoEventTimer )

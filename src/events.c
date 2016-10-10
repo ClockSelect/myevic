@@ -164,7 +164,7 @@ __myevic__ void GetUserInput()
 			if ( !(gFlags.usb_attached) )
 			{
 				UserInputs = 10;
-				byte_20000048 = 0;
+				BattProbeCount = 0;
 			}
 		}
 		else
@@ -177,18 +177,40 @@ __myevic__ void GetUserInput()
 
 		if ( gFlags.usb_attached )
 		{
-			if ( !PD7 && !(gFlags.battery_charging) )
+			if ( ISVTCDUAL )
 			{
-				if ( !byte_20000048 || byte_20000048 >= 50 )
+				if ( NumBatteries == 1 )
 				{
-					UserInputs = 12;
-					byte_20000048 = 0;
+					if ( !PD1 && !gFlags.battery_charging )
+					{
+						if ( !BattProbeCount || BattProbeCount >= 50 )
+						{
+							UserInputs = 12;
+							BattProbeCount = 0;
+						}
+					}
+					else if ( PD1 && gFlags.battery_charging && BatteryVoltage >= 414 )
+					{
+						UserInputs = 13;
+						BattProbeCount = 1;
+					}
 				}
 			}
-			else if ( PD7 && gFlags.battery_charging )
+			else
 			{
-				UserInputs = 13;
-				byte_20000048 = 1;
+				if ( !PD7 && !gFlags.battery_charging )
+				{
+					if ( !BattProbeCount || BattProbeCount >= 50 )
+					{
+						UserInputs = 12;
+						BattProbeCount = 0;
+					}
+				}
+				else if ( PD7 && gFlags.battery_charging )
+				{
+					UserInputs = 13;
+					BattProbeCount = 1;
+				}
 			}
 		}
 	}

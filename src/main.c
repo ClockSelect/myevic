@@ -44,7 +44,7 @@ __myevic__ void CustomStartup()
 	}
 
 	Object3D = 1;
-	
+
 //------------------------------------------------------------------------------
 // Timer test 1
 
@@ -52,12 +52,12 @@ __myevic__ void CustomStartup()
 	{
 		TIMER_Stop( TIMER3 );
 		TIMER_Close( TIMER3 );
-	
+
 		MemClear( gPlayfield.uc, 256 );
-	
+
 		CLK_SetModuleClock( TMR3_MODULE, CLK_CLKSEL1_TMR3SEL_LIRC, 0 );
-	
-		gPlayfield.ul[1] = 
+
+		gPlayfield.ul[1] =
 		TIMER_Open( TIMER3, TIMER_PERIODIC_MODE, 10 );
 		TIMER_EnableInt( TIMER3 );
 		TIMER_Start( TIMER3 );
@@ -71,17 +71,17 @@ __myevic__ void CustomStartup()
 	{
 		TIMER_Close( TIMER2 );
 		TIMER_Close( TIMER3 );
-	
+
 		MemClear( gPlayfield.uc, 256 );
-	
+
 		CLK_SetModuleClock( TMR2_MODULE, CLK_CLKSEL1_TMR2SEL_HXT, 0 );
 		CLK_SetModuleClock( TMR3_MODULE, CLK_CLKSEL1_TMR3SEL_LIRC, 0 );
 
 		CLK_EnableModuleClock( TMR2_MODULE );
 		CLK_EnableModuleClock( TMR3_MODULE );
-	
+
 		__set_PRIMASK(1);
-	
+
 		TIMER3->CTL |= TIMER_CTL_RSTCNT_Msk;
 		TIMER2->CTL |= TIMER_CTL_RSTCNT_Msk;
 
@@ -91,9 +91,9 @@ __myevic__ void CustomStartup()
 		TIMER2->CTL  = TIMER_CTL_CNTEN_Msk | TIMER_CONTINUOUS_MODE;
 		while(!(TIMER3->INTSTS & TIMER_INTSTS_TIF_Msk));
 		TIMER2->CTL = 0;
-	
+
 		gPlayfield.ul[0] = TIMER2->CNT;
-	
+
 		__set_PRIMASK(0);
 
 		TIMER_Close( TIMER2 );
@@ -120,6 +120,8 @@ __myevic__ void CustomStartup()
 //----- (0000652C) --------------------------------------------------------
 void InitDevices()
 {
+	SYS_UnlockReg();
+
 	// Internal 22.1184MHz oscillator
 	CLK_EnableXtalRC( CLK_PWRCTL_HIRCEN_Msk );
 	CLK_WaitClockReady( CLK_STATUS_HIRCSTB_Msk );
@@ -192,6 +194,10 @@ void InitDevices()
 
 	// Update clock data
 	SystemCoreClockUpdate();
+
+	WDT_Open( WDT_TIMEOUT_2POW18, WDT_RESET_DELAY_18CLK, TRUE, FALSE );
+
+	SYS_LockReg();
 }
 
 
@@ -199,19 +205,12 @@ void InitDevices()
 //----- (00000C48) --------------------------------------------------------
 __myevic__ void InitHardware()
 {
-	SYS_UnlockReg();
-
-	InitDevices();
-
-	WDT_Open( WDT_TIMEOUT_2POW18, WDT_RESET_DELAY_18CLK, TRUE, FALSE );
-
-	SYS_LockReg();
-
 	InitUART0();
 	InitGPIO();
 	InitSPI0();
 	InitEADC();
 	InitPWM();
+	InitUSB();
 
 	InitTimers();
 }
@@ -243,7 +242,11 @@ __myevic__ void BOD_IRQHandler()
 
 	if ( SYS_GetBODStatus() )
 	{
-		RTCSleep();
+		if ( !gFlags.has_x32 )
+		{
+			RTCAdjustClock( 0 );
+		}
+
 		while( 1 )
 			;
 	}
@@ -268,7 +271,7 @@ __myevic__ void Plantouille( int xpsr, int* stack )
 	while ( 1 )
 	{
 		ClearScreenBuffer();
-		
+
 		DrawImage( 0, 0, 'X'+0x27 );
 		DrawHexLong( 16, 0, xpsr, 0 );
 
@@ -313,7 +316,11 @@ __myevic__ void DevicesOnOff( int off )
 		TIMER_DisableInt( TIMER0 );
 		TIMER_DisableInt( TIMER1 );
 		TIMER_DisableInt( TIMER2 );
-		TIMER_DisableInt( TIMER3 );
+
+		if ( !gFlags.light_sleep )
+		{
+			TIMER_DisableInt( TIMER3 );
+		}
 
 		EADC_Close( EADC );
 		SetADCState( 1, 0 );
@@ -327,17 +334,16 @@ __myevic__ void DevicesOnOff( int off )
 
 			PD7 = 0;
 			BBC_Configure( BBC_PWMCH_CHARGER, 0 );
-			
-			PA3 = 0;
+			PD7 = 0;
+		}
+		else
+		{
 			PC3 = 0;
-			PF2 = 0;
-			PA2 = 0;
 		}
 
 		PC1 = 0;
 		PC0 = 0;
 		BBC_Configure( BBC_PWMCH_BUCK, 0 );
-		PC3 = 0;
 		PC2 = 0;
 		BBC_Configure( BBC_PWMCH_BOOST, 0 );
 
@@ -372,6 +378,14 @@ __myevic__ void DevicesOnOff( int off )
 		GPIO_EnableInt( PE, 0, GPIO_INT_BOTH_EDGE );
 		GPIO_EnableInt( PD, 2, GPIO_INT_BOTH_EDGE );
 		GPIO_EnableInt( PD, 3, GPIO_INT_BOTH_EDGE );
+
+		if ( ISVTCDUAL )
+		{
+			PA3 = 0;
+			PC3 = 0;
+			PF2 = 0;
+			PA2 = 0;
+		}
 
 		SYS_UnlockReg();
 		SYS->USBPHY &= ~SYS_USBPHY_LDO33EN_Msk;
@@ -445,7 +459,48 @@ __myevic__ void DevicesOnOff( int off )
 __myevic__ void FlushAndSleep()
 {
 	UART_WAIT_TX_EMPTY( UART0 );
-	CLK_PowerDown();
+
+	if ( !gFlags.light_sleep )
+	{
+		CLK_PowerDown();
+	}
+	else
+	{
+		// Switch Core Clock to HXT
+		CLK_SetHCLK( CLK_CLKSEL0_HCLKSEL_HXT, CLK_CLKDIV0_HCLK( 1 ) );
+    
+		// Switch off the PLL Clock & the HIRC
+		CLK_DisablePLL();
+		CLK_DisableXtalRC( CLK_PWRCTL_HIRCEN_Msk );
+
+		// Disable Clocks of Modules using HCLK/HXT or LIRC
+		CLK_DisableModuleClock( PWM0_MODULE );
+		CLK_DisableModuleClock( UART0_MODULE );
+		CLK_DisableModuleClock( SPI0_MODULE );
+		CLK_DisableModuleClock( CRC_MODULE );
+
+		gFlags.wake_up = 0;
+
+		do
+		{
+			CLK_Idle();
+		}
+		while ( !gFlags.wake_up );
+
+		// Wake up the HIRC
+		CLK_EnableXtalRC( CLK_PWRCTL_HIRCEN_Msk );
+		CLK_WaitClockReady( CLK_STATUS_HIRCSTB_Msk );
+    
+		// Wake up the PLL
+		CLK_SetCoreClock( CPU_FREQ );
+		CLK_WaitClockReady( CLK_STATUS_PLLSTB_Msk );
+
+		// Wake up Modules
+		CLK_EnableModuleClock( PWM0_MODULE );
+		CLK_EnableModuleClock( UART0_MODULE );
+		CLK_EnableModuleClock( SPI0_MODULE );
+		CLK_EnableModuleClock( CRC_MODULE );
+	}
 }
 
 
@@ -454,6 +509,8 @@ __myevic__ void FlushAndSleep()
 
 void GoToSleep()
 {
+	gFlags.light_sleep = !( gFlags.has_x32 || dfStatus.lsloff );
+
 	ScreenOff();
 	gFlags.firing = 0;
 	BatReadTimer = 50;
@@ -465,7 +522,7 @@ void GoToSleep()
 	if ( dfStatus.off || PE0 || KeyPressTime == 1100 )
 	{
 		SYS_UnlockReg();
-		WDT_Open( WDT_TIMEOUT_2POW14, WDT_RESET_DELAY_18CLK, FALSE, FALSE );
+		WDT_Close();
 		FlushAndSleep();
 	}
 	WDT_Open( WDT_TIMEOUT_2POW14, WDT_RESET_DELAY_18CLK, TRUE, FALSE );
@@ -492,7 +549,7 @@ __myevic__ void SleepIfIdle()
 			AtoRezMilli = 0;
 			gFlags.sample_vbat = 1;
 			ReadBatteryVoltage();
-			if (( BatteryVoltage <= BatteryCutOff + 20 ) && !(gFlags.usb_attached) )
+			if (( BatteryVoltage <= BatteryCutOff + 20 ) && !gFlags.usb_attached )
 			{
 				dfStatus.off = 1;
 				Screen = 0;
@@ -584,20 +641,24 @@ __myevic__ void Monitor()
 //----- (00000148) ------------------------------------------------------------
 __myevic__ void Main()
 {
-	InitHardware();
+	InitDevices();
+
 	InitVariables();
 
-	InitPWM();
+	InitHardware();
 
 	if ( dfStatus.x32off )
 	{
 		gFlags.has_x32 = 0;
 		CLK_DisableXtalRC( CLK_PWRCTL_LXTEN_Msk );
 	}
+	else if ( gFlags.has_x32 )
+	{
+		dfStatus.lsloff = 1;
+		UpdateDFTimer = 50;
+	}
 
 	InitRTC( 0 );
-
-	InitUSB();
 
 	myprintf( "\n\nJoyetech APROM\n" );
 	myprintf( "CPU @ %dHz(PLL@ %dHz)\n", SystemCoreClock, PllClock );
@@ -707,7 +768,10 @@ __myevic__ void Main()
 				Overtemp();
 			}
 
-			BatteryCharge();
+			if ( ISVTCDUAL )
+			{
+				BatteryCharge();
+			}
 
 			if (( gFlags.anim3d ) && ( Screen == 1 ) && ( !EditModeTimer ))
 			{
@@ -770,7 +834,7 @@ __myevic__ void Main()
 				{
 					ReadInternalResistance();
 				}
-				
+
 				if ( gFlags.monitoring )
 				{
 					Monitor();

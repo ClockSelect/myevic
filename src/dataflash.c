@@ -65,15 +65,15 @@ __myevic__ void SetProductID()
 			BoxModel = BOX_VTWO;
 			break;
 		}
-	//	else if ( u32Data == PID_VTCDUAL )
-	//	{
-	//		dfProductID = u32Data;
-	//		dfMaxHWVersion = 0x00010001;
-	//		DFMagicNumber = 0x12;
-	//		BoxModel = BOX_VTCDUAL;
-	//		gFlags.pwm_pll = 1;
-	//		break;
-	//	}
+		else if ( u32Data == PID_VTCDUAL )
+		{
+			dfProductID = u32Data;
+			dfMaxHWVersion = 0x00010001;
+			DFMagicNumber = 0x12;
+			BoxModel = BOX_VTCDUAL;
+			gFlags.pwm_pll = 1;
+			break;
+		}
 		else if ( u32Data == PID_PRESA75W )
 		{
 			dfProductID = u32Data;

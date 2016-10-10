@@ -281,7 +281,9 @@ __myevic__ void StopFire()
 	PreheatTimer = 0;
 
 	PC1 = 0;
-	PC3 = 0;
+
+	if ( !ISVTCDUAL )
+		PC3 = 0;
 
 	BuckDuty = 0;
 	PC0 = 0;
@@ -546,6 +548,9 @@ __myevic__ void ReadAtomizer()
 		if ( !ADCShuntSum ) ADCShuntSum = 1;
 		AtoRezMilli = 1300 * AtoShuntRez / 100 * ADCAtoSum / ( 3 * ADCShuntSum );
 
+	//	myprintf( "ARM=%d, sh=%d, ato=%d, apc=%d\n",
+	//				AtoRezMilli, ADCShuntSum, ADCAtoSum, AtoProbeCount );
+		
 		ReadAtoCurrent();
 
 		if ( gFlags.firing )
@@ -647,7 +652,8 @@ __myevic__ void RegulateBuckBoost()
 				{
 					PC2 = 1;
 					BBC_Configure( BBC_PWMCH_BOOST, 0 );
-					PC3 = 1;
+					if ( !ISVTCDUAL )
+						PC3 = 1;
 
 					PC0 = 1;
 					BBC_Configure( BBC_PWMCH_BUCK, 0 );
@@ -676,7 +682,8 @@ __myevic__ void RegulateBuckBoost()
 				{
 					PC2 = 1;
 					BBC_Configure( BBC_PWMCH_BOOST, 0 );
-					PC3 = 1;
+					if ( !ISVTCDUAL )
+						PC3 = 1;
 
 					BBC_Configure( BBC_PWMCH_BUCK, 1 );
 
@@ -733,7 +740,8 @@ __myevic__ void RegulateBuckBoost()
 					BoostDuty = MaxDuty;
 					PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, BoostDuty );
 
-					PC3 = 1;
+					if ( !ISVTCDUAL )
+						PC3 = 1;
 
 					bd = 0;
 				}
@@ -932,7 +940,8 @@ __myevic__ void TweakTargetVoltsTC()
 			{
 				gFlags.limit_ato_temp = 0;
 				TargetVolts = 0;
-				PC3 = 0;
+				if ( !ISVTCDUAL )
+					PC3 = 0;
 				PC1 = 0;
 				BuckDuty = 0;
 				PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, 0 );
@@ -1120,32 +1129,32 @@ __myevic__ void SetAtoSMARTParams()
 //----- (000090DC) --------------------------------------------------------
 __myevic__ void SetAtoLimits()
 {
-	unsigned int pwr;
+	uint16_t pwr;
 
 	SetMinMaxVolts();
 	SetMinMaxPower();
 
-	if ( ISMODEVW(dfMode) )
+	if ( dfPower > MaxPower ) dfPower = MaxPower;
+	if ( dfTCPower > MaxTCPower ) dfTCPower = MaxTCPower;
+
+	if ( !AtoError && AtoRez )
 	{
-		if ( !AtoError && AtoRez )
-		{
-			SetAtoSMARTParams();
+		SetAtoSMARTParams();
 
-			if ( dfMode == 6 )
-				pwr = dfSavedCfgPwr[ConfigIndex];
-			else
-				pwr = dfPower;
+		if ( dfMode == 6 )
+			pwr = dfSavedCfgPwr[ConfigIndex];
+		else
+			pwr = dfPower;
 
-			if ( pwr < AtoMinPower ) pwr = AtoMinPower;
-			if ( pwr > AtoMaxPower ) pwr = AtoMaxPower;
+		if ( pwr < AtoMinPower ) pwr = AtoMinPower;
+		if ( pwr > AtoMaxPower ) pwr = AtoMaxPower;
 
-			dfVWVolts = GetAtoVWVolts( pwr );
+		dfVWVolts = GetAtoVWVolts(pwr);
 
-			if ( dfMode == 6 )
-				dfPower = ClampPower( dfVWVolts, 1 );
-			else
-				dfPower = pwr;
-		}
+		if ( dfMode == 6 )
+			dfPower = ClampPower( dfVWVolts, 1 );
+		else
+			dfPower = pwr;
 	}
 }
 
@@ -1158,46 +1167,54 @@ __myevic__ void ProbeAtomizer()
 	SetADCState( 2, 1 );
 	WaitOnTMR2( 2 );
 
-	if (( AtoProbeCount == 8 ) || ( gFlags.firing ))
+	if ( ISVTCDUAL && ( byte_20000057 == 2 || !PA3 ) )
 	{
-		if ( gFlags.firing )
-		{
-			gFlags.limit_ato_temp = 1;
-		}
-		TargetVolts = GetVoltsForPower( 50 );
-		if ( !TargetVolts ) TargetVolts = 100;
-	}
-	else if ( AtoProbeCount == 9 )
-	{
-		TargetVolts = GetVoltsForPower( 100 );
-	}
-	else if ( AtoProbeCount == 10 )
-	{
-		TargetVolts = GetVoltsForPower( 150 );
+		AtoStatus = 0;
 	}
 	else
 	{
-		TargetVolts = 100;
-	}
+		if (( AtoProbeCount == 8 ) || ( gFlags.firing ))
+		{
+			if ( gFlags.firing )
+			{
+				gFlags.limit_ato_temp = 1;
+			}
+			TargetVolts = GetVoltsForPower( 50 );
+			if ( !TargetVolts ) TargetVolts = 100;
+		}
+		else if ( AtoProbeCount == 9 )
+		{
+			TargetVolts = GetVoltsForPower( 100 );
+		}
+		else if ( AtoProbeCount == 10 )
+		{
+			TargetVolts = GetVoltsForPower( 150 );
+		}
+		else
+		{
+			TargetVolts = 100;
+		}
 
-	if ( TargetVolts > 600 ) TargetVolts = 600;
+		if ( TargetVolts > 600 ) TargetVolts = 600;
 
-	gFlags.probing_ato = 1;
-	AtoWarmUp();
-	WaitOnTMR2(2);
-	ReadAtomizer();
-	gFlags.probing_ato = 0;
+		gFlags.probing_ato = 1;
+		AtoWarmUp();
+		WaitOnTMR2(2);
+		ReadAtomizer();
+		gFlags.probing_ato = 0;
 
-	if ( !(gFlags.firing) )
-	{
-		PC1 = 0;
-		PC3 = 0;
-		SetADCState( 1, 0 );
-		SetADCState( 2, 0 );
-		BoostDuty = 0;
-		PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, 0 );
-		BuckDuty = 0;
-		PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, 0 );
+		if ( !(gFlags.firing) )
+		{
+			PC1 = 0;
+			if ( !ISVTCDUAL )
+				PC3 = 0;
+			SetADCState( 1, 0 );
+			SetADCState( 2, 0 );
+			BoostDuty = 0;
+			PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, 0 );
+			BuckDuty = 0;
+			PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, 0 );
+		}
 	}
 
 	switch ( AtoStatus )
@@ -1357,7 +1374,7 @@ __myevic__ void ReadBoardTemp()
 
 	BoardTemp = 0;
 
-	if ( sample != 4096 && sample )
+	if ( sample != 4096 && sample > 100 )
 	{
 		if ( NumBatteries == 1 )
 		{

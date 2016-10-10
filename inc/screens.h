@@ -65,6 +65,10 @@ extern void ShowRTCAdjust();
 extern void ShowScreenSaver();
 extern void ShowSetTime();
 extern void ShowSetDate();
+extern void ShowCheckBattery();
+extern void ShowCheckUSB();
+extern void ShowChargeError();
+extern void ShowImbBatts();
 
 extern void ShowFireDuration( int line );
 
@@ -133,9 +137,6 @@ extern const uint16_t String_VOLT_s[];
 extern const uint16_t String_COIL_s[];
 extern const uint16_t String_TIME_s[];
 extern const uint16_t String_PUFF_s[];
-extern const uint16_t String_BOARD_s[];
-extern const uint16_t String_RES_s[];
-extern const uint16_t String_LIQ_s[];
 extern const uint16_t String_SMART[];
 extern const uint16_t String_End[];
 
@@ -145,6 +146,9 @@ extern const uint16_t String_End[];
 extern const uint16_t String_BATT_s[];
 extern const uint16_t String_VOUT_s[];
 extern const uint16_t String_TEMP_s[];
+extern const uint16_t String_BOARD_s[];
+extern const uint16_t String_RES_s[];
+extern const uint16_t String_LIQ_s[];
 
 // from screens.c
 extern const uint16_t String_Contrast[];
@@ -156,6 +160,12 @@ extern const uint16_t String_myevic[];
 extern const uint16_t String_Build[];
 extern const uint16_t String_mld[];
 extern const uint16_t String_ml[];
+extern const uint16_t String_Check[];
+extern const uint16_t String_Adapter[];
+extern const uint16_t String_Charge[];
+extern const uint16_t String_Error[];
+extern const uint16_t String_Imbalanced[];
+extern const uint16_t String_Batteries[];
 
 // from menus.c
 extern const uint16_t String_Menus[];
@@ -233,6 +243,7 @@ extern const uint16_t String_Tetra[];
 extern const uint16_t String_Vaped[];
 extern const uint16_t String_BVO[];
 extern const uint16_t String_mlkJ[];
+extern const uint16_t String_LSL[];
 
 
 //==============================================================================
