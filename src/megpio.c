@@ -1,5 +1,6 @@
 #include "myevic.h"
 #include "myprintf.h"
+#include "dataflash.h"
 #include "events.h"
 #include "atomizer.h"
 #include "battery.h"
@@ -41,24 +42,26 @@ __myevic__ void GPD_IRQHandler()
 	{
 		GPIO_CLR_INT_FLAG( PD, GPIO_PIN_PIN0_Msk );
 
-		if ( ISPRESA75W || ISVTCDUAL )
+		if ( ISPRESA75W || ISVTCDUAL || ISCUBOID )
 		{
-			if ( Event != 28 )
+			if ( gFlags.firing || gFlags.probing_ato )
 			{
-				Event = 28;
-				StopFire();
+				if ( Event != 28 )
+				{
+					Event = 28;
+					StopFire();
+				}
 			}
 		}
 	}
-	else if ( GPIO_GET_INT_FLAG( PD, GPIO_PIN_PIN2_Msk ) )
+	else if ( GPIO_GET_INT_FLAG( PD, GPIO_PIN_PIN2_Msk|GPIO_PIN_PIN3_Msk ) )
 	{
-		GPIO_CLR_INT_FLAG( PD, GPIO_PIN_PIN2_Msk );
-		gFlags.wake_up = 1;
-	}
-	else if ( GPIO_GET_INT_FLAG( PD, GPIO_PIN_PIN3_Msk ) )
-	{
-		GPIO_CLR_INT_FLAG( PD, GPIO_PIN_PIN3_Msk );
-		gFlags.wake_up = 1;
+		GPIO_CLR_INT_FLAG( PD, GPIO_PIN_PIN2_Msk|GPIO_PIN_PIN3_Msk );
+
+		if ( dfStatus.wakeonpm )
+		{
+			gFlags.wake_up = 1;
+		}
 	}
 	else
 	{
@@ -72,6 +75,7 @@ __myevic__ void GPE_IRQHandler()
 	if ( GPIO_GET_INT_FLAG( PE, GPIO_PIN_PIN0_Msk ) )
 	{
 		GPIO_CLR_INT_FLAG( PE, GPIO_PIN_PIN0_Msk );
+
 		gFlags.wake_up = 1;
 	}
 	else
@@ -91,21 +95,31 @@ __myevic__ void GPF_IRQHandler()
 //----- (00002384) --------------------------------------------------------
 __myevic__ void InitGPIO()
 {
-	// PD1 = Data transmitter output pin for UART0
-	SYS->GPD_MFPL = SYS_GPD_MFPL_PD1MFP_UART0_TXD;
-
 	if ( ISVTCDUAL )
 	{
 		PA3 = 0;
 		GPIO_SetMode( PA, GPIO_PIN_PIN3_Msk, GPIO_MODE_OUTPUT );
 	}
 
+	if ( ISCUBOID )
+	{
+		SYS->GPF_MFPL &= ~SYS_GPF_MFPL_PF0MFP_Msk;
+		SYS->GPF_MFPL |= SYS_GPF_MFPL_PF0MFP_GPIO;
+		PF0 = 0;
+		GPIO_SetMode( PF, GPIO_PIN_PIN0_Msk, GPIO_MODE_OUTPUT );
+	}
+
+	#if (ENABLE_UART)
+		// PD1 = Data transmitter output pin for UART0
+		SYS->GPD_MFPL |= SYS_GPD_MFPL_PD1MFP_UART0_TXD;
+	#endif
+
 	// PC0 = PWM0 CH0
 	BBC_Configure( BBC_PWMCH_BUCK, 1 );
 	// PC2 = PWM0 CH2
 	BBC_Configure( BBC_PWMCH_BOOST, 1 );
 
-	if ( ISVTCDUAL )
+	if ( ISVTCDUAL || ISCUBOID )
 	{
 		PD7 = 0;
 		BBC_Configure( BBC_PWMCH_CHARGER, 0 );
@@ -118,6 +132,11 @@ __myevic__ void InitGPIO()
 	GPIO_SetMode( PD, GPIO_PIN_PIN3_Msk, GPIO_MODE_INPUT );
 
 	// BUCK/BOOST CONVERTER CONTROL LINES
+	if ( ISCUBOID )
+	{
+		PF2 = 1;
+		GPIO_SetMode( PF, GPIO_PIN_PIN2_Msk, GPIO_MODE_OUTPUT );
+	}
 	PC1 = 0;
 	GPIO_SetMode( PC, GPIO_PIN_PIN1_Msk, GPIO_MODE_OUTPUT );
 	PC3 = 0;
@@ -145,7 +164,7 @@ __myevic__ void InitGPIO()
 		GPIO_EnableInt( PD, 1, GPIO_INT_RISING );
 		GPIO_ENABLE_DEBOUNCE( PD, GPIO_PIN_PIN1_Msk );
 	}
-	else
+	else if ( !ISCUBOID )
 	{
 		GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_INPUT );
 		GPIO_EnableInt( PD, 7, GPIO_INT_RISING );
@@ -170,6 +189,8 @@ __myevic__ void InitGPIO()
 	GPIO_SET_DEBOUNCE_TIME( GPIO_DBCTL_DBCLKSRC_LIRC, GPIO_DBCTL_DBCLKSEL_1024 );
 }
 
+
+#if (ENABLE_UART)
 
 //=========================================================================
 //----- (00006738) --------------------------------------------------------
@@ -204,4 +225,4 @@ __myevic__ void InitUART0()
 	myputc = (FPUTC_FUNC*)&UART0_Putc;
 }
 
-
+#endif

@@ -201,7 +201,7 @@ __myevic__ void EventHandler()
 				return;
 			}
 
-			if ( byte_20000057 == 2 )
+			if ( BatteryStatus == 2 )
 			{
 				Screen = 56;
 				ScreenDuration = 2;
@@ -209,7 +209,7 @@ __myevic__ void EventHandler()
 				return;
 			}
 
-			if ( byte_20000057 == 3 )
+			if ( BatteryStatus == 3 )
 			{
 				Screen = 57;
 				ScreenDuration = 2;
@@ -217,7 +217,7 @@ __myevic__ void EventHandler()
 				return;
 			}
 
-			if ( byte_20000057 == 4 )
+			if ( BatteryStatus == 4 )
 			{
 				Screen = 58;
 				ScreenDuration = 2;
@@ -511,7 +511,7 @@ __myevic__ void EventHandler()
 				GPIO_SetMode( PD, GPIO_PIN_PIN1_Msk, GPIO_MODE_OUTPUT );
 				PD1 = 0;
 			}
-			else
+			else if ( !ISCUBOID )
 			{
 				GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_OUTPUT );
 				PD7 = 0;
@@ -864,7 +864,7 @@ __myevic__ void EventHandler()
 			gFlags.battery_charging = 1;
 			gFlags.refresh_display = 1;
 			BatAnimLevel = BatteryTenth;
-			if ( byte_20000057 == 1 )
+			if ( BatteryStatus == 1 )
 			{
 				Screen = 55;
 				ScreenDuration = 2;
@@ -881,12 +881,15 @@ __myevic__ void EventHandler()
 			return;
 
 		case 11:	// USB cable detach
-			PF2 = 0;
-			PA2 = 0;
-			byte_20000056 = 0;
-			if ( byte_20000057 == 3 || byte_20000057 == 4 )
+			if ( ISVTCDUAL )
 			{
-				byte_20000057 = 0;
+				PF2 = 0;
+				PA2 = 0;
+			}
+			byte_20000056 = 0;
+			if ( BatteryStatus == 3 || BatteryStatus == 4 )
+			{
+				BatteryStatus = 0;
 			}
 			gFlags.usb_attached = 0;
 			gFlags.battery_charging = 0;

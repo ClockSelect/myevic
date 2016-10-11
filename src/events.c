@@ -196,7 +196,7 @@ __myevic__ void GetUserInput()
 					}
 				}
 			}
-			else
+			else if ( !ISCUBOID )
 			{
 				if ( !PD7 && !gFlags.battery_charging )
 				{

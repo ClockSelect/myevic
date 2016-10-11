@@ -156,12 +156,18 @@ __myevic__ void RTCFullAccess()
 
 __myevic__ void RTCWriteRegister( uint32_t r, uint32_t v )
 {
+	if ( gFlags.noclock )
+		return;
+
 	RTCFullAccess();
 	RTC_WRITE_SPARE_REGISTER( r, v );
 }
 
 __myevic__ uint32_t RTCReadRegister( uint32_t r )
 {
+	if ( gFlags.noclock )
+		return 0;
+
 	RTCFullAccess();
 	return RTC_READ_SPARE_REGISTER( r );
 }
@@ -207,6 +213,21 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 	SYS_UnlockReg();
 
 	CLK_EnableModuleClock( RTC_MODULE );
+
+	gFlags.has_x32 = 0;
+
+	if ( !dfStatus.x32off )
+	{
+		//  32.768kHz external crystal
+		SYS->GPF_MFPL &= ~(SYS_GPF_MFPL_PF0MFP_Msk|SYS_GPF_MFPL_PF1MFP_Msk);
+		SYS->GPF_MFPL |=  (SYS_GPF_MFPL_PF0MFP_X32_OUT|SYS_GPF_MFPL_PF1MFP_X32_IN);
+
+		CLK_EnableXtalRC( CLK_PWRCTL_LXTEN_Msk );
+		if ( CLK_WaitClockReady( CLK_STATUS_LXTSTB_Msk ) )
+		{
+			gFlags.has_x32 = 1;
+		}
+	}
 
 	if ( gFlags.has_x32 )
 	{
@@ -338,7 +359,7 @@ __myevic__ void GetRTC( S_RTC_TIME_DATA_T *rtd )
 
 	if ( gFlags.noclock )
 	{
-		MemClear( rtd, sizeof( rtd ) );
+		MemClear( rtd, sizeof( *rtd ) );
 		return;
 	}
 

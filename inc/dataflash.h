@@ -69,6 +69,7 @@ typedef struct
 /* 00100000 */	int onedegree:1;
 /* 00200000 */	int battv:1;
 /* 00400000 */	int lsloff:1;
+/* 00800000 */	int logomid:1;
 
 // Do not exceed 32 bits;
 // if you may do so, create another bitfield.

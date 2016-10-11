@@ -690,8 +690,6 @@ __myevic__ void ShowMainView()
 
 	if ( dfMode != 6 )
 	{
-		if ( !HideLogo ) DrawLOGO( 0, 0 );
-
 		DrawHLine( 0, 43, 63, 1 );
 		DrawHLine( 0, 107, 63, 1 );
 
@@ -723,6 +721,11 @@ __myevic__ void ShowMainView()
 			{
 				DrawInfoLines();
 			}
+		}
+
+		if (( Screen == 1 ) && ( !HideLogo ))
+		{
+			DrawLOGO( 0, dfStatus.logomid ? 46 : 0 );
 		}
 	}
 

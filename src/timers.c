@@ -166,7 +166,7 @@ __myevic__ void TimedItems()
 		if ( !PD1 && ( BattProbeCount >= 2 ) && ( BattProbeCount < 50 ) && ( NumBatteries == 1 ) )
 			++BattProbeCount;
 	}
-	else
+	else if ( !ISCUBOID )
 	{
 		if ( !PD7 && ( BattProbeCount >= 2 ) && ( BattProbeCount < 50 ) )
 			++BattProbeCount;

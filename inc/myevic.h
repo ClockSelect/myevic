@@ -15,6 +15,8 @@
 
 #define BBC_PWM_FREQ	150000
 
+#define ENABLE_UART		0
+
 //-------------------------------------------------------------------------
 
 #define	ISMODETC(m) ((m)<=3)
@@ -46,6 +48,7 @@
 #define PID_EVICAIO		(*(uint32_t*)"E092")
 #define PID_EGRIPII		(*(uint32_t*)"E083")
 #define PID_CUBOMINI	(*(uint32_t*)"E056")
+#define PID_CUBOID		(*(uint32_t*)"E060")
 #define PID_EVICBASIC	(*(uint32_t*)"E150")
 
 enum
@@ -59,6 +62,7 @@ enum
     BOX_EVICAIO,
     BOX_EGRIPII,
     BOX_CUBOMINI,
+    BOX_CUBOID,
     BOX_EVICBASIC
 };
 
@@ -71,6 +75,7 @@ enum
 #define ISEVICAIO		(BoxModel==BOX_EVICAIO)
 #define ISEGRIPII		(BoxModel==BOX_EGRIPII)
 #define ISCUBOMINI		(BoxModel==BOX_CUBOMINI)
+#define ISCUBOID		(BoxModel==BOX_CUBOID)
 #define ISEVICBASIC		(BoxModel==BOX_EVICBASIC)
 
 

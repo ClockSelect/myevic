@@ -132,14 +132,7 @@ void InitDevices()
 	CLK_WaitClockReady( CLK_STATUS_HXTSTB_Msk );
 
 	//  32.768kHz external crystal
-	SYS->GPF_MFPL &= ~(SYS_GPF_MFPL_PF0MFP_Msk|SYS_GPF_MFPL_PF1MFP_Msk);
-	SYS->GPF_MFPL |=  (SYS_GPF_MFPL_PF0MFP_X32_OUT|SYS_GPF_MFPL_PF1MFP_X32_IN);
-
-	CLK_EnableXtalRC( CLK_PWRCTL_LXTEN_Msk );
-	if ( CLK_WaitClockReady( CLK_STATUS_LXTSTB_Msk ) )
-	{
-		gFlags.has_x32 = 1;
-	}
+	CLK_DisableXtalRC( CLK_PWRCTL_LXTEN_Msk );
 
 	// FMC Frequency Optimisation mode <= 72MHz
 	FMC_EnableFreqOptimizeMode( FMC_FTCTL_OPTIMIZE_72MHZ );
@@ -205,7 +198,9 @@ void InitDevices()
 //----- (00000C48) --------------------------------------------------------
 __myevic__ void InitHardware()
 {
-	InitUART0();
+	#if (ENABLE_UART)
+		InitUART0();
+	#endif
 	InitGPIO();
 	InitSPI0();
 	InitEADC();
@@ -229,6 +224,10 @@ __myevic__ void InitVariables()
 	gFlags.read_battery = 1;
 	gFlags.read_bir = 1;
 	WattsInc = dfStatus.onewatt ? 10 : 1;
+	AtoMinVolts = 50;
+	AtoMaxVolts = MaxVolts;
+	AtoMinPower = 10;
+	AtoMaxPower = MaxPower;
 }
 
 
@@ -327,7 +326,7 @@ __myevic__ void DevicesOnOff( int off )
 		SetADCState( 2, 0 );
 		SetADCState( 14, 0 );
 
-		if ( ISVTCDUAL )
+		if ( ISVTCDUAL || ISCUBOID )
 		{
 			SetADCState( 3, 0 );
 			SetADCState( 13, 0 );
@@ -335,15 +334,18 @@ __myevic__ void DevicesOnOff( int off )
 			PD7 = 0;
 			BBC_Configure( BBC_PWMCH_CHARGER, 0 );
 			PD7 = 0;
-		}
-		else
-		{
-			PC3 = 0;
+
+			if ( ISCUBOID )
+			{
+				PF2 = 0;
+			}
 		}
 
 		PC1 = 0;
 		PC0 = 0;
 		BBC_Configure( BBC_PWMCH_BUCK, 0 );
+		if ( !ISVTCDUAL )
+			PC3 = 0;
 		PC2 = 0;
 		BBC_Configure( BBC_PWMCH_BOOST, 0 );
 
@@ -359,7 +361,7 @@ __myevic__ void DevicesOnOff( int off )
 			PD1 = 0;
 			GPIO_SetMode( PD, GPIO_PIN_PIN1_Msk, GPIO_MODE_OUTPUT );
 		}
-		else
+		else if ( !ISCUBOID )
 		{
 			GPIO_DisableInt( PD, 7 );
 			PD7 = 0;
@@ -385,6 +387,10 @@ __myevic__ void DevicesOnOff( int off )
 			PC3 = 0;
 			PF2 = 0;
 			PA2 = 0;
+		}
+		else if ( ISCUBOID )
+		{
+			PF0 = 0;
 		}
 
 		SYS_UnlockReg();
@@ -414,6 +420,11 @@ __myevic__ void DevicesOnOff( int off )
 		GPIO_DisableInt( PD, 2 );
 		GPIO_DisableInt( PD, 3 );
 
+		if ( ISCUBOID )
+		{
+			PF2 = 1;
+		}
+
 		SYS->GPE_MFPH &= ~(SYS_GPE_MFPH_PE11MFP_Msk|SYS_GPE_MFPH_PE12MFP_Msk|SYS_GPE_MFPH_PE13MFP_Msk);
 		SYS->GPE_MFPH |= (SYS_GPE_MFPH_PE11MFP_SPI0_MOSI0|SYS_GPE_MFPH_PE12MFP_SPI0_SS|SYS_GPE_MFPH_PE13MFP_SPI0_CLK);
 
@@ -426,7 +437,7 @@ __myevic__ void DevicesOnOff( int off )
 			GPIO_EnableInt( PD, 1, GPIO_INT_RISING );
 			GPIO_ENABLE_DEBOUNCE( PD, GPIO_PIN_PIN1_Msk );
 		}
-		else
+		else if ( !ISCUBOID )
 		{
 			GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_INPUT );
 			GPIO_EnableInt( PD, 7, GPIO_INT_RISING );
@@ -440,7 +451,7 @@ __myevic__ void DevicesOnOff( int off )
 		SetADCState( 2, 1 );
 		SetADCState( 14, 1 );
 
-		if ( ISVTCDUAL )
+		if ( ISVTCDUAL || ISCUBOID )
 		{
 			SetADCState( 3, 1 );
 			SetADCState( 13, 1 );
@@ -458,7 +469,9 @@ __myevic__ void DevicesOnOff( int off )
 //----- (00005D14) --------------------------------------------------------
 __myevic__ void FlushAndSleep()
 {
-	UART_WAIT_TX_EMPTY( UART0 );
+	#if (ENABLE_UART)
+		UART_WAIT_TX_EMPTY( UART0 );
+	#endif
 
 	if ( !gFlags.light_sleep )
 	{
@@ -509,7 +522,7 @@ __myevic__ void FlushAndSleep()
 
 void GoToSleep()
 {
-	gFlags.light_sleep = !( gFlags.has_x32 || dfStatus.lsloff );
+	gFlags.light_sleep = !( gFlags.has_x32 || dfStatus.lsloff || gFlags.noclock );
 
 	ScreenOff();
 	gFlags.firing = 0;
@@ -645,20 +658,20 @@ __myevic__ void Main()
 
 	InitVariables();
 
-	InitHardware();
-
-	if ( dfStatus.x32off )
+	if ( ISCUBOID )
 	{
-		gFlags.has_x32 = 0;
-		CLK_DisableXtalRC( CLK_PWRCTL_LXTEN_Msk );
+		dfStatus.x32off = 1;
 	}
-	else if ( gFlags.has_x32 )
+
+	InitRTC( 0 );
+
+	if ( gFlags.has_x32 )
 	{
 		dfStatus.lsloff = 1;
 		UpdateDFTimer = 50;
 	}
 
-	InitRTC( 0 );
+	InitHardware();
 
 	myprintf( "\n\nJoyetech APROM\n" );
 	myprintf( "CPU @ %dHz(PLL@ %dHz)\n", SystemCoreClock, PllClock );
@@ -770,7 +783,11 @@ __myevic__ void Main()
 
 			if ( ISVTCDUAL )
 			{
-				BatteryCharge();
+				BatteryChargeDual();
+			}
+			else if ( ISCUBOID )
+			{
+				BatteryChargeCuboid();
 			}
 
 			if (( gFlags.anim3d ) && ( Screen == 1 ) && ( !EditModeTimer ))

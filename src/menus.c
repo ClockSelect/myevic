@@ -17,19 +17,46 @@
 
 typedef struct menu_s menu_t;
 typedef struct mitem_s mitem_t;
+typedef struct mdata_s mdata_t;
+typedef struct mbitdesc_s mbitdesc_t;
+
+enum {
+	MACTION_SUBMENU,
+	MACTION_DATA
+};
+
+enum {
+	MITYPE_BIT
+};
+
+struct mbitdesc_s
+{
+	const uint8_t div;
+	const uint8_t pos;
+	const uint16_t* const on;
+	const uint16_t* const off;
+};
+
+struct mdata_s
+{
+	void* const ptr;
+	const void* const desc;
+	const uint8_t type;
+	const uint8_t bitpos;
+};
 
 struct mitem_s
 {
-	const uint16_t *caption;
-	const menu_t *submenu;
-	const char event;
-	const char rffe;
+	const uint16_t* const caption;
+	const void* const action;
+	const uint8_t event;
+	const uint8_t action_type;
 };
 
 struct menu_s
 {
-	const uint16_t *caption;
-	struct menu_s const *parent;
+	const uint16_t* const caption;
+	const struct menu_s const *parent;
 	void (*on_enter)();
 	void (*on_drawitem)( int mi, int y, int sel );
 	void (*on_selectitem)();
@@ -39,8 +66,8 @@ struct menu_s
 	const mitem_t mitems[];
 };
 
-struct menu_s const *CurrentMenu;
-unsigned char CurrentMenuItem;
+const menu_t const *CurrentMenu;
+uint8_t CurrentMenuItem;
 
 
 //-----------------------------------------------------------------------------
@@ -741,11 +768,11 @@ __myevic__ int ExpertMenuOnEvent( int event )
 				
 				case 7:	// BVO
 				{
-					int i = 0;
-					if ( ++dfBVOffset[i] > 5 )
+					if ( ++dfBVOffset[0] > 5 )
 					{
-						dfBVOffset[i] = ( KeyTicks == 0 ) ? -5 : 5;
+						dfBVOffset[0] = ( KeyTicks == 0 ) ? -5 : 5;
 					}
+					dfBVOffset[2] = dfBVOffset[1] = dfBVOffset[0];
 					vret = 1;
 					break;
 				}
@@ -767,11 +794,11 @@ __myevic__ int ExpertMenuOnEvent( int event )
 				
 				case 7:	// BVO
 				{
-					int i = 0;
-					if ( --dfBVOffset[i] < -5 )
+					if ( --dfBVOffset[0] < -5 )
 					{
-						dfBVOffset[i] = ( KeyTicks == 0 ) ? 5 : -5;
+						dfBVOffset[0] = ( KeyTicks == 0 ) ? 5 : -5;
 					}
+					dfBVOffset[2] = dfBVOffset[1] = dfBVOffset[0];
 					vret = 1;
 					break;
 				}
@@ -1183,9 +1210,9 @@ __myevic__ void ScreenMenuOnClick()
 {
 	switch ( CurrentMenuItem )
 	{
-		case 3:	// Logo
-			dfStatus.nologo ^= 1;
-			break;
+	//	case 3:	// Logo
+	//		dfStatus.nologo ^= 1;
+	//		break;
 
 		case 4:	// Invert
 			dfStatus.invert ^= 1;
@@ -1202,10 +1229,10 @@ __myevic__ void ScreenMenuIDraw( int it, int line, int sel )
 {
 	switch ( it )
 	{
-		case 3:	// Logo
-			DrawFillRect( 40, line, 63, line+12, 0 );
-			DrawString( dfStatus.nologo ? String_Off : String_On, 44, line+2 );
-			break;
+	//	case 3:	// Logo
+	//		DrawFillRect( 40, line, 63, line+12, 0 );
+	//		DrawString( dfStatus.nologo ? String_Off : String_On, 44, line+2 );
+	//		break;
 
 		case 4:	// Invert
 			DrawFillRect( 40, line, 63, line+12, 0 );
@@ -1317,7 +1344,7 @@ const menu_t CoilsMenu =
 	0,
 	3,
 	{
-		{ String_Manage, &CoilsMgmtMenu, 0, 0 },
+		{ String_Manage, &CoilsMgmtMenu, 0, MACTION_SUBMENU },
 		{ String_TCRSet, 0, 39, 0 },
 		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
@@ -1351,8 +1378,8 @@ const menu_t MiscsMenu =
 	0,
 	3,
 	{
-		{ String_Game, &GameMenu, 0, 0 },
-		{ String_3D, &Object3DMenu, 0, 0 },
+		{ String_Game, &GameMenu, 0, MACTION_SUBMENU },
+		{ String_3D, &Object3DMenu, 0, MACTION_SUBMENU },
 		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
@@ -1438,6 +1465,53 @@ const menu_t ScreenSaveMenu =
 	}
 };
 
+const mbitdesc_t InvBitDesc =
+{
+	0, 0,
+	String_Off,
+	String_On
+};
+
+const mbitdesc_t TopBotDesc =
+{
+	0, 0,
+	String_Mid,
+	String_Top
+};
+
+const mdata_t LogoShowData =
+{
+	&dfStatus,
+	&InvBitDesc,
+	MITYPE_BIT,
+	3
+};
+
+const mdata_t LogoWhereData =
+{
+	&dfStatus,
+	&TopBotDesc,
+	MITYPE_BIT,
+	23
+};
+
+const menu_t LogoMenu =
+{
+	String_Logo,
+	&ScreenMenu,
+	0,
+	0,
+	0,
+	0,
+	0,
+	3,
+	{
+		{ String_Show, &LogoShowData, 0, MACTION_DATA },
+		{ String_Where, &LogoWhereData, 0, MACTION_DATA },
+		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+	}
+};
+
 const menu_t ScreenMenu =
 {
 	String_Screen,
@@ -1449,12 +1523,12 @@ const menu_t ScreenMenu =
 	0,
 	7,
 	{
-		{ String_Contrast, 0, EVENT_EDIT_CONTRAST, 0 },
-		{ String_Protection, &ScreenProtMenu, 0, 0 },
-		{ String_Saver, &ScreenSaveMenu, 0, 0 },
-		{ String_Logo, 0, 0, 0 },
+		{ String_Contrast, 0, EVENT_EDIT_CONTRAST,  },
+		{ String_Protection, &ScreenProtMenu, 0, MACTION_SUBMENU },
+		{ String_Saver, &ScreenSaveMenu, 0, MACTION_SUBMENU },
+		{ String_Logo, &LogoMenu, 0, MACTION_SUBMENU },
 		{ String_Invert, 0, 0, 0 },
-		{ String_Miscs, &MiscsMenu, 0, 0 },
+		{ String_Miscs, &MiscsMenu, 0, MACTION_SUBMENU },
 		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
@@ -1495,7 +1569,7 @@ const menu_t IFMenu =
 		{ String_Font, 0, 0, 0 },
 		{ String_Temp, 0, 0, 0 },
 		{ String_PPwr, 0, 0, 0 },
-		{ String_Clicks, &ClicksMenu, 0, 0 },
+		{ String_Clicks, &ClicksMenu, 0, MACTION_SUBMENU },
 		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
@@ -1511,8 +1585,8 @@ const menu_t VapingMenu =
 	VapingMenuOnEvent+1,
 	6,
 	{
-		{ String_Preheat, &PreheatMenu, 0, 0 },
-		{ String_Modes, &ModesMenu, 0, 0 },
+		{ String_Preheat, &PreheatMenu, 0, MACTION_SUBMENU },
+		{ String_Modes, &ModesMenu, 0, MACTION_SUBMENU },
 		{ String_Prot, 0, 0, 0 },
 		{ String_Vaped, 0, 0, 0 },
 		{ String_mlkJ, 0, 0, 0 },
@@ -1531,15 +1605,49 @@ const menu_t MainMenu =
 	0,
 	7,
 	{
-		{ String_Screen, &ScreenMenu, 0, 0 },
-		{ String_Coils, &CoilsMenu, 0, 0 },
-		{ String_Vaping, &VapingMenu, 0, 0 },
-		{ String_Clock, &ClockMenu, 0, 0 },
-		{ String_Interface, &IFMenu, 0, 0 },
-		{ String_Expert, &ExpertMenu, 0, 0 },
+		{ String_Screen, &ScreenMenu, 0, MACTION_SUBMENU },
+		{ String_Coils, &CoilsMenu, 0, MACTION_SUBMENU },
+		{ String_Vaping, &VapingMenu, 0, MACTION_SUBMENU },
+		{ String_Clock, &ClockMenu, 0, MACTION_SUBMENU },
+		{ String_Interface, &IFMenu, 0, MACTION_SUBMENU },
+		{ String_Expert, &ExpertMenu, 0, MACTION_SUBMENU },
 		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
+
+//-----------------------------------------------------------------------------
+
+__myevic__ void DrawMenuData( int line, int sel, const mdata_t *data )
+{
+	switch ( data->type )
+	{
+		case MITYPE_BIT:
+		{
+			uint32_t const *p;
+			uint32_t b;
+
+			const mbitdesc_t *desc = data->desc;
+
+			p = data->ptr;
+			p += data->bitpos / 32;
+			b = 1 << ( data->bitpos % 32 );
+			b &= *p;
+
+			if ( !desc )
+			{
+				DrawFillRect( 40, line, 63, line + 12, 0 );
+				DrawString( b ? String_On : String_Off, 44, line+2 );
+			}
+			else
+			{
+				DrawFillRect( desc->div ? : 40, line, 63, line + 12, 0 );
+				DrawString( b ? desc->on : desc->off, desc->pos ? : 44, line+2 );
+			}
+			break;
+		}
+	}
+}
+
 
 //-----------------------------------------------------------------------------
 
@@ -1584,17 +1692,26 @@ __myevic__ void DrawMenu()
 	{
 		if ( firstitem + i >= CurrentMenu->nitems ) break;
 
-		if ( CurrentMenu->mitems[firstitem+i].caption )
+		mitem_t const *mi = &CurrentMenu->mitems[firstitem+i];
+
+		int line = 18 + 14 * i;
+
+		if ( mi->caption )
 		{
 			if ( CurrentMenuItem == firstitem + i )
 			{
-				DrawFillRect( 0, 18+14*i, 63, 30+14*i, 1 );
-				DrawStringInv( CurrentMenu->mitems[firstitem+i].caption, 4, 20+14*i );
+				DrawFillRect( 0, line, 63, line + 12, 1 );
+				DrawStringInv( mi->caption, 4, line + 2 );
 			}
 			else
 			{
-				DrawString( CurrentMenu->mitems[firstitem+i].caption, 4, 20+14*i );
+				DrawString( mi->caption, 4, line + 2 );
 			}
+		}
+
+		if ( mi->action_type == MACTION_DATA )
+		{
+			DrawMenuData( line, CurrentMenuItem == firstitem + i, mi->action );
 		}
 
 		if ( CurrentMenu->on_drawitem )
@@ -1606,6 +1723,46 @@ __myevic__ void DrawMenu()
 
 //-----------------------------------------------------------------------------
 
+__myevic__ int MenuDataAction( int event, const mdata_t *data )
+{
+	int vret = 0;
+
+	switch ( event )
+	{
+		case 1:
+		{
+			if ( data->type == MITYPE_BIT )
+			{
+				uint32_t *p = data->ptr;
+				p += data->bitpos / 32;
+				uint32_t mask = 1 << ( data->bitpos % 32 );
+				*p ^= mask;
+				vret = 1;
+			}
+			else
+			{
+				// Other types to come
+			}
+			break;
+		}
+		
+		default:
+			// Other events to come
+			break;
+	}
+
+	if ( vret )
+	{
+		UpdateDFTimer = 50;
+		gFlags.refresh_display = 1;
+	}
+			
+	return vret;
+}
+
+
+//-----------------------------------------------------------------------------
+
 __myevic__ int MenuEvent( int event )
 {
 	int vret = 0;
@@ -1614,7 +1771,22 @@ __myevic__ int MenuEvent( int event )
 	{
 		ScreenDuration = 30;
 		vret = CurrentMenu->on_event( event );
-		if ( vret ) return 1;
+		if ( vret ) return vret;
+	}
+
+	mitem_t const *mi = &CurrentMenu->mitems[CurrentMenuItem];
+
+	if ( mi->action )
+	{
+		switch ( mi->action_type )
+		{
+			case MACTION_DATA:
+			{
+				vret = MenuDataAction( event, (const mdata_t*)mi->action );
+				if ( vret ) return vret;
+				break;
+			}
+		}
 	}
 
 	switch ( event )
@@ -1624,16 +1796,21 @@ __myevic__ int MenuEvent( int event )
 			ScreenDuration = 30;
 			if ( CurrentMenu->on_clickitem ) CurrentMenu->on_clickitem();
 
-			mitem_t const *mi = &CurrentMenu->mitems[CurrentMenuItem];
-
-			if ( mi->submenu )
+			if ( mi->action )
 			{
-				CurrentMenu = mi->submenu;
-				CurrentMenuItem = 0;
+				switch ( mi->action_type )
+				{
+					case MACTION_SUBMENU:
+					{
+						CurrentMenu = (const menu_t*)mi->action;
+						CurrentMenuItem = 0;
 
-				if ( CurrentMenu->on_enter ) CurrentMenu->on_enter();
+						if ( CurrentMenu->on_enter ) CurrentMenu->on_enter();
 
-				gFlags.refresh_display = 1;
+						gFlags.refresh_display = 1;
+						break;
+					}
+				}
 			}
 			else if ( mi->event > 0 )
 			{

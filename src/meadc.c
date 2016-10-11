@@ -33,10 +33,10 @@ __myevic__ void InitEADC()
 	// Disable PB.0 - PB.6 digital input paths to avoid leakage currents
 	GPIO_DISABLE_DIGITAL_PATH( PB, 0x7F );
 
-	EADC_Open( EADC, EADC_CTL_DIFFEN_SINGLE_END );
-	EADC_SetInternalSampleTime( EADC, 6 );	// 0.67 us
+//	EADC_Open( EADC, EADC_CTL_DIFFEN_SINGLE_END );
+//	EADC_SetInternalSampleTime( EADC, 6 );	// 0.67 us
 
-	EADC_ConfigSampleModule( EADC, 14, EADC_SOFTWARE_TRIGGER, 14 );
+//	EADC_ConfigSampleModule( EADC, 14, EADC_SOFTWARE_TRIGGER, 14 );
 }
 
 
@@ -159,7 +159,7 @@ __myevic__ void SetADCState( int module, int onoff )
 	if ( onoff )
 	{
 		GPIO_SetMode( PB, pin, GPIO_MODE_INPUT );
-		EADC_ConfigSampleModule( EADC, module, EADC_SOFTWARE_TRIGGER, module );
+//		EADC_ConfigSampleModule( EADC, module, EADC_SOFTWARE_TRIGGER, module );
 	}
 	else
 	{

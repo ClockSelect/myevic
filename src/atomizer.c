@@ -108,6 +108,10 @@ __myevic__ void InitPWM()
 
 	PWM_ConfigOutputChannel( PWM0, BBC_PWMCH_BUCK, BBC_PWM_FREQ, 0 );
 	PWM_ConfigOutputChannel( PWM0, BBC_PWMCH_BOOST, BBC_PWM_FREQ, 0 );
+	if ( ISVTCDUAL || ISCUBOID )
+	{
+		PWM_ConfigOutputChannel( PWM0, BBC_PWMCH_CHARGER, BBC_PWM_FREQ, 0 );
+	}
 
 	PWM_EnableOutput( PWM0, 1 << BBC_PWMCH_BUCK );
 	PWM_EnablePeriodInt( PWM0, BBC_PWMCH_BUCK, 0 );
@@ -115,14 +119,29 @@ __myevic__ void InitPWM()
 	PWM_EnableOutput( PWM0, 1 << BBC_PWMCH_BOOST );
 	PWM_EnablePeriodInt( PWM0, BBC_PWMCH_BOOST, 0 );
 
+	if ( ISVTCDUAL || ISCUBOID )
+	{
+		PWM_EnableOutput( PWM0, 1 << BBC_PWMCH_CHARGER );
+	}
+
 	PWM_Start( PWM0, 1 << BBC_PWMCH_BUCK );
 	PWM_Start( PWM0, 1 << BBC_PWMCH_BOOST );
+	if ( ISVTCDUAL || ISCUBOID )
+	{
+		PWM_Start( PWM0, 1 << BBC_PWMCH_CHARGER );
+	}
 
 	BoostDuty = 0;
 	PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, 0 );
 
 	BuckDuty = 0;
 	PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, 0 );
+
+	if ( ISVTCDUAL || ISCUBOID )
+	{
+		ChargerDuty = 0;
+		PWM_SET_CMR( PWM0, BBC_PWMCH_CHARGER, 0 );
+	}
 }
 
 
@@ -344,6 +363,7 @@ __myevic__ void ReadAtoCurrent()
 	if ( gFlags.firing || gFlags.probing_ato )
 	{
 		adcShunt = ADC_Read( 2 );
+		CLK_SysTickDelay( 10 );
 		adcAtoVolts = ADC_Read( 1 );
 
 		// Shunt current, in 10th of an Amp
@@ -1163,16 +1183,17 @@ __myevic__ void SetAtoLimits()
 //----- (00006038) --------------------------------------------------------
 __myevic__ void ProbeAtomizer()
 {
-	SetADCState( 1, 1 );
-	SetADCState( 2, 1 );
-	WaitOnTMR2( 2 );
-
-	if ( ISVTCDUAL && ( byte_20000057 == 2 || !PA3 ) )
+	if (( ISVTCDUAL && ( BatteryStatus == 2 || !PA3 ) )
+	||  ( ISCUBOID  && ( BatteryStatus == 2 || !PF0 ) ))
 	{
 		AtoStatus = 0;
 	}
 	else
 	{
+		SetADCState( 1, 1 );
+		SetADCState( 2, 1 );
+		WaitOnTMR2( 2 );
+
 		if (( AtoProbeCount == 8 ) || ( gFlags.firing ))
 		{
 			if ( gFlags.firing )

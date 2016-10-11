@@ -67,7 +67,7 @@
 #define HID_DEFAULT_INT_IN_INTERVAL     1
 #define USBD_SELF_POWERED               0
 #define USBD_REMOTE_WAKEUP              0
-#define USBD_MAX_POWER                  50  /* The unit is in 2mA. ex: 50 * 2mA = 100mA */
+#define USBD_MAX_POWER                 50  /* The unit is in 2mA. ex: 50 * 2mA = 100mA */
 
 //=========================================================================
 

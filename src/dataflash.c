@@ -106,6 +106,16 @@ __myevic__ void SetProductID()
 			BoxModel = BOX_CUBOMINI;
 			break;
 		}
+		else if ( u32Data == PID_CUBOID )
+		{
+			dfProductID = u32Data;
+			dfMaxHWVersion = 0x00020001;
+			DFMagicNumber = 0x39;
+			BoxModel = BOX_CUBOID;
+			NumBatteries = 2;
+			gFlags.pwm_pll = 1;
+			break;
+		}
 		else if ( u32Data == PID_EVICBASIC )
 		{
 			dfProductID = u32Data;
@@ -763,6 +773,18 @@ __myevic__ void InitDataFlash()
 				break;
 		}
 	}
+	else if ( ISCUBOID )
+	{
+		switch ( dfHWVersion )
+		{
+			case 102:
+				DisplayModel = 1;
+				break;
+			default:
+				DisplayModel = 0;
+				break;
+		}
+	}
 	else
 	{
 		switch ( dfHWVersion )
@@ -798,6 +820,10 @@ __myevic__ void InitDataFlash()
 	else if ( ISVTCDUAL )
 	{
 		MaxPower	= 1500;
+	}
+	else if ( ISCUBOID )
+	{
+		MaxPower	= 2000;
 	}
 	else
 	{
@@ -942,6 +968,10 @@ __myevic__ uint16_t GetShuntRezValue()
 				rez = 105;
 				break;
 		}
+	}
+	else if ( ISCUBOID )
+	{
+		rez = 105;
 	}
 	else if ( ISWRX75TC )
 	{

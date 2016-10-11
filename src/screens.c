@@ -616,9 +616,26 @@ __myevic__ void ShowBatCharging()
 //----- (0000683C) --------------------------------------------------------
 __myevic__ void ShowBattVolts()
 {
-	DrawStringCentered( String_Battery, 88 );
-	DrawValue( 6, 102, BatteryVoltage, 2, 0x29, 3 );
-	DrawImage( 46, 102, 0xB8 );
+	if ( NumBatteries > 1 )
+	{
+		DrawStringCentered( String_Batteries, 52 );
+		DrawValue( 6, 64, BattVolts[0], 2, 0x29, 3 );
+		DrawImage( 46, 64, 0xB8 );
+		DrawValue( 6, 84, BattVolts[1], 2, 0x29, 3 );
+		DrawImage( 46, 84, 0xB8 );
+
+		if ( NumBatteries > 2 )
+		{
+			DrawValue( 6, 104, BattVolts[2], 2, 0x29, 3 );
+			DrawImage( 46, 104, 0xB8 );
+		}
+	}
+	else
+	{
+		DrawStringCentered( String_Battery, 88 );
+		DrawValue( 6, 102, BatteryVoltage, 2, 0x29, 3 );
+		DrawImage( 46, 102, 0xB8 );
+	}
 }
 
 

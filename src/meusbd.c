@@ -701,15 +701,23 @@ __myevic__ uint32_t hidResetSysCmd( CMD_T *pCmd )
 	if ( UpdateDFTimer ) UpdateDataFlash();
 	if ( UpdatePTTimer ) UpdatePTCounters();
 
-	if ( ISVTCDUAL )
+	if ( ISVTCDUAL || ISCUBOID )
 	{
 		PD7 = 0;
-		BBC_Configure( 5, 0 );
+		BBC_Configure( BBC_PWMCH_CHARGER, 0 );
 		PD7 = 0;
 		ChargerDuty = 0;
-		PA3 = 0;
-		PC3 = 0;
-		PA2 = 0;
+
+		if ( ISVTCDUAL )
+		{
+			PA3 = 0;
+			PC3 = 0;
+			PA2 = 0;
+		}
+		else if ( ISCUBOID )
+		{
+			PF0 = 0;
+		}
 	}
 
 	SYS_UnlockReg();

@@ -11,6 +11,7 @@ extern uint16_t RTBatVolts;
 extern uint16_t LowBatVolts;
 extern uint32_t	PowerScale;
 extern uint16_t	BatteryVoltage;
+extern uint16_t	BattVolts[3];
 extern uint16_t	BatteryCutOff;
 extern uint16_t	BatteryIntRez;
 extern uint16_t	BatteryMaxPwr;
@@ -26,7 +27,7 @@ extern uint8_t	BattProbeCount;
 
 extern uint8_t	byte_20000055;
 extern uint8_t	byte_20000056;
-extern uint8_t	byte_20000057;
+extern uint8_t	BatteryStatus;
 
 //-------------------------------------------------------------------------
 
@@ -38,7 +39,8 @@ extern void SetBatteryModel();
 extern const uint16_t *GetBatteryName();
 extern void ReadInternalResistance();
 extern void SetBatMaxPower();
-extern void BatteryCharge();
+extern void BatteryChargeDual();
+extern void BatteryChargeCuboid();
 
 //=========================================================================
 #endif /* __BATTERY_H__ */
