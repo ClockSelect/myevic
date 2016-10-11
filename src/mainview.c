@@ -764,6 +764,20 @@ __myevic__ void DrawDigitClock( int line )
 	S_RTC_TIME_DATA_T rtd;
 	GetRTC( &rtd );
 
-	DrawTime( 5, line,    &rtd, 0x1F );
-	DrawDate( 4, line+16, &rtd, 0x1F );
+	if ( dfStatus.timebig )
+	{
+		DrawValue( 5, line-3, rtd.u32Hour, 0, 0x29, 2 );
+		DrawValue( 33, line-3, rtd.u32Minute, 0, 0x29, 2 );
+		if ( !( rtd.u32Second & 1 ) )
+		{
+			DrawImage( 29, line-5, 0xDF );
+			DrawImage( 29, line-13, 0xDF );
+		}
+		DrawDate( 4, line+19, &rtd, 0x1F );
+	}
+	else
+	{
+		DrawTime( 5, line,    &rtd, 0x1F );
+		DrawDate( 4, line+16, &rtd, 0x1F );
+	}
 }

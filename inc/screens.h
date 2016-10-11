@@ -248,6 +248,10 @@ extern const uint16_t String_Show[];
 extern const uint16_t String_Where[];
 extern const uint16_t String_Top[];
 extern const uint16_t String_Mid[];
+extern const uint16_t String_Size[];
+extern const uint16_t String_hms[];
+extern const uint16_t String_HM[];
+
 
 //==============================================================================
 

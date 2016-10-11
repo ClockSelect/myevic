@@ -249,7 +249,7 @@ __myevic__ void ClockMenuIDraw( int it, int line, int sel )
 			DrawString( dfStatus.mdy ? String_MDY : String_DMY, 40, line+2 );
 			break;
 
-		case 5:	// Dial
+		case 6:	// Dial
 			DrawFillRect( 36, line, 63, line+12, 0 );
 			DrawImage( 40, line+2, dfStatus.digclk ? 0x9F : 0x9C );
 			break;
@@ -275,7 +275,7 @@ __myevic__ void ClockMenuOnClick()
 			gFlags.refresh_display = 1;
 			break;
 
-		case 5:	// Dial
+		case 6:	// Dial
 			dfStatus.digclk ^= 1;
 			UpdateDFTimer = 50;
 			gFlags.refresh_display = 1;
@@ -1384,6 +1384,21 @@ const menu_t MiscsMenu =
 	}
 };
 
+const mbitdesc_t HmsDesc =
+{
+	36, 40,
+	String_HM,
+	String_hms
+};
+
+const mdata_t ClkSizeData =
+{
+	&dfStatus,
+	&HmsDesc,
+	MITYPE_BIT,
+	24
+};
+
 const menu_t ClockMenu =
 {
 	String_Clock,
@@ -1393,13 +1408,14 @@ const menu_t ClockMenu =
 	0,
 	ClockMenuOnClick+1,
 	0,
-	7,
+	8,
 	{
 		{ String_SetTime, 0, 0, 0 },
 		{ String_SetDate, 0, 0, 0 },
 		{ String_ClkAdjust, 0, EVENT_CLK_ADJUST, 0 },
 		{ String_ClkSpeed, 0, EVENT_CLK_SPEED, 0 },
 		{ String_Fmt, 0, 0, 0 },
+		{ String_Size, &ClkSizeData, 0, MACTION_DATA },
 		{ String_Dial, 0, 0, 0 },
 		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
