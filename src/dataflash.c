@@ -285,6 +285,7 @@ __myevic__ void ResetDataFlash()
 	dfContrast = 45;
 //	dfModesSel = 0;
 	dfClkRatio = RTC_DEF_CLK_RATIO;
+	dfVVRatio = VVEL_DEF_RATIO;
 	dfPreheatPwr = 200;
 //	dfPreheatTime = 0;
 	dfClick[0] = CLICK_ACTION_CLOCK;
