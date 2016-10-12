@@ -8,6 +8,7 @@ This is My eVic VTC Mini.
 * eVic AIO
 * eVic Basic
 * eGrip II
+* Cuboid
 * Cuboid Mini
 * Wismec Presa 75W
 * Wismec Releaux RX75
