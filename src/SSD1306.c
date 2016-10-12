@@ -256,7 +256,7 @@ __myevic__ void SSD1306_WriteBytes( const int isData, const uint8_t data[], cons
 
 	for ( int l = 0 ; l < len ; ++l )
 	{
-		SPI_WRITE_TX( SPI0, data[l] ^ ( ( isData == 0x40 ) ? 0xFF : 0 ) );
+		SPI_WRITE_TX( SPI0, data[l] /* ^ ( ( isData == 0x40 ) ? 0xFF : 0 ) */ );
 		while ( SPI_IS_BUSY( SPI0 ) )
 			;
 	}
