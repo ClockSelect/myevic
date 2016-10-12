@@ -27,6 +27,7 @@ extern const uint8_t ByteMaskRight[];
 extern const uint8_t ByteMaskLeft[];
 
 extern uint8_t DisplayModel;
+extern uint8_t DisplayEorByte;
 extern uint8_t ScreenBuffer[];
 
 extern const image_t **font1;

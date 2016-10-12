@@ -276,19 +276,24 @@ __myevic__ uint32_t SSD1327_Bitmap( int x, int y, const image_t *image, int colo
 //----- (00006444) --------------------------------------------------------
 __myevic__ void SSD1327_WriteBytes( const int isData, const uint8_t data[], const int len )
 {
+	register int is_data;
 	unsigned int pairs;
 	unsigned int mask;
 	uint8_t d;
 	uint8_t byte;
 
-	PE10 = ( isData == 0x40 ) ? 1 : 0;
+	is_data = ( isData == 0x40 );
+
+	PE10 = is_data ? 1 : 0;
 
 	for ( int l = 0 ; l < len ; ++l )
 	{
 		d = data[l];
 
-		if ( isData == 0x40 )
+		if ( is_data )
 		{
+			d ^= DisplayEorByte;
+
 			for ( pairs = 0 ; pairs < 4 ; ++pairs )
 			{
 				mask = ( 1 << ( 7 - 2 * pairs ));

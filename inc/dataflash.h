@@ -150,23 +150,23 @@ dfParams_t;
 
 typedef struct
 {
-	uint32_t	FWVersion;
-	uint32_t	LDVersion;
-	uint32_t	fmcCID;
-	uint32_t	fmcDID;
-	uint32_t	fmcPID;
-	uint32_t	fmcUID[3];
-	uint32_t	fmcUCID[4];
-	uint32_t	PuffCount;
-	uint32_t	TimeCount;
-	uint32_t	ProductID;
-	uint32_t	MaxHWVersion;
-	uint16_t	Year;
-	uint8_t		Month;
-	uint8_t		Day;
-	uint8_t		Hour;
-	uint8_t		Minute;
-	uint8_t		Second;
+/* 0000 */	uint32_t	FWVersion;
+/* 0004 */	uint32_t	LDVersion;
+/* 0008 */	uint32_t	fmcCID;
+/* 000C */	uint32_t	fmcDID;
+/* 0010 */	uint32_t	fmcPID;
+/* 0014 */	uint32_t	fmcUID[3];
+/* 0020 */	uint32_t	fmcUCID[4];
+/* 0030 */	uint32_t	PuffCount;
+/* 0034 */	uint32_t	TimeCount;
+/* 0038 */	uint32_t	ProductID;
+/* 003C */	uint32_t	MaxHWVersion;
+/* 0040 */	uint16_t	Year;
+/* 0042 */	uint8_t		Month;
+/* 0043 */	uint8_t		Day;
+/* 0044 */	uint8_t		Hour;
+/* 0045 */	uint8_t		Minute;
+/* 0046 */	uint8_t		Second;
 }
 dfInfos_t;
 

@@ -660,6 +660,9 @@ __myevic__ void Main()
 
 	if ( ISCUBOID )
 	{
+		// Cuboid uses the PF.0 pin as part of
+		// its battery management system, and thus
+		// cannot have an X32.
 		dfStatus.x32off = 1;
 	}
 
@@ -667,8 +670,15 @@ __myevic__ void Main()
 
 	if ( gFlags.has_x32 )
 	{
+		// Disable Light Sleep mode.
 		dfStatus.lsloff = 1;
 		UpdateDFTimer = 50;
+	}
+	else
+	{
+		// System resets are mostly due to battery replacement.
+		// Take this delay into account (approx).
+		RTCAdjustClock( 10 );
 	}
 
 	InitHardware();

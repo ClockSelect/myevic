@@ -166,6 +166,8 @@ extern const uint16_t String_Charge[];
 extern const uint16_t String_Error[];
 extern const uint16_t String_Imbalanced[];
 extern const uint16_t String_Batteries[];
+extern const uint16_t String_BALANCE_s[];
+extern const uint16_t String_BAL_s[];
 
 // from menus.c
 extern const uint16_t String_Menus[];

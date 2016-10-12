@@ -523,7 +523,11 @@ __myevic__ void ShowBattery()
 		if ( dfStatus.battpc )
 		{
 			DrawImage( 30, 114, 0xE2 );
-			if ( BatteryTenth )
+			if ( gFlags.batteries_ooe && gFlags.draw_battery )
+			{
+				DrawString( String_BAL_s, 35, 117 );
+			}
+			else if ( BatteryTenth )
 			{
 				DrawFillRect( 32, 118, (25 * BatteryTenth / 10 + 31), 124, 1 );
 			}
@@ -531,7 +535,11 @@ __myevic__ void ShowBattery()
 		else
 		{
 			DrawImage( 8, 115, 0xC4 );
-			if ( BatteryTenth )
+			if ( gFlags.batteries_ooe && gFlags.draw_battery )
+			{
+				DrawString( String_BALANCE_s, 10, 117 );
+			}
+			else if ( BatteryTenth )
 			{
 				DrawFillRect( 10, 118, (4 * BatteryTenth + 9), 124, 1 );
 			}

@@ -230,7 +230,7 @@ __myevic__ void TimedItems()
 				gFlags.refresh_display = 1;
 			}
 		}
-		else if ( gFlags.battery_10pc )
+		else if ( gFlags.battery_10pc || gFlags.batteries_ooe )
 		{
 			gFlags.draw_battery ^= 1;
 

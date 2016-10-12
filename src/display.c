@@ -8,6 +8,7 @@
 
 uint8_t	DisplayModel;
 uint8_t	DisplayCmdByte;
+uint8_t DisplayEorByte;
 
 const image_t **font1;
 const image_t **font2;
@@ -112,15 +113,23 @@ __myevic__ void DisplaySetContrast( const uint8_t c )
 //=========================================================================
 __myevic__ void DisplaySetInverse( const uint8_t i )
 {
-	switch ( DisplayModel )
+	if ( gFlags.scr_noinv )
 	{
-		case 0:
-			SSD1306_SetInverse( i );
-			break;
+		DisplayEorByte = i ? 0 : 0xFF;
+		DisplayRefresh();
+	}
+	else
+	{
+		switch ( DisplayModel )
+		{
+			case 0:
+				SSD1306_SetInverse( i );
+				break;
 
-		case 1:
-			SSD1327_SetInverse( i );
-			break;
+			case 1:
+				SSD1327_SetInverse( i );
+				break;
+		}
 	}
 }
 

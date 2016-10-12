@@ -143,6 +143,7 @@ typedef struct
 /* 00020000 */	int pwm_pll:1;
 /* 00040000 */	int light_sleep:1;
 /* 00080000 */	int wake_up:1;
+/* 00100000 */	int scr_noinv:1;
 }
 
 gFlags_t;
