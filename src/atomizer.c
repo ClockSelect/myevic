@@ -1157,7 +1157,7 @@ __myevic__ void SetAtoLimits()
 	if ( dfPower > MaxPower ) dfPower = MaxPower;
 	if ( dfTCPower > MaxTCPower ) dfTCPower = MaxTCPower;
 
-	if ( !AtoError && AtoRez )
+	if ( !AtoError && AtoRez && ISMODEVW(dfMode) )
 	{
 		SetAtoSMARTParams();
 

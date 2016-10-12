@@ -1126,18 +1126,17 @@ __myevic__ int CoilsMEvent( int event )
 	if ( CurrentMenuItem > 3 )
 		return vret;
 
+	if ( event != 1 ) rmodified = 0;
+	
 	switch ( event )
 	{
 		case 1:
 			gFlags.edit_value ^= 1;
-			if ( gFlags.edit_value )
-			{
-				rmodified = 0;
-			}
-			else if ( !rmodified && *CoilSelectedRez > 0 )
+			if ( !gFlags.edit_value && !rmodified && *CoilSelectedRez > 0 )
 			{
 				*CoilSelectedLock ^= 1;
 			}
+			rmodified = 0;
 			gFlags.refresh_display = 1;
 			vret = 1;
 			break;
@@ -1200,6 +1199,17 @@ __myevic__ int CoilsMEvent( int event )
 			break;
 
 	}
+
+	if ( rmodified )
+	{
+		if ( CurrentMenuItem == dfMode )
+		{
+			AtoRez = *CoilSelectedRez;
+			dfResistance = *CoilSelectedRez;
+			SetAtoLimits();
+		}
+	}
+
 	return vret;
 }
 
