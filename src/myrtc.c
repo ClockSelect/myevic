@@ -460,23 +460,14 @@ __myevic__ void RTCSleep()
 	if ( gFlags.noclock )
 		return;
 
-	if ( gFlags.has_x32 )
-	{
-		S_RTC_TIME_DATA_T rtd;
-		time_t t;
+	if ( gFlags.light_sleep )
+		return;
 
-		GetRTC( &rtd );
-		RTCTimeToEpoch( &t, &rtd );
-		RTCSetReferenceDate( &t );
-	}
-	else
-	{
-		if ( !gFlags.light_sleep )
-		{
-			RTC_DisableInt( RTC_INTEN_TICKIEN_Msk );
-			RTCAdjustClock( 0 );
-		}
-	}
+	if ( gFlags.has_x32 )
+		return;
+
+	RTC_DisableInt( RTC_INTEN_TICKIEN_Msk );
+	RTCAdjustClock( 0 );
 }
 
 
@@ -486,6 +477,9 @@ __myevic__ void RTCWakeUp()
 		return;
 
 	if ( gFlags.light_sleep )
+		return;
+
+	if ( gFlags.has_x32 )
 		return;
 
 	S_RTC_TIME_DATA_T rtd;
@@ -498,9 +492,6 @@ __myevic__ void RTCWakeUp()
 	sleep_ticks = ( t - ref );
 	int_cnt = 0;
 
-	if ( !gFlags.has_x32 )
-	{
-		RTC_EnableInt( RTC_INTEN_TICKIEN_Msk );
-	}
+	RTC_EnableInt( RTC_INTEN_TICKIEN_Msk );
 }
 

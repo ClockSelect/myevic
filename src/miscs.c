@@ -233,10 +233,106 @@ const obj3d_t tetra =
 	tetra_lines
 };
 
+const pt3d_t octa_points[] = 
+	{
+		{  0,  1,  0 }, // 0
+		{  1,  0,  0 }, // 1
+		{  0,  0,  1 }, // 2
+		{ -1,  0,  0 }, // 3
+		{  0,  0, -1 }, // 4
+		{  0, -1,  0 }, // 5
+	};
+
+const line3d_t octa_lines[] = 
+	{
+		{ 0, 1 },
+		{ 0, 2 },
+		{ 0, 3 },
+		{ 0, 4 },
+		{ 5, 1 },
+		{ 5, 2 },
+		{ 5, 3 },
+		{ 5, 4 },
+		{ 1, 2 },
+		{ 2, 3 },
+		{ 3, 4 },
+		{ 4, 1 },
+	};
+	
+const obj3d_t octa =
+{
+	28, 1,
+	6,
+	12,
+	octa_points,
+	octa_lines
+};
+
+const pt3d_t isoca_points[] = 
+	{
+		{   0,  10,  16 }, //  0
+		{   0, -10,  16 }, //  1
+		{   0,  10, -16 }, //  2
+		{   0, -10, -16 }, //  3
+		{  10,  16,   0 }, //  4
+		{ -10,  16,   0 }, //  5
+		{  10, -16,   0 }, //  6
+		{ -10, -16,   0 }, //  7
+		{  16,   0,  10 }, //  8
+		{ -16,   0,  10 }, //  9
+		{  16,   0, -10 }, // 10
+		{ -16,   0, -10 }, // 11
+	};
+
+const line3d_t isoca_lines[] = 
+	{
+		{  0,  1 },
+		{  0,  4 },
+		{  0,  5 },
+		{  0,  8 },
+		{  0,  9 },
+		{  1,  6 },
+		{  1,  7 },
+		{  1,  8 },
+		{  1,  9 },
+		{  2,  3 },
+		{  2,  4 },
+		{  2,  5 },
+		{  2, 10 },
+		{  2, 11 },
+		{  3,  6 },
+		{  3,  7 },
+		{  3, 10 },
+		{  3, 11 },
+		{  4,  5 },
+		{  4,  8 },
+		{  4, 10 },
+		{  5,  9 },
+		{  5, 11 },
+		{  6,  7 },
+		{  6,  8 },
+		{  6, 10 },
+		{  7,  9 },
+		{  7, 11 },
+		{  8, 10 },
+		{  9, 11 }
+	};
+
+const obj3d_t isoca =
+{
+	16, 11,
+	12,
+	30,
+	isoca_points,
+	isoca_lines
+};
+
 const obj3d_t const *objects3d[] =
 	{
 		&tetra,
-		&cube
+		&cube,
+		&octa,
+		&isoca
 	};
 
 #define N3DOBJECTS (sizeof(objects3d)/sizeof(obj3d_t*))
@@ -247,7 +343,7 @@ typedef int32_t matrix3d_t[3][3];
 static angles_t angles = { 0, 0, 0 };
 static angles_t speeds = { 3, 5, 1 };
 static matrix3d_t rot_matrix;
-static pt3d_t points[8];
+static pt3d_t points[12];
 
 uint8_t Object3D = 0;
 

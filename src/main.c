@@ -262,7 +262,7 @@ __myevic__ void Plantouille( int xpsr, int* stack )
 	k = 0;
 
 	SYS_UnlockReg();
-	WDT_Open( WDT_TIMEOUT_2POW14, WDT_RESET_DELAY_18CLK, FALSE, FALSE );
+	WDT_Close();
 	SYS_LockReg();
 
 	InitDisplay();
@@ -374,7 +374,7 @@ __myevic__ void DevicesOnOff( int off )
 		PE12 = 0;
 		GPIO_SetMode( PE, GPIO_PIN_PIN12_Msk, GPIO_MODE_OUTPUT );
 		PE13 = 0;
-		GPIO_SetMode( PE, GPIO_PIN_PIN13_Msk, GPIO_MODE_OUTPUT );	// org: pin 3. bug.
+		GPIO_SetMode( PE, GPIO_PIN_PIN13_Msk, GPIO_MODE_OUTPUT );
 		PE10 = 0;
 
 		GPIO_EnableInt( PE, 0, GPIO_INT_BOTH_EDGE );
@@ -446,7 +446,7 @@ __myevic__ void DevicesOnOff( int off )
 
 		PB7 = 1;
 
-		EADC_Open( EADC, EADC_CTL_DIFFEN_SINGLE_END );
+	//	EADC_Open( EADC, EADC_CTL_DIFFEN_SINGLE_END );
 		SetADCState( 1, 1 );
 		SetADCState( 2, 1 );
 		SetADCState( 14, 1 );

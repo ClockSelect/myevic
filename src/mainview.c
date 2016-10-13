@@ -330,6 +330,8 @@ __myevic__ void DrawAPTLine( int line )
 			DrawString( String_RES_s, 0, line+2 );
 			DrawValue( 19, line, AtoRezMilli, 3, 0x1F, 4 );
 			DrawImage( 56, line+2, 0xC0 );
+			// Refresh every second
+			ScreenRefreshTimer = 10;
 			break;
 		}
 

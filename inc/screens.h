@@ -253,6 +253,8 @@ extern const uint16_t String_Mid[];
 extern const uint16_t String_Size[];
 extern const uint16_t String_hms[];
 extern const uint16_t String_HM[];
+extern const uint16_t String_Octa[];
+extern const uint16_t String_Isoca[];
 
 
 //==============================================================================
