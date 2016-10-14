@@ -697,7 +697,7 @@ __myevic__ void BatteryChargeDual()
 	sample3 = ADC_Read( 3 );
 	USBVolts = 147 * sample3 / 752 + 5;
 
-//	myprintf( "nb=%d, adc13=%d USBVolts=%d, b55=%d, b56=%d, b57=%d PD1=%d\n",
+//	myprintf( "nb=%d, adc13=%d USBVolts=%d, b55=%d, b56=%d, BS=%d PD1=%d\n",
 //			NumBatteries, adc13, USBVolts,
 //			byte_20000055, byte_20000056, BatteryStatus, PD1&1 );
 

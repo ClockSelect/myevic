@@ -472,6 +472,7 @@ __myevic__ void PreheatIDraw( int it, int line, int sel )
 			else
 			{
 				dp = ( v < 1000 ) ? 1 : 0;
+				v  = ( v < 1000 ) ? v : v / 10;
 				img = 0x98;
 			}
 			break;

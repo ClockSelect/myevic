@@ -267,10 +267,18 @@ __myevic__ void DrawScreen()
 			break;
 
 		case  22: // Atomizer Low
-		case  23: // 10s Protection
 		case  24: // Battery Low
 		case  25: // Battery Low Lock
 		case  50: // FW Version
+			break;
+
+		case  23: // 10s Protection
+			if ( !dfStatus.off )
+			{
+				// Switch box off after 10s if no response
+				// have been given to a long fire.
+				Event = 17;
+			}
 			break;
 
 		case  20: // No Atomizer Found

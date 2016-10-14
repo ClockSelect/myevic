@@ -818,27 +818,28 @@ __myevic__ void InitDataFlash()
 
 	dfFWVersion	= FWVERSION;
 
-	MaxVolts	= 900;
+	MaxVolts = 900;
 
 	if ( ISEVICBASIC )
 	{
-		MaxPower	= 600;
+		MaxPower = 600;
 	}
 	else if ( ISVTWO || ISEGRIPII || ISCUBOMINI )
 	{
-		MaxPower	= 800;
+		MaxPower = 800;
 	}
 	else if ( ISVTCDUAL )
 	{
-		MaxPower	= 1500;
+		MaxPower = 1500;
+		gFlags.batt_unk = 1;
 	}
 	else if ( ISCUBOID )
 	{
-		MaxPower	= 2000;
+		MaxPower = 2000;
 	}
 	else
 	{
-		MaxPower	= 750;
+		MaxPower = 750;
 	}
 
 	MaxTCPower = MaxPower;

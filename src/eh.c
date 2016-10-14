@@ -24,6 +24,8 @@ uint8_t	WattsInc;
 
 __myevic__ void PowerPlus( uint16_t *pwr, uint16_t min, uint16_t max )
 {
+	max = max - ( max % WattsInc );
+
 	if ( *pwr >= max )
 	{
 		if ( KeyTicks < 5 )
@@ -66,7 +68,7 @@ __myevic__ void PowerMinus( uint16_t *pwr, uint16_t min, uint16_t max )
 	{
 		if ( KeyTicks < 5 )
 		{
-			*pwr = max;
+			*pwr = max - ( max % WattsInc );
 		}
 	}
 	else if ( KeyTicks < 105 )
@@ -754,7 +756,7 @@ __myevic__ void EventHandler()
 				return;
 			gFlags.refresh_display = 1;
 			Screen = 23;
-			ScreenDuration = 2;
+			ScreenDuration = 10;
 			return;
 
 		case 23:	// Reset Time counter

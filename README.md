@@ -3,6 +3,7 @@ This is My eVic VTC Mini.
 
 ### Compatible hardwares:
 * eVic VTC Mini
+* eVic VTC Dual
 * eVic VTwo Mini
 * eVic VTwo
 * eVic AIO
