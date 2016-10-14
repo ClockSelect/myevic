@@ -587,7 +587,7 @@ const FAT16_FileEntry_t VNFileEntry =
 
 FAT16_FileEntry_t FWFileEntry =
 {
-	"FIRMWARE",
+	"MYEVIC  ",
 	"BIN",
 	0x01,
 	0,

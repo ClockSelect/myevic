@@ -77,7 +77,7 @@ Some changes has been made to the overall behavior of the firmware from the orig
 
 * Temperature setting in TEMP mode:  
   The temperature no longer wraps-around by switching between °C and °F; the temperature unit has to be chosen once and for all in the Interface menu. Default is °C.  
-  The temperature setting vary by +/1 °C or +/-5 °F when edited.
+  The temperature setting can vary by +/1 °C or +/-5 °F when edited if configured to do so inthe Interface menu (see below).
 
 * Fire button Multi-Clicks:  
   Clicking rapidly 2, 3 or 4 times on the fire button may now have some effect - see below in the Interface menu description to see those effects and how to set (or unset) them up.  
@@ -103,16 +103,17 @@ Some changes has been made to the overall behavior of the firmware from the orig
     The clock screen is close to the one viewed on the VTwo box; just better, imo.  
     See below the Clock menu to know how to configure clock.
 
-    ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/mainscreen_zpsvjfqgoub.png)
+    ![](http://i345.photobucket.com/albums/p374/ClockSelect/mainscreen_zpsuoh0cthd.png) ![](http://i345.photobucket.com/albums/p374/ClockSelect/mainscreen3_zpsfunjeoct.png)
 
 * Third info line:
 
     The third info line of the main screen, used to display amps,  puffs or time counters now have a few more options:
     - Atomizer voltage
+    - Battery voltage
     - Board temperature
     - Real-time clock
     - Real-time atomizer resistance
-    - Estimate of vape velocity in ml/day *(experimental)*
+    - Estimate of vape velocity in ml or ml/day *(experimental)*
 
         ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/mainscreen2_zpsclbvvdah.png)
 
@@ -123,13 +124,16 @@ Holding fire and right button a few seconds enters menus.
 There's many more to LOGO and Game menus now. See below.
 
 * At any time, you may press simultaneously fire and right button to get out of the menus and return to the main screen.
-* When navigating in sub-menus, you may press simultaneously left and right buttons to return to the parent (upper level) menu.
+* When navigating in sub-menus, you may press simultaneously left and right buttons for one second to return to the parent (upper level) menu.
+
+    ![](http://i345.photobucket.com/albums/p374/ClockSelect/menus_zpsb8gftzok.png)  
+Main menu screen
 
 ----------
 
 * Screen
 
-    ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/screenmenu_zpssfqwsuy4.png)
+    ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/screenmenu_zpsph9b8ono.png)
 
     Screen management menu:
 
@@ -147,13 +151,22 @@ There's many more to LOGO and Game menus now. See below.
 
   * Saver:
 
-         ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/saver_zpsrfxibqb5.png)
+         ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/saver_zpsdkyhj1mz.png)
 
-         Select the screen saver animation. You may choose between None (blank screen), an analog clock or a 3D spinning cube. More to come. Content of this menu will vary from time to time; this document may not always be up to date. Have a look.
+         Select the screen saver animation. You may choose between None (blank screen), the clock (analog or digital depending on the Clock menu setting), 3D spinning objects, the logo, a Qix-like animation, or the snow screen. More to come. Content of this menu will vary from time to time; this document may not always be up to date. Have a look.  
+         When the 3D screen saver is active, the + and - buttons change the animated object.  
+         About the snow screen saver: choose this screen saver if your box experiment burnt pixels; it's a common issue on boxes a few months to a year old, and this screen may help restore the pixels. Se also the Invert option that may serve the same purpose.
+
+  * Logo
+
+         The Logo submenu is used to toggle display of the custom logo On of Off, and to choose where to display it. Logo may be displayed on the top of the screen (in place of the power/temp setting zone) or in the middle of the screen in place of the two first information lines.
 
   * Invert  
   
-         Toggle display mode between white on black and black on white.
+         ![](http://i345.photobucket.com/albums/p374/ClockSelect/invert_zpsyowemzqu.png)  
+
+         Toggle display mode between white on black and black on white.  
+         Beyond the fact you may find this option fancy and cool-looking, it may have its usefulness if your box experiment burnt pixels on the always-white zones. You may use this option in combination with the snow screen saver to restore the quality of your display (see the snow screen saver above in the Screen>Saver submenu section).
 
   * Miscs  
       Sub-menu
@@ -167,7 +180,7 @@ There's many more to LOGO and Game menus now. See below.
 
             ![3D cube](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/cube_zpsf9apfiun.png)
 
-            Cool 3D spinning cube.  
+            Cool 3D spinning shape.  
             Come back to this menu and set it to "None" to cancel animation.  
             Or reset the box.  
 
@@ -267,7 +280,7 @@ There's many more to LOGO and Game menus now. See below.
 
 * Interface
 
-    ![Interface menu screen](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/interface_zpscxrcgysw.png)
+    ![Interface menu screen](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/interface_zpshqw8kg89.png)
 
   * BatV% Off / % / V
 
@@ -280,10 +293,6 @@ There's many more to LOGO and Game menus now. See below.
   * 1C5F On/Off
 
         Enable increment of temperature setting by ±1°C and ±5°F instead of ±5°C and ±10°F
-
-  * Logo On/Off
-  
-        Enable/Disable custom logo display
 
   * Wake < > On/Off
 
@@ -337,28 +346,29 @@ There's many more to LOGO and Game menus now. See below.
        May be usefull if you are developping your own version of the firmware.
 
      * DSK: A virtual drive to download the firmware file.
-     Connect the box to a PC, and a disk device will appear with a "FIRMWARE.BIN" file. This can be read and copied. This file is an encoded firmware file that can be uploaded to another device using evic-usb or the official Joyetech firmware tool.
+     Connect the box to a PC, and a disk device will appear with a "MYEVIC.BIN" file. This can be read and copied. This file is an encoded firmware file that can be uploaded to another device using evic-usb or the official Joyetech/Wismec firmware tool.
 
   * DBG
   
-        Enables or disables the debug informations mode. Once the DBG option is set to "ON", Debug informations can be shown/hidden by clicking fire button four times. This option is OFF by default to prevent users to inadvertendly mess up their screen.
+        Enables or disables the debug informations mode. Once the DBG option is set to "ON", Debug informations can be shown/hidden by clicking fire button four times. This option is OFF by default to prevent users to inadvertendly mess up their screen. It's of no interest if you're not developping your own version of the firmware.
 
   * X32
 
         Enables or disables usage of the X32 crystal of the PCB.  
-        If this setting is "OFF", the firmware won't try to drive the Real-Time Clock with the 32.768kHz crystal. This may solve freezing issues on some malfunctionning boxes (VTwo only). It may also diminish a bit startup time on non-X32 boxes (such as VTC).  
+        If this setting is "OFF", the firmware won't try to drive the Real-Time Clock with the 32.768kHz crystal. This may solve freezing issues on some malfunctionning boxes (VTwo/Dual). It may also diminish a bit startup time on non-X32 boxes (such as VTC).  
         This setting will be active at next reset.  
+        *Keeping this option enabled on boxes known not to have an X32 crystal should theorically do no harm, but sporadic issues have been reported concerning some of thoses boxes with this option enabled. So, I recommend to set this option to "OFF" if the manufacturer's firmware does not handle the Real-Time Clock. This concerns all boxes except VTwo, VTwo-Mini and VTC-Dual.*  
 
   * LSL
   
         Light Sleep mode.  
-        This setting is useless and forced to "OFF" on boxes with a X32 crystal (VTwo etc), and defaults to "ON" on other boxes.  
+        This setting is useless and forced to "OFF" on boxes with a X32 crystal (VTwo/Dual), and defaults to "ON" on other boxes.  
         On boxes where the Real-Time Clock is emulated (like the VTC-Mini), by setting the Light Sleep mode "ON", the box continues to drive the Real-Time Clock with the external 12.000MHz Crystal instead of the internal LIRC oscillator when entering sleep mode. This makes the Clock far more accurate and eliminates the need for the Clock Speed ratio, at the cost of a greater battery consumption (estimated 60~100mAh/day).  
         Using this setting, Clock accuracy is identical to those of real RTC boxes.
 
   * NFE
  
-        *Warning: You can't use Joyetech's firmware updater while this option is "ON".*  
+        *Warning: You can't use Joyetech's firmware updater while this option is "ON". It may aloso cause issues with third-party firmware management systems.*  
         Enables or disables partial compatibility with the [NFirmwareEditor 5.0+](https://github.com/TBXin/NFirmwareEditor/releases) myEvic Configuration Editor.  
         This option is disabled by default; set it to "ON" if you plan to use developpement features of the NFE. You'll have access to monitoring, screenshot, and COM terminal.  
  

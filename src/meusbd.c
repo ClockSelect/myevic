@@ -874,6 +874,12 @@ __myevic__ uint32_t hidScreenshot( CMD_T *pCmd )
 
 		Screen2Bitmap( hidData );
 
+		if ( dfStatus.invert )
+		{
+			for ( int i = 0 ; i < SCREEN_BUFFER_SIZE ; ++i )
+				hidData[i] ^= 0xFF;
+		}
+
 		hidInDataPtr = hidData;
 		hidStartInReport( u32ParamLen );
 	}
