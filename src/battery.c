@@ -699,7 +699,7 @@ __myevic__ void BatteryChargeDual()
 
 //	myprintf( "nb=%d, adc13=%d USBVolts=%d, b55=%d, b56=%d, BS=%d PD1=%d\n",
 //			NumBatteries, adc13, USBVolts,
-//			byte_20000055, byte_20000056, BatteryStatus, PD1&1 );
+//			byte_20000055, byte_20000056, BatteryStatus, PD1 );
 
 	if ( NumBatteries == 0 )
 	{
@@ -910,35 +910,33 @@ LABEL_64:
 			if ( adc13 >= dword_200000B4 )
 				goto LABEL_90;
 
-			if ( ++dword_200000C4 <= 10 )
-				goto LABEL_90;
-
-			dword_200000C4 = 0;
-
-			if ( adc13 >= 180 )
+			if ( ++dword_200000C4 > 10 )
 			{
-				if ( ChargerDuty > 255 )
+				dword_200000C4 = 0;
+
+				if ( adc13 >= 180 )
+				{
+					if ( ChargerDuty > 255 )
+						goto LABEL_90;
+				}
+				else if ( ChargerDuty > 255 )
+				{
+					BatteryStatus = 4;
+					PA3 = 0;
+					PC3 = 0;
+					PA2 = 0;
+					PF2 = 0;
 					goto LABEL_90;
-			}
-			else if ( ChargerDuty > 255 )
-			{
-				BatteryStatus = 4;
-				PA3 = 0;
-				PC3 = 0;
-				PA2 = 0;
-				PF2 = 0;
-				goto LABEL_90;
-			}
-			if ( sample13 < 4020 )
-			{
-				++ChargerDuty;
-				goto LABEL_90;
+				}
+				if ( adc13 < 1005 )
+				{
+					++ChargerDuty;
+				}
 			}
 		}
 		else if ( ChargerDuty )
 		{
 			--ChargerDuty;
-			goto LABEL_90;
 		}
 LABEL_90:
 		PWM_SET_CMR( PWM0, BBC_PWMCH_CHARGER, ChargerDuty );

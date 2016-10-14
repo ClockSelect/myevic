@@ -243,6 +243,9 @@ __myevic__ void BOD_IRQHandler()
 	{
 		if ( !gFlags.has_x32 )
 		{
+		// System resets are mostly due to battery replacement.
+		// Take this delay into account (approx).
+			RTCAdjustClock( 10 );
 			RTCAdjustClock( 0 );
 		}
 
@@ -673,12 +676,6 @@ __myevic__ void Main()
 		// Disable Light Sleep mode.
 		dfStatus.lsloff = 1;
 		UpdateDFTimer = 50;
-	}
-	else
-	{
-		// System resets are mostly due to battery replacement.
-		// Take this delay into account (approx).
-		RTCAdjustClock( 10 );
 	}
 
 	InitHardware();

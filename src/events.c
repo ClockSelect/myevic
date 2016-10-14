@@ -322,7 +322,7 @@ __myevic__ void GetUserInput()
 					break;
 
 				case 20:
-					FireClicksEvent = 29;	// firmware version screen
+					Event = 29;	// firmware version screen
 					break;
 			}
 		}

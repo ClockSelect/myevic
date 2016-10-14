@@ -148,10 +148,7 @@ __myevic__ void RTCEpochToTime( S_RTC_TIME_DATA_T *d, const time_t *t )
 
 __myevic__ void RTCFullAccess()
 {
-	if ( !(RTC->RWEN&RTC_RWEN_RWENF_Msk) || !(RTC->SPRCTL&RTC_SPRCTL_SPRRWEN_Msk) )
-	{
-		RTC_EnableSpareAccess();
-	}
+	RTC_EnableSpareAccess();
 }
 
 __myevic__ void RTCWriteRegister( uint32_t r, uint32_t v )

@@ -720,6 +720,13 @@ __myevic__ uint32_t hidResetSysCmd( CMD_T *pCmd )
 		}
 	}
 
+	if ( !gFlags.has_x32 )
+	{
+		RTCAdjustClock( dfBootFlag ? 9 : 1 );
+		RTCAdjustClock( 0 );
+		CLK_SysTickDelay( 500 );
+	}
+
 	SYS_UnlockReg();
 	SYS_ResetChip();
 	while ( 1 )
