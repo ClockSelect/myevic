@@ -39,18 +39,6 @@
 
 //-------------------------------------------------------------------------
 
-#define PID_VTCMINI		(*(uint32_t*)"E052")
-#define PID_VTWOMINI	(*(uint32_t*)"E115")
-#define PID_VTWO		(*(uint32_t*)"E043")
-#define PID_VTCDUAL		(*(uint32_t*)"E079")
-#define PID_PRESA75W	(*(uint32_t*)"W007")
-#define PID_WRX75TC		(*(uint32_t*)"W026")
-#define PID_EVICAIO		(*(uint32_t*)"E092")
-#define PID_EGRIPII		(*(uint32_t*)"E083")
-#define PID_CUBOMINI	(*(uint32_t*)"E056")
-#define PID_CUBOID		(*(uint32_t*)"E060")
-#define PID_EVICBASIC	(*(uint32_t*)"E150")
-
 enum
 {
 	BOX_VTCMINI,

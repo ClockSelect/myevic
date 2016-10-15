@@ -32,6 +32,38 @@ uint8_t		X32Off;
 
 uint16_t	fmcCntrsIndex;
 
+//-------------------------------------------------------------------------
+
+#define __PIDATTR__ \
+	__attribute__((aligned(4))) \
+	__attribute__((section (".productid")))
+
+const char pid_vtcmini	[4]	__PIDATTR__	= { 'E','0','5','2' };
+const char pid_vtwomini	[4]	__PIDATTR__	= { 'E','1','1','5' };
+const char pid_vtwo		[4]	__PIDATTR__	= { 'E','0','4','3' };
+const char pid_vtcdual	[4]	__PIDATTR__	= { 'E','0','7','9' };
+const char pid_presa75w	[4]	__PIDATTR__	= { 'W','0','0','7' };
+const char pid_wrx75tc	[4]	__PIDATTR__	= { 'W','0','2','6' };
+const char pid_evicaio	[4]	__PIDATTR__	= { 'E','0','9','2' };
+const char pid_egripii	[4]	__PIDATTR__	= { 'E','0','8','3' };
+const char pid_cubomini	[4]	__PIDATTR__	= { 'E','0','5','6' };
+const char pid_cuboid	[4]	__PIDATTR__	= { 'E','0','6','0' };
+const char pid_evicbasic[4]	__PIDATTR__	= { 'E','1','5','0' };
+
+#define MAKEPID(p) (((p)[0])|((p)[1]<<8)|((p)[2]<<16)|((p)[3]<<24))
+
+#define PID_VTCMINI		MAKEPID(pid_vtcmini)
+#define PID_VTWOMINI	MAKEPID(pid_vtwomini)
+#define PID_VTWO		MAKEPID(pid_vtwo)
+#define PID_VTCDUAL		MAKEPID(pid_vtcdual)
+#define PID_PRESA75W	MAKEPID(pid_presa75w)
+#define PID_WRX75TC		MAKEPID(pid_wrx75tc)
+#define PID_EVICAIO		MAKEPID(pid_evicaio)
+#define PID_EGRIPII		MAKEPID(pid_egripii)
+#define PID_CUBOMINI	MAKEPID(pid_cubomini)
+#define PID_CUBOID		MAKEPID(pid_cuboid)
+#define PID_EVICBASIC	MAKEPID(pid_evicbasic)
+
 
 //=============================================================================
 //----- (00002064) --------------------------------------------------------

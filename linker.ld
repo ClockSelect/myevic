@@ -33,6 +33,9 @@ SECTIONS {
 		KEEP(*(.myevic*))
 
 		. = ALIGN(4);
+		KEEP(*(.productid*))
+
+		. = ALIGN(4);
 		*(.rodata*)
 
 		. = ALIGN(4);
