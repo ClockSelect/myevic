@@ -19,10 +19,10 @@ SECTIONS {
 		KEEP(*(.isr_vectors))
 
 		LONG(0x5746594D)
-		LONG(font1_start)
-		LONG(font1_end)
-		LONG(font2_start)
-		LONG(font2_end)
+		LONG(images1_start)
+		LONG(images1_end)
+		LONG(images2_start)
+		LONG(images2_end)
 		LONG(Strings_Start)
 		LONG(Strings_End)
 
@@ -41,12 +41,13 @@ SECTIONS {
 		Strings_End = .;
 
 		. = ALIGN(4);
-		font1_start = .;
-		*(.font1)
-		font1_end = .;
-		font2_start = .;
-		*(.font2)
-		font2_end = .;
+		images1_start = .;
+		*(.imgblock1)
+		images1_end = .;
+
+		images2_start = .;
+		*(.imgblock2)
+		images2_end = .;
 
 	} > ROM
 

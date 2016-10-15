@@ -490,7 +490,7 @@ __myevic__ void ShowBattery()
 	{
 		if ( dfStatus.battv )
 		{
-			uint16_t bv = gFlags.firing ? RTBatVolts : BatteryVoltage;
+			uint16_t bv = gFlags.firing ? RTBattVolts : BatteryVoltage;
 			DrawValueRight(	20, 118, bv, 2, 0x0B, 0 );
 			DrawImage( 21, 118, 0x7D );
 		}

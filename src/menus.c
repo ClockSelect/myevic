@@ -19,6 +19,7 @@ typedef struct menu_s menu_t;
 typedef struct mitem_s mitem_t;
 typedef struct mdata_s mdata_t;
 typedef struct mbitdesc_s mbitdesc_t;
+typedef struct mvaluedesc_s mvaluedesc_t;
 
 enum {
 	MACTION_SUBMENU,
@@ -26,7 +27,10 @@ enum {
 };
 
 enum {
-	MITYPE_BIT
+	MITYPE_BIT,
+	MITYPE_BYTE,
+	MITYPE_SBYTE,
+	MITYPE_WORD
 };
 
 struct mbitdesc_s
@@ -35,6 +39,21 @@ struct mbitdesc_s
 	const uint8_t pos;
 	const uint16_t* const on;
 	const uint16_t* const off;
+};
+
+struct mvaluedesc_s
+{
+	const uint8_t div;
+	const uint8_t posr;
+	const uint8_t nd;
+	const uint8_t dp;
+	const int16_t min;
+	const int16_t max;
+	const void const (*draw)( int x, int y, int v, uint8_t dp, uint16_t z, uint8_t nd );
+	const uint16_t* const unit_s;
+	const uint16_t unit_c;
+	const uint8_t z;
+	const uint8_t inc;
 };
 
 struct mdata_s
@@ -611,6 +630,23 @@ __myevic__ int PreheatMEvent( int event )
 
 //-----------------------------------------------------------------------------
 
+__myevic__ void BVOMenuIDraw( int it, int line, int sel )
+{
+	if ( it >= CurrentMenu->nitems - 1 )
+		return;
+
+	DrawFillRect( 32, line, 63, line+12, 0 );
+
+	uint16_t bvo = ( dfBVOffset[it] >= 0 ) ? dfBVOffset[it] : -dfBVOffset[it];
+	DrawImage( 36, line+2, ( dfBVOffset[it] >= 0 ) ? 0xFC : 0xFD );
+	DrawValue( 44, line+2, bvo * 10, 0, 0x0B, 2 );
+	if ( gFlags.edit_value && sel )
+		InvertRect( 0, line, 63, line+12 );
+}
+
+
+//-----------------------------------------------------------------------------
+
 __myevic__ void ExpertMenuIDraw( int it, int line, int sel )
 {
 	if ( it >= CurrentMenu->nitems - 1 )
@@ -657,27 +693,17 @@ __myevic__ void ExpertMenuIDraw( int it, int line, int sel )
 				DrawString( String_OFF, 36, line+2 );
 			break;
 
-		case 5:	// BAT
-			DrawString( GetBatteryName(), 36, line+2 );
-			break;
-
-		case 6:	// SHR
+		case 5:	// SHR
 			DrawValue( 36, line+2, AtoShuntRez, 0, 0x0B, 3 );
 			if ( gFlags.edit_value && sel )
 				InvertRect( 0, line, 63, line+12 );
 			break;
 
-		case 7:	// BVO
-		{
-			int i = 0;
-			uint16_t bvo = ( dfBVOffset[i] >= 0 ) ? dfBVOffset[i] : -dfBVOffset[i];
-			DrawImage( 36, line+2, ( dfBVOffset[i] >= 0 ) ? 0xFC : 0xFD );
-			DrawValue( 44, line+2, bvo * 10, 0, 0x0B, 2 );
-			if ( gFlags.edit_value && sel )
-				InvertRect( 0, line, 63, line+12 );
+		case 6:	// BAT
+			DrawString( GetBatteryName(), 36, line+2 );
 			break;
-		}
 
+		case 7:	// BVO
 		default:
 			break;
 	}
@@ -721,7 +747,12 @@ __myevic__ void ExpertMenuOnClick()
 			dfStatus.nfe ^= 1;
 			break;
 
-		case 5:	// BAT
+		case 5:	// Shunt Rez Value
+			if ( !(gFlags.edit_value ^= 1) )
+				dfShuntRez = AtoShuntRez;
+			break;
+
+		case 6:	// BAT
 			if ( ++dfBatteryModel >= GetNBatteries() )
 				dfBatteryModel = 0;
 			SetBatteryModel();
@@ -730,13 +761,7 @@ __myevic__ void ExpertMenuOnClick()
 			SetBatMaxPower();
 			break;
 
-		case 6:	// Shunt Rez Value
-			if ( !(gFlags.edit_value ^= 1) )
-				dfShuntRez = AtoShuntRez;
-			break;
-
 		case 7:	// BVO
-			gFlags.edit_value ^= 1;
 			break;
 
 		case 8:	// Exit
@@ -759,24 +784,13 @@ __myevic__ int ExpertMenuOnEvent( int event )
 				break;
 			switch ( CurrentMenuItem )
 			{
-				case 6:	// Shunt Rez
+				case 5:	// Shunt Rez
 					if ( ++AtoShuntRez > SHUNT_MAX_VALUE )
 					{
 						AtoShuntRez = ( KeyTicks == 0 ) ? SHUNT_MIN_VALUE : SHUNT_MAX_VALUE;
 					}
 					vret = 1;
 					break;
-				
-				case 7:	// BVO
-				{
-					if ( ++dfBVOffset[0] > 5 )
-					{
-						dfBVOffset[0] = ( KeyTicks == 0 ) ? -5 : 5;
-					}
-					dfBVOffset[2] = dfBVOffset[1] = dfBVOffset[0];
-					vret = 1;
-					break;
-				}
 			}
 			break;
 
@@ -785,31 +799,20 @@ __myevic__ int ExpertMenuOnEvent( int event )
 				break;
 			switch ( CurrentMenuItem )
 			{
-				case 6:	// Shunt Rez
+				case 5:	// Shunt Rez
 					if ( --AtoShuntRez < SHUNT_MIN_VALUE )
 					{
 						AtoShuntRez = ( KeyTicks == 0 ) ? SHUNT_MAX_VALUE : SHUNT_MIN_VALUE;
 					}
 					vret = 1;
 					break;
-				
-				case 7:	// BVO
-				{
-					if ( --dfBVOffset[0] < -5 )
-					{
-						dfBVOffset[0] = ( KeyTicks == 0 ) ? 5 : -5;
-					}
-					dfBVOffset[2] = dfBVOffset[1] = dfBVOffset[0];
-					vret = 1;
-					break;
-				}
 			}
 			break;
 
 		case EVENT_LONG_FIRE:
 			switch ( CurrentMenuItem )
 			{
-				case 6:	// Shunt Rez
+				case 5:	// Shunt Rez
 					AtoShuntRez = GetShuntRezValue();
 					dfShuntRez = 0;
 					vret = 1;
@@ -1216,44 +1219,6 @@ __myevic__ int CoilsMEvent( int event )
 
 
 //-----------------------------------------------------------------------------
-
-__myevic__ void ScreenMenuOnClick()
-{
-	switch ( CurrentMenuItem )
-	{
-	//	case 3:	// Logo
-	//		dfStatus.nologo ^= 1;
-	//		break;
-
-		case 4:	// Invert
-			dfStatus.invert ^= 1;
-			DisplaySetInverse( dfStatus.invert );
-			break;
-	}
-
-	UpdateDFTimer = 50;
-	gFlags.refresh_display = 1;
-}
-
-
-__myevic__ void ScreenMenuIDraw( int it, int line, int sel )
-{
-	switch ( it )
-	{
-	//	case 3:	// Logo
-	//		DrawFillRect( 40, line, 63, line+12, 0 );
-	//		DrawString( dfStatus.nologo ? String_Off : String_On, 44, line+2 );
-	//		break;
-
-		case 4:	// Invert
-			DrawFillRect( 40, line, 63, line+12, 0 );
-			DrawString( dfStatus.invert ? String_On : String_Off, 44, line+2 );
-			break;
-	}
-}
-
-
-//-----------------------------------------------------------------------------
 // Forward declarations for parent menu pointers
 
 const menu_t MainMenu;
@@ -1263,8 +1228,23 @@ const menu_t ScreenMenu;
 const menu_t MiscsMenu;
 const menu_t IFMenu;
 const menu_t VapingMenu;
+const menu_t ExpertMenu;
 
 //-----------------------------------------------------------------------------
+
+const mbitdesc_t BitDesc =
+{
+	0, 0,
+	String_On,
+	String_Off
+};
+
+const mbitdesc_t InvBitDesc =
+{
+	0, 0,
+	String_Off,
+	String_On
+};
 
 const menu_t GameMenu =
 {
@@ -1451,6 +1431,60 @@ const menu_t ScreenProtMenu =
 	}
 };
 
+const mvaluedesc_t BVODesc =
+{
+	32, 56,
+	2, 0,
+	-5, 5,
+	0,
+	0,
+	0,
+	0x0B,
+	1
+};
+
+const mdata_t BVO1Data =
+{
+	&dfBVOffset[0],
+	&BVODesc,
+	MITYPE_SBYTE,
+	0
+};
+
+const mdata_t BVO2Data =
+{
+	&dfBVOffset[1],
+	&BVODesc,
+	MITYPE_SBYTE,
+	0
+};
+
+const mdata_t BVO3Data =
+{
+	&dfBVOffset[2],
+	&BVODesc,
+	MITYPE_SBYTE,
+	0
+};
+
+const menu_t BVOMenu =
+{
+	String_BVO,
+	&ExpertMenu,
+	0,
+	BVOMenuIDraw+1,
+	0,
+	0,
+	0,
+	4,
+	{
+		{ String_B1, &BVO1Data, 0, MACTION_DATA },
+		{ String_B2, &BVO2Data, 0, MACTION_DATA },
+		{ String_B3, &BVO3Data, 0, MACTION_DATA },
+		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+	}
+};
+
 const menu_t ExpertMenu =
 {
 	String_Expert,
@@ -1467,9 +1501,9 @@ const menu_t ExpertMenu =
 		{ String_X32, 0, 0, 0 },
 		{ String_LSL, 0, 0, 0 },
 		{ String_NFE, 0, 0, 0 },
-		{ String_BAT, 0, 0, 0 },
 		{ String_SHR, 0, 0, 0 },
-		{ String_BVO, 0, 0, 0 },
+		{ String_BAT, 0, 0, 0 },
+		{ String_BVO, &BVOMenu, 0, MACTION_SUBMENU },
 		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
@@ -1492,13 +1526,6 @@ const menu_t ScreenSaveMenu =
 		{ String_Qix, 0, EVENT_EXIT_MENUS, 0 },
 		{ String_Snow, 0, EVENT_EXIT_MENUS, 0 }
 	}
-};
-
-const mbitdesc_t InvBitDesc =
-{
-	0, 0,
-	String_Off,
-	String_On
 };
 
 const mbitdesc_t TopBotDesc =
@@ -1541,14 +1568,22 @@ const menu_t LogoMenu =
 	}
 };
 
+const mdata_t ScreenInvData =
+{
+	&dfStatus,
+	&BitDesc,
+	MITYPE_BIT,
+	18
+};
+
 const menu_t ScreenMenu =
 {
 	String_Screen,
 	&MainMenu,
 	0,
-	ScreenMenuIDraw+1,
 	0,
-	ScreenMenuOnClick+1,
+	0,
+	0,
 	0,
 	7,
 	{
@@ -1556,7 +1591,7 @@ const menu_t ScreenMenu =
 		{ String_Protection, &ScreenProtMenu, 0, MACTION_SUBMENU },
 		{ String_Saver, &ScreenSaveMenu, 0, MACTION_SUBMENU },
 		{ String_Logo, &LogoMenu, 0, MACTION_SUBMENU },
-		{ String_Invert, 0, 0, 0 },
+		{ String_Invert, &ScreenInvData, EVENT_INVERT_SCREEN, MACTION_DATA },
 		{ String_Miscs, &MiscsMenu, 0, MACTION_SUBMENU },
 		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
@@ -1648,16 +1683,15 @@ const menu_t MainMenu =
 
 __myevic__ void DrawMenuData( int line, int sel, const mdata_t *data )
 {
+	uint32_t const *p = data->ptr;
+	const mbitdesc_t *desc = data->desc;
+
 	switch ( data->type )
 	{
 		case MITYPE_BIT:
 		{
-			uint32_t const *p;
 			uint32_t b;
 
-			const mbitdesc_t *desc = data->desc;
-
-			p = data->ptr;
 			p += data->bitpos / 32;
 			b = 1 << ( data->bitpos % 32 );
 			b &= *p;
@@ -1758,23 +1792,131 @@ __myevic__ int MenuDataAction( int event, const mdata_t *data )
 
 	switch ( event )
 	{
-		case 1:
+		case 1:	// Fire
 		{
-			if ( data->type == MITYPE_BIT )
+			switch ( data->type )
 			{
-				uint32_t *p = data->ptr;
-				p += data->bitpos / 32;
-				uint32_t mask = 1 << ( data->bitpos % 32 );
-				*p ^= mask;
-				vret = 1;
+				case MITYPE_BIT:
+				{
+					uint32_t *p = data->ptr;
+					p += data->bitpos / 32;
+					uint32_t mask = 1 << ( data->bitpos % 32 );
+					*p ^= mask;
+					vret = 1;
+					break;
+				}
+
+				case MITYPE_BYTE:
+				case MITYPE_SBYTE:
+				case MITYPE_WORD:
+					gFlags.edit_value ^= 1;
+					vret = 1;
+					break;
 			}
-			else
-			{
-				// Other types to come
-			}
+
+			Event = CurrentMenu->mitems[CurrentMenuItem].event;
+
 			break;
 		}
-		
+
+		case 2:	// Plus
+		{
+			if ( !gFlags.edit_value )
+				break;
+
+			const mvaluedesc_t *desc = data->desc;
+
+			switch ( data->type )
+			{
+				case MITYPE_BYTE:
+				{
+					uint8_t *p = data->ptr;
+
+					if ( ( *p += desc->inc ) > desc->max )
+					{
+						*p = ( KeyTicks == 1 ) ? desc->min : desc->max;
+					}
+					vret = 1;
+					break;
+				}
+
+				case MITYPE_SBYTE:
+				{
+					int8_t *p = data->ptr;
+
+					if ( ( *p += desc->inc ) > desc->max )
+					{
+						*p = ( KeyTicks == 1 ) ? desc->min : desc->max;
+					}
+					vret = 1;
+					break;
+				}
+
+				case MITYPE_WORD:
+				{
+					int16_t *p = data->ptr;
+					
+					if ( ( *p += desc->inc ) > desc->max )
+					{
+						*p = ( KeyTicks == 1 ) ? desc->min : desc->max;
+					}
+					vret = 1;
+					break;
+				}
+			}
+
+			break;
+		}
+
+		case 3:	// Minus
+		{
+			if ( !gFlags.edit_value )
+				break;
+
+			const mvaluedesc_t *desc = data->desc;
+
+			switch ( data->type )
+			{
+				case MITYPE_BYTE:
+				{
+					uint8_t *p = data->ptr;
+
+					if ( ( *p <= desc->min ) || ( ( *p -= desc->inc ) < desc->min ) )
+					{
+						*p = ( KeyTicks == 1 ) ? desc->max : desc->min;
+					}
+					vret = 1;
+					break;
+				}
+
+				case MITYPE_SBYTE:
+				{
+					int8_t *p = data->ptr;
+
+					if ( ( *p -= desc->inc ) < desc->min )
+					{
+						*p = ( KeyTicks == 1 ) ? desc->max : desc->min;
+					}
+					vret = 1;
+					break;
+				}
+
+				case MITYPE_WORD:
+				{
+					int16_t *p = data->ptr;
+					
+					if ( ( *p -= desc->inc ) < desc->min )
+					{
+						*p = ( KeyTicks == 1 ) ? desc->max : desc->min;
+					}
+					vret = 1;
+					break;
+				}
+			}
+
+			break;
+		}
+
 		default:
 			// Other events to come
 			break;

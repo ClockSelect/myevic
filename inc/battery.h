@@ -7,7 +7,7 @@
 
 //-------------------------------------------------------------------------
 
-extern uint16_t RTBatVolts;
+extern uint16_t RTBattVolts;
 extern uint16_t LowBatVolts;
 extern uint32_t	PowerScale;
 extern uint16_t	BatteryVoltage;
@@ -40,7 +40,7 @@ extern const uint16_t *GetBatteryName();
 extern void ReadInternalResistance();
 extern void SetBatMaxPower();
 extern void BatteryChargeDual();
-extern void BatteryChargeCuboid();
+extern void BatteryCharge();
 
 //=========================================================================
 #endif /* __BATTERY_H__ */

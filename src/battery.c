@@ -191,6 +191,7 @@ const Battery_t Batteries[] =
 uint16_t	LowBatVolts;
 uint32_t	PowerScale;
 uint16_t	BatteryVoltage;
+uint16_t	BattVoltsHighest;
 uint16_t	BattVolts[3];
 uint16_t	BatteryCutOff;
 uint16_t	BatteryIntRez;
@@ -202,7 +203,7 @@ uint8_t		NoEventTimer;
 uint8_t		BatReadTimer;
 uint8_t		NumBatteries;
 uint16_t	ChargerDuty;
-uint16_t	RTBatVolts;
+uint16_t	RTBattVolts;
 
 uint8_t		BattProbeCount;
 
@@ -325,7 +326,7 @@ __myevic__ void ReadInternalResistance()
 //
 //	if ( ISVTCDUAL ) vbat += 2;
 
-	vbat = RTBatVolts;
+	vbat = RTBattVolts;
 
 	// Assume 90% efficiency of the circuitry
 	ibat = ( 10 * vato * iato ) / ( 9 * vbat );
@@ -455,8 +456,6 @@ __myevic__ void ReadBatteryVoltage()
 			VbatSample1 = ( VbatSample1 >> 7 ) + 2;
 			VbatSample2 = 139 * ( VbatSample2 >> 4 ) / 624;
 
-		//	myprintf( "S1=%d S2=%d\n", VbatSample1, VbatSample2 );
-
 			BattVolts[0] = VbatSample1 + dfBVOffset[0];
 
 			if ( VbatSample1 + VbatSample1 / 5 < VbatSample2 )
@@ -509,27 +508,20 @@ __myevic__ void ReadBatteryVoltage()
 
 		gFlags.batteries_ooe = 0;
 
-		if ( NumBatteries == 2 )
-		{
-			if ( BattVolts[0] < BattVolts[1] )
-			{
-				BatteryVoltage = BattVolts[0];
-			}
-			else
-			{
-				BatteryVoltage = BattVolts[1];
-				BattVolts[1] = BattVolts[0];
-				BattVolts[0] = BatteryVoltage;
-			}
+		BattVoltsHighest = 0;
 
-			if ( BattVolts[1] - BattVolts[0] > 30 )
-			{
-				gFlags.batteries_ooe = 1;
-			}
-		}
-		else
+		for ( int i = 0 ; i < NumBatteries ; ++i )
 		{
-			BatteryVoltage = BattVolts[0];
+			if ( BattVolts[i] > BattVoltsHighest )
+				BattVoltsHighest = BattVolts[i];
+
+			if ( !i || BattVolts[i] < BatteryVoltage )
+				BatteryVoltage = BattVolts[i];
+		}
+
+		if ( BattVoltsHighest - BatteryVoltage > 30 )
+		{
+			gFlags.batteries_ooe = 1;
 		}
 
 		if ( ( NoEventTimer <= 100 )
@@ -573,7 +565,7 @@ __myevic__ int CheckBattery()
 		pwr = dfPower;
 	}
 
-	RTBatVolts = 0;
+	RTBattVolts = 0;
 
 	i = 0;
 	do
@@ -631,7 +623,7 @@ __myevic__ int CheckBattery()
 		return 1;
 	}
 
-	RTBatVolts = bv;
+	RTBattVolts = bv;
 
 	if ( !( gFlags.firing )
 		|| ( !ISMODEVW(dfMode) && ( !ISMODETC(dfMode) || gFlags.check_mode ) ) )
@@ -847,7 +839,7 @@ LABEL_29:
 
 	if ( gFlags.battery_charging )
 	{
-		if ( byte_20000056 == 4 && BattVolts[1] > 422 )
+		if ( byte_20000056 == 4 && BattVoltsHighest > 422 )
 		{
 			if ( NumBatteries != 2 )
 				goto LABEL_61;
@@ -872,7 +864,7 @@ LABEL_64:
 
 		if ( BatteryVoltage >= 290 )
 		{
-			if ( BattVolts[1] < 416 )
+			if ( BattVoltsHighest < 416 )
 			{
 				if ( byte_20000056 != 4 )
 				{
@@ -943,7 +935,7 @@ LABEL_90:
 		return;
 	}
 
-	if ( BattVolts[1] >= 420 || byte_20000056 == 5 )
+	if ( BattVoltsHighest >= 420 || byte_20000056 == 5 )
 		goto LABEL_60;
 
 	if ( NumBatteries == 2 )
@@ -968,7 +960,7 @@ LABEL_61:
 //=========================================================================
 // Battery Charging (Cuboid)
 //-------------------------------------------------------------------------
-__myevic__ void BatteryChargeCuboid()
+__myevic__ void BatteryCharge()
 {
 	uint32_t USBVolts, adc13, sample3, sample13;
 
@@ -1024,7 +1016,7 @@ __myevic__ void BatteryChargeCuboid()
 		if ( adc13 > 250 )
 		{
 			gFlags.refresh_display = 1;
-			Screen = 58;
+			Screen = 58;	// Charge Error
 			ScreenDuration = 2;
 		}
 	}
@@ -1035,7 +1027,7 @@ LABEL_24:
 		if ( byte_20000056 != 6 )
 		{
 			gFlags.refresh_display = 1;
-			Screen = 57;
+			Screen = 57;	// USB Adapter Error
 LABEL_35:
 			ScreenDuration = 2;
 		}
@@ -1070,7 +1062,7 @@ LABEL_39:
 
 	if ( !gFlags.battery_charging )
 	{
-		if ( BattVolts[1] < 420 && byte_20000056 != 5 )
+		if ( BattVoltsHighest < 420 && byte_20000056 != 5 )
 		{
 			Event = 12;
 			byte_20000056 = 0;
@@ -1084,7 +1076,7 @@ LABEL_29:
 			goto LABEL_39;
 		goto LABEL_31;
 	}
-	if ( BattVolts[1] > 422 )
+	if ( BattVoltsHighest > 422 )
 	{
 		Event = 13;
 		byte_20000056 = 5;
@@ -1094,7 +1086,7 @@ LABEL_29:
 LABEL_31:
 	if ( BatteryVoltage >= 290 )
 	{
-		if ( BattVolts[1] < 416 )
+		if ( BattVoltsHighest < 416 )
 		{
 			if ( byte_20000056 != 4 )
 			{

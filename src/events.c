@@ -1081,6 +1081,11 @@ __myevic__ int CustomEvents()
 			vret = 1;
 			break;
 
+		case EVENT_INVERT_SCREEN:
+			DisplaySetInverse( dfStatus.invert );
+			vret = 1;
+			break;
+
 		default:
 			break;
 	}

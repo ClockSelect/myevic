@@ -309,7 +309,7 @@ __myevic__ void DrawAPTLine( int line )
 		case 5:	// Battery voltage
 		{
 			DrawString( String_BATT_s, 0, line+2 );
-			DrawValue( 27, line, (gFlags.firing)?RTBatVolts:BatteryVoltage, 2, 0x1F, 3 );
+			DrawValue( 27, line, (gFlags.firing)?RTBattVolts:BatteryVoltage, 2, 0x1F, 3 );
 			DrawImage( 57, line+2, 0x97 );
 			break;
 		}

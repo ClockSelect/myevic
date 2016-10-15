@@ -188,7 +188,7 @@ __myevic__ uint32_t SSD1306_Image( int x, int y, uint16_t img, int color )
 	{
 		y += 2;
 	}
-	return SSD1306_Bitmap( x, y, font1[img - 1], color );
+	return SSD1306_Bitmap( x, y, Images[img - 1], color );
 }
 
 

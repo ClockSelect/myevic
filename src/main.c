@@ -139,7 +139,6 @@ void InitDevices()
 
 	// Setup PLL to 144MHz and HCLK source to PLL/2
 	CLK_SetCoreClock( CPU_FREQ );
-	CLK_WaitClockReady( CLK_STATUS_PLLSTB_Msk );
 
 	// UART0 CLK = HXT/1
 	CLK_EnableModuleClock( UART0_MODULE );
@@ -469,6 +468,45 @@ __myevic__ void DevicesOnOff( int off )
 
 
 //=============================================================================
+__myevic__ void LightSleep()
+{
+	// Switch Core Clock to HXT/3 (4MHz)
+	CLK_SetHCLK( CLK_CLKSEL0_HCLKSEL_HXT, CLK_CLKDIV0_HCLK( 3 ) );
+
+	// Switch off the PLL Clock & the HIRC
+	CLK_DisablePLL();
+	CLK_DisableXtalRC( CLK_PWRCTL_HIRCEN_Msk );
+
+	// Disable Clocks of Modules using HCLK/HXT or LIRC
+	CLK_DisableModuleClock( PWM0_MODULE );
+	CLK_DisableModuleClock( UART0_MODULE );
+	CLK_DisableModuleClock( SPI0_MODULE );
+	CLK_DisableModuleClock( CRC_MODULE );
+
+	gFlags.wake_up = 0;
+
+	do
+	{
+		CLK_Idle();
+	}
+	while ( !gFlags.wake_up );
+
+	// Wake up the HIRC
+	CLK_EnableXtalRC( CLK_PWRCTL_HIRCEN_Msk );
+	CLK_WaitClockReady( CLK_STATUS_HIRCSTB_Msk );
+
+	// Wake up the PLL
+	CLK_SetCoreClock( CPU_FREQ );
+
+	// Wake up Modules
+	CLK_EnableModuleClock( PWM0_MODULE );
+	CLK_EnableModuleClock( UART0_MODULE );
+	CLK_EnableModuleClock( SPI0_MODULE );
+	CLK_EnableModuleClock( CRC_MODULE );
+}
+
+
+//=============================================================================
 //----- (00005D14) --------------------------------------------------------
 __myevic__ void FlushAndSleep()
 {
@@ -482,40 +520,7 @@ __myevic__ void FlushAndSleep()
 	}
 	else
 	{
-		// Switch Core Clock to HXT
-		CLK_SetHCLK( CLK_CLKSEL0_HCLKSEL_HXT, CLK_CLKDIV0_HCLK( 1 ) );
-    
-		// Switch off the PLL Clock & the HIRC
-		CLK_DisablePLL();
-		CLK_DisableXtalRC( CLK_PWRCTL_HIRCEN_Msk );
-
-		// Disable Clocks of Modules using HCLK/HXT or LIRC
-		CLK_DisableModuleClock( PWM0_MODULE );
-		CLK_DisableModuleClock( UART0_MODULE );
-		CLK_DisableModuleClock( SPI0_MODULE );
-		CLK_DisableModuleClock( CRC_MODULE );
-
-		gFlags.wake_up = 0;
-
-		do
-		{
-			CLK_Idle();
-		}
-		while ( !gFlags.wake_up );
-
-		// Wake up the HIRC
-		CLK_EnableXtalRC( CLK_PWRCTL_HIRCEN_Msk );
-		CLK_WaitClockReady( CLK_STATUS_HIRCSTB_Msk );
-    
-		// Wake up the PLL
-		CLK_SetCoreClock( CPU_FREQ );
-		CLK_WaitClockReady( CLK_STATUS_PLLSTB_Msk );
-
-		// Wake up Modules
-		CLK_EnableModuleClock( PWM0_MODULE );
-		CLK_EnableModuleClock( UART0_MODULE );
-		CLK_EnableModuleClock( SPI0_MODULE );
-		CLK_EnableModuleClock( CRC_MODULE );
+		LightSleep();
 	}
 }
 
@@ -587,7 +592,7 @@ __myevic__ void Monitor()
 		myprintf( "FIRING "
 					"RESM=%d BATT=%d VOUT=%d CUR=%d",
 					AtoRezMilli,
-					RTBatVolts,
+					RTBattVolts,
 					AtoVolts,
 					AtoCurrent
 				);
@@ -794,7 +799,7 @@ __myevic__ void Main()
 			}
 			else if ( ISCUBOID )
 			{
-				BatteryChargeCuboid();
+				BatteryCharge();
 			}
 
 			if (( gFlags.anim3d ) && ( Screen == 1 ) && ( !EditModeTimer ))

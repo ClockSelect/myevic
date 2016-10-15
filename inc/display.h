@@ -30,8 +30,7 @@ extern uint8_t DisplayModel;
 extern uint8_t DisplayEorByte;
 extern uint8_t ScreenBuffer[];
 
-extern const image_t **font1;
-extern const image_t **font2;
+extern const image_t **Images;
 
 extern const image_t const *font0_1306[];
 extern const image_t const *font0_1327[];
@@ -67,9 +66,9 @@ extern void DrawFillRect( const int x1, const int y1,const  int x2, const int y2
 extern uint32_t DrawImage( const int x, const int y, const uint16_t img );
 extern uint32_t DrawImageInv( const int x, const int y, const uint16_t img );
 extern void DrawLOGO( const int x, const int y );
-extern void DrawValue( int x, int y, int v, int dp, uint16_t z, int nd );
-extern void DrawValueRight( int x, int y, int v, int dp, uint16_t z, int nd );
-extern void DrawValueInv( int x, int y, int v, int dp, uint16_t z, int nd );
+extern void DrawValue( int x, int y, int v, uint8_t dp, uint16_t z, uint8_t nd );
+extern void DrawValueRight( int x, int y, int v, uint8_t dp, uint16_t z, uint8_t nd );
+extern void DrawValueInv( int x, int y, int v, uint8_t dp, uint16_t z, uint8_t nd );
 extern void DrawString( const uint16_t s[], int x, int y );
 extern void DrawStringInv( const uint16_t s[], int x, int y );
 extern void DrawStringCentered( const uint16_t s[], int y );

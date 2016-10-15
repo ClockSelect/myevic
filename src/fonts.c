@@ -1,7 +1,7 @@
 #include "display.h"
 
-#define __font1__ __attribute__((section (".font1")))
-#define __font2__ __attribute__((section (".font2")))
+#define __font1__ __attribute__((section (".imgblock1")))
+#define __font2__ __attribute__((section (".imgblock2")))
 
 const image_t f0img1306_0001 = { 6, 8, { 62, 127, 65, 127, 62, 0 } };
 const image_t f0img1306_0002 = { 6, 8, { 0, 2, 127, 127, 0, 0 } };
@@ -528,7 +528,7 @@ const image_t const *font0_1306[] __font1__ =
 	&f0img1306_0104
 };
 
-
+/*
 const image_t f0img1327_0001 = { 6, 8, { 112, 216, 216, 216, 216, 216, 112, 0 } };
 const image_t f0img1327_0002 = { 6, 8, { 48, 112, 48, 48, 48, 48, 48, 0 } };
 const image_t f0img1327_0003 = { 6, 8, { 240, 24, 24, 112, 192, 192, 248, 0 } };
@@ -1053,7 +1053,7 @@ const image_t const *font0_1327[] __font2__ =
 	&f0img1327_0103,
 	&f0img1327_0104
 };
-
+*/
 
 const image_t f1img1306_0001 = { 6, 8, { 0, 60, 66, 66, 60, 0 } };
 const image_t f1img1306_0002 = { 6, 8, { 0, 0, 4, 254, 0, 0 } };
@@ -1472,7 +1472,7 @@ const image_t const *font1_1306[] __font1__ =
 	&f0img1306_0104
 };
 
-
+/*
 const image_t f1img1327_0001 = { 6, 8, { 0, 48, 72, 72, 72, 72, 48, 0 } };
 const image_t f1img1327_0002 = { 6, 8, { 0, 16, 48, 16, 16, 16, 16, 0 } };
 const image_t f1img1327_0003 = { 6, 8, { 0, 48, 72, 8, 16, 32, 120, 0 } };
@@ -1889,4 +1889,5 @@ const image_t const *font1_1327[] __font2__ =
 	&f0img1327_0103,
 	&f0img1327_0104
 };
+*/
 

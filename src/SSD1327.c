@@ -183,89 +183,72 @@ __myevic__ uint32_t SSD1327_Image( int x, int y, uint16_t img, int color )
 	{
 		y += 2;
 	}
-	return SSD1327_Bitmap( x, y, font2[img - 1], color );
+	return SSD1327_Bitmap( x, y, Images[img - 1], color );
 }
 
 
 //=========================================================================
-//----- (00005368) --------------------------------------------------------
+// Modified SSD1327 Bitmap drawing function to draw SSD1306 Bitmaps.
+//-------------------------------------------------------------------------
 __myevic__ uint32_t SSD1327_Bitmap( int x, int y, const image_t *image, int color )
 {
-	uint32_t shiftr, shiftl;
-	uint32_t w, h;
-	uint32_t pixels, npix;
-	uint32_t caddr, laddr;
-	uint8_t bpl;
-	uint8_t ml, mr;
+	int sblinebase, sbi;
+	uint8_t sbbyte;
 
-	shiftr = x & 7;
-	shiftl = 8 - shiftr;
+	const uint8_t *pixline;
+	uint8_t bitline;
+	uint8_t pixel;
 
-	bpl = ( image->width + 7 ) >> 3;
+	int h;
+	h = ( y < 0 ) ? -y : 0;
 
-	caddr = 8 * y + ( x >> 3 );
+	sblinebase = ( ( y + h ) << 3 ) + ( x >> 3 );
 
-	for ( w = 0 ; w < bpl ; ++w )
+	pixline = &image->bitmap[ ( h << 3 ) * image->width ];
+	bitline = h & 7;
+
+	for ( ; h < image->height ; ++h )
 	{
-		laddr = caddr;
+		if ( y + h >= 128 )
+			break;
 
-		if ( laddr >= 0x400 )
-			continue;
+		sbi = sblinebase;
 
-		if ( w == bpl - 1 )
+		uint8_t pixmask = ( 1 << ( 7 - ( x & 7 ) ) );
+		uint8_t bitmask = ( 1 << bitline );
+
+		int w;
+		w = ( x < 0 ) ? -x : 0;
+
+		for ( ; w < image->width; ++w )
 		{
-			npix = image->width & 7;
-			if ( npix == 0 ) npix = 8;
-		}
-		else npix = 8;
+			if ( x + w >= 64 )
+				break;
 
-		for ( h = 0; h < image->height ; ++h )
+			sbbyte = ScreenBuffer[sbi];
+			sbbyte &= ~pixmask;
+
+			pixel = pixline[w];
+			if ( color ) pixel = ~pixel;
+			pixel &= bitmask;
+
+			ScreenBuffer[sbi] = sbbyte | ( pixel ? pixmask : 0 );
+
+			pixmask >>= 1;
+			if ( !pixmask )
+			{
+				pixmask = 0x80;
+				++sbi;
+			}
+		}
+
+		sblinebase += 8;
+
+		if ( ++bitline == 8 )
 		{
-			pixels = image->bitmap[ h * bpl + w ];
-
-			if ( color ) pixels = ~pixels;
-
-			if ( !shiftr )
-			{
-				ScreenBuffer[laddr] = pixels;
-			}
-			else
-			{
-				ml = ByteMaskLeft[shiftl];
-				mr = ByteMaskRight[shiftl];
-
-				if ( npix <= shiftl )
-				{
-					if ( color )
-					{
-						ScreenBuffer[laddr] &= ml;
-					}
-					else
-					{
-						ScreenBuffer[laddr] &= ml | ByteMaskRight[ /* ? */ shiftl - npix ];
-					}
-					ScreenBuffer[laddr] |= ( pixels >> shiftr ) & mr;
-				}
-				else
-				{
-					ScreenBuffer[laddr] &= ml;
-					ScreenBuffer[laddr] |= ( pixels >> shiftr ) & mr;
-
-					if (( npix >= 8 ) && ( laddr + 1 < 0x400 ))
-					{
-						ScreenBuffer[laddr+1] &= mr;
-						ScreenBuffer[laddr+1] |= ( pixels << shiftl ) & ml;
-					}
-					else
-					{
-						ScreenBuffer[laddr+1] &= ByteMaskRight[ shiftl + 8 - npix ];
-						ScreenBuffer[laddr+1] |= ( pixels << shiftl ) & ml;
-					}
-				}
-			}
-			laddr += 8;
+			bitline = 0;
+			pixline += image->width;
 		}
-		++caddr;
 	}
 
 	return image->width;

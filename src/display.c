@@ -10,8 +10,7 @@ uint8_t	DisplayModel;
 uint8_t	DisplayCmdByte;
 uint8_t DisplayEorByte;
 
-const image_t **font1;
-const image_t **font2;
+const image_t **Images;
 
 uint8_t ScreenBuffer[SCREEN_BUFFER_SIZE] __attribute__((aligned(8)));
 
@@ -227,23 +226,7 @@ __myevic__ void DisplayRefresh()
 //----- (000051CC) --------------------------------------------------------
 __myevic__ int GetImageWidth( const uint16_t imgnum )
 {
-	const image_t *img;
-
-	switch ( DisplayModel )
-	{
-		case 0:
-			img = font1[imgnum - 1];
-			break;
-
-		case 1:
-			img = font2[imgnum - 1];
-			break;
-		
-		default:
-			return 0;
-	}
-
-	return img->width;
+	return Images[imgnum - 1]->width;
 }
 
 
@@ -350,19 +333,21 @@ __myevic__ void DrawLOGO( const int x, const int y )
 
 	if (( dfStatus.nologo ) && ( Screen != 60 )) return;
 
-	switch ( DisplayModel )
-	{
-		case 0:
-			base_addr = DATAFLASH_LOGO_1306_BASE;
-			break;
+	base_addr = DATAFLASH_LOGO_1306_BASE;
 
-		case 1:
-			base_addr = DATAFLASH_LOGO_1327_BASE;
-			break;
-
-		default:
-			return;
-	}
+//	switch ( DisplayModel )
+//	{
+//		case 0:
+//			base_addr = DATAFLASH_LOGO_1306_BASE;
+//			break;
+//
+//		case 1:
+//			base_addr = DATAFLASH_LOGO_1327_BASE;
+//			break;
+//
+//		default:
+//			return;
+//	}
 
 	MemClear( buffer, DATAFLASH_LOGO_SIZE );
 	img = (image_t*)buffer;
@@ -465,7 +450,7 @@ __myevic__ uint16_t* Value2Str( uint16_t *str, int v, int dp, uint16_t z, int nd
 
 //=========================================================================
 //----- (000058A4) --------------------------------------------------------
-__myevic__ void DrawValue( int x, int y, int v, int dp, uint16_t z, int nd )
+__myevic__ void DrawValue( int x, int y, int v, uint8_t dp, uint16_t z, uint8_t nd )
 {
 	uint16_t str[12];
 
@@ -477,7 +462,7 @@ __myevic__ void DrawValue( int x, int y, int v, int dp, uint16_t z, int nd )
 //=========================================================================
 // Draw right-justified numerical value
 //-------------------------------------------------------------------------
-__myevic__ void DrawValueRight( int x, int y, int v, int dp, uint16_t z, int nd )
+__myevic__ void DrawValueRight( int x, int y, int v, uint8_t dp, uint16_t z, uint8_t nd )
 {
 	uint16_t str[12];
 
@@ -488,7 +473,7 @@ __myevic__ void DrawValueRight( int x, int y, int v, int dp, uint16_t z, int nd 
 
 //=========================================================================
 //----- (000058A4) --------------------------------------------------------
-__myevic__ void DrawValueInv( int x, int y, int v, int dp, uint16_t z, int nd )
+__myevic__ void DrawValueInv( int x, int y, int v, uint8_t dp, uint16_t z, uint8_t nd )
 {
 	uint16_t str[12];
 
@@ -675,13 +660,13 @@ __myevic__ void DisplaySetFont()
 {
 	if ( dfStatus.font )
 	{
-		font1 = font1_1306;
-		font2 = font1_1327;
+		Images = font1_1306;
+//		font2 = font1_1327;
 	}
 	else
 	{
-		font1 = font0_1306;
-		font2 = font0_1327;
+		Images = font0_1306;
+//		font2 = font0_1327;
 	}
 }
 

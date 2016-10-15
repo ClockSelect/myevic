@@ -362,7 +362,7 @@ Main menu screen
   
         Light Sleep mode.  
         *This setting is useless and forced to "OFF" on boxes with a X32 crystal (VTwo/Dual, AIO, Basic, eGrip II), and defaults to "ON" on other boxes.*  
-        On boxes where the Real-Time Clock is emulated (like the VTC-Mini), by setting the Light Sleep mode "ON", the box continues to drive the Real-Time Clock with the external 12.000MHz Crystal instead of the internal LIRC oscillator when entering sleep mode. This makes the Clock far more accurate and eliminates the need for the Clock Speed ratio, at the cost of a greater battery consumption (estimated 60~100mAh/day).  
+        On boxes where the Real-Time Clock is emulated (like the VTC-Mini), by setting the Light Sleep mode "ON", the box continues to drive the Real-Time Clock with the external 12.000MHz Crystal instead of the internal LIRC oscillator when entering sleep mode. This makes the Clock far more accurate and eliminates the need for the Clock Speed ratio, at the cost of a greater battery consumption (estimated less than 50 mAh/day).  
         Using this setting, Clock accuracy is identical to those of real RTC boxes.
 
   * NFE
