@@ -265,9 +265,9 @@ Main menu screen
 
   * Clk Speed
 
-        For owners of VTC-Mini (useless for VTwo owners).  
+        *This setting is useless on RTC-enabled boxes (VTwo/Dual, AIO, Basic, eGrip II)*  
         *This setting is only usefull if you have set the Light Sleep mode "OFF" in the Expert menu. See below the "LSL" setting in the Expert menu description. As long as the Light Sleep mode is "ON" (default setting), there is no real need to adjust the Clock Speed Ratio.*  
-        The VTC mini does not have the needed 32kHz crystal soldered on the pcb to regulate the clock speed; so, another time source is used to drive the clock. Since its frequency is quite different, a clock speed ratio is needed to regulate the clock. As long as the box is awake (you're using it), the clock is regulated by the external 12.000MHz crystal, which is an accurate time source. Problem arises when the box enters sleep mode, since the crystal is switched off and the only clock source is the somewhat unreliable 10kHz internal oscillator of the processor. Clock drift mostly occurs when the box is switched off or sleeping.
+        Some boxes (VTC-Mini, Cuboid/Mini, Presa 75W, RX75) does not have the needed 32kHz crystal soldered on the pcb to regulate the clock speed; so, another time source is used to drive the clock. Since its frequency is quite different, a clock speed ratio is needed to regulate the clock. As long as the box is awake (you're using it), the clock is regulated by the external 12.000MHz crystal, which is an accurate time source. Problem arises when the box enters sleep mode, since the crystal is switched off and the only clock source is the somewhat unreliable 10kHz internal oscillator of the processor. Clock drift mostly occurs when the box is switched off or sleeping.
     
         The procedure to adjust the clock speed ratio is as follow:
         * First, setup time accurately via the date/time menu or the "```evic-usb time```" command line.
@@ -355,14 +355,13 @@ Main menu screen
   * X32
 
         Enables or disables usage of the X32 crystal of the PCB.  
-        If this setting is "OFF", the firmware won't try to drive the Real-Time Clock with the 32.768kHz crystal. This may solve freezing issues on some malfunctionning boxes (VTwo/Dual). It may also diminish a bit startup time on non-X32 boxes (such as VTC).  
-        This setting will be active at next reset.  
-        *Keeping this option enabled on boxes known not to have an X32 crystal should theorically do no harm, but sporadic issues have been reported concerning some of thoses boxes with this option enabled. So, I recommend to set this option to "OFF" if the manufacturer's firmware does not handle the Real-Time Clock. This concerns all boxes except VTwo, VTwo-Mini and VTC-Dual.*  
+        If this setting is "OFF", the firmware won't try to drive the Real-Time Clock with the 32.768kHz crystal. This may solve freezing issues on some malfunctionning boxes. This setting will be active at next reset.  
+        *This option is useless and forced to "OFF" on boxes known not to have an X32 crystal. Those are all boxes for which the manufacturer did not enable the RTC feature, i.e: VTC-Mini, Cuboid/Mini, Presa 75W and RX75.*  
 
   * LSL
   
         Light Sleep mode.  
-        This setting is useless and forced to "OFF" on boxes with a X32 crystal (VTwo/Dual), and defaults to "ON" on other boxes.  
+        *This setting is useless and forced to "OFF" on boxes with a X32 crystal (VTwo/Dual, AIO, Basic, eGrip II), and defaults to "ON" on other boxes.*  
         On boxes where the Real-Time Clock is emulated (like the VTC-Mini), by setting the Light Sleep mode "ON", the box continues to drive the Real-Time Clock with the external 12.000MHz Crystal instead of the internal LIRC oscillator when entering sleep mode. This makes the Clock far more accurate and eliminates the need for the Clock Speed ratio, at the cost of a greater battery consumption (estimated 60~100mAh/day).  
         Using this setting, Clock accuracy is identical to those of real RTC boxes.
 

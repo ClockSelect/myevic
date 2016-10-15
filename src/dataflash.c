@@ -24,6 +24,7 @@ uint8_t ParamsBackup[DATAFLASH_PARAMS_SIZE];
 uint8_t		UpdateDFTimer;
 uint8_t		UpdatePTTimer;
 uint8_t		DFMagicNumber;
+uint8_t		X32Off;
 
 
 //-------------------------------------------------------------------------
@@ -49,7 +50,12 @@ __myevic__ void SetProductID()
 	{
 		uint32_t u32Data = FMC_Read( LDROM_BASE + offset );
 
-		if ( u32Data == PID_VTWOMINI )
+		if ( u32Data == PID_VTCMINI )
+		{
+			X32Off = 1;
+			break;
+		}
+		else if ( u32Data == PID_VTWOMINI )
 		{
 			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00000001;
@@ -74,14 +80,6 @@ __myevic__ void SetProductID()
 			gFlags.pwm_pll = 1;
 			break;
 		}
-		else if ( u32Data == PID_PRESA75W )
-		{
-			dfProductID = u32Data;
-			dfMaxHWVersion = 0x00030001;
-			DFMagicNumber = 0x30;
-			BoxModel = BOX_PRESA75W;
-			break;
-		}
 		else if ( u32Data == PID_EVICAIO )
 		{
 			dfProductID = u32Data;
@@ -104,6 +102,7 @@ __myevic__ void SetProductID()
 			dfMaxHWVersion = 0x00020001;
 			DFMagicNumber = 0x50;
 			BoxModel = BOX_CUBOMINI;
+			X32Off = 1;
 			break;
 		}
 		else if ( u32Data == PID_CUBOID )
@@ -114,6 +113,7 @@ __myevic__ void SetProductID()
 			BoxModel = BOX_CUBOID;
 			NumBatteries = 2;
 			gFlags.pwm_pll = 1;
+			X32Off = 1;
 			break;
 		}
 		else if ( u32Data == PID_EVICBASIC )
@@ -124,12 +124,22 @@ __myevic__ void SetProductID()
 			BoxModel = BOX_EVICBASIC;
 			break;
 		}
+		else if ( u32Data == PID_PRESA75W )
+		{
+			dfProductID = u32Data;
+			dfMaxHWVersion = 0x00030001;
+			DFMagicNumber = 0x30;
+			BoxModel = BOX_PRESA75W;
+			X32Off = 1;
+			break;
+		}
 		else if ( u32Data == PID_WRX75TC )
 		{
 			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00010001;
 			DFMagicNumber = 0x32;
 			BoxModel = BOX_WRX75TC;
+			X32Off = 1;
 			break;
 		}
 	}
@@ -257,7 +267,7 @@ __myevic__ void ResetDataFlash()
 //	dfStatus.vcom = 0;
 //	dfStatus.storage = 0;
 //	dfStatus.dbgena = 0;
-//	dfStatus.x32off = 0;
+	dfStatus.x32off = X32Off;
 //	dfStatus.onewatt = 0;
 //	dfStatus.digclk = 0;
 //	dfStatus.battpc = 0;
@@ -309,11 +319,6 @@ __myevic__ void DFCheckValuesValidity()
 {
 	int i,v;
 
-	if ( dfMagic == DATAFLASH_NFE_MAGIC )
-	{
-		dfMagic = DFMagicNumber;
-	}
-
 	if ( dfMode >= 7 )
 		dfMode = 4;
 
@@ -324,10 +329,10 @@ __myevic__ void DFCheckValuesValidity()
 		dfVWVolts = 330;
 
 	if ( dfPower > MaxPower || dfPower < 10 )
-		dfPower = MaxPower;
+		dfPower = 200;
 
 	if ( dfTCPower > MaxTCPower || dfTCPower < 10 )
-		dfTCPower = MaxTCPower;
+		dfTCPower = 200;
 
 	if ( dfPuffCount > 99999 || dfTimeCount > 999999 )
 	{
@@ -844,6 +849,7 @@ __myevic__ void InitDataFlash()
 
 	MaxTCPower = MaxPower;
 
+
 	myprintf( "  APROM Version ......................... [%d.%d%d]\n",
 				FWVERSION / 100,
 				FWVERSION / 10 % 10,
@@ -853,10 +859,6 @@ __myevic__ void InitDataFlash()
 				dfHWVersion / 10 % 10,
 				dfHWVersion % 10 );
 
-	if ( dfMagic == DATAFLASH_NFE_MAGIC )
-	{
-		dfMagic = DFMagicNumber;
-	}
 
 	if ( dfMagic == DFMagicNumber && CalcPageCRC( DataFlash.params ) == dfCRC )
 	{
@@ -866,6 +868,11 @@ __myevic__ void InitDataFlash()
 	{
 		myprintf( "Data Flash Re-Initialization\n" );
 		ResetDataFlash();
+	}
+
+	if ( X32Off )
+	{
+		dfStatus.x32off = 1;
 	}
 
 	dfStatus.off = 0;
