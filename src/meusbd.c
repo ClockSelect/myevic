@@ -340,14 +340,6 @@ __myevic__ void USBD_IRQHandler(void)
 		}
 	}
 
-	//------------------------------------------------------------------
-	if(u32IntSts & USBD_INTSTS_WAKEUP)
-	{
-		/* Clear event flag */
-		USBD_CLR_INT_FLAG(USBD_INTSTS_WAKEUP);
-		gFlags.wake_up = 1;
-	}
-
 	/* clear unknown event */
 	USBD_CLR_INT_FLAG(u32IntSts);
 }

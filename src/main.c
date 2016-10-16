@@ -178,11 +178,7 @@ void InitDevices()
 	SYS->VREFCTL = SYS_VREFCTL_VREF_2_56V;
 
 	// Brown-out detector; interrupts under 2.2V
-	SYS_EnableBOD( SYS_BODCTL_BOD_INTERRUPT_EN, SYS_BODCTL_BODVL_2_2V );
-	NVIC_EnableIRQ( BOD_IRQn );
-
-	// Enable Low-Voltage-Reset function
-	SYS_ENABLE_LVR();
+	SYS_EnableBOD( SYS_BODCTL_BOD_RST_EN, SYS_BODCTL_BODVL_2_2V );
 
 	// Update clock data
 	SystemCoreClockUpdate();
@@ -227,30 +223,6 @@ __myevic__ void InitVariables()
 	AtoMaxVolts = MaxVolts;
 	AtoMinPower = 10;
 	AtoMaxPower = MaxPower;
-}
-
-
-//=============================================================================
-// Brown-Out Detector IRQ Handler
-
-__myevic__ void BOD_IRQHandler()
-{
-	// Clear BOD Interrupt Flag
-	SYS_CLEAR_BOD_INT_FLAG();
-
-	if ( SYS_GetBODStatus() )
-	{
-		if ( !gFlags.has_x32 )
-		{
-		// System resets are mostly due to battery replacement.
-		// Take this delay into account (approx).
-			RTCAdjustClock( 10 );
-			RTCAdjustClock( 0 );
-		}
-
-		while( 1 )
-			;
-	}
 }
 
 
@@ -398,7 +370,6 @@ __myevic__ void DevicesOnOff( int off )
 		SYS_UnlockReg();
 		SYS->USBPHY &= ~SYS_USBPHY_LDO33EN_Msk;
 		SYS->IVSCTL &= ~SYS_IVSCTL_VBATUGEN_Msk;
-		SYS_DISABLE_LVR();
 		SYS_DisableBOD();
 		SYS->VREFCTL = 0;
 		SYS_LockReg();
@@ -414,8 +385,7 @@ __myevic__ void DevicesOnOff( int off )
 		SYS->USBPHY |= SYS_USBPHY_LDO33EN_Msk;
 		SYS->IVSCTL |= SYS_IVSCTL_VBATUGEN_Msk;
 		SYS->VREFCTL = SYS_VREFCTL_VREF_2_56V;
-		SYS_EnableBOD( SYS_BODCTL_BOD_INTERRUPT_EN, SYS_BODCTL_BODVL_2_2V );
-		SYS_ENABLE_LVR();
+		SYS_EnableBOD( SYS_BODCTL_BOD_RST_EN, SYS_BODCTL_BODVL_2_2V );
 		SYS_LockReg();
 
 		GPIO_DisableInt( PE, 0 );
