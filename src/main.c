@@ -197,6 +197,35 @@ __myevic__ void InitHardware()
 		InitUART0();
 	#endif
 	InitGPIO();
+
+	if ( !PD3 )
+	{
+		gFlags.noclock = 1;
+		
+		while ( !PD3 )
+			;
+	}
+
+	if ( ISCUBOID )
+	{
+		// Cuboid uses the PF.0 pin as part of
+		// its battery management system, and thus
+		// cannot have an X32.
+		dfStatus.x32off = 1;
+	}
+
+	if ( !gFlags.noclock )
+	{
+		InitRTC( 0 );
+	}
+
+	if ( gFlags.has_x32 )
+	{
+		// Disable Light Sleep mode.
+		dfStatus.lsloff = 1;
+		UpdateDFTimer = 50;
+	}
+
 	InitSPI0();
 	InitEADC();
 	InitPWM();
@@ -635,23 +664,6 @@ __myevic__ void Main()
 	InitDevices();
 
 	InitVariables();
-
-	if ( ISCUBOID )
-	{
-		// Cuboid uses the PF.0 pin as part of
-		// its battery management system, and thus
-		// cannot have an X32.
-		dfStatus.x32off = 1;
-	}
-
-	InitRTC( 0 );
-
-	if ( gFlags.has_x32 )
-	{
-		// Disable Light Sleep mode.
-		dfStatus.lsloff = 1;
-		UpdateDFTimer = 50;
-	}
 
 	InitHardware();
 
