@@ -661,12 +661,10 @@ __myevic__ void DisplaySetFont()
 	if ( dfStatus.font )
 	{
 		Images = font1_1306;
-//		font2 = font1_1327;
 	}
 	else
 	{
 		Images = font0_1306;
-//		font2 = font0_1327;
 	}
 }
 

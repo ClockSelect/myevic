@@ -265,14 +265,11 @@ __myevic__ int ReadBatterySample( int nbat )
 	}
 	else if ( nbat == 1 )
 	{
-		if ( ISVTCDUAL || ISCUBOID )
-		{
-			sample = ADC_Read( 0 );
-		}
-		else
-		{
-			sample = 0;
-		}
+		sample = ADC_Read( 0 );
+	}
+	else if ( nbat == 2 )
+	{
+		sample = ADC_Read( 4 );
 	}
 	else
 	{
@@ -456,16 +453,17 @@ __myevic__ void ReadBatteryVoltage()
 			VbatSample1 = ( VbatSample1 >> 7 ) + 2;
 			VbatSample2 = 139 * ( VbatSample2 >> 4 ) / 624;
 
-			BattVolts[0] = VbatSample1 + dfBVOffset[0];
+			BattVolts[0] = VbatSample1;
 
 			if ( VbatSample1 + VbatSample1 / 5 < VbatSample2 )
 			{
-				BattVolts[1] = VbatSample2 - VbatSample1 + dfBVOffset[1];
+				BattVolts[0] += dfBVOffset[1];
+				BattVolts[1] = VbatSample2 - VbatSample1 + dfBVOffset[2];
 				NumBatteries = 2;
 			}
 			else if (( VbatSample1 - VbatSample1 / 10 < VbatSample2 ) && ( VbatSample2 >= 100 ))
 			{
-				BattVolts[1] = BattVolts[0];
+				BattVolts[0] += dfBVOffset[0];
 				NumBatteries = 1;
 			}
 			else

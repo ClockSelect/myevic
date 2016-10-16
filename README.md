@@ -95,6 +95,14 @@ Some changes has been made to the overall behavior of the firmware from the orig
   Menus accessed by pressing Fire and Right button have been completely revamped. See below for new menus description.
 
 ----------
+### About Multi-cells boxes
+
+At the moment, the interface only display one battery icon, percentage or voltage, just like there where only a single battery in the box (this may change in the future).  
+The displayed values are those of the battery that is in the *lowest state-of-charge* of the set.  
+A battery set should always be kept in equilibrium and a balance warning is issued if the difference between the lowest and the highest voltage exceeds 0.3 Volts.  
+So as long as you have no warning (a blinking "balance" on the battery icon or an "imbalanced batteries" screen warning), you know that all batteries are within 300mV of the first.
+
+----------
 
 ### Main Screen
 * Double-click:
@@ -386,15 +394,21 @@ Main menu screen
 
   * BVO
 
-        Battery Voltage Offset  
+        Battery Voltage Offset submenu  
         Corrective offset value of the battery voltage. Depending on your box, the displayed battery voltage may be off by a few tens of millivolts. It's usually not a concern, but it may make the box locking the vape too early (wasting some battery capacity) or too late (box resets due to low voltage when firing).  
-        Use an external accurate voltmeter (your battery charger may do the job) to compare the displayed voltage on the box to the actual battery voltage, then adjust the displayed voltage with this item.  
-        Range is -50 to +50 milliVolts.
+        Use an external accurate voltmeter (your battery charger may do the job) to compare the displayed voltages on the box to the actual battery voltages, then adjust the displayed voltages with this item.  
+        Range is -50 to +50 milliVolts.  
+        * On a single-cell box, only the first setting (B1) is significant. B2 and B3 are ignored.  
+        * On a fixed dual-cells box, the two first settings (B1 & B2) are used, respectively, for the first and the second battery (depending on the box, you'll have to determine wich one wich with your voltmeter). B3 is ignored.  
+        * On a mixed single/dual-cells box, B1 is used for the lone battery in single-cell setting, and B2 & B3 for the two cells in a dual-cells setting.  
+        * On a triple-cell box, I let you guess.  
+
 
 ----------
 
 ### Build:
-Follow [evic-sdk::Readme] (https://github.com/ReservedField/evic-sdk/blob/master/README.md) instructions to:
+Follow [evic-sdk::Readme](https://github.com/ReservedField/evic-sdk/blob/master/README.md) instructions to:
+
   * Setup the environment
 
   * Install python-evic

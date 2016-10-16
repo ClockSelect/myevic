@@ -25,6 +25,7 @@ uint8_t		UpdateDFTimer;
 uint8_t		UpdatePTTimer;
 uint8_t		DFMagicNumber;
 uint8_t		X32Off;
+uint8_t		ScrFlip;
 
 
 //-------------------------------------------------------------------------
@@ -118,6 +119,7 @@ __myevic__ void SetProductID()
 			dfMaxHWVersion = 0x00010001;
 			DFMagicNumber = 0x50;
 			BoxModel = BOX_EVICAIO;
+			ScrFlip = 1;
 			break;
 		}
 		else if ( u32Data == PID_EGRIPII )
@@ -134,6 +136,7 @@ __myevic__ void SetProductID()
 			dfMaxHWVersion = 0x00020001;
 			DFMagicNumber = 0x50;
 			BoxModel = BOX_CUBOMINI;
+			ScrFlip = 1;
 			X32Off = 1;
 			break;
 		}
@@ -145,6 +148,7 @@ __myevic__ void SetProductID()
 			BoxModel = BOX_CUBOID;
 			NumBatteries = 2;
 			gFlags.pwm_pll = 1;
+			ScrFlip = 1;
 			X32Off = 1;
 			break;
 		}
@@ -154,6 +158,7 @@ __myevic__ void SetProductID()
 			dfMaxHWVersion = 0x00010001;
 			DFMagicNumber = 0x13;
 			BoxModel = BOX_EVICBASIC;
+			ScrFlip = 1;
 			break;
 		}
 		else if ( u32Data == PID_PRESA75W )
@@ -293,7 +298,7 @@ __myevic__ void ResetDataFlash()
 	CpyTmpCoefsTI();
 //	dfStatus.off = 0;
 //	dfStatus.keylock = 0;
-//	dfStatus.flipped = 0;
+	dfStatus.flipped = ScrFlip;
 //	dfStatus.nologo = 0;
 //	dfStatus.clock = 0;
 //	dfStatus.vcom = 0;
