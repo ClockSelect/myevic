@@ -20,6 +20,9 @@ static volatile uint8_t int_cnt = 0;
 static volatile int64_t adj_10k = 0;
 static int32_t sleep_ticks = 0;
 
+static uint16_t cache_flags;
+static uint32_t spare_cache[16];
+
 //=============================================================================
 
 __myevic__ void RTC_IRQHandler()
@@ -146,27 +149,94 @@ __myevic__ void RTCEpochToTime( S_RTC_TIME_DATA_T *d, const time_t *t )
 
 //=============================================================================
 
-__myevic__ void RTCFullAccess()
+__myevic__ int RTCEnableAccess()
 {
-	RTC_EnableSpareAccess();
+	// Wait RWENF bit is cleared
+	// and enable RWENF bit (Access Enable bit) again
+
+	int c;
+
+	// Potential waiting time is 1024 RTC cycles
+	// If the RTC is driven by the LIRC, it's 0.1024s
+	c = 102400;
+	while( ( RTC->RWEN & RTC_RWEN_RWENF_Msk ) )
+	{
+		if ( !--c ) return 0;
+		CLK_SysTickDelay( 1 );
+	}
+
+	RTC->RWEN = RTC_WRITE_KEY;
+	// Wait RWENF bit is set and user can access
+	// the protected-register of RTC from now on
+	c = 10000;
+	while( !( RTC->RWEN & RTC_RWEN_RWENF_Msk ) )
+	{
+		if ( !--c ) return 0;
+		CLK_SysTickDelay( 1 );
+	}
+
+	return 1;
+}
+
+
+__myevic__ int RTCSpareAccess()
+{
+	int c;
+
+	if ( !RTCEnableAccess() )
+		return 0;
+
+	RTC->SPRCTL |= RTC_SPRCTL_SPRRWEN_Msk;
+
+	c = 10000;
+	while( !( RTC->SPRCTL & RTC_SPRCTL_SPRRWRDY_Msk ) )
+	{
+		if ( !--c ) return 0;
+		CLK_SysTickDelay( 1 );
+	}
+
+	return 1;
 }
 
 __myevic__ void RTCWriteRegister( uint32_t r, uint32_t v )
 {
+	if ( !gFlags.rtcinit )
+		return;
+
 	if ( gFlags.noclock )
 		return;
 
-	RTCFullAccess();
-	RTC_WRITE_SPARE_REGISTER( r, v );
+	if ( RTCSpareAccess() )
+	{
+		RTC_WRITE_SPARE_REGISTER( r, v );
+
+		cache_flags |= ( 1 << r );
+		spare_cache[r] = v;
+	}
 }
 
 __myevic__ uint32_t RTCReadRegister( uint32_t r )
 {
+	uint32_t v = 0;
+
+	if ( cache_flags & ( 1 << r ) )
+		return spare_cache[r];
+
+	if ( !gFlags.rtcinit )
+		return 0;
+
 	if ( gFlags.noclock )
 		return 0;
 
-	RTCFullAccess();
-	return RTC_READ_SPARE_REGISTER( r );
+	if ( RTCSpareAccess() )
+	{
+		v = RTC_READ_SPARE_REGISTER( r );
+
+		cache_flags |= ( 1 << r );
+		spare_cache[r] = v;
+	}
+
+	return v;
 }
 
 __myevic__ void RTCSetReferenceDate( time_t *t )
@@ -203,36 +273,41 @@ __myevic__ unsigned int RTCGetClockSpeed()
 
 //=============================================================================
 
-__myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
+__myevic__ void RTCStart( S_RTC_TIME_DATA_T *d )
 {
 	register int rtccnt;
+	uint32_t rtcclk;
 
 	SYS_UnlockReg();
 
-	CLK_EnableModuleClock( RTC_MODULE );
-
-	gFlags.has_x32 = 0;
-
-	if ( !dfStatus.x32off )
+	if ( !dfStatus.x32off && gFlags.has_x32 )
 	{
-		//  32.768kHz external crystal
-		SYS->GPF_MFPL &= ~(SYS_GPF_MFPL_PF0MFP_Msk|SYS_GPF_MFPL_PF1MFP_Msk);
-		SYS->GPF_MFPL |=  (SYS_GPF_MFPL_PF0MFP_X32_OUT|SYS_GPF_MFPL_PF1MFP_X32_IN);
-
-		CLK_EnableXtalRC( CLK_PWRCTL_LXTEN_Msk );
-		if ( CLK_WaitClockReady( CLK_STATUS_LXTSTB_Msk ) )
+		if ( !( CLK->STATUS & CLK_STATUS_LXTSTB_Msk ) )
 		{
-			gFlags.has_x32 = 1;
-		}
-	}
+			//  32.768kHz external crystal
+			SYS->GPF_MFPL &= ~(SYS_GPF_MFPL_PF0MFP_Msk|SYS_GPF_MFPL_PF1MFP_Msk);
+			SYS->GPF_MFPL |=  (SYS_GPF_MFPL_PF0MFP_X32_OUT|SYS_GPF_MFPL_PF1MFP_X32_IN);
 
-	if ( gFlags.has_x32 )
-	{
-		RTC->LXTCTL |= RTC_LXTCTL_LXTEN_Msk;
-		CLK_SetModuleClock( RTC_MODULE, CLK_CLKSEL3_RTCSEL_LXT, 0 );
+			CLK_EnableXtalRC( CLK_PWRCTL_LXTEN_Msk );
+			if ( CLK_WaitClockReady( CLK_STATUS_LXTSTB_Msk ) )
+			{
+				rtcclk = CLK_CLKSEL3_RTCSEL_LXT;
+			}
+			else
+			{
+				gFlags.has_x32 = 0;
+			}
+		}
 	}
 	else
 	{
+		gFlags.has_x32 = 0;
+	}
+
+	if ( !gFlags.has_x32 )
+	{
+		CLK_DisableXtalRC( CLK_PWRCTL_LXTEN_Msk );
+
 		// Enable LIRC 10kHz clock
 		if ( !( CLK->STATUS & CLK_STATUS_LIRCSTB_Msk ) )
 		{
@@ -240,20 +315,24 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 			CLK_WaitClockReady( CLK_STATUS_LIRCSTB_Msk );
 		}
 
-		CLK_SetModuleClock( RTC_MODULE, CLK_CLKSEL3_RTCSEL_LIRC, 0 );
+		rtcclk = CLK_CLKSEL3_RTCSEL_LIRC;
 	}
 
-	SYS_LockReg();
+	CLK_EnableModuleClock( RTC_MODULE );
+	CLK_SetModuleClock( RTC_MODULE, rtcclk, 0 );
 
 	// Try to Open RTC
-	rtccnt = 100000;	// Give it plenty of time
+	rtccnt = 10000;	// Give it plenty of time
 	RTC->INIT = RTC_INIT_KEY;
 	if ( RTC->INIT != RTC_INIT_ACTIVE_Msk )
 	{
 		RTC->INIT = RTC_INIT_KEY;
 		while ( RTC->INIT != RTC_INIT_ACTIVE_Msk )
+		{
 			if (!--rtccnt)
 				break;
+			CLK_SysTickDelay( 1 );
+		}
 	}
 
 	if ( !rtccnt )
@@ -264,8 +343,7 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 		{
 			// Disable X32 and retry.
 			gFlags.has_x32 = 0;
-			CLK_DisableXtalRC( CLK_PWRCTL_LXTEN_Msk );
-			InitRTC( d );
+			RTCStart( d );
 			return;
 		}
 		else
@@ -285,20 +363,12 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 	{
 		// Checking that we correctly get access to the RTC registers
 		// should be a good test.
-		rtccnt = 100000;	// Plenty again
-		while( ( RTC->RWEN & RTC_RWEN_RWENF_Msk ) == RTC_RWEN_RWENF_Msk );
-		RTC->RWEN = RTC_WRITE_KEY;
-		while( ( RTC->RWEN & RTC_RWEN_RWENF_Msk ) == 0x0 )
-			if ( !--rtccnt )
-				break;
-
-		// In case we did not acces to the protected registers,
-		// disable X32 usage and  re-init the RTC with the LIRC.
-		if ( !rtccnt )
+		if ( !RTCEnableAccess() )
 		{
+			// In case we did not acces to the protected registers,
+			// disable X32 usage and  re-init the RTC with the LIRC.
 			gFlags.has_x32 = 0;
-			CLK_DisableXtalRC( CLK_PWRCTL_LXTEN_Msk );
-			InitRTC( d );
+			RTCStart( d );
 			return;
 		}
 	}
@@ -306,6 +376,8 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 	{
 		RTC_32KCalibration( 3276800 );
 	}
+
+	SYS_LockReg();
 
 	if ( d )
 	{
@@ -325,6 +397,9 @@ __myevic__ void InitRTC( S_RTC_TIME_DATA_T *d )
 __myevic__ void SetRTC( S_RTC_TIME_DATA_T *rtd )
 {
 	time_t t;
+
+	if ( !gFlags.rtcinit )
+		return;
 
 	if ( gFlags.noclock )
 		return;
@@ -354,7 +429,7 @@ __myevic__ void GetRTC( S_RTC_TIME_DATA_T *rtd )
 	uint32_t cs;
 	uint64_t d;
 
-	if ( gFlags.noclock )
+	if ( gFlags.noclock || !gFlags.rtcinit )
 	{
 		MemClear( rtd, sizeof( *rtd ) );
 		return;
@@ -390,6 +465,9 @@ __myevic__ void GetRTC( S_RTC_TIME_DATA_T *rtd )
 
 __myevic__ void RTCAdjustClock( int seconds )
 {
+	if ( !gFlags.rtcinit )
+		return;
+
 	if ( gFlags.noclock )
 		return;
 
@@ -454,6 +532,9 @@ __myevic__ time_t RTCGetEpoch( time_t *t )
 
 __myevic__ void RTCSleep()
 {
+	if ( !gFlags.rtcinit )
+		return;
+
 	if ( gFlags.noclock )
 		return;
 
@@ -470,6 +551,9 @@ __myevic__ void RTCSleep()
 
 __myevic__ void RTCWakeUp()
 {
+	if ( !gFlags.rtcinit )
+		return;
+
 	if ( gFlags.noclock )
 		return;
 

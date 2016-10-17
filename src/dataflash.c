@@ -50,6 +50,7 @@ const char pid_egripii	[4]	__PIDATTR__	= { 'E','0','8','3' };
 const char pid_cubomini	[4]	__PIDATTR__	= { 'E','0','5','6' };
 const char pid_cuboid	[4]	__PIDATTR__	= { 'E','0','6','0' };
 const char pid_evicbasic[4]	__PIDATTR__	= { 'E','1','5','0' };
+const char pid_rx200s	[4]	__PIDATTR__	= { 'X','0','3','3' };
 
 #define MAKEPID(p) (((p)[0])|((p)[1]<<8)|((p)[2]<<16)|((p)[3]<<24))
 
@@ -64,6 +65,7 @@ const char pid_evicbasic[4]	__PIDATTR__	= { 'E','1','5','0' };
 #define PID_CUBOMINI	MAKEPID(pid_cubomini)
 #define PID_CUBOID		MAKEPID(pid_cuboid)
 #define PID_EVICBASIC	MAKEPID(pid_evicbasic)
+#define PID_RX200S		MAKEPID(pid_rx200s)
 
 
 //=============================================================================
@@ -179,6 +181,17 @@ __myevic__ void SetProductID()
 			X32Off = 1;
 			break;
 		}
+//		else if ( u32Data == PID_RX200S )
+//		{
+//			dfProductID = u32Data;
+//			dfMaxHWVersion = 0x00000001;
+//			DFMagicNumber = 0x14;
+//			BoxModel = BOX_RX200S;
+//			NumBatteries = 3;
+//			gFlags.pwm_pll = 1;
+//			X32Off = 1;
+//			break;
+//		}
 	}
 
 	FMC_DISABLE_ISP();
@@ -802,10 +815,6 @@ __myevic__ void InitDataFlash()
 				break;
 		}
 	}
-	else if ( ISVTWOMINI || ISVTCDUAL || ISEGRIPII || ISWRX75TC )
-	{
-		DisplayModel = 0;
-	}
 	else if ( ISPRESA75W )
 	{
 		switch ( dfHWVersion )
@@ -838,7 +847,7 @@ __myevic__ void InitDataFlash()
 				break;
 		}
 	}
-	else
+	else if ( ISVTCMINI )
 	{
 		switch ( dfHWVersion )
 		{
@@ -854,6 +863,10 @@ __myevic__ void InitDataFlash()
 				DisplayModel = 0;
 				break;
 		}
+	}
+	else
+	{
+		DisplayModel = 0;
 	}
 
 	AtoShuntRez = GetShuntRezValue();
@@ -878,6 +891,10 @@ __myevic__ void InitDataFlash()
 	else if ( ISCUBOID )
 	{
 		MaxPower = 2000;
+	}
+	else if ( ISRX200S )
+	{
+		MaxPower = 2500;
 	}
 	else
 	{
@@ -1056,6 +1073,10 @@ __myevic__ uint16_t GetShuntRezValue()
 				rez = 105;
 				break;
 		}
+	}
+	else if ( ISRX200S )
+	{
+		rez = 110;
 	}
 	else
 	{

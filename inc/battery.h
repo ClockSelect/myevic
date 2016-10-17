@@ -22,6 +22,7 @@ extern uint8_t	NoEventTimer;
 extern uint8_t	BatReadTimer;
 extern uint8_t	NumBatteries;
 extern uint16_t	ChargerDuty;
+extern uint16_t	MaxChargerDuty;
 
 extern uint8_t	BattProbeCount;
 

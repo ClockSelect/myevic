@@ -51,7 +51,8 @@ enum
     BOX_EGRIPII,
     BOX_CUBOMINI,
     BOX_CUBOID,
-    BOX_EVICBASIC
+    BOX_EVICBASIC,
+	BOX_RX200S
 };
 
 #define ISVTCMINI		(BoxModel==BOX_VTCMINI)
@@ -65,6 +66,7 @@ enum
 #define ISCUBOMINI		(BoxModel==BOX_CUBOMINI)
 #define ISCUBOID		(BoxModel==BOX_CUBOID)
 #define ISEVICBASIC		(BoxModel==BOX_EVICBASIC)
+#define ISRX200S		(BoxModel==BOX_RX200S)
 
 
 //=========================================================================
@@ -100,8 +102,8 @@ typedef struct
 /* 00400000 */	int decrease_voltage:1;
 /* 00800000 */	int check_mode:1;
 
-/* 01000000 */	int unused1:1;
-/* 02000000 */	int unused2:1;
+/* 01000000 */	int unused24:1;
+/* 02000000 */	int unused25:1;
 /* 04000000 */	int limit_ato_temp:1;
 /* 08000000 */	int check_rez_ti:1;
 /* 10000000 */	int check_rez_ni:1;
@@ -111,17 +113,17 @@ typedef struct
 
 /* 00000001 */	int edit_value:1;
 /* 00000002 */	int check_rez_tcr:1;
-/* 00000004 */	int unused4:1;
-/* 00000008 */	int unused5:1;
+/* 00000004 */	int unused34:1;
+/* 00000008 */	int unused35:1;
 /* 00000010 */	int edit_capture_evt:1;
 /* 00000020 */	int osc_1hz:1;
-/* 00000040 */	int unused7:1;
+/* 00000040 */	int unused38:1;
 /* 00000080 */	int batt_unk:1;
 
 /* 00000100 */	int	tick_1hz:1;
 /* 00000200 */	int	playing_fb:1;
 /* 00000400 */	int has_x32:1;
-/* 00000800 */	int is_mini:1;
+/* 00000800 */	int unused43:1;
 /* 00001000 */	int debug:1;
 /* 00002000 */	int noclock:1;
 /* 00004000 */	int read_bir:1;
@@ -129,9 +131,10 @@ typedef struct
 
 /* 00010000 */	int anim3d:1;
 /* 00020000 */	int pwm_pll:1;
-/* 00040000 */	int light_sleep:1;
-/* 00080000 */	int wake_up:1;
-/* 00100000 */	int scr_noinv:1;
+/* 00040000 */	int rtcinit:1;
+/* 00080000 */	int light_sleep:1;
+/* 00100000 */	int wake_up:1;
+/* 00200000 */	int scr_noinv:1;
 }
 
 gFlags_t;

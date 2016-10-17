@@ -17,8 +17,6 @@ uint32_t	AtoVoltsADC;
 uint32_t	AtoVolts;
 uint32_t	TargetVolts;
 uint32_t	AtoRezMilli;
-uint32_t	ADCShuntSum;
-uint32_t	ADCAtoSum;
 uint32_t	AtoMinVolts;
 uint32_t	AtoMaxVolts;
 uint32_t	AtoMinPower;
@@ -108,7 +106,7 @@ __myevic__ void InitPWM()
 
 	PWM_ConfigOutputChannel( PWM0, BBC_PWMCH_BUCK, BBC_PWM_FREQ, 0 );
 	PWM_ConfigOutputChannel( PWM0, BBC_PWMCH_BOOST, BBC_PWM_FREQ, 0 );
-	if ( ISVTCDUAL || ISCUBOID )
+	if ( ISVTCDUAL || ISCUBOID || ISRX200S )
 	{
 		PWM_ConfigOutputChannel( PWM0, BBC_PWMCH_CHARGER, BBC_PWM_FREQ, 0 );
 	}
@@ -119,14 +117,14 @@ __myevic__ void InitPWM()
 	PWM_EnableOutput( PWM0, 1 << BBC_PWMCH_BOOST );
 	PWM_EnablePeriodInt( PWM0, BBC_PWMCH_BOOST, 0 );
 
-	if ( ISVTCDUAL || ISCUBOID )
+	if ( ISVTCDUAL || ISCUBOID || ISRX200S )
 	{
 		PWM_EnableOutput( PWM0, 1 << BBC_PWMCH_CHARGER );
 	}
 
 	PWM_Start( PWM0, 1 << BBC_PWMCH_BUCK );
 	PWM_Start( PWM0, 1 << BBC_PWMCH_BOOST );
-	if ( ISVTCDUAL || ISCUBOID )
+	if ( ISVTCDUAL || ISCUBOID || ISRX200S )
 	{
 		PWM_Start( PWM0, 1 << BBC_PWMCH_CHARGER );
 	}
@@ -137,10 +135,19 @@ __myevic__ void InitPWM()
 	BuckDuty = 0;
 	PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, 0 );
 
-	if ( ISVTCDUAL || ISCUBOID )
+	if ( ISVTCDUAL || ISCUBOID || ISRX200S )
 	{
 		ChargerDuty = 0;
 		PWM_SET_CMR( PWM0, BBC_PWMCH_CHARGER, 0 );
+
+		if ( ISRX200S )
+		{
+			MaxChargerDuty = 511;
+		}
+		else
+		{
+			MaxChargerDuty = 255;
+		}
 	}
 }
 
@@ -279,7 +286,29 @@ __myevic__ uint16_t FarenheitToC( uint16_t tf )
 //----- (0000344C) --------------------------------------------------------
 __myevic__ void StopFire()
 {
-	GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_INPUT );
+	if ( ISVTCDUAL )
+	{
+		GPIO_SetMode( PD, GPIO_PIN_PIN1_Msk, GPIO_MODE_INPUT );
+	}
+	else if ( !ISCUBOID && !ISRX200S )
+	{
+		GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_INPUT );
+	}
+
+	PC1 = 0;
+	if ( !ISVTCDUAL )
+		PC3 = 0;
+
+	BuckDuty = 0;
+	PC0 = 0;
+	BBC_Configure( 0, 0 );
+
+	BoostDuty = 0;
+	PC2 = 0;
+	BBC_Configure( 2, 0 );
+
+	SetADCState( 1, 0 );
+	SetADCState( 2, 0 );
 
 	if ( gFlags.firing )
 	{
@@ -298,22 +327,6 @@ __myevic__ void StopFire()
 
 	AutoPuffTimer = 0;
 	PreheatTimer = 0;
-
-	PC1 = 0;
-
-	if ( !ISVTCDUAL )
-		PC3 = 0;
-
-	BuckDuty = 0;
-	PC0 = 0;
-	BBC_Configure( 0, 0 );
-
-	BoostDuty = 0;
-	PC2 = 0;
-	BBC_Configure( 2, 0 );
-
-	SetADCState( 1, 0 );
-	SetADCState( 2, 0 );
 
 	LowBatVolts = 0;
 	BatReadTimer = 200;
@@ -355,32 +368,66 @@ __myevic__ uint16_t AtoPowerLimit( uint16_t pwr )
 //----- (00003564) --------------------------------------------------------
 __myevic__ void ReadAtoCurrent()
 {
-	unsigned int adcShunt;
+	unsigned int adcShunt1, adcShunt2;
 	unsigned int adcAtoVolts;
 	unsigned int arez;
+	unsigned int current1, current2;
 	int s;
 
 	if ( gFlags.firing || gFlags.probing_ato )
 	{
-		adcShunt = ADC_Read( 2 );
+		if ( ISRX200S )
+		{
+			CLK_SysTickDelay( 10 );
+			adcShunt2 = ADC_Read( 15 );
+			if ( gFlags.firing && BuckDuty <= 25 && adcShunt2 > 200 )
+				adcShunt2 = 0;
+		}
+		else
+		{
+			adcShunt2 = 0;
+		}
+
+		CLK_SysTickDelay( 10 );
+		adcShunt1 = ADC_Read( 2 );
 		CLK_SysTickDelay( 10 );
 		adcAtoVolts = ADC_Read( 1 );
 
-		// Shunt current, in 10th of an Amp
-		AtoCurrent = ( (10 * 2560 * adcShunt) >> 12 ) / AtoShuntRez;
+		if ( ISRX200S )
+		{
+			current1 = ( 10 * 2560 * adcShunt2 >> 12 ) / AtoShuntRez;
+			if ( gFlags.firing )
+			{
+				current2 = ( 10 * 2560 * adcShunt1 >> 12 ) / AtoShuntRez;
+				AtoCurrent = current1 + current2;
+			}
+			else
+			{
+				current2 = 0;
+				AtoCurrent = current1;
+			}
+		}
+		else
+		{
+			// Shunt current, in 10th of an Amp
+			current1 = ( (10 * 2560 * adcShunt1) >> 12 ) / AtoShuntRez;
+			current2 = 0;
+
+			AtoCurrent = current1;
+		}
 
 		arez = LowestRezMeasure();
 
 		if	(  gFlags.firing
 			   // ( shunt current ) > ( 1.6 * theorical ato current )
-			&& 160 * 13 * adcAtoVolts / 100 * AtoShuntRez < 30 * adcShunt * arez
+			&& 160 * 13 * adcAtoVolts / 100 * AtoShuntRez < 30 * ( adcShunt1 + adcShunt2 ) * arez
 			&& AtoCurrent > 50		// 5.0A
 			&& TargetVolts >= 100	// 1.00V
 		)
 		{
 			s = 2;
 		}
-		else if ( AtoCurrent > 256 && !ISMODEBY(dfMode) )
+		else if ( ( current1 > 256 || current2 > 256 ) && !ISMODEBY(dfMode) )
 		{
 			// This case can only occur if shunt resistance value is below 1 mOhm,
 			// due to the resolution of the EADC. On all hardware versions, shunts
@@ -402,7 +449,7 @@ __myevic__ void ReadAtoCurrent()
 					" Short %d! u32ADValue_Res_temp(%d) u32ADValue_CurVol_temp(%d)"
 					" g_u16DetRes_I(%d.%d) u16Res(%d) g_u32Set_OutVol(%d).\n",
 					s,
-					adcShunt,
+					adcShunt1,
 					adcAtoVolts,
 					AtoCurrent / 10,
 					AtoCurrent % 10,
@@ -542,6 +589,10 @@ __myevic__ void CheckMode()
 //----- (00003250) --------------------------------------------------------
 __myevic__ void ReadAtomizer()
 {
+	uint32_t ADCShuntSum1;
+	uint32_t ADCShuntSum2;
+	uint32_t ADCAtoSum;
+
 	int NumShuntSamples;
 
 	if ( TargetVolts )
@@ -556,20 +607,28 @@ __myevic__ void ReadAtomizer()
 		}
 
 		ADCAtoSum = 0;
-		ADCShuntSum = 0;
+		ADCShuntSum1 = 0;
+		ADCShuntSum2 = 0;
+
 		for ( int count = 0 ; count < NumShuntSamples ; ++count )
 		{
+			if ( ISRX200S )
+			{
+				CLK_SysTickDelay( 10 );
+				ADCShuntSum2 += ADC_Read( 15 );
+			}
 			CLK_SysTickDelay( 10 );
-			ADCShuntSum += ADC_Read( 2 );
+			ADCShuntSum1 += ADC_Read( 2 );
 			CLK_SysTickDelay( 10 );
 			ADCAtoSum += ADC_Read( 1 );
 		}
 
-		if ( !ADCShuntSum ) ADCShuntSum = 1;
-		AtoRezMilli = 1300 * AtoShuntRez / 100 * ADCAtoSum / ( 3 * ADCShuntSum );
+		if ( !ADCShuntSum1 ) ADCShuntSum1 = 1;
 
-	//	myprintf( "ARM=%d, sh=%d, ato=%d, apc=%d\n",
-	//				AtoRezMilli, ADCShuntSum, ADCAtoSum, AtoProbeCount );
+		AtoRezMilli = 1300 * AtoShuntRez / 100 * ADCAtoSum / ( 3 * ( ADCShuntSum1 + ADCShuntSum2 ) );
+
+	//	myprintf( "ARM=%d, sh1=%d, sh2=%d, ato=%d, apc=%d\n",
+	//				AtoRezMilli, ADCShuntSum1, ADCShuntSum2, ADCAtoSum, AtoProbeCount );
 		
 		ReadAtoCurrent();
 
@@ -585,7 +644,7 @@ __myevic__ void ReadAtomizer()
 			{
 				AtoStatus = 1;
 				myprintf( "RL_GND %d(%d,%d,%d)\n",
-						  AtoRezMilli, ADCAtoSum, ADCShuntSum, 0 );
+						  AtoRezMilli, ADCAtoSum, ADCShuntSum1, ADCShuntSum2 );
 				if ( gFlags.firing )
 				{
 					StopFire();
@@ -1184,7 +1243,7 @@ __myevic__ void SetAtoLimits()
 __myevic__ void ProbeAtomizer()
 {
 	if (( ISVTCDUAL && ( BatteryStatus == 2 || !PA3 ) )
-	||  ( ISCUBOID  && ( BatteryStatus == 2 || !PF0 ) ))
+	||  ( ( ISCUBOID || ISRX200S )  && ( BatteryStatus == 2 || !PF0 ) ))
 	{
 		AtoStatus = 0;
 	}

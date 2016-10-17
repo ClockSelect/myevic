@@ -101,7 +101,7 @@ __myevic__ void InitGPIO()
 		GPIO_SetMode( PA, GPIO_PIN_PIN3_Msk, GPIO_MODE_OUTPUT );
 	}
 
-	if ( ISCUBOID )
+	if ( ISCUBOID || ISRX200S )
 	{
 		SYS->GPF_MFPL &= ~SYS_GPF_MFPL_PF0MFP_Msk;
 		SYS->GPF_MFPL |= SYS_GPF_MFPL_PF0MFP_GPIO;
@@ -119,7 +119,7 @@ __myevic__ void InitGPIO()
 	// PC2 = PWM0 CH2
 	BBC_Configure( BBC_PWMCH_BOOST, 1 );
 
-	if ( ISVTCDUAL || ISCUBOID )
+	if ( ISVTCDUAL || ISCUBOID || ISRX200S )
 	{
 		PD7 = 0;
 		BBC_Configure( BBC_PWMCH_CHARGER, 0 );
@@ -132,7 +132,7 @@ __myevic__ void InitGPIO()
 	GPIO_SetMode( PD, GPIO_PIN_PIN3_Msk, GPIO_MODE_INPUT );
 
 	// BUCK/BOOST CONVERTER CONTROL LINES
-	if ( ISCUBOID )
+	if ( ISCUBOID || ISRX200S )
 	{
 		PF2 = 1;
 		GPIO_SetMode( PF, GPIO_PIN_PIN2_Msk, GPIO_MODE_OUTPUT );
@@ -164,7 +164,7 @@ __myevic__ void InitGPIO()
 		GPIO_EnableInt( PD, 1, GPIO_INT_RISING );
 		GPIO_ENABLE_DEBOUNCE( PD, GPIO_PIN_PIN1_Msk );
 	}
-	else if ( !ISCUBOID )
+	else if ( !ISCUBOID && !ISRX200S )
 	{
 		GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_INPUT );
 		GPIO_EnableInt( PD, 7, GPIO_INT_RISING );
@@ -177,9 +177,19 @@ __myevic__ void InitGPIO()
 	PE12 = 0;
 	GPIO_SetMode( PE, GPIO_PIN_PIN12_Msk, GPIO_MODE_OUTPUT );
 
-	// ? (What is PB.7?)
-	PB7 = 1;
-	GPIO_SetMode( PB, GPIO_PIN_PIN7_Msk, GPIO_MODE_OUTPUT );
+	if ( ISRX200S )
+	{
+		SYS->GPF_MFPL &= ~SYS_GPF_MFPL_PF1MFP_Msk;
+		SYS->GPF_MFPL |= SYS_GPF_MFPL_PF1MFP_GPIO;
+		PF1 = 1;
+		GPIO_SetMode( PF, GPIO_PIN_PIN0_Msk, GPIO_MODE_OUTPUT );
+	}
+	else
+	{
+		// ? (What is PB.7?)
+		PB7 = 1;
+		GPIO_SetMode( PB, GPIO_PIN_PIN7_Msk, GPIO_MODE_OUTPUT );
+	}
 
 	NVIC_EnableIRQ( GPD_IRQn );
 	NVIC_EnableIRQ( GPE_IRQn );

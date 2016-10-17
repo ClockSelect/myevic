@@ -203,6 +203,7 @@ uint8_t		NoEventTimer;
 uint8_t		BatReadTimer;
 uint8_t		NumBatteries;
 uint16_t	ChargerDuty;
+uint16_t	MaxChargerDuty;
 uint16_t	RTBattVolts;
 
 uint8_t		BattProbeCount;
@@ -227,7 +228,7 @@ __myevic__ void SetBatteryModel()
 	BatteryCutOff = Battery->cutoff;
 	if ( !BatteryIntRez )
 	{
-		BatteryIntRez = 100;
+		BatteryIntRez = 20;
 
 		if ( Battery->intrez > BatteryIntRez )
 		{
@@ -906,10 +907,10 @@ LABEL_64:
 
 				if ( adc13 >= 180 )
 				{
-					if ( ChargerDuty > 255 )
+					if ( ChargerDuty > MaxChargerDuty )
 						goto LABEL_90;
 				}
-				else if ( ChargerDuty > 255 )
+				else if ( ChargerDuty > MaxChargerDuty )
 				{
 					BatteryStatus = 4;
 					PA3 = 0;
@@ -965,10 +966,10 @@ __myevic__ void BatteryCharge()
 	static uint32_t dword_200000B4 = 0;
 	static uint32_t dword_200000C4 = 0;
 
-	sample13 = ADC_Read(13);
+	sample13 = ADC_Read( 13 );
 	adc13 = sample13 >> 2;
 
-	sample3 = ADC_Read(3);
+	sample3 = ADC_Read( 3 );
 	USBVolts = 147 * sample3 / 752 + 5;
 
 //	myprintf( "adc13=%d usbv=%d, b55=%d, b56=%d, BS=%d PF0=%d CD=%d\n",
@@ -1127,10 +1128,10 @@ LABEL_31:
 
 				if ( adc13 >= 180 )
 				{
-					if ( ChargerDuty > 255 )
+					if ( ChargerDuty > MaxChargerDuty )
 						goto LABEL_62;
 				}
-				else if ( ChargerDuty > 255 )
+				else if ( ChargerDuty > MaxChargerDuty )
 				{
 					BatteryStatus = 4;
 					PF0 = 0;

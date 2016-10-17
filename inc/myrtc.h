@@ -44,7 +44,7 @@ extern volatile int32_t ClockCorrection;
 //=========================================================================
 // Functions
 
-extern void InitRTC( S_RTC_TIME_DATA_T *d );
+extern void RTCStart( S_RTC_TIME_DATA_T *d );
 extern void GetRTC( S_RTC_TIME_DATA_T *rtd );
 extern void SetRTC( S_RTC_TIME_DATA_T *rtd );
 

@@ -364,6 +364,7 @@ Main menu screen
 
         Enables or disables usage of the X32 crystal of the PCB.  
         If this setting is "OFF", the firmware won't try to drive the Real-Time Clock with the 32.768kHz crystal. This may solve freezing issues on some malfunctionning boxes. This setting will be active at next reset.  
+        After reset, if the box cannot use the X32 to drive the RTC, this option will be set back to "OFF" and the Light Sleep feature will be enabled (see "LSL" below).  
         *This option is useless and forced to "OFF" on boxes known not to have an X32 crystal. Those are all boxes for which the manufacturer did not enable the RTC feature, i.e: VTC-Mini, Cuboid/Mini, Presa 75W and RX75.*  
 
   * LSL

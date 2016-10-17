@@ -196,7 +196,7 @@ __myevic__ void GetUserInput()
 					}
 				}
 			}
-			else if ( !ISCUBOID )
+			else if ( !ISCUBOID && !ISRX200S )
 			{
 				if ( !PD7 && !gFlags.battery_charging )
 				{

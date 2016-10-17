@@ -20,8 +20,6 @@
 extern uint32_t	AtoVolts;
 extern uint32_t	TargetVolts;
 extern uint32_t	AtoRezMilli;
-extern uint32_t	ADCShuntSum;
-extern uint32_t	ADCAtoSum;
 extern uint32_t	AtoMinVolts;
 extern uint32_t	AtoMaxVolts;
 extern uint32_t	AtoMinPower;

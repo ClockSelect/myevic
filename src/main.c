@@ -15,37 +15,20 @@
 #include "flappy.h"
 
 
-//=============================================================================
+//=========================================================================
 // Globals
 
 volatile gFlags_t gFlags;
 uint8_t BoxModel;
 
 
-//=============================================================================
+//=========================================================================
 // Additional initialisations
-//------------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 __myevic__ void CustomStartup()
 {
-	time_t vvbase;
 
-	vvbase = RTCReadRegister( RTCSPARE_VV_BASE );
-
-	if ( ( vvbase == 0 ) || ( vvbase % 86400 ) )
-	{
-		vvbase = RTCGetEpoch( 0 );
-		vvbase -= vvbase % 86400;
-		RTCWriteRegister( RTCSPARE_VV_BASE, vvbase );
-		RTCWriteRegister( RTCSPARE_VV_MJOULES, 0 );
-	}
-	else
-	{
-		MilliJoules = RTCReadRegister( RTCSPARE_VV_MJOULES );
-	}
-
-	Object3D = 1;
-
-//------------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Timer test 1
 
 	if ( 0 )
@@ -64,7 +47,7 @@ __myevic__ void CustomStartup()
 	}
 
 
-//------------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // Timer test 2
 
 	if ( 0 )
@@ -131,9 +114,6 @@ void InitDevices()
 	CLK_EnableXtalRC( CLK_PWRCTL_HXTEN_Msk );
 	CLK_WaitClockReady( CLK_STATUS_HXTSTB_Msk );
 
-	//  32.768kHz external crystal
-	CLK_DisableXtalRC( CLK_PWRCTL_LXTEN_Msk );
-
 	// FMC Frequency Optimisation mode <= 72MHz
 	FMC_EnableFreqOptimizeMode( FMC_FTCTL_OPTIMIZE_72MHZ );
 
@@ -189,41 +169,43 @@ void InitDevices()
 }
 
 
-//=============================================================================
+//=========================================================================
 //----- (00000C48) --------------------------------------------------------
 __myevic__ void InitHardware()
 {
+	if ( ISCUBOID || ISRX200S )
+	{
+		// Cuboid uses the PF.0 pin as part of
+		// its battery management system, and thus
+		// cannot have an X32.
+		// RX200S uses PF.1 pin and also cannot have
+		// an X32.
+		dfStatus.x32off = 1;
+	}
+
+	//  32.768kHz external crystal
+	if ( dfStatus.x32off )
+	{
+		CLK_DisableXtalRC( CLK_PWRCTL_LXTEN_Msk );
+	}
+	else
+	{
+		SYS->GPF_MFPL &= ~(SYS_GPF_MFPL_PF0MFP_Msk|SYS_GPF_MFPL_PF1MFP_Msk);
+		SYS->GPF_MFPL |=  (SYS_GPF_MFPL_PF0MFP_X32_OUT|SYS_GPF_MFPL_PF1MFP_X32_IN);
+
+		CLK_EnableXtalRC( CLK_PWRCTL_LXTEN_Msk );
+		CLK_WaitClockReady( CLK_STATUS_LXTSTB_Msk );
+	}
+
 	#if (ENABLE_UART)
 		InitUART0();
 	#endif
+
 	InitGPIO();
 
 	if ( !PD3 )
 	{
 		gFlags.noclock = 1;
-		
-		while ( !PD3 )
-			;
-	}
-
-	if ( ISCUBOID )
-	{
-		// Cuboid uses the PF.0 pin as part of
-		// its battery management system, and thus
-		// cannot have an X32.
-		dfStatus.x32off = 1;
-	}
-
-	if ( !gFlags.noclock )
-	{
-		InitRTC( 0 );
-	}
-
-	if ( gFlags.has_x32 )
-	{
-		// Disable Light Sleep mode.
-		dfStatus.lsloff = 1;
-		UpdateDFTimer = 50;
 	}
 
 	InitSPI0();
@@ -235,7 +217,53 @@ __myevic__ void InitHardware()
 }
 
 
-//=============================================================================
+//=========================================================================
+// Real-Time Clock
+//-------------------------------------------------------------------------
+__myevic__ void InitRTC()
+{
+	if ( !gFlags.noclock )
+	{
+		gFlags.has_x32 = !dfStatus.x32off;
+		RTCStart( 0 );
+	}
+
+	if ( gFlags.has_x32 )
+	{
+		// Disable Light Sleep mode.
+		dfStatus.lsloff = 1;
+		UpdateDFTimer = 1;
+	}
+	else if ( !dfStatus.x32off )
+	{
+		// Disable X32
+		dfStatus.x32off = 1;
+		// Enable Light Sleep mode.
+		dfStatus.lsloff = 0;
+		UpdateDFTimer = 1;
+	}
+
+	gFlags.rtcinit = 1;
+
+	time_t vvbase;
+
+	vvbase = RTCReadRegister( RTCSPARE_VV_BASE );
+
+	if ( ( vvbase == 0 ) || ( vvbase % 86400 ) )
+	{
+		vvbase = RTCGetEpoch( 0 );
+		vvbase -= vvbase % 86400;
+		RTCWriteRegister( RTCSPARE_VV_BASE, vvbase );
+		RTCWriteRegister( RTCSPARE_VV_MJOULES, 0 );
+	}
+	else
+	{
+		MilliJoules = RTCReadRegister( RTCSPARE_VV_MJOULES );
+	}
+}
+
+
+//=========================================================================
 //----- (0000895C) --------------------------------------------------------
 __myevic__ void InitVariables()
 {
@@ -252,10 +280,11 @@ __myevic__ void InitVariables()
 	AtoMaxVolts = MaxVolts;
 	AtoMinPower = 10;
 	AtoMaxPower = MaxPower;
+	Object3D = 1;
 }
 
 
-//=============================================================================
+//=========================================================================
 // BSOD
 
 __myevic__ void Plantouille( int xpsr, int* stack )
@@ -309,7 +338,7 @@ __myevic__ void Plantouille( int xpsr, int* stack )
 }
 
 
-//=============================================================================
+//=========================================================================
 //----- (00005D24) --------------------------------------------------------
 __myevic__ void DevicesOnOff( int off )
 {
@@ -329,16 +358,21 @@ __myevic__ void DevicesOnOff( int off )
 		SetADCState( 2, 0 );
 		SetADCState( 14, 0 );
 
-		if ( ISVTCDUAL || ISCUBOID )
+		if ( ISVTCDUAL || ISCUBOID || ISRX200S )
 		{
 			SetADCState( 3, 0 );
 			SetADCState( 13, 0 );
+			
+			if ( ISRX200S )
+			{
+				SetADCState( 15, 0 );
+			}
 
 			PD7 = 0;
 			BBC_Configure( BBC_PWMCH_CHARGER, 0 );
 			PD7 = 0;
 
-			if ( ISCUBOID )
+			if ( ISCUBOID || ISRX200S )
 			{
 				PF2 = 0;
 			}
@@ -352,7 +386,14 @@ __myevic__ void DevicesOnOff( int off )
 		PC2 = 0;
 		BBC_Configure( BBC_PWMCH_BOOST, 0 );
 
-		PB7 = 0;
+		if ( ISRX200S )
+		{
+			PF1 = 0;
+		}
+		else
+		{
+			PB7 = 0;
+		}
 
 		GPIO_DisableInt( PD, 0 );
 		PD0 = 0;
@@ -364,7 +405,7 @@ __myevic__ void DevicesOnOff( int off )
 			PD1 = 0;
 			GPIO_SetMode( PD, GPIO_PIN_PIN1_Msk, GPIO_MODE_OUTPUT );
 		}
-		else if ( !ISCUBOID )
+		else if ( !ISCUBOID && !ISRX200S )
 		{
 			GPIO_DisableInt( PD, 7 );
 			PD7 = 0;
@@ -391,7 +432,7 @@ __myevic__ void DevicesOnOff( int off )
 			PF2 = 0;
 			PA2 = 0;
 		}
-		else if ( ISCUBOID )
+		else if ( ISCUBOID || ISRX200S )
 		{
 			PF0 = 0;
 		}
@@ -421,7 +462,7 @@ __myevic__ void DevicesOnOff( int off )
 		GPIO_DisableInt( PD, 2 );
 		GPIO_DisableInt( PD, 3 );
 
-		if ( ISCUBOID )
+		if ( ISCUBOID || ISRX200S )
 		{
 			PF2 = 1;
 		}
@@ -445,17 +486,28 @@ __myevic__ void DevicesOnOff( int off )
 			GPIO_ENABLE_DEBOUNCE( PD, GPIO_PIN_PIN7_Msk );
 		}
 
-		PB7 = 1;
+		if ( ISRX200S )
+		{
+			PF1 = 1;
+		}
+		else
+		{
+			PB7 = 1;
+		}
 
-	//	EADC_Open( EADC, EADC_CTL_DIFFEN_SINGLE_END );
 		SetADCState( 1, 1 );
 		SetADCState( 2, 1 );
 		SetADCState( 14, 1 );
 
-		if ( ISVTCDUAL || ISCUBOID )
+		if ( ISVTCDUAL || ISCUBOID || ISRX200S )
 		{
 			SetADCState( 3, 1 );
 			SetADCState( 13, 1 );
+			
+			if ( ISRX200S )
+			{
+				SetADCState( 15, 1 );
+			}
 		}
 
 		TIMER_EnableInt( TIMER0 );
@@ -466,7 +518,7 @@ __myevic__ void DevicesOnOff( int off )
 }
 
 
-//=============================================================================
+//=========================================================================
 __myevic__ void LightSleep()
 {
 	// Switch Core Clock to HXT/3 (4MHz)
@@ -505,7 +557,7 @@ __myevic__ void LightSleep()
 }
 
 
-//=============================================================================
+//=========================================================================
 //----- (00005D14) --------------------------------------------------------
 __myevic__ void FlushAndSleep()
 {
@@ -524,7 +576,7 @@ __myevic__ void FlushAndSleep()
 }
 
 
-//=============================================================================
+//=========================================================================
 //----- (00004F0C) --------------------------------------------------------
 
 void GoToSleep()
@@ -554,7 +606,7 @@ void GoToSleep()
 }
 
 
-//=============================================================================
+//=========================================================================
 //----- (0000782C) --------------------------------------------------------
 __myevic__ void SleepIfIdle()
 {
@@ -581,9 +633,9 @@ __myevic__ void SleepIfIdle()
 }
 
 
-//=============================================================================
+//=========================================================================
 // Monitoring
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 __myevic__ void Monitor()
 {
 	if ( gFlags.firing )
@@ -657,8 +709,8 @@ __myevic__ void Monitor()
 }
 
 
-//=============================================================================
-//----- (00000148) ------------------------------------------------------------
+//=========================================================================
+//----- (00000148) --------------------------------------------------------
 __myevic__ void Main()
 {
 	InitDevices();
@@ -682,6 +734,13 @@ __myevic__ void Main()
 	MainView();
 
 	CustomStartup();
+
+	if ( !PD3 )
+	{
+		DrawScreen();
+		while ( !PD3 )
+			;
+	}
 
 	while ( 1 )
 	{
@@ -779,7 +838,7 @@ __myevic__ void Main()
 			{
 				BatteryChargeDual();
 			}
-			else if ( ISCUBOID )
+			else if ( ISCUBOID || ISRX200S )
 			{
 				BatteryCharge();
 			}
@@ -865,6 +924,11 @@ __myevic__ void Main()
 		{
 			// 5Hz
 			gFlags.tick_5hz = 0;
+
+			if ( !gFlags.rtcinit && NumBatteries )
+			{
+				InitRTC();
+			}
 
 			if ( gFlags.firing )
 			{

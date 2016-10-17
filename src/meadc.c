@@ -25,7 +25,7 @@ __myevic__ void InitEADC()
 					   SYS_GPB_MFPL_PB4MFP_Msk | SYS_GPB_MFPL_PB5MFP_Msk |
 					   SYS_GPB_MFPL_PB6MFP_Msk);
 
-   SYS->GPB_MFPL |= (SYS_GPB_MFPL_PB0MFP_EADC_CH0 | SYS_GPB_MFPL_PB1MFP_EADC_CH1 |
+	SYS->GPB_MFPL |= (SYS_GPB_MFPL_PB0MFP_EADC_CH0 | SYS_GPB_MFPL_PB1MFP_EADC_CH1 |
 					 SYS_GPB_MFPL_PB2MFP_EADC_CH2 | SYS_GPB_MFPL_PB3MFP_EADC_CH3 |
 					 SYS_GPB_MFPL_PB4MFP_EADC_CH4 | SYS_GPB_MFPL_PB5MFP_EADC_CH13 |
 					 SYS_GPB_MFPL_PB6MFP_EADC_CH14);
@@ -33,17 +33,19 @@ __myevic__ void InitEADC()
 	// Disable PB.0 - PB.6 digital input paths to avoid leakage currents
 	GPIO_DISABLE_DIGITAL_PATH( PB, 0x7F );
 
-//	EADC_Open( EADC, EADC_CTL_DIFFEN_SINGLE_END );
-//	EADC_SetInternalSampleTime( EADC, 6 );	// 0.67 us
-
-//	EADC_ConfigSampleModule( EADC, 14, EADC_SOFTWARE_TRIGGER, 14 );
+	if ( ISRX200S )
+	{
+		SYS->GPB_MFPL &= ~SYS_GPB_MFPL_PB7MFP_Msk;
+		SYS->GPB_MFPL |= SYS_GPB_MFPL_PB7MFP_EADC_CH15;
+		GPIO_DISABLE_DIGITAL_PATH( PB, 0x80 );
+	}
 }
 
 
 //=============================================================================
 __myevic__ void SetADCState( int module, int onoff )
 {
-	int pin;
+	int pin, mode;
 
 	switch ( module )
 	{
@@ -152,19 +154,28 @@ __myevic__ void SetADCState( int module, int onoff )
 			}
 			break;
 
+		case 15:
+			pin = GPIO_PIN_PIN7_Msk;
+
+			SYS->GPB_MFPL &= ~SYS_GPB_MFPL_PB7MFP_Msk;
+
+			if ( onoff )
+			{
+				SYS->GPB_MFPL |= SYS_GPB_MFPL_PB7MFP_EADC_CH15;
+			}
+			else
+			{
+				PB7 = 0;
+			}
+			break;
+
 		default:
 			return;
 	}
 
-	if ( onoff )
-	{
-		GPIO_SetMode( PB, pin, GPIO_MODE_INPUT );
-//		EADC_ConfigSampleModule( EADC, module, EADC_SOFTWARE_TRIGGER, module );
-	}
-	else
-	{
-		GPIO_SetMode( PB, pin, GPIO_MODE_OUTPUT );
-	}
+	mode = onoff ? GPIO_MODE_INPUT : GPIO_MODE_OUTPUT;
+
+	GPIO_SetMode( PB, pin, mode );
 }
 
 
