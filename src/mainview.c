@@ -328,7 +328,7 @@ __myevic__ void DrawAPTLine( int line )
 		case 7:	// Real-time atomizer resistance
 		{
 			DrawString( String_RES_s, 0, line+2 );
-			DrawValue( 19, line, AtoRezMilli, 3, 0x1F, 4 );
+			DrawValue( 19, line, AtoError ? 0 : AtoRezMilli, 3, 0x1F, 4 );
 			DrawImage( 56, line+2, 0xC0 );
 			// Refresh every second
 			ScreenRefreshTimer = 10;

@@ -544,13 +544,13 @@ __myevic__ void DFCheckValuesValidity()
 
 	if ( dfStatus.phpct )
 	{
-		if ( dfPreheatPwr > 200 )
+		if (( dfPreheatPwr < 50 ) || ( dfPreheatPwr > 300 ))
 			dfPreheatPwr = 100;
 	}
 	else
 	{
 		if ( dfPreheatPwr > MaxPower )
-			dfPreheatPwr = 200;
+			dfPreheatPwr = dfPower;
 	}
 
 	if ( dfPreheatTime > 200 )

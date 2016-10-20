@@ -658,6 +658,10 @@ __myevic__ void EventHandler()
 
 			SetADCState( 1, 1 );
 			SetADCState( 2, 1 );
+			if ( ISRX200S )
+			{
+				SetADCState( 15, 1 );
+			}
 			AtoWarmUp();
 			if ( !(gFlags.firing) || LastInputs != 1 )
 				StopFire();

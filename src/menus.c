@@ -540,8 +540,8 @@ __myevic__ int PreheatMEvent( int event )
 				if ( dfStatus.phpct )
 				{
 					dfPreheatPwr = 100 * dfPreheatPwr / dfPower;
-					if ( dfPreheatPwr > 200 ) dfPreheatPwr = 200;
-					if ( dfPreheatPwr < 10 ) dfPreheatPwr = 10;
+					if ( dfPreheatPwr > 300 ) dfPreheatPwr = 300;
+					if ( dfPreheatPwr < 50 ) dfPreheatPwr = 50;
 				}
 				else
 				{
@@ -570,7 +570,7 @@ __myevic__ int PreheatMEvent( int event )
 					}
 					if ( dfStatus.phpct )
 					{
-						PowerPlus( &dfPreheatPwr, 10, 200 );
+						PowerPlus( &dfPreheatPwr, 50, 300 );
 					}
 					else
 					{
@@ -599,7 +599,7 @@ __myevic__ int PreheatMEvent( int event )
 					}
 					if ( dfStatus.phpct )
 					{
-						PowerMinus( &dfPreheatPwr, 10, 200 );
+						PowerMinus( &dfPreheatPwr, 50, 300 );
 					}
 					else
 					{

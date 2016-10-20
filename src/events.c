@@ -74,36 +74,33 @@ __myevic__ void KeyRepeat()
 	{
 		// First event has been emitted by GetUserInput()
 
-		// Second event at +0.6s
-		// Next 4 events every .2s
-		// Next 100 events every .01s
-		// Following events every .03s
-
-	//	if ( KeyTicks >= 105 )
-	//	{
-	//		KRDelay = 0;
-	//	}
-	//	else
-	//	{
-	//		++KeyTicks;
-	//	}
-
-		// Second event at +0.6s
-		// Next 4 events every .2s (0.8s)
-		// Next 50 events every .05s (2.5s)
-		// Next 50 events every .03s (1.5s)
-		// Following events every .01s
-
-		if ( KeyTicks >= 5 && KeyTicks < 55 )
+		// +0.60s
+		// Polled every 200ms...
+		if ( KeyTicks < 5 )
 		{
-			KRDelay = 5;
+			KRDelay = 0;
 		}
-		else if ( KeyTicks >= 55 && KeyTicks < 105 )
+		// then every 10ms.
+		// +0.40s (1.00s)
+		else if ( KeyTicks < 105 )
 		{
-			KRDelay = 3;
+			// Quadratic function having its minimum (1) at 104
+			KRDelay = 104 - KeyTicks;
+			KRDelay = ( KRDelay * KRDelay ) / 1089 + 1;
+		}
+		// +3.60s (4.60s)
+		else if ( KeyTicks < 205 )
+		{
+			// Step jumped from 1 to 10, ie. speed x10
+			// Recover this jump then smooth with same function as above
+			KRDelay = 204 - KeyTicks;
+			KRDelay = ( KRDelay * KRDelay ) / 1089 + 1;
 		}
 
-		++KeyTicks;
+		if ( KeyTicks < 205 )
+		{
+			++KeyTicks;
+		}
 
 		if ( !PD2 )
 		{
@@ -1093,3 +1090,4 @@ __myevic__ int CustomEvents()
 }
 
 //==========================================================================
+

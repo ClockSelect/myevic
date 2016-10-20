@@ -309,6 +309,10 @@ __myevic__ void StopFire()
 
 	SetADCState( 1, 0 );
 	SetADCState( 2, 0 );
+	if ( ISRX200S )
+	{
+		SetADCState( 15, 0 );
+	}
 
 	if ( gFlags.firing )
 	{
@@ -597,13 +601,24 @@ __myevic__ void ReadAtomizer()
 
 	if ( TargetVolts )
 	{
-		if ( gFlags.firing || AtoProbeCount != 10 )
+		if ( !gFlags.firing )
 		{
-			NumShuntSamples = 1;
+			if ( AtoProbeCount == 10 )
+			{
+				NumShuntSamples = 50;
+			}
+			else if ( AtoProbeCount >= 12 )
+			{
+				NumShuntSamples = 5;
+			}
+			else
+			{
+				NumShuntSamples = 1;
+			}
 		}
 		else
 		{
-			NumShuntSamples = 50;
+			NumShuntSamples = 1;
 		}
 
 		ADCAtoSum = 0;
@@ -629,7 +644,7 @@ __myevic__ void ReadAtomizer()
 
 	//	myprintf( "ARM=%d, sh1=%d, sh2=%d, ato=%d, apc=%d\n",
 	//				AtoRezMilli, ADCShuntSum1, ADCShuntSum2, ADCAtoSum, AtoProbeCount );
-		
+
 		ReadAtoCurrent();
 
 		if ( gFlags.firing )
@@ -1251,6 +1266,10 @@ __myevic__ void ProbeAtomizer()
 	{
 		SetADCState( 1, 1 );
 		SetADCState( 2, 1 );
+		if ( ISRX200S )
+		{
+			SetADCState( 15, 1 );
+		}
 		WaitOnTMR2( 2 );
 
 		if (( AtoProbeCount == 8 ) || ( gFlags.firing ))
@@ -1279,7 +1298,7 @@ __myevic__ void ProbeAtomizer()
 
 		gFlags.probing_ato = 1;
 		AtoWarmUp();
-		WaitOnTMR2(2);
+		WaitOnTMR2( 2 );
 		ReadAtomizer();
 		gFlags.probing_ato = 0;
 
@@ -1290,6 +1309,10 @@ __myevic__ void ProbeAtomizer()
 				PC3 = 0;
 			SetADCState( 1, 0 );
 			SetADCState( 2, 0 );
+			if ( ISRX200S )
+			{
+				SetADCState( 15, 0 );
+			}
 			BoostDuty = 0;
 			PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, 0 );
 			BuckDuty = 0;
