@@ -136,6 +136,8 @@ typedef struct dfParams
 /* 00CD */	uint8_t		PreheatTime;
 /* 00CE */	uint16_t	PreheatPwr;
 /* 00D0 */	uint16_t	AtoPreheatPwr;
+/* 00D2 */	uint8_t		unused2[2];		// 2-bytes pad
+/* 00D4 */	uint16_t	TCRP[3];
 }
 dfParams_t;
 
@@ -309,6 +311,7 @@ extern dfStruct_t DataFlash;
 #define dfPreheatTime	DFP(PreheatTime)
 #define dfPreheatPwr	DFP(PreheatPwr)
 #define dfAtoPreheatPwr	DFP(AtoPreheatPwr)
+#define dfTCRP			DFP(TCRP)
 
 #define dfFWVersion		DFI(FWVersion)
 #define dffmcCID        DFI(fmcCID)

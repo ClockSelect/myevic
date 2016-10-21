@@ -529,19 +529,26 @@ __myevic__ void EventHandler()
 				case 1:
 					GetTempCoef( dfTempCoefsNI );
 					break;
+
 				case 2:
 					GetTempCoef( dfTempCoefsTI );
 					break;
+
 				case 3:
-					// Hard to find a consensusal value for the TCR of SS316L.
-					// Anything from 88- to 100+ can be found depending on the source.
-					// The original value of 120 is obviously way too high.
-					// steam-engine.org gives a value of 87.9, seems reliable to me.
-					TCR = 88;
+					TCR = 120;
 					break;
+
 				case 4:
-					TCR = dfTCRM[dfTCRIndex];
+					if ( dfMode == 3 )
+					{
+						TCR = dfTCRM[dfTCRIndex];
+					}
+					else if ( dfMode < 3 )
+					{
+						TCR = dfTCRP[dfMode];
+					}
 					break;
+
 				default:
 					break;
 			}

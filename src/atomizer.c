@@ -8,6 +8,7 @@
 #include "meadc.h"
 #include "megpio.h"
 #include "myrtc.h"
+#include "atomizer.h"
 
 //=============================================================================
 
@@ -99,6 +100,11 @@ __myevic__ void InitPWM()
 	MaxBoost	= PWMCycles / 12;
 	ProbeDuty	= PWMCycles / 8;
 	BoostWindow	= PWMCycles / 19;
+
+	if ( ISRX200S )
+	{
+		MaxDuty = 95 * PWMCycles / 100;
+	}
 
 	CLK_EnableModuleClock( PWM0_MODULE );
 	CLK_SetModuleClock( PWM0_MODULE, clk, 0 );
@@ -714,6 +720,55 @@ __myevic__ void ReadAtomizer()
 
 
 //=============================================================================
+// Dual Buck converter regulation
+//-----------------------------------------------------------------------------
+// (RX200S)
+//-----------------------------------------------------------------------------
+__myevic__ void RegulateDualBuck()
+{
+	if ( BBCMode != BBCNextMode )
+	{
+		if ( gFlags.firing )
+		{
+			BBC_Configure( BBC_PWMCH_BUCK2, 1 );
+			BuckDuty = MinBuck;
+			PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK2, BuckDuty );
+			PC3 = 1;
+		}
+
+		BBC_Configure( BBC_PWMCH_BUCK1, 1 );
+		BuckDuty = MinBuck;
+		PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK1, BuckDuty );
+		PC1 = 1;
+
+		BBCMode = BBCNextMode;
+	}
+
+	if ( AtoVolts > TargetVolts )
+	{
+		if ( BuckDuty <= MinBuck )
+			BuckDuty = 0;
+		else
+			--BuckDuty;
+	}
+	else if ( AtoVolts < TargetVolts )
+	{
+		if ( BuckDuty < MaxDuty )
+			++BuckDuty;
+	}
+
+	if ( ( AtoStatus == 0 || AtoStatus == 1 || ( !gFlags.firing && AtoProbeCount >= 12 ) )
+		&& BuckDuty >= ProbeDuty )
+	{
+		BuckDuty = ProbeDuty;
+	}
+
+	PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK2, BuckDuty );
+	PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK1, BuckDuty );
+}
+
+
+//=============================================================================
 //----- (00002CD8) --------------------------------------------------------
 __myevic__ void RegulateBuckBoost()
 {
@@ -732,11 +787,14 @@ __myevic__ void RegulateBuckBoost()
 			return;
 	}
 
-	ProbeDuty = PWMCycles / NumBatteries / 8;
-
 	AtoVoltsADC = ADC_Read( 1 );
 	AtoVolts = ( 1109 * AtoVoltsADC ) >> 12;
 
+	if ( ISRX200S )
+	{
+		RegulateDualBuck();
+		return;
+	}
 
 	switch ( BBCNextMode )
 	{
@@ -894,6 +952,8 @@ __myevic__ void AtoWarmUp()
 {
 	BBCNextMode = 2;
 	BBCMode = 0;
+
+	ProbeDuty = PWMCycles / NumBatteries / 8;
 
 	WarmUpCounter = ( NumBatteries > 1 ) ? 2000 : 3000;
 

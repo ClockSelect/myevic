@@ -555,6 +555,10 @@ __myevic__ void DFCheckValuesValidity()
 
 	if ( dfPreheatTime > 200 )
 		dfPreheatTime = 0;
+
+	for ( i = 0 ; i < 3 ; ++i )
+		if ( dfTCRP[i] > 999 )
+			dfTCRP[i] = 0;
 }
 
 

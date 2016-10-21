@@ -258,6 +258,10 @@ extern const uint16_t String_Isoca[];
 extern const uint16_t String_B1[];
 extern const uint16_t String_B2[];
 extern const uint16_t String_B3[];
+extern const uint16_t String_M1[];
+extern const uint16_t String_M2[];
+extern const uint16_t String_M3[];
+extern const uint16_t String_DEF[];
 
 
 //==============================================================================

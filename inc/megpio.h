@@ -2,10 +2,6 @@
 #define __MEGPIO_H__
 
 
-/* DC/DC converters PWM channels */
-#define BBC_PWMCH_BUCK  0
-#define BBC_PWMCH_BOOST 2
-
 
 extern void InitGPIO();
 

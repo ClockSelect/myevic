@@ -8,6 +8,10 @@
 #define BBC_PWMCH_BUCK		0
 #define BBC_PWMCH_BOOST		2
 
+#define BBC_PWMCH_BUCK1		0
+#define BBC_PWMCH_BUCK2		2
+
+
 #define SHUNT_MIN_VALUE	75
 #define SHUNT_MAX_VALUE	150
 

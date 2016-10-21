@@ -49,11 +49,13 @@ struct mvaluedesc_s
 	const uint8_t dp;
 	const int16_t min;
 	const int16_t max;
-	const void const (*draw)( int x, int y, int v, uint8_t dp, uint16_t z, uint8_t nd );
+	void (*draw)( int x, int y, int v, uint8_t dp, uint16_t z, uint8_t nd );
 	const uint16_t* const unit_s;
 	const uint16_t unit_c;
 	const uint8_t z;
 	const uint8_t inc;
+	const int16_t def1;
+	const int16_t def2;
 };
 
 struct mdata_s
@@ -107,7 +109,7 @@ __myevic__ void VapingMenuIDraw( int it, int line, int sel )
 			DrawFillRect( 39, line, 63, line+12, 0 );
 			DrawString( dfStatus.vapedml ? String_ml : String_mld, 43, line+2 );
 			break;
-		
+
 		case 4: // mL/kJ
 			DrawFillRect( 39, line, 63, line+12, 0 );
 			DrawValueRight( 61, line+2, dfVVRatio, 0, 0x0B, 0 );
@@ -160,7 +162,7 @@ __myevic__ int VapingMenuOnEvent( int event )
 					}
 					vret = 1;
 					break;
-				
+
 				case 4: // mL/kJ
 					if ( ++dfVVRatio > VVEL_MAX_RATIO )
 					{
@@ -1131,7 +1133,7 @@ __myevic__ int CoilsMEvent( int event )
 		return vret;
 
 	if ( event != 1 ) rmodified = 0;
-	
+
 	switch ( event )
 	{
 		case 1:
@@ -1215,6 +1217,27 @@ __myevic__ int CoilsMEvent( int event )
 	}
 
 	return vret;
+}
+
+
+//-----------------------------------------------------------------------------
+
+__myevic__ void DrawTCRP( int x, int y, int v, uint8_t dp, uint16_t z, uint8_t nd )
+{
+	if ( v == 0 )
+	{
+		DrawString( String_DEF, x - 18, y + 2 );
+	}
+	else
+	{
+		DrawValueRight( x, y + 2, v, dp, z, nd );
+	}
+}
+
+__myevic__ int TCRSetOnEvent( int event )
+{
+	Event = EVENT_MODE_CHANGE;
+	return 0;
 }
 
 
@@ -1304,6 +1327,127 @@ const menu_t PreheatMenu =
 	}
 };
 
+const mvaluedesc_t TCRNIDesc =
+{
+	32, 59,
+	0, 0,
+	0, 999,
+	&DrawTCRP+1,
+	0,
+	0,
+	0x0B,
+	1,
+	0, 600
+};
+
+const mvaluedesc_t TCRTIDesc =
+{
+	32, 59,
+	0, 0,
+	0, 999,
+	&DrawTCRP+1,
+	0,
+	0,
+	0x0B,
+	1,
+	0, 366
+};
+
+const mvaluedesc_t TCRSSDesc =
+{
+	32, 59,
+	0, 0,
+	0, 999,
+	&DrawTCRP+1,
+	0,
+	0,
+	0x0B,
+	1,
+	0, 88
+};
+
+const mvaluedesc_t TCRMDesc =
+{
+	32, 59,
+	0, 0,
+	1, 999,
+	0,
+	0,
+	0,
+	0x0B,
+	1,
+	0, 120
+};
+
+const mdata_t TCRNIData =
+{
+	&dfTCRP[0],
+	&TCRNIDesc,
+	MITYPE_WORD,
+	0
+};
+
+const mdata_t TCRTIData =
+{
+	&dfTCRP[1],
+	&TCRTIDesc,
+	MITYPE_WORD,
+	0
+};
+
+const mdata_t TCRSSData =
+{
+	&dfTCRP[2],
+	&TCRSSDesc,
+	MITYPE_WORD,
+	0
+};
+
+const mdata_t TCRM1Data =
+{
+	&dfTCRM[0],
+	&TCRMDesc,
+	MITYPE_WORD,
+	0
+};
+
+const mdata_t TCRM2Data =
+{
+	&dfTCRM[1],
+	&TCRMDesc,
+	MITYPE_WORD,
+	0
+};
+
+const mdata_t TCRM3Data =
+{
+	&dfTCRM[2],
+	&TCRMDesc,
+	MITYPE_WORD,
+	0
+};
+
+const menu_t TCRSetMenu =
+{
+	String_TCRSet,
+	&CoilsMenu,
+	0,
+	0,
+	0,
+	0,
+	&TCRSetOnEvent+1,
+	7,
+	{
+		{ String_M1, &TCRM1Data, 0, MACTION_DATA },
+		{ String_M2, &TCRM2Data, 0, MACTION_DATA },
+		{ String_M3, &TCRM3Data, 0, MACTION_DATA },
+		{ String_NI, &TCRNIData, 0, MACTION_DATA },
+		{ String_TI, &TCRTIData, 0, MACTION_DATA },
+		{ String_SS, &TCRSSData, 0, MACTION_DATA },
+		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+	}
+};
+
 const menu_t CoilsMgmtMenu =
 {
 	String_Coils,
@@ -1336,7 +1480,7 @@ const menu_t CoilsMenu =
 	3,
 	{
 		{ String_Manage, &CoilsMgmtMenu, 0, MACTION_SUBMENU },
-		{ String_TCRSet, 0, 39, 0 },
+		{ String_TCRSet, &TCRSetMenu, 0, MACTION_SUBMENU },
 		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
@@ -1440,7 +1584,8 @@ const mvaluedesc_t BVODesc =
 	0,
 	0,
 	0x0B,
-	1
+	1,
+	127, 0
 };
 
 const mdata_t BVO1Data =
@@ -1684,13 +1829,13 @@ const menu_t MainMenu =
 __myevic__ void DrawMenuData( int line, int sel, const mdata_t *data )
 {
 	uint32_t const *p = data->ptr;
-	const mbitdesc_t *desc = data->desc;
 
 	switch ( data->type )
 	{
 		case MITYPE_BIT:
 		{
 			uint32_t b;
+			const mbitdesc_t *desc = data->desc;
 
 			p += data->bitpos / 32;
 			b = 1 << ( data->bitpos % 32 );
@@ -1705,6 +1850,26 @@ __myevic__ void DrawMenuData( int line, int sel, const mdata_t *data )
 			{
 				DrawFillRect( desc->div ? : 40, line, 63, line + 12, 0 );
 				DrawString( b ? desc->on : desc->off, desc->pos ? : 44, line+2 );
+			}
+			break;
+		}
+
+		case MITYPE_WORD:
+		{
+			uint16_t v = *(const uint16_t*)p;
+			const mvaluedesc_t *desc = data->desc;
+			DrawFillRect( desc->div, line, 63, line+12, 0 );
+			if ( desc->draw )
+			{
+				desc->draw( desc->posr, line, v, desc->dp, desc->z, desc-> nd );
+			}
+			else
+			{
+				DrawValueRight( desc->posr, line + 2, v, desc->dp, desc->z, desc-> nd );
+			}
+			if ( sel && gFlags.edit_value )
+			{
+				InvertRect( 0, line, 63, line+12 );
 			}
 			break;
 		}
@@ -1832,11 +1997,17 @@ __myevic__ int MenuDataAction( int event, const mdata_t *data )
 				{
 					uint8_t *p = data->ptr;
 
-					if ( ( *p += desc->inc ) > desc->max )
-					{
-						*p = ( KeyTicks == 1 ) ? desc->min : desc->max;
-					}
 					vret = 1;
+
+					if ( *p == desc->def1 )
+						break;
+
+					*p += desc->inc * ( KeyTicks >= 105 ) ? 10 : 1;
+
+					if ( *p > desc->max )
+					{
+						*p = ( KeyTicks < 5 ) ? desc->min : desc->max;
+					}
 					break;
 				}
 
@@ -1844,23 +2015,35 @@ __myevic__ int MenuDataAction( int event, const mdata_t *data )
 				{
 					int8_t *p = data->ptr;
 
-					if ( ( *p += desc->inc ) > desc->max )
-					{
-						*p = ( KeyTicks == 1 ) ? desc->min : desc->max;
-					}
 					vret = 1;
+
+					if ( *p == desc->def1 )
+						break;
+
+					*p += desc->inc * ( KeyTicks >= 105 ) ? 10 : 1;
+
+					if ( *p > desc->max )
+					{
+						*p = ( KeyTicks < 5 ) ? desc->min : desc->max;
+					}
 					break;
 				}
 
 				case MITYPE_WORD:
 				{
 					int16_t *p = data->ptr;
-					
-					if ( ( *p += desc->inc ) > desc->max )
-					{
-						*p = ( KeyTicks == 1 ) ? desc->min : desc->max;
-					}
+
 					vret = 1;
+
+					if ( *p == desc->def1 )
+						break;
+
+					*p += desc->inc * ( KeyTicks >= 105 ) ? 10 : 1;
+
+					if ( *p > desc->max )
+					{
+						*p = ( KeyTicks < 5 ) ? desc->min : desc->max;
+					}
 					break;
 				}
 			}
@@ -1881,11 +2064,17 @@ __myevic__ int MenuDataAction( int event, const mdata_t *data )
 				{
 					uint8_t *p = data->ptr;
 
-					if ( ( *p <= desc->min ) || ( ( *p -= desc->inc ) < desc->min ) )
-					{
-						*p = ( KeyTicks == 1 ) ? desc->max : desc->min;
-					}
 					vret = 1;
+
+					if ( *p == desc->def1 )
+						break;
+
+					uint16_t inc = desc->inc * ( KeyTicks >= 105 ) ? 10 : 1;
+
+					if ( ( *p <= desc->min + inc ) || ( ( *p -= inc ) < desc->min ) )
+					{
+						*p = ( KeyTicks < 5 ) ? desc->max : desc->min;
+					}
 					break;
 				}
 
@@ -1893,23 +2082,69 @@ __myevic__ int MenuDataAction( int event, const mdata_t *data )
 				{
 					int8_t *p = data->ptr;
 
-					if ( ( *p -= desc->inc ) < desc->min )
-					{
-						*p = ( KeyTicks == 1 ) ? desc->max : desc->min;
-					}
 					vret = 1;
+
+					if ( *p == desc->def1 )
+						break;
+
+					uint16_t inc = desc->inc * ( KeyTicks >= 105 ) ? 10 : 1;
+
+					if ( ( *p -= inc ) < desc->min )
+					{
+						*p = ( KeyTicks < 5 ) ? desc->max : desc->min;
+					}
 					break;
 				}
 
 				case MITYPE_WORD:
 				{
 					int16_t *p = data->ptr;
-					
-					if ( ( *p -= desc->inc ) < desc->min )
-					{
-						*p = ( KeyTicks == 1 ) ? desc->max : desc->min;
-					}
+
 					vret = 1;
+
+					if ( *p == desc->def1 )
+						break;
+
+					uint16_t inc = desc->inc * ( KeyTicks >= 105 ) ? 10 : 1;
+
+					if ( ( *p -= inc ) < desc->min )
+					{
+						*p = ( KeyTicks < 5 ) ? desc->max : desc->min;
+					}
+					break;
+				}
+			}
+
+			break;
+		}
+
+		case EVENT_LONG_FIRE:
+		{
+			const mvaluedesc_t *desc = data->desc;
+
+			switch ( data->type )
+			{
+				case MITYPE_WORD:
+				{
+					int16_t *p = data->ptr;
+					if ( *p == desc->def1 )
+					{
+						*p = desc->def2;
+						gFlags.edit_value = 1;
+						vret = 1;
+					}
+					else if ( desc->def1 >= desc->min && desc->def1 <= desc->max )
+					{
+						*p = desc->def1;
+						gFlags.edit_value = 0;
+						vret = 1;
+					}
+					else if ( desc->def2 >= desc->min && desc->def2 <= desc->max )
+					{
+						*p = desc->def2;
+						gFlags.edit_value = 0;
+						vret = 1;
+					}
 					break;
 				}
 			}
@@ -1925,9 +2160,10 @@ __myevic__ int MenuDataAction( int event, const mdata_t *data )
 	if ( vret )
 	{
 		UpdateDFTimer = 50;
+		ScreenDuration = 30;
 		gFlags.refresh_display = 1;
 	}
-			
+
 	return vret;
 }
 
@@ -2038,6 +2274,8 @@ __myevic__ int MenuEvent( int event )
 
 		case EVENT_EXIT_MENUS:
 			EditModeTimer = 0;
+			gFlags.edit_capture_evt = 0;
+			gFlags.edit_value = 0;
 			UpdateDataFlash();
 			MainView();
 			vret = 1;

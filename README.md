@@ -216,8 +216,17 @@ Main menu screen
             Zeroes all resistances; also zeroes all "SMART" and "POWER" modes saved resistance settings.
 
     * TCR Set:
-      
-        Enters the TCR Set menu. This is a guenuine menu from the original firmware and is described in your box's manual. This menu can also be accessed by switching off the box and pressing both Fire and Right regulatory button for 5 seconds.
+
+        ![](https://www.dropbox.com/s/n09iy9nu57jnv18/tcrset.png?dl=1)  
+
+        TCR Set menu.  
+        *The guenuine menu from the original firmware is still accessible by switching off the box and pressing both Fire and Right regulatory button (+) for 5 seconds (but maybe not for long^^).*  
+        
+        In addition to the three usual TCR modes (M1, M2 & M3), the box standard presets for TEMP NI, TI and SS are editable. To edit one of the three preset modes:
+        * Select the mode you want to edit,
+        * Long fire to unlock the default (DEF) behavior; a reasonable value is proposed as a default starting value for edition,
+        * Edit the TCR value.
+        * Long fire to restore the default (DEF) behavior if needed.
 
 
 ----------
@@ -225,7 +234,7 @@ Main menu screen
 
     * Preheat:
     
-        ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/preheat_zpsrpcu0fml.png)
+        ![TCR Set Menu](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/preheat_zpsrpcu0fml.png)
         
         Coil preheat function. Set at wich power and how long you want the coil to be preheated when you fire; after this delay, the atomizer will be powered by your regular setting. Set the delay to zero to switch preheating off. A small "P" icon will appear on the main screen next the the power setting to remind you the preheat function is enabled ("POWER" mode only). This function can only be active in "POWER" and "SMART" modes; it is ignored in all other modes.
 

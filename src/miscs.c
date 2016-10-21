@@ -14,7 +14,14 @@ __myevic__ void ModeChange()
 	switch ( dfMode )
 	{
 		case 0:
-			dfTempAlgo = 1;
+			if ( dfTCRP[dfMode] == 0 )
+			{
+				dfTempAlgo = 1;
+			}
+			else
+			{
+				dfTempAlgo = 4;
+			}
 			if ( dfRezNI )
 			{
 				if ( ( dfRezLockedNI ) || !( gFlags.check_rez_ni ))
@@ -23,8 +30,16 @@ __myevic__ void ModeChange()
 				}
 			}
 			break;
+
 		case 1:
-			dfTempAlgo = 2;
+			if ( dfTCRP[dfMode] == 0 )
+			{
+				dfTempAlgo = 2;
+			}
+			else
+			{
+				dfTempAlgo = 4;
+			}
 			if ( dfRezTI )
 			{
 				if (( dfRezLockedTI ) || !( gFlags.check_rez_ti ))
@@ -33,8 +48,16 @@ __myevic__ void ModeChange()
 				}
 			}
 			break;
+
 		case 2:
-			dfTempAlgo = 3;
+			if ( dfTCRP[dfMode] == 0 )
+			{
+				dfTempAlgo = 3;
+			}
+			else
+			{
+				dfTempAlgo = 4;
+			}
 			if ( dfRezSS )
 			{
 				if (( dfRezLockedSS ) || !( gFlags.check_rez_ss ))
@@ -43,6 +66,7 @@ __myevic__ void ModeChange()
 				}
 			}
 			break;
+
 		case 3:
 			dfTempAlgo = 4;
 			if ( dfRezTCR )
@@ -53,6 +77,7 @@ __myevic__ void ModeChange()
 				}
 			}
 			break;
+
 		default:
 			break;
 	}

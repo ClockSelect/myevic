@@ -74,6 +74,7 @@ extern uint8_t	LastEvent;
 #define EVENT_CLK_SPEED		114
 #define EVENT_CLK_ADJUST	115
 #define EVENT_INVERT_SCREEN	116
+#define EVENT_MODE_CHANGE	117
 
 
 //==============================================================================

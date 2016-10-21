@@ -1083,6 +1083,11 @@ __myevic__ int CustomEvents()
 			vret = 1;
 			break;
 
+		case EVENT_MODE_CHANGE:
+			ModeChange();
+			vret = 1;
+			break;
+
 		default:
 			break;
 	}

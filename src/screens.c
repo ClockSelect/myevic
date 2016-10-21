@@ -293,6 +293,7 @@ __myevic__ void DrawScreen()
 			MainView();
 			break;
 
+		case  59: // TCR Set Menu
 		case 101: // Contrast Menu
 		case 102: // Menus
 		case 103: // RTC Speed
@@ -300,8 +301,7 @@ __myevic__ void DrawScreen()
 		case 105: // Set Time
 		case 106: // Set Date
 			gFlags.edit_capture_evt = 0;
-			// NOBREAK
-		case  59: // TCR Set Menu
+			gFlags.edit_value = 0;
 			UpdateDataFlash();
 			// NOBREAK
 		case   1: // Main view
