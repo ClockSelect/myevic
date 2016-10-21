@@ -80,6 +80,7 @@ __myevic__ void SetProductID()
 	DFMagicNumber = 0x36;
 	BoxModel = BOX_VTCMINI;
 	NumBatteries = 1;
+	MaxBatteries = 1;
 
 	for ( uint32_t offset = 0 ; offset < LDROM_SIZE ; offset += 4 )
 	{
@@ -112,6 +113,8 @@ __myevic__ void SetProductID()
 			dfMaxHWVersion = 0x00010001;
 			DFMagicNumber = 0x12;
 			BoxModel = BOX_VTCDUAL;
+			NumBatteries = 0;
+			MaxBatteries = 2;
 			gFlags.pwm_pll = 1;
 			break;
 		}
@@ -149,6 +152,7 @@ __myevic__ void SetProductID()
 			DFMagicNumber = 0x39;
 			BoxModel = BOX_CUBOID;
 			NumBatteries = 2;
+			MaxBatteries = 2;
 			gFlags.pwm_pll = 1;
 			ScrFlip = 1;
 			X32Off = 1;
@@ -188,6 +192,7 @@ __myevic__ void SetProductID()
 //			DFMagicNumber = 0x14;
 //			BoxModel = BOX_RX200S;
 //			NumBatteries = 3;
+//			MaxBatteries = 3;
 //			gFlags.pwm_pll = 1;
 //			X32Off = 1;
 //			break;
@@ -341,7 +346,7 @@ __myevic__ void ResetDataFlash()
 //	MemClear( dfSavedCfgPwr, sizeof(dfSavedCfgPwr) );
 //	dfFBBest = 0;
 //	dfFBSpeed = 0;
-//	dfbyte_2000033D = 0;
+//	dfBattPC = 0;
 	dfContrast = 45;
 //	dfModesSel = 0;
 	dfClkRatio = RTC_DEF_CLK_RATIO;
@@ -483,8 +488,8 @@ __myevic__ void DFCheckValuesValidity()
 			dfTCRM[i] = 120;
 	}
 
-	if ( dfbyte_2000033D > 1 )
-		dfbyte_2000033D = 0;
+	if ( dfBattPC > 1 )
+		dfBattPC = 0;
 
 	if ( dfFBSpeed > 2 )
 		dfFBSpeed = 0;

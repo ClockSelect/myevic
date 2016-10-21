@@ -200,6 +200,7 @@ uint16_t	LowBatVolts;
 uint32_t	PowerScale;
 uint16_t	BatteryVoltage;
 uint16_t	BattVoltsHighest;
+uint16_t	BattVoltsTotal;
 uint16_t	BattVolts[3];
 uint16_t	BatteryCutOff;
 uint16_t	BatteryIntRez;
@@ -211,6 +212,7 @@ uint8_t		BatteryTenth;
 uint8_t		NoEventTimer;
 uint8_t		BatReadTimer;
 uint8_t		NumBatteries;
+uint8_t		MaxBatteries;
 uint16_t	ChargerDuty;
 uint16_t	MaxChargerDuty;
 uint16_t	RTBattVolts;
@@ -260,28 +262,35 @@ __myevic__ int ReadBatterySample( int nbat )
 {
 	int sample;
 
-	if ( nbat == 0 )
+	if ( nbat < MaxBatteries )
 	{
-		if ( ISVTWOMINI || ISEVICAIO )
+		if ( nbat == 0 )
+		{
+			if ( ISVTWOMINI || ISEVICAIO )
+			{
+				sample = ADC_Read( 0 );
+			}
+			else if ( ISVTCDUAL )
+			{
+				sample = ADC_Read( 4 );
+			}
+			else
+			{
+				sample = ADC_Read( 18 );
+			}
+		}
+		else if ( nbat == 1 )
 		{
 			sample = ADC_Read( 0 );
 		}
-		else if ( ISVTCDUAL )
+		else if ( nbat == 2 )
 		{
 			sample = ADC_Read( 4 );
 		}
 		else
 		{
-			sample = ADC_Read( 18 );
+			sample = 0;
 		}
-	}
-	else if ( nbat == 1 )
-	{
-		sample = ADC_Read( 0 );
-	}
-	else if ( nbat == 2 )
-	{
-		sample = ADC_Read( 4 );
 	}
 	else
 	{
@@ -451,18 +460,20 @@ __myevic__ void ReadBatteryVoltage()
 {
 	static uint32_t VbatSample1 = 0;
 	static uint32_t VbatSample2 = 0;
+	static uint32_t VbatSample3 = 0;
 	static uint8_t	VbatSampleCnt = 0;
 
-	if ( !(gFlags.firing) )
+	if ( !gFlags.firing )
 	{
 		while ( VbatSampleCnt < 16 )
 		{
+			VbatSample3 += ReadBatterySample( 2 );
 			VbatSample2 += ReadBatterySample( 1 );
 			VbatSample1 += ReadBatterySample( 0 );
 
 			++VbatSampleCnt;
 
-			if ( !(gFlags.sample_vbat) )
+			if ( !gFlags.sample_vbat )
 				return;
 		}
 
@@ -512,11 +523,32 @@ __myevic__ void ReadBatteryVoltage()
 
 		//	myprintf( "S1=%d S2=%d V1=%d V2=%d\n",
 		//		VbatSample1, VbatSample2, BattVolts[0], BattVolts[1] );
+		}
+		else if ( ISRX200S )
+		{
+			VbatSample1 = 125 * ( VbatSample1 >> 7 ) / 100;
+			VbatSample2 = 139 * ( VbatSample2 >> 4 ) / 624;
+			VbatSample3 =   3 * ( VbatSample3 >> 4 ) >> 3;
 
-		//	//***
-		//	BattVolts[0] = ( BattVolts[0] + BattVolts[1] ) / 2;
-		//	BattVolts[1] = BattVolts[0];
-		//	//***
+			BattVolts[0] = VbatSample1;
+
+			if ( VbatSample2 <= VbatSample1 )
+				BattVolts[1] = 0;
+			else
+				BattVolts[1] = VbatSample2 - VbatSample1;
+
+			if ( VbatSample1 + BattVolts[1] >= VbatSample3 )
+				BattVolts[2] = 0;
+			else
+				BattVolts[2] = VbatSample3 - VbatSample1 - BattVolts[1];
+
+			for ( int i = 0 ; i < NumBatteries ; ++i )
+				if ( BattVolts[i] )
+					BattVolts[i] += dfBVOffset[i];
+
+		//	myprintf( "S1=%d S2=%d S3=%d V1=%d V2=%d V3=%d\n",
+		//		VbatSample1, VbatSample2, VbatSample3,
+		//		BattVolts[0], BattVolts[1], BattVolts[2] );
 		}
 		else
 		{
@@ -527,9 +559,12 @@ __myevic__ void ReadBatteryVoltage()
 		gFlags.batteries_ooe = 0;
 
 		BattVoltsHighest = 0;
+		BattVoltsTotal = 0;
 
 		for ( int i = 0 ; i < NumBatteries ; ++i )
 		{
+			BattVoltsTotal += BattVolts[i];
+
 			if ( BattVolts[i] > BattVoltsHighest )
 				BattVoltsHighest = BattVolts[i];
 
@@ -554,6 +589,7 @@ __myevic__ void ReadBatteryVoltage()
 		VbatSampleCnt = 0;
 		VbatSample1 = 0;
 		VbatSample2 = 0;
+		VbatSample3 = 0;
 	}
 }
 
@@ -594,7 +630,7 @@ __myevic__ int CheckBattery()
 
 			if ( NumBatteries == 2 )
 			{
-				bs = 139 * ReadBatterySample( 1 ) / 624u;
+				bs = 139 * ReadBatterySample( 1 ) / 624;
 				bv2 = ( bs <= bv ) ? 0 : ( bs - bv );
 
 				bv  += dfBVOffset[1];
@@ -609,7 +645,7 @@ __myevic__ int CheckBattery()
 		}
 		else if ( ISCUBOID )
 		{
-			bvtot = 139 * ReadBatterySample( 1 ) / 624u;
+			bvtot = 139 * ReadBatterySample( 1 ) / 624;
 			if ( bvtot ) bvtot += 4;
 
 			bv = ( ReadBatterySample( 0 ) >> 3 ) + 32;

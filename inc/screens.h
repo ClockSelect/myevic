@@ -17,7 +17,6 @@ extern uint8_t	BatAnimLevel;
 
 extern uint8_t	EditItemIndex;
 extern uint16_t	EditModeTimer;
-extern uint8_t	EditTCRIndex;
 
 extern const uint8_t ScrSaveTimes[8];
 extern const uint8_t ScrMainTimes[6];

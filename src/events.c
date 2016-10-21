@@ -234,8 +234,9 @@ __myevic__ void GetUserInput()
 
 	// A keypress must be stable during at least
 	// 60 milliseconds before an event is emitted.
+	// (Taking into account the 50ms debounce time)
 
-	if ( KeyPressTime == 6 )
+	if ( KeyPressTime == 1 )
 	{
 		gFlags.user_idle = 0;
 
@@ -422,9 +423,9 @@ __myevic__ void GetUserInput()
 		}
 		else if ( UserInputs == 5 )
 		{
-			if ( !(dfStatus.off) )
+			if ( !dfStatus.off )
 			{
-				if ( !(gFlags.playing_fb) )
+				if ( !gFlags.playing_fb )
 				{
 					Event = EVENT_ENTER_MENUS;
 				}
@@ -439,7 +440,7 @@ __myevic__ void GetUserInput()
 		}
 		else if ( UserInputs == 6 )
 		{
-			if ( !(dfStatus.off) )
+			if ( !dfStatus.off )
 			{
 				Event = 6;	// stealth on/off
 			}
@@ -478,7 +479,7 @@ __myevic__ void GetUserInput()
 		}
 		else if ( KeyPressTime & 0x8000 )
 		{
-			KeyPressTime = 6;
+			KeyPressTime = 1;
 		}
 	}
 }

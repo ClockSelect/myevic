@@ -12,6 +12,7 @@
 //=============================================================================
 
 uint16_t	HideLogo = 0;
+uint16_t	BypassVolts;
 
 
 //=============================================================================
@@ -171,6 +172,7 @@ __myevic__ void DrawTempLine( int line )
 __myevic__ void DrawVoltsLine( int volts, int line )
 {
 	DrawString( String_VOLT_s, 0, line+2 );
+	if ( volts > MaxVolts ) volts = MaxVolts;
 	DrawValue( 27, line, volts, 2, 0x1F, 3 );
 	DrawImage( 57, line+2, 0x97 );
 }
@@ -397,8 +399,6 @@ __myevic__ void DrawInfoLines()
 			case 5:
 			{
 				ShowFireDuration( 49 );
-			//	DrawValue( 10, 49, FireDuration, 1, 0x29, 2 );
-			//	DrawImage( 40, 49, 0xB7 );
 				break;
 			}
 			default:
@@ -426,7 +426,7 @@ __myevic__ void DrawInfoLines()
 				DrawVoltsLine( dfVWVolts, 52 );
 				break;
 			case 5:
-				DrawVoltsLine( BatteryVoltage, 52 );
+				DrawVoltsLine( BypassVolts, 52 );
 				break;
 			default:
 				break;
@@ -495,16 +495,16 @@ __myevic__ void DrawTemp()
 
 __myevic__ void DrawPower( int pwr )
 {
-	if ( pwr > 999 )
+	if ( pwr < 100 )
 	{
-		DrawValue( 0, 18, pwr, 1, 0x29, 4 );
-		DrawImage( 54, 26, 0x98 );
+		DrawValue( 5, 13, pwr, 1, 0x48, 2 );
+		DrawImage( 45, 18, 0xB9 );
 		if ( ISMODEVW(dfMode) && dfPreheatTime )
 		{
-			DrawImage( 54, 17, 0x77 );
+			DrawImage( 45, 13, 0x77 );
 		}
 	}
-	else if ( pwr > 99 )
+	else if ( pwr < 1000 )
 	{
 		DrawValue( 0, 13, pwr, 1, 0x48, 3 );
 		DrawImage( 54, 26, 0x98 );
@@ -515,11 +515,11 @@ __myevic__ void DrawPower( int pwr )
 	}
 	else
 	{
-		DrawValue( 5, 13, pwr, 1, 0x48, 2 );
-		DrawImage( 45, 18, 0xB9 );
+		DrawValue( 0, 18, pwr, 1, 0x29, 4 );
+		DrawImage( 54, 26, 0x98 );
 		if ( ISMODEVW(dfMode) && dfPreheatTime )
 		{
-			DrawImage( 45, 13, 0x77 );
+			DrawImage( 54, 17, 0x77 );
 		}
 	}
 }
@@ -529,9 +529,10 @@ __myevic__ void DrawPower( int pwr )
 
 __myevic__ void ShowMainView()
 {
-	unsigned int pwr; // r2@2
-	unsigned int v15; // r0@93
+	unsigned int pwr, amps;
 	unsigned int i, j;
+
+	unsigned int v15; // r0@93
 	unsigned int v17; // r8@98
 	unsigned int v19; // r3@99
 	unsigned int v20; // r1@99
@@ -554,7 +555,11 @@ __myevic__ void ShowMainView()
 		}
 		else
 		{
-			pwr = ClampPower( BatteryVoltage, 0 );
+			amps = 10 * BattVoltsTotal
+				/ ( 10 * AtoRez + NumBatteries * BatteryIntRez );
+			BypassVolts = AtoRez * amps;
+			if ( BypassVolts > MaxVolts ) BypassVolts = MaxVolts;
+			pwr  = ClampPower( BypassVolts, 0 );
 		}
 	}
 
@@ -585,37 +590,23 @@ __myevic__ void ShowMainView()
 		}
 	}
 
-	if ( dfMode == 4 )
+	if (( dfMode == 4 ) || ( dfMode == 5 ))
 	{
 		DrawPower( pwr );
 	}
 
-	if ( dfMode == 5 )
-	{
-		if ( gFlags.firing )
-		{
-			DrawValue( 0, 13, AtoVolts, 2, 0x48, 3 );
-			DrawImage( 54, 26, 0x97 );
-		}
-		else
-		{
-			if ( pwr < 100 )
-			{
-				DrawValue( 5, 13, pwr, 1, 0x48, 2 );
-				DrawImage( 45, 18, 0xB9 );
-			}
-			else if ( pwr < 1000 )
-			{
-				DrawValue( 0, 13, pwr, 1, 0x48, 3 );
-				DrawImage( 54, 26, 0x98 );
-			}
-			else
-			{
-				DrawValue( 0, 18, pwr, 1, 0x29, 4 );
-				DrawImage( 54, 26, 0x98 );
-			}
-		}
-	}
+//	if ( dfMode == 5 )
+//	{
+//		if ( gFlags.firing )
+//		{
+//			DrawValue( 0, 13, AtoVolts, 2, 0x48, 3 );
+//			DrawImage( 54, 26, 0x97 );
+//		}
+//		else
+//		{
+//			DrawPower( pwr );
+//		}
+//	}
 
 	if ( dfMode == 6 )
 	{

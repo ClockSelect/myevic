@@ -1,4 +1,5 @@
 #include "myevic.h"
+#include "myprintf.h"
 #include "screens.h"
 #include "atomizer.h"
 #include "display.h"
@@ -277,7 +278,7 @@ __myevic__ void EventHandler()
 			if ( byte_200000B3 == 1 )
 			{
 				byte_200000B3 = 0;
-				word_200000C0 = AtoRez;
+				NewRez = AtoRez;
 
 				uint16_t rez = 0;
 				if 		( dfMode == 0 ) rez = dfRezLockedNI;
@@ -306,10 +307,10 @@ __myevic__ void EventHandler()
 				{
 					word_200000BA = dfRezNI;
 
-					if (  3 * dfRezNI >= word_200000C0 )
+					if (  3 * dfRezNI >= NewRez )
 					{
-						if (	dfRezNI + dfRezNI / 20 < word_200000C0
-							&&	dfRezNI + 1 < word_200000C0
+						if (	dfRezNI + dfRezNI / 20 < NewRez
+							&&	dfRezNI + 1 < NewRez
 							&&	!dfRezLockedNI )
 						{
 							gFlags.check_rez_ni = 1;
@@ -319,28 +320,28 @@ __myevic__ void EventHandler()
 
 						if
 						(
-							(	(dfRezNI - dfRezNI / 20 <= word_200000C0 || dfRezNI - 1 <= word_200000C0)
-							&&	(dfRezNI + dfRezNI / 20 >= word_200000C0 || dfRezNI + 1 >= word_200000C0))
+							(	(dfRezNI - dfRezNI / 20 <= NewRez || dfRezNI - 1 <= NewRez)
+							&&	(dfRezNI + dfRezNI / 20 >= NewRez || dfRezNI + 1 >= NewRez))
 						||
 							(	dfRezLockedNI
-							&&	(dfRezNI - dfRezNI / 10 <= word_200000C0 || dfRezNI - 4 <= word_200000C0))
+							&&	(dfRezNI - dfRezNI / 10 <= NewRez || dfRezNI - 4 <= NewRez))
 						)
 						{
 							dfResistance = dfRezNI;
 						}
 						else
 						{
-							if ( dfRezNI - dfRezNI / 20 > word_200000C0 && dfRezNI - 1 > word_200000C0 )
+							if ( dfRezNI - dfRezNI / 20 > NewRez && dfRezNI - 1 > NewRez )
 							{
-								dfResistance = word_200000C0;
-								dfRezNI = word_200000C0;
+								dfResistance = NewRez;
+								dfRezNI = NewRez;
 							}
 						}
 					}
 					else
 					{
-						dfResistance = word_200000C0;
-						dfRezNI = word_200000C0;
+						dfResistance = NewRez;
+						dfRezNI = NewRez;
 					}
 				}
 			}
@@ -357,10 +358,10 @@ __myevic__ void EventHandler()
 				{
 					word_200000B8 = dfRezTI;
 
-					if (  2 * dfRezTI >= word_200000C0 )
+					if (  2 * dfRezTI >= NewRez )
 					{
-						if (	dfRezTI + dfRezTI / 20 < word_200000C0
-							&&	dfRezTI + 1 < word_200000C0
+						if (	dfRezTI + dfRezTI / 20 < NewRez
+							&&	dfRezTI + 1 < NewRez
 							&&	!dfRezLockedTI )
 						{
 							gFlags.check_rez_ti = 1;
@@ -370,28 +371,28 @@ __myevic__ void EventHandler()
 
 						if
 						(
-							(	(dfRezTI - dfRezTI / 20 <= word_200000C0 || dfRezTI - 1 <= word_200000C0)
-							&&	(dfRezTI + dfRezTI / 20 >= word_200000C0 || dfRezTI + 1 >= word_200000C0))
+							(	(dfRezTI - dfRezTI / 20 <= NewRez || dfRezTI - 1 <= NewRez)
+							&&	(dfRezTI + dfRezTI / 20 >= NewRez || dfRezTI + 1 >= NewRez))
 						||
 							(	dfRezLockedTI
-							&&	(dfRezTI - dfRezTI / 10 <= word_200000C0 || dfRezTI - 4 <= word_200000C0))
+							&&	(dfRezTI - dfRezTI / 10 <= NewRez || dfRezTI - 4 <= NewRez))
 						)
 						{
 							dfResistance = dfRezTI;
 						}
 						else
 						{
-							if ( dfRezTI - dfRezTI / 20 > word_200000C0 && dfRezTI - 1 > word_200000C0 )
+							if ( dfRezTI - dfRezTI / 20 > NewRez && dfRezTI - 1 > NewRez )
 							{
-								dfResistance = word_200000C0;
-								dfRezTI = word_200000C0;
+								dfResistance = NewRez;
+								dfRezTI = NewRez;
 							}
 						}
 					}
 					else
 					{
-						dfResistance = word_200000C0;
-						dfRezTI = word_200000C0;
+						dfResistance = NewRez;
+						dfRezTI = NewRez;
 					}
 				}
 			}
@@ -408,10 +409,10 @@ __myevic__ void EventHandler()
 				{
 					word_200000BC = dfRezSS;
 
-					if ( 3 * dfRezSS >= 2 * word_200000C0 )
+					if ( 3 * dfRezSS >= 2 * NewRez )
 					{
-						if (	dfRezSS + dfRezSS / 20 < word_200000C0
-							&&	dfRezSS + 1 < word_200000C0
+						if (	dfRezSS + dfRezSS / 20 < NewRez
+							&&	dfRezSS + 1 < NewRez
 							&&	!dfRezLockedSS )
 						{
 							gFlags.check_rez_ss = 1;
@@ -422,26 +423,26 @@ __myevic__ void EventHandler()
 						{
 							if
 							(
-								(	( dfRezSS - dfRezSS / 20 <= word_200000C0 || dfRezSS - 1 <= word_200000C0 )
-								&&	( dfRezSS + dfRezSS / 20 >= word_200000C0 || dfRezSS + 1 >= word_200000C0 ) )
+								(	( dfRezSS - dfRezSS / 20 <= NewRez || dfRezSS - 1 <= NewRez )
+								&&	( dfRezSS + dfRezSS / 20 >= NewRez || dfRezSS + 1 >= NewRez ) )
 							||
 								(	  dfRezLockedSS
-								&&	( dfRezSS - dfRezSS / 10 <= word_200000C0 || dfRezSS - 4 <= word_200000C0 ) )
+								&&	( dfRezSS - dfRezSS / 10 <= NewRez || dfRezSS - 4 <= NewRez ) )
 							)
 							{
 								dfResistance = dfRezSS;
 							}
-							else if ( dfRezSS - dfRezSS / 20 > word_200000C0 && dfRezSS - 1 > word_200000C0 )
+							else if ( dfRezSS - dfRezSS / 20 > NewRez && dfRezSS - 1 > NewRez )
 							{
-								dfResistance = word_200000C0;
-								dfRezSS = word_200000C0;
+								dfResistance = NewRez;
+								dfRezSS = NewRez;
 							}
 						}
 					}
 					else
 					{
-						dfResistance = word_200000C0;
-						dfRezSS = word_200000C0;
+						dfResistance = NewRez;
+						dfRezSS = NewRez;
 					}
 				}
 			}
@@ -458,10 +459,10 @@ __myevic__ void EventHandler()
 				{
 					word_200000BE = dfRezTCR;
 
-					if ( 3 * dfRezTCR >= 2 * word_200000C0 )
+					if ( 3 * dfRezTCR >= 2 * NewRez )
 					{
-						if (	dfRezTCR + dfRezTCR / 20 < word_200000C0
-							&&	dfRezTCR + 1 < word_200000C0
+						if (	dfRezTCR + dfRezTCR / 20 < NewRez
+							&&	dfRezTCR + 1 < NewRez
 							&&	!dfRezLockedTCR )
 						{
 							gFlags.check_rez_tcr = 1;
@@ -472,26 +473,26 @@ __myevic__ void EventHandler()
 						{
 							if
 							(
-								(	( dfRezTCR - dfRezTCR / 20 <= word_200000C0 || dfRezTCR - 1 <= word_200000C0 )
-								&&	( dfRezTCR + dfRezTCR / 20 >= word_200000C0 || dfRezTCR + 1 >= word_200000C0 ) )
+								(	( dfRezTCR - dfRezTCR / 20 <= NewRez || dfRezTCR - 1 <= NewRez )
+								&&	( dfRezTCR + dfRezTCR / 20 >= NewRez || dfRezTCR + 1 >= NewRez ) )
 							||
 								(	  dfRezLockedTCR
-								&&	( dfRezTCR - dfRezTCR / 10 <= word_200000C0 || dfRezTCR - 4 <= word_200000C0 ) )
+								&&	( dfRezTCR - dfRezTCR / 10 <= NewRez || dfRezTCR - 4 <= NewRez ) )
 							)
 							{
 								dfResistance = dfRezTCR;
 							}
-							else if ( dfRezTCR - dfRezTCR / 20 > word_200000C0 && dfRezTCR - 1 > word_200000C0 )
+							else if ( dfRezTCR - dfRezTCR / 20 > NewRez && dfRezTCR - 1 > NewRez )
 							{
-								dfResistance = word_200000C0;
-								dfRezTCR = word_200000C0;
+								dfResistance = NewRez;
+								dfRezTCR = NewRez;
 							}
 						}
 					}
 					else
 					{
-						dfResistance = word_200000C0;
-						dfRezTCR = word_200000C0;
+						dfResistance = NewRez;
+						dfRezTCR = NewRez;
 					}
 				}
 			}
@@ -510,6 +511,8 @@ __myevic__ void EventHandler()
 				GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_OUTPUT );
 				PD7 = 0;
 			}
+
+		//	myprintf( "StartFire\n" );
 
 			gFlags.firing = 1;
 			FireDuration = 0;
@@ -552,7 +555,7 @@ __myevic__ void EventHandler()
 			{
 				if ( dfResistance <= 150 )
 				{
-					if ( !(gFlags.check_mode) )
+					if ( !gFlags.check_mode )
 					{
 						if ( dfRezType != 1 )
 						{
@@ -652,7 +655,14 @@ __myevic__ void EventHandler()
 
 			if ( ISMODEBY(dfMode) )
 			{
-				TargetVolts = 450;
+				if ( ( NumBatteries > 1 ) && ( ISVTCDUAL || ISCUBOID ) )
+				{
+					TargetVolts = 900;
+				}
+				else
+				{
+					TargetVolts = 450;
+				}
 			}
 
 			SetADCState( 1, 1 );
@@ -662,7 +672,7 @@ __myevic__ void EventHandler()
 				SetADCState( 15, 1 );
 			}
 			AtoWarmUp();
-			if ( !(gFlags.firing) || LastInputs != 1 )
+			if ( !gFlags.firing || LastInputs != 1 )
 				StopFire();
 			gFlags.refresh_display = 1;
 			Screen = 2;
@@ -678,7 +688,7 @@ __myevic__ void EventHandler()
 //------------------------------------------------------------------------------
 
 		case 34:	// Show battery voltage
-			if ( !(dfStatus.off) )
+			if ( !dfStatus.off )
 				return;
 			gFlags.refresh_display = 1;
 			Screen = 54;
@@ -771,7 +781,7 @@ __myevic__ void EventHandler()
 			return;
 
 		case 18:	// Flip display
-			if ( !(dfStatus.off) )
+			if ( !dfStatus.off )
 				return;
 			dfStatus.flipped ^= 1;
 			InitDisplay();
@@ -912,7 +922,7 @@ __myevic__ void EventHandler()
 			byte_20000055 = 1;
 			gFlags.low_battery = 0;
 			gFlags.usb_attached = 1;
-			if ( !(dfStatus.off) )
+			if ( !dfStatus.off )
 			{
 				if ( Screen == 0 )
 				{
@@ -1099,19 +1109,19 @@ __myevic__ void EventHandler()
 				switch ( dfMode )
 				{
 					case 0:
-						dfRezNI = word_200000C0;
+						dfRezNI = NewRez;
 						gFlags.check_rez_ni = 0;
 						break;
 					case 1:
-						dfRezTI = word_200000C0;
+						dfRezTI = NewRez;
 						gFlags.check_rez_ti = 0;
 						break;
 					case 2:
-						dfRezSS = word_200000C0;
+						dfRezSS = NewRez;
 						gFlags.check_rez_ss = 0;
 						break;
 					case 3:
-						dfRezTCR = word_200000C0;
+						dfRezTCR = NewRez;
 						gFlags.check_rez_tcr = 0;
 						break;
 					default:

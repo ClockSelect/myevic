@@ -123,7 +123,7 @@ typedef struct dfParams
 /* 00A6 */	uint16_t	SavedCfgPwr[10];
 /* 00BA */	uint16_t	FBBest;
 /* 00BC */	uint8_t		FBSpeed;
-/* 00BD */	uint8_t		byte_2000033D;	//	unused
+/* 00BD */	uint8_t		BattPC;			//	unused
 /* 00BE */	uint8_t		Contrast;
 /* 00BF */	uint8_t		ModesSel;
 /* 00C0 */	uint16_t	ClkRatio;
@@ -299,7 +299,7 @@ extern dfStruct_t DataFlash;
 #define dfSavedCfgPwr	DFP(SavedCfgPwr)
 #define dfFBBest		DFP(FBBest)
 #define dfFBSpeed		DFP(FBSpeed)
-#define dfbyte_2000033D	DFP(byte_2000033D)
+#define dfBattPC		DFP(BattPC)
 #define dfContrast		DFP(Contrast)
 #define dfModesSel		DFP(ModesSel)
 #define dfClkRatio		DFP(ClkRatio)

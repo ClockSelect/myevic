@@ -22,7 +22,6 @@ const uint8_t ScrMainTimes[6] = { 30, 60, 5, 10, 15, 20 };
 
 uint8_t		EditItemIndex;
 uint16_t	EditModeTimer;
-uint8_t		EditTCRIndex;
 
 uint8_t		ShowWeakBatFlag;
 uint8_t		BatAnimLevel;
@@ -506,7 +505,7 @@ __myevic__ void ShowBattery()
 		}
 	}
 
-	if ( gFlags.battery_10pc && !(gFlags.battery_charging) )
+	if ( gFlags.battery_10pc && !gFlags.battery_charging )
 	{
 		if ( gFlags.draw_battery )
 		{

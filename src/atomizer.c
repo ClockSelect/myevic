@@ -47,7 +47,7 @@ uint16_t	word_200000B8;
 uint16_t	word_200000BA;
 uint16_t	word_200000BC;
 uint16_t	word_200000BE;
-uint16_t	word_200000C0;
+uint16_t	NewRez;
 
 
 //-------------------------------------------------------------------------
@@ -292,6 +292,11 @@ __myevic__ uint16_t FarenheitToC( uint16_t tf )
 //----- (0000344C) --------------------------------------------------------
 __myevic__ void StopFire()
 {
+//	register const uint32_t lr __asm__("lr");
+//	uint32_t caller;
+
+//	caller = lr;
+
 	if ( ISVTCDUAL )
 	{
 		GPIO_SetMode( PD, GPIO_PIN_PIN1_Msk, GPIO_MODE_INPUT );
@@ -334,6 +339,8 @@ __myevic__ void StopFire()
 
 		RTCWriteRegister( RTCSPARE_VV_MJOULES, MilliJoules );
 	}
+
+//	myprintf( "StopFire from 0x%08x\n", caller );
 
 	AutoPuffTimer = 0;
 	PreheatTimer = 0;
@@ -868,7 +875,7 @@ __myevic__ void RegulateBuckBoost()
 				}
 
 				if (	( AtoStatus == 0 || AtoStatus == 1 )
-					||	( !(gFlags.firing) && AtoProbeCount >= 12 ) )
+					||	( !gFlags.firing && AtoProbeCount >= 12 ) )
 				{
 					if ( BuckDuty >= ProbeDuty ) BuckDuty = ProbeDuty;
 				}
@@ -962,7 +969,7 @@ __myevic__ void AtoWarmUp()
 	// With fast ADC modifs: 16.7us (59.85kHz)
 	do
 	{
-		if ( !(gFlags.probing_ato) && !(gFlags.firing) )
+		if ( !gFlags.probing_ato && !gFlags.firing )
 			break;
 
 		if ( gFlags.firing || !( WarmUpCounter % 20 ) )
@@ -1362,7 +1369,7 @@ __myevic__ void ProbeAtomizer()
 		ReadAtomizer();
 		gFlags.probing_ato = 0;
 
-		if ( !(gFlags.firing) )
+		if ( !gFlags.firing )
 		{
 			PC1 = 0;
 			if ( !ISVTCDUAL )
@@ -1528,7 +1535,7 @@ __myevic__ void ReadBoardTemp()
 	{
 		BTempSampleSum += ADC_Read( 14 );
 		++BTempSampleCnt;
-		if ( !(gFlags.sample_btemp) )
+		if ( !gFlags.sample_btemp )
 		return;
 	}
 	gFlags.sample_btemp = 0;

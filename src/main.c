@@ -413,6 +413,7 @@ __myevic__ void DevicesOnOff( int off )
 		}
 
 		SYS->GPE_MFPH &= ~(SYS_GPE_MFPH_PE11MFP_Msk|SYS_GPE_MFPH_PE12MFP_Msk|SYS_GPE_MFPH_PE13MFP_Msk);
+		SYS->GPE_MFPH |= (SYS_GPE_MFPH_PE11MFP_GPIO|SYS_GPE_MFPH_PE12MFP_GPIO|SYS_GPE_MFPH_PE13MFP_GPIO);
 		PE11 = 0;
 		GPIO_SetMode( PE, GPIO_PIN_PIN11_Msk, GPIO_MODE_OUTPUT );
 		PE12 = 0;
@@ -479,7 +480,7 @@ __myevic__ void DevicesOnOff( int off )
 			GPIO_EnableInt( PD, 1, GPIO_INT_RISING );
 			GPIO_ENABLE_DEBOUNCE( PD, GPIO_PIN_PIN1_Msk );
 		}
-		else if ( !ISCUBOID )
+		else if ( !ISCUBOID && !ISRX200S )
 		{
 			GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_INPUT );
 			GPIO_EnableInt( PD, 7, GPIO_INT_RISING );
@@ -990,7 +991,7 @@ __myevic__ void Main()
 			// 1Hz
 			gFlags.tick_1hz = 0;
 
-			if ( !(gFlags.firing) && !(dfStatus.off) && !EditModeTimer )
+			if ( !gFlags.firing && !dfStatus.off && !EditModeTimer )
 			{
 				if ( HideLogo )
 				{

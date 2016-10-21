@@ -88,6 +88,10 @@ Some changes has been made to the overall behavior of the firmware from the orig
   Coils may vary by +/-10% in resistance to still be recognized, and two different coils within 10% won't be distinguished.
   The coils memory can be erased in the Coils >> Manage >> Zero All menu item (see below).
 
+* Bypass mode:
+  Power is now displayed on top of screen instead of voltage, as it's a more relevant information regarding vaping quality. Real-time output voltage information is still available as a third-line option (VOUT).  
+  Predicted power and voltage are also more accurate, especially on multi-cells boxes. It needs a few puffs to reach max accuracy, time for the box to estimate battery behavior under high load.
+
 * Menus:  
   Menus accessed by pressing Fire and Right button have been completely revamped. See below for new menus description.
 
