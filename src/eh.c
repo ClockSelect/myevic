@@ -173,14 +173,6 @@ __myevic__ void EventHandler()
 
 		case 1:		// Fire
 		{
-			if ( Screen == 59 )
-			{
-				gFlags.edit_value ^= 1;
-				gFlags.refresh_display = 1;
-				ScreenDuration = 10;
-				return;
-			}
-
 			if ( dfStatus.off )
 			{
 				return;
@@ -685,14 +677,6 @@ __myevic__ void EventHandler()
 
 //------------------------------------------------------------------------------
 
-		case 39:	// TCR Set menu select
-			gFlags.edit_value = 0;
-			EditTCRIndex = 0;
-			gFlags.refresh_display = 1;
-			Screen = 59;
-			ScreenDuration = 10;
-			return;
-
 		case 34:	// Show battery voltage
 			if ( !(dfStatus.off) )
 				return;
@@ -839,8 +823,6 @@ __myevic__ void EventHandler()
 		case 15:	// Single Fire click
 			if ( dfStatus.off || gFlags.firing )
 				return;
-			if ( Screen == 59 )
-				return;
 			if ( gFlags.refresh_battery )
 			{
 				gFlags.refresh_battery = 0;
@@ -969,29 +951,6 @@ __myevic__ void EventHandler()
 
 		case 3:		// - (minus or left) button
 		{
-			if ( Screen == 59 )
-			{
-				if ( gFlags.edit_value )
-				{
-					if ( EditTCRIndex >= 3 ) EditTCRIndex = 0;
-
-					if ( dfTCRM[EditTCRIndex] > 1 )
-					{
-						--dfTCRM[EditTCRIndex];
-					}
-				}
-				else
-				{
-					if ( EditTCRIndex )
-						--EditTCRIndex;
-					else
-						EditTCRIndex = 2;
-				}
-				gFlags.refresh_display = 1;
-				ScreenDuration = 10;
-				return;
-			}
-
 			if ( dfStatus.off )
 			{
 				return;
@@ -1117,27 +1076,6 @@ __myevic__ void EventHandler()
 
 		case 2:		// + (plus or right) button
 		{
-			if ( Screen == 59 )
-			{
-				if ( gFlags.edit_value )
-				{
-					if ( EditTCRIndex > 2 ) EditTCRIndex = 0;
-
-					if ( dfTCRM[EditTCRIndex] < 999 )
-					{
-						++dfTCRM[EditTCRIndex];
-					}
-				}
-				else
-				{
-					++EditTCRIndex;
-					if ( ( EditTCRIndex ) > 2 ) EditTCRIndex = 0;
-				}
-				gFlags.refresh_display = 1;
-				ScreenDuration = 10;
-				return;
-			}
-
 			if ( dfStatus.off )
 			{
 				return;

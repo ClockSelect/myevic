@@ -51,7 +51,7 @@ __myevic__ void KeyRepeat()
 
 	if ( dfStatus.off )
 	{
-		if ( Screen != 59 )
+		if ( !IsMenuScreen() )
 			return;
 	}
 	else if ( EditModeTimer && ( Screen == 1 ) )
@@ -146,7 +146,7 @@ __myevic__ void GetUserInput()
 			FireClicksEvent = 0;
 		}
 
-		if ( !(dfStatus.off) || Screen == 59 )
+		if ( !dfStatus.off || IsMenuScreen() )
 		{
 			if ( !PD2 ) UserInputs = 2;
 			if ( !PD3 ) UserInputs = 3;
@@ -158,7 +158,7 @@ __myevic__ void GetUserInput()
 
 		if ( USBD_IS_ATTACHED() )
 		{
-			if ( !(gFlags.usb_attached) )
+			if ( !gFlags.usb_attached )
 			{
 				UserInputs = 10;
 				BattProbeCount = 0;
@@ -873,20 +873,6 @@ __myevic__ int EvtLongFire()
 
 	switch ( Screen )
 	{
-		case  59:
-			UpdateDataFlash();
-			if ( dfStatus.off )
-			{
-				gFlags.refresh_display = 1;
-				Screen = 0;
-			}
-			else
-			{
-				MainView();
-			}
-			vret = 1;
-			break;
-
 		case 102:
 			vret = MenuEvent( LastEvent );
 			break;
@@ -983,8 +969,12 @@ __myevic__ int CustomEvents()
 			vret = EvtMinusButton();
 			break;
 
-		case  15:	//Single Fire
+		case  15:	// Single Fire
 			vret = EvtSingleFire();
+			break;
+
+		case  39:	// TCR Set Menu select
+			vret = MenuEvent( LastEvent );
 			break;
 
 		case EVENT_TOGGLE_CLOCK:	// Double Fire

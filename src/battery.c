@@ -129,6 +129,7 @@ typedef struct
 	const BatV2P_t	*V2P;
 	const uint16_t	cutoff;
 	const uint16_t	intrez;
+	const uint16_t	maxamp;
 }
 Battery_t;
 
@@ -138,20 +139,23 @@ const Battery_t Batteries[] =
 		String_GEN,
 		GENB_VTable,
 		280,
-		25
+		25,
+		20
 	},
 
 	{
 		String_25R,
 		S25R_VTable,
 		280,
-		20
+		20,
+		25
 	},
 
 	{
 		String_HG2,
 		LHG2_VTable,
 		280,
+		20,
 		20
 	},
 
@@ -159,28 +163,32 @@ const Battery_t Batteries[] =
 		String_HE4,
 		LHE4_VTable,
 		280,
-		20
+		20,
+		25
 	},
 
 	{
 		String_30Q,
 		S30Q_VTable,
 		280,
-		20
+		20,
+		25
 	},
 
 	{
 		String_VT4,
 		VTC4_VTable,
 		280,
-		20
+		20,
+		30
 	},
 
 	{
 		String_VT5,
 		VTC5_VTable,
 		280,
-		20
+		20,
+		30
 	}
 };
 
@@ -195,6 +203,7 @@ uint16_t	BattVoltsHighest;
 uint16_t	BattVolts[3];
 uint16_t	BatteryCutOff;
 uint16_t	BatteryIntRez;
+uint16_t	BatteryMaxAmp;
 uint16_t	BatteryMaxPwr;
 uint16_t	SavedBatVoltage;
 uint8_t		BatteryPercent;
@@ -234,6 +243,8 @@ __myevic__ void SetBatteryModel()
 		{
 			BatteryIntRez = Battery->intrez;
 		}
+
+		BatteryMaxAmp = Battery->maxamp * 100;
 	}
 }
 
@@ -284,15 +295,23 @@ __myevic__ int ReadBatterySample( int nbat )
 //=========================================================================
 __myevic__ void SetBatMaxPower()
 {
-	// Assume 90% efficiency of the circuitry
-	int Pmax = 90	* ( BatteryCutOff + 10 )
-					* ( BatteryVoltage - ( BatteryCutOff + 10 ) )
+	// 100th of an Amp
+	int Imax = 1000	* ( BatteryVoltage - ( BatteryCutOff + 10 ) )
 					/ BatteryIntRez;
 
-	BatteryMaxPwr = Pmax / 100;
+	if ( Imax > BatteryMaxAmp )
+	{
+		Imax = BatteryMaxAmp;
+	}
 
-//	int Imax = 10000 * ( BatteryVoltage - ( BatteryCutOff + 10 ) ) / BatteryIntRez;
-//	myprintf( "Imax = %dA, Pmax = %dW\n", Imax / 1000, Pmax / 1000 );
+	// milliWatts
+	// Assume 90% efficiency of the circuitry
+	int Pmax = 90	* ( BatteryVoltage - BatteryIntRez * Imax / 1000 )
+					* Imax / 1000;
+
+	BatteryMaxPwr = NumBatteries * Pmax / 100;
+
+//	myprintf( "Imax = %dA, Pmax = %dW\n", Imax / 100, Pmax / 1000 );
 }
 
 
@@ -547,7 +566,7 @@ __myevic__ int CheckBattery()
 	int v0;
 	int pwr;
 	int i;
-	int bvtot, bv, bv2, bs;
+	int bvtot, bv, bv2, bv3, bs;
 
 	v0 = 0;
 
@@ -578,10 +597,14 @@ __myevic__ int CheckBattery()
 				bs = 139 * ReadBatterySample( 1 ) / 624u;
 				bv2 = ( bs <= bv ) ? 0 : ( bs - bv );
 
-				bv  += dfBVOffset[0];
-				bv2 += dfBVOffset[1];
+				bv  += dfBVOffset[1];
+				bv2 += dfBVOffset[2];
 
 				if ( bv2 < bv ) bv = bv2;
+			}
+			else
+			{
+				bv  += dfBVOffset[0];
 			}
 		}
 		else if ( ISCUBOID )
@@ -603,6 +626,29 @@ __myevic__ int CheckBattery()
 			bv2 += dfBVOffset[1];
 
 			if ( bv2 < bv ) bv = bv2;
+		}
+		else if ( ISRX200S )
+		{
+			bvtot = 3 * ReadBatterySample( 2 ) >> 3;
+			bv2 = 139 * ReadBatterySample( 1 ) / 624;
+			bv  = 125 * ( ReadBatterySample( 0 ) >> 3 ) / 100;
+
+			if ( bv2 <= bv )
+				bv2 = 0;
+			else
+				bv2 = bv2 - bv;
+
+			if ( bv + bv2 >= bvtot )
+				bv3 = 0;
+			else
+				bv3 = bvtot - bv - bv2;
+
+			bv  += dfBVOffset[0];
+			bv2 += dfBVOffset[1];
+			bv3 += dfBVOffset[2];
+
+			if ( bv2 < bv ) bv = bv2;
+			if ( bv3 < bv ) bv = bv3;
 		}
 		else
 		{

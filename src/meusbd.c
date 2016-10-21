@@ -739,31 +739,29 @@ __myevic__ uint32_t hidGetInfoCmd( CMD_T *pCmd )
 
 	if ( u32ParamLen )
 	{
-		if ( dfStatus.nfe )
-		{
-			dfMagic = DATAFLASH_NFE_MAGIC;
-			dfBuild = __BUILD3;
-		}
-		else
-		{
-			dfBuild = 0;
-		}
-
-		dfChecksum = Checksum( (uint8_t *)DataFlash.params, FMC_FLASH_PAGE_SIZE - 4 );
-
 		if ( u32StartAddr + u32ParamLen > FMC_FLASH_PAGE_SIZE )
 		{
 			u32ParamLen = FMC_FLASH_PAGE_SIZE - u32StartAddr;
 		}
 
-		MemCpy( hidData, ((uint8_t *)&DataFlash) + u32StartAddr, u32ParamLen );
+		MemCpy( hidData, ((uint8_t *)&DataFlash), FMC_FLASH_PAGE_SIZE );
+
+		dfStruct_t * df = (dfStruct_t*)hidData;
 
 		if ( dfStatus.nfe )
 		{
-			dfMagic = DFMagicNumber;
+			df->p.Magic = DATAFLASH_NFE_MAGIC;
+			df->n.Build = __BUILD3;
+			uint32_t o = offsetof( dfStruct_t, p.VVRatio );
+			MemClear( &hidData[o], DATAFLASH_PARAMS_SIZE - o );
+			df->p.ShuntRez = 100;
+			df->p.VVRatio = 200;	// PreheatPwr for NFE
+			df->p.DimTimeout = 30;
 		}
 
-		hidInDataPtr = hidData;
+		df->Checksum = Checksum( (uint8_t *)df->params, FMC_FLASH_PAGE_SIZE - 4 );
+
+		hidInDataPtr = &hidData[u32StartAddr];
 		hidStartInReport( u32ParamLen );
 	}
 

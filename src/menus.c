@@ -1363,7 +1363,7 @@ const mvaluedesc_t TCRSSDesc =
 	0,
 	0x0B,
 	1,
-	0, 88
+	0, 120
 };
 
 const mvaluedesc_t TCRMDesc =
@@ -2272,6 +2272,15 @@ __myevic__ int MenuEvent( int event )
 			vret = 1;
 			break;
 
+		case 39:
+			CurrentMenu = &TCRSetMenu;
+			CurrentMenuItem = 0;
+			Screen = 102;
+			ScreenDuration = 30;
+			gFlags.refresh_display = 1;
+			vret = 1;
+			break;
+
 		case EVENT_EXIT_MENUS:
 			EditModeTimer = 0;
 			gFlags.edit_capture_evt = 0;
@@ -2285,10 +2294,6 @@ __myevic__ int MenuEvent( int event )
 		{
 			switch ( Screen )
 			{
-				case 59:
-					CurrentMenu = &CoilsMenu;
-					break;
-
 				case 101:
 					CurrentMenu = &ScreenMenu;
 					break;

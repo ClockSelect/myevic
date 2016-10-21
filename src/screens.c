@@ -149,10 +149,6 @@ __myevic__ void DrawScreen()
 				ShowChargeError();
 				break;
 
-			case 59: // TCR Set Menu
-				ShowTCRSet();
-				break;
-
 			case 60: // Screen Saver
 				ShowScreenSaver();
 				break;
@@ -258,12 +254,6 @@ __myevic__ void DrawScreen()
 			break;
 
 		case   5: // Black w/ Battery
-			if ( dfStealthOn )
-			{
-				Screen = 0;
-				SleepTimer = dfStatus.off ? 0 : 18000;
-				gFlags.refresh_display = 1;
-			}
 			break;
 
 		case  22: // Atomizer Low
@@ -293,7 +283,6 @@ __myevic__ void DrawScreen()
 			MainView();
 			break;
 
-		case  59: // TCR Set Menu
 		case 101: // Contrast Menu
 		case 102: // Menus
 		case 103: // RTC Speed
@@ -308,23 +297,39 @@ __myevic__ void DrawScreen()
 		case  37: // Board Temp
 		case  54: // Battery Voltage
 		case 100: // Infos page
-			if (( dfScreenSaver && GetScreenProtection() )
-				|| ( !gFlags.battery_charging ) || dfStealthOn )
+			if ( gFlags.battery_charging )
 			{
-				Screen = 0;
-				SleepTimer = 18000;
+				ChargeView();
+
+				if ( dfStealthOn )
+				{
+					ScreenDuration = 0;
+				}
 			}
 			else
 			{
-				ChargeView();
+				Screen = 0;
+				SleepTimer = 18000;
+				gFlags.refresh_display = 1;
 			}
-			gFlags.refresh_display = 1;
 			break;
 
 		case  60: // Screen Saver
-			Screen = 0;
-			SleepTimer = 0;
-			gFlags.refresh_display = 1;
+			if ( gFlags.battery_charging )
+			{
+				ChargeView();
+
+				if ( dfStealthOn )
+				{
+					ScreenDuration = 0;
+				}
+			}
+			else
+			{
+				Screen = 0;
+				SleepTimer = 0;
+				gFlags.refresh_display = 1;
+			}
 			break;
 
 		default:
@@ -560,6 +565,11 @@ __myevic__ void ShowBattery()
 //----- (00006764) --------------------------------------------------------
 __myevic__ void ShowBatCharging()
 {
+	if ( dfStealthOn && ScreenDuration == 0 )
+	{
+		return;
+	}
+
 	switch ( dfScreenSaver )
 	{
 		case 1:
@@ -716,57 +726,6 @@ __myevic__ void ShowNewCoil()
 
 	DrawImage( 40, 102, 0xC0 );
 	DrawStringCentered( String_Left, 114 );
-}
-
-
-//=========================================================================
-//----- (000072EC) --------------------------------------------------------
-__myevic__ void ShowTCRSet()
-{
-	int i;
-	int line;
-
-	DrawString( String_TCRSet, 7, 6 );
-	DrawHLine( 0, 22, 63, 1 );
-
-	if ( gFlags.edit_value )
-	{
-		for ( i = 0 ; i < 3 ; ++i )
-		{
-			if ( EditTCRIndex == i )
-			{
-				DrawFillRect( 28, 25 * i + 30, 62, 25 * i + 52, 1 );
-				DrawValueInv(30, 25 * i + 36, dfTCRM[i], 0, 0x1F, 4);
-			}
-			else
-			{
-				DrawValue( 30, 25 * i + 36, dfTCRM[i], 0, 0x1F, 4 );
-			}
-			line = 25 * i + 33;
-			DrawImage(  0, line, 0xED );
-			DrawImage( 15, line, 0xEE + i );
-		}
-	}
-	else
-	{
-		for ( i = 0 ; i < 3 ; ++i )
-		{
-			line = 25 * i + 33;
-
-			if ( EditTCRIndex == i )
-			{
-				DrawImageInv(  0, line, 0xED );
-				DrawImageInv( 15, line, 0xEE + i );
-				DrawFillRect( 25, line, 30, line + 16, 0);
-			}
-			else
-			{
-				DrawImage(  0, line, 0xED );
-				DrawImage( 15, line, 0xEE + i );
-			}
-			DrawValue( 30, 25 * i + 36, dfTCRM[i], 0, 0x1F, 4 );
-		}
-	}
 }
 
 
@@ -975,7 +934,7 @@ __myevic__ void ShowSetDate()
 //=========================================================================
 __myevic__ int IsMenuScreen()
 {
-	return (( Screen == 59 ) || ((Screen >= 101) && (Screen <= 106)));
+	return (( Screen >= 101 ) && ( Screen <= 106 ));
 }
 
 

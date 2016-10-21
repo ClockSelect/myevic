@@ -88,9 +88,6 @@ Some changes has been made to the overall behavior of the firmware from the orig
   Coils may vary by +/-10% in resistance to still be recognized, and two different coils within 10% won't be distinguished.
   The coils memory can be erased in the Coils >> Manage >> Zero All menu item (see below).
 
-* SS316 Temperature Control:  
-  TCR value of TEMP SS mode has been changed. This may mess up your usual temperature setting while vaping on SS316 coils. See at the end of this document for more information.
-
 * Menus:  
   Menus accessed by pressing Fire and Right button have been completely revamped. See below for new menus description.
 
@@ -435,13 +432,5 @@ Follow [evic-sdk::Readme](https://github.com/ReservedField/evic-sdk/blob/master/
 
   ![](http://imgs.xkcd.com/comics/fixing_problems.png)
 
-  * Temperature Control on SS316
-
-    Temperature Control on SS316 is different in this firmware when compared to the original one.
-    Depending on your setup, you might need to change you regular temperature setting.
-    It's often better to use Temperature Control in TCR mode with SS316L, adapting the TCR/Temperature values to the build by a dry cotton test.
-
-    *It's hard to find a consensusal value for the TCR of SS316L.
-    Anything from 88 to 100 can be found depending on the source.
-    The original value of 120 is obviously way too high.
-    steam-engine.org gives a value of 87.9, which seems reliable, therefore the TCR for SS316 was selected as 88 instead of original 120.*
+Issues evolve fast; it's hard to maintain this section up to date.  
+See the [opened issues page](https://github.com/ClockSelect/myevic/issues) on github to be kept informed.

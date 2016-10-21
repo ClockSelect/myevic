@@ -136,7 +136,7 @@ typedef struct dfParams
 /* 00CD */	uint8_t		PreheatTime;
 /* 00CE */	uint16_t	PreheatPwr;
 /* 00D0 */	uint16_t	AtoPreheatPwr;
-/* 00D2 */	uint8_t		unused2[2];		// 2-bytes pad
+/* 00D2 */	uint8_t		unused2[2];		// unused
 /* 00D4 */	uint16_t	TCRP[3];
 }
 dfParams_t;
