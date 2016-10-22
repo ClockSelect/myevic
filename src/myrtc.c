@@ -1,7 +1,6 @@
 #include "myevic.h"
 #include "dataflash.h"
 #include "screens.h"
-#include "myprintf.h"
 #include "timers.h"
 #include "myrtc.h"
 

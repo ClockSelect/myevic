@@ -1,5 +1,4 @@
 #include "myevic.h"
-#include "myprintf.h"
 #include "events.h"
 #include "screens.h"
 #include "display.h"

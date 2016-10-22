@@ -47,7 +47,7 @@ OR
 
 OR  
 
-- Use  [NFirmwareEditor](https://github.com/TBXin/NFirmwareEditor/releases) or [FWUpdater](https://www.dropbox.com/s/ze0z9isrmaegva4/FWUpdater.zip?dl=1) to upload [myevic.bin](https://github.com/ClockSelect/myevic/blob/master/bin/myevic.bin) to your box.
+- Use  [NFirmwareEditor](https://github.com/TBXin/NFirmwareEditor/releases) or the [FWUpdater](https://www.dropbox.com/s/83zd19gu05pl3r6/EvicVTCFont.rar?dl=1) part of the [VTCFont](https://www.dropbox.com/s/83zd19gu05pl3r6/EvicVTCFont.rar?dl=1) package to upload [myevic.bin](https://github.com/ClockSelect/myevic/blob/master/bin/myevic.bin) to your box.
 
 ### Thanks to:
 
@@ -88,7 +88,7 @@ Some changes has been made to the overall behavior of the firmware from the orig
   Coils may vary by +/-10% in resistance to still be recognized, and two different coils within 10% won't be distinguished.
   The coils memory can be erased in the Coils >> Manage >> Zero All menu item (see below).
 
-* Bypass mode:
+* Bypass mode:  
   Power is now displayed on top of screen instead of voltage, as it's a more relevant information regarding vaping quality. Real-time output voltage information is still available as a third-line option (VOUT).  
   Predicted power and voltage are also more accurate, especially on multi-cells boxes. It needs a few puffs to reach max accuracy, time for the box to estimate battery behavior under high load.
 

@@ -3,7 +3,7 @@
 
 
 void InitEADC();
-void SetADCState( int module, int onoff );
+void SetADCState( uint32_t module, int onoff );
 uint32_t ADC_Read( uint32_t module );
 
 

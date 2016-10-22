@@ -1,5 +1,4 @@
 #include "myevic.h"
-#include "myprintf.h"
 #include "timers.h"
 
 
@@ -19,33 +18,46 @@ __myevic__ void ADC00_IRQHandler()
 //=============================================================================
 __myevic__ void InitEADC()
 {
-	// Configure PB.0 - PB.6 analog input pins
-	SYS->GPB_MFPL &= ~(SYS_GPB_MFPL_PB0MFP_Msk | SYS_GPB_MFPL_PB1MFP_Msk |
-					   SYS_GPB_MFPL_PB2MFP_Msk | SYS_GPB_MFPL_PB3MFP_Msk |
-					   SYS_GPB_MFPL_PB4MFP_Msk | SYS_GPB_MFPL_PB5MFP_Msk |
-					   SYS_GPB_MFPL_PB6MFP_Msk);
-
-	SYS->GPB_MFPL |= (SYS_GPB_MFPL_PB0MFP_EADC_CH0 | SYS_GPB_MFPL_PB1MFP_EADC_CH1 |
-					 SYS_GPB_MFPL_PB2MFP_EADC_CH2 | SYS_GPB_MFPL_PB3MFP_EADC_CH3 |
-					 SYS_GPB_MFPL_PB4MFP_EADC_CH4 | SYS_GPB_MFPL_PB5MFP_EADC_CH13 |
-					 SYS_GPB_MFPL_PB6MFP_EADC_CH14);
-
-	// Disable PB.0 - PB.6 digital input paths to avoid leakage currents
-	GPIO_DISABLE_DIGITAL_PATH( PB, 0x7F );
-
 	if ( ISRX200S )
 	{
-		SYS->GPB_MFPL &= ~SYS_GPB_MFPL_PB7MFP_Msk;
-		SYS->GPB_MFPL |= SYS_GPB_MFPL_PB7MFP_EADC_CH15;
-		GPIO_DISABLE_DIGITAL_PATH( PB, 0x80 );
+		// Configure PB.0 - PB.7 analog input pins
+		SYS->GPB_MFPL &= ~(SYS_GPB_MFPL_PB0MFP_Msk | SYS_GPB_MFPL_PB1MFP_Msk |
+						   SYS_GPB_MFPL_PB2MFP_Msk | SYS_GPB_MFPL_PB3MFP_Msk |
+						   SYS_GPB_MFPL_PB4MFP_Msk | SYS_GPB_MFPL_PB5MFP_Msk |
+						   SYS_GPB_MFPL_PB6MFP_Msk | SYS_GPB_MFPL_PB7MFP_Msk);
+
+		SYS->GPB_MFPL |= (SYS_GPB_MFPL_PB0MFP_EADC_CH0 | SYS_GPB_MFPL_PB1MFP_EADC_CH1 |
+						 SYS_GPB_MFPL_PB2MFP_EADC_CH2 | SYS_GPB_MFPL_PB3MFP_EADC_CH3 |
+						 SYS_GPB_MFPL_PB4MFP_EADC_CH4 | SYS_GPB_MFPL_PB5MFP_EADC_CH13 |
+						 SYS_GPB_MFPL_PB6MFP_EADC_CH14 | SYS_GPB_MFPL_PB7MFP_EADC_CH15);
+
+		// Disable PB.0 - PB.7 digital input paths to avoid leakage currents
+		GPIO_DISABLE_DIGITAL_PATH( PB, 0xFF );
+	}
+	else
+	{
+		// Configure PB.0 - PB.6 analog input pins
+		SYS->GPB_MFPL &= ~(SYS_GPB_MFPL_PB0MFP_Msk | SYS_GPB_MFPL_PB1MFP_Msk |
+						   SYS_GPB_MFPL_PB2MFP_Msk | SYS_GPB_MFPL_PB3MFP_Msk |
+						   SYS_GPB_MFPL_PB4MFP_Msk | SYS_GPB_MFPL_PB5MFP_Msk |
+						   SYS_GPB_MFPL_PB6MFP_Msk);
+
+		SYS->GPB_MFPL |= (SYS_GPB_MFPL_PB0MFP_EADC_CH0 | SYS_GPB_MFPL_PB1MFP_EADC_CH1 |
+						 SYS_GPB_MFPL_PB2MFP_EADC_CH2 | SYS_GPB_MFPL_PB3MFP_EADC_CH3 |
+						 SYS_GPB_MFPL_PB4MFP_EADC_CH4 | SYS_GPB_MFPL_PB5MFP_EADC_CH13 |
+						 SYS_GPB_MFPL_PB6MFP_EADC_CH14);
+
+		// Disable PB.0 - PB.6 digital input paths to avoid leakage currents
+		GPIO_DISABLE_DIGITAL_PATH( PB, 0x7F );
 	}
 }
 
 
 //=============================================================================
-__myevic__ void SetADCState( int module, int onoff )
+
+__myevic__ void SetADCState( uint32_t module, int onoff )
 {
-	int pin, mode;
+	uint32_t pin, mode;
 
 	switch ( module )
 	{

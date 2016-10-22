@@ -1,5 +1,4 @@
 #include "myevic.h"
-#include "myprintf.h"
 #include "atomizer.h"
 #include "display.h"
 #include "battery.h"
@@ -111,7 +110,8 @@ void InitDevices()
 	CLK_SetHCLK( CLK_CLKSEL0_HCLKSEL_HIRC, CLK_CLKDIV0_HCLK( 1 ) );
 
 	// 12.000MHz external crystal
-	CLK_EnableXtalRC( CLK_PWRCTL_HXTEN_Msk );
+	CLK_EnableXtalRC( CLK_PWRCTL_HXTEN_Msk|CLK_PWRCTL_LXTEN_Msk );
+	CLK_DisableXtalRC( CLK_PWRCTL_LXTEN_Msk );
 	CLK_WaitClockReady( CLK_STATUS_HXTSTB_Msk );
 
 	// FMC Frequency Optimisation mode <= 72MHz
@@ -121,8 +121,10 @@ void InitDevices()
 	CLK_SetCoreClock( CPU_FREQ );
 
 	// UART0 CLK = HXT/1
+	#if (ENABLE_UART)
 	CLK_EnableModuleClock( UART0_MODULE );
 	CLK_SetModuleClock( UART0_MODULE, CLK_CLKSEL1_UARTSEL_HXT, CLK_CLKDIV0_UART( 1 ) );
+	#endif
 
 	// USB CLK = PLL/3 (48MHz)
 	CLK_EnableModuleClock( USBD_MODULE );
@@ -525,15 +527,20 @@ __myevic__ void LightSleep()
 	// Switch Core Clock to HXT/3 (4MHz)
 	CLK_SetHCLK( CLK_CLKSEL0_HCLKSEL_HXT, CLK_CLKDIV0_HCLK( 3 ) );
 
+	// Update clock data
+	SystemCoreClockUpdate();
+
 	// Switch off the PLL Clock & the HIRC
 	CLK_DisablePLL();
 	CLK_DisableXtalRC( CLK_PWRCTL_HIRCEN_Msk );
 
 	// Disable Clocks of Modules using HCLK/HXT or LIRC
 	CLK_DisableModuleClock( PWM0_MODULE );
-	CLK_DisableModuleClock( UART0_MODULE );
 	CLK_DisableModuleClock( SPI0_MODULE );
 	CLK_DisableModuleClock( CRC_MODULE );
+	#if (ENABLE_UART)
+	CLK_DisableModuleClock( UART0_MODULE );
+	#endif
 
 	gFlags.wake_up = 0;
 
@@ -550,9 +557,14 @@ __myevic__ void LightSleep()
 	// Wake up the PLL
 	CLK_SetCoreClock( CPU_FREQ );
 
+	// Update clock data
+	SystemCoreClockUpdate();
+
 	// Wake up Modules
-	CLK_EnableModuleClock( PWM0_MODULE );
+	#if (ENABLE_UART)
 	CLK_EnableModuleClock( UART0_MODULE );
+	#endif
+	CLK_EnableModuleClock( PWM0_MODULE );
 	CLK_EnableModuleClock( SPI0_MODULE );
 	CLK_EnableModuleClock( CRC_MODULE );
 }
@@ -915,7 +927,7 @@ __myevic__ void Main()
 			if ( ShowWeakBatFlag )
 				--ShowWeakBatFlag;
 
-			if ( ! ((gFlags.firing) && ISMODETC(dfMode)) )
+			if ( ! (gFlags.firing && ISMODETC(dfMode)) )
 			{
 				DrawScreen();
 			}

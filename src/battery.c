@@ -4,7 +4,6 @@
 #include "events.h"
 #include "meadc.h"
 #include "atomizer.h"
-#include "myprintf.h"
 #include "timers.h"
 #include "battery.h"
 
@@ -258,9 +257,9 @@ __myevic__ const uint16_t *GetBatteryName()
 
 
 //=========================================================================
-__myevic__ int ReadBatterySample( int nbat )
+__myevic__ uint32_t ReadBatterySample( int nbat )
 {
-	int sample;
+	uint32_t sample;
 
 	if ( nbat < MaxBatteries )
 	{
@@ -468,8 +467,8 @@ __myevic__ void ReadBatteryVoltage()
 		while ( VbatSampleCnt < 16 )
 		{
 			VbatSample3 += ReadBatterySample( 2 );
-			VbatSample2 += ReadBatterySample( 1 );
 			VbatSample1 += ReadBatterySample( 0 );
+			VbatSample2 += ReadBatterySample( 1 );
 
 			++VbatSampleCnt;
 
@@ -521,11 +520,12 @@ __myevic__ void ReadBatteryVoltage()
 			else
 				BattVolts[1] = VbatSample2 - BattVolts[0] + dfBVOffset[1];
 
-		//	myprintf( "S1=%d S2=%d V1=%d V2=%d\n",
-		//		VbatSample1, VbatSample2, BattVolts[0], BattVolts[1] );
 		}
 		else if ( ISRX200S )
 		{
+			myprintf( "S1=%d S2=%d S3=%d\n",
+				VbatSample1, VbatSample2, VbatSample3 );
+
 			VbatSample1 = 125 * ( VbatSample1 >> 7 ) / 100;
 			VbatSample2 = 139 * ( VbatSample2 >> 4 ) / 624;
 			VbatSample3 =   3 * ( VbatSample3 >> 4 ) >> 3;
@@ -546,9 +546,9 @@ __myevic__ void ReadBatteryVoltage()
 				if ( BattVolts[i] )
 					BattVolts[i] += dfBVOffset[i];
 
-		//	myprintf( "S1=%d S2=%d S3=%d V1=%d V2=%d V3=%d\n",
-		//		VbatSample1, VbatSample2, VbatSample3,
-		//		BattVolts[0], BattVolts[1], BattVolts[2] );
+			myprintf( "S1=%d S2=%d S3=%d V1=%d V2=%d V3=%d\n",
+				VbatSample1, VbatSample2, VbatSample3,
+				BattVolts[0], BattVolts[1], BattVolts[2] );
 		}
 		else
 		{
@@ -800,7 +800,9 @@ __myevic__ void BatteryChargeDual()
 
 LABEL_14:
 		if ( BatteryStatus == 2 || BatteryStatus == 3 || BatteryStatus == 4 )
+		{
 			goto LABEL_29;
+		}
 
 		goto LABEL_17;
 	}
@@ -829,6 +831,7 @@ LABEL_14:
 			goto LABEL_14;
 		}
 	}
+
 	if ( gFlags.usb_attached && ( USBVolts > 580 ) )
 	{
 		BatteryStatus = 3;
@@ -989,10 +992,10 @@ LABEL_64:
 
 				if ( adc13 >= 180 )
 				{
-					if ( ChargerDuty > MaxChargerDuty )
+					if ( ChargerDuty >= MaxChargerDuty )
 						goto LABEL_90;
 				}
-				else if ( ChargerDuty > MaxChargerDuty )
+				else if ( ChargerDuty >= MaxChargerDuty )
 				{
 					BatteryStatus = 4;
 					PA3 = 0;
@@ -1039,7 +1042,7 @@ LABEL_61:
 
 
 //=========================================================================
-// Battery Charging (Cuboid)
+// Battery Charging (Cuboid/RX200S)
 //-------------------------------------------------------------------------
 __myevic__ void BatteryCharge()
 {
@@ -1100,6 +1103,8 @@ __myevic__ void BatteryCharge()
 			Screen = 58;	// Charge Error
 			ScreenDuration = 2;
 		}
+
+		goto LABEL_28;
 	}
 
 	if ( BatteryStatus == 3 )
@@ -1109,7 +1114,6 @@ LABEL_24:
 		{
 			gFlags.refresh_display = 1;
 			Screen = 57;	// USB Adapter Error
-LABEL_35:
 			ScreenDuration = 2;
 		}
 
@@ -1117,7 +1121,6 @@ LABEL_28:
 		if ( gFlags.battery_charging )
 			goto LABEL_29;
 
-LABEL_26:
 		byte_20000056 = 6;
 		gFlags.battery_charging = 0;
 
@@ -1136,9 +1139,15 @@ LABEL_39:
 		{
 			gFlags.refresh_display = 1;
 			Screen = 58;
-			goto LABEL_35;
+			ScreenDuration = 2;
+			goto LABEL_28;
 		}
-		goto LABEL_26;
+		else
+		{
+			byte_20000056 = 6;
+			gFlags.battery_charging = 0;
+			goto LABEL_39;
+		}
 	}
 
 	if ( !gFlags.battery_charging )
@@ -1200,41 +1209,44 @@ LABEL_31:
 
 	BBC_Configure( 5, 1 );
 
-	if ( adc13 <= dword_200000B4 + 10 && USBVolts >= 400 )
-	{
-		if ( adc13 < dword_200000B4 )
-		{
-			if ( ++dword_200000C4 > 10 )
-			{
-				dword_200000C4 = 0;
-
-				if ( adc13 >= 180 )
-				{
-					if ( ChargerDuty > MaxChargerDuty )
-						goto LABEL_62;
-				}
-				else if ( ChargerDuty > MaxChargerDuty )
-				{
-					BatteryStatus = 4;
-					PF0 = 0;
-					goto LABEL_62;
-				}
-				if ( sample13 < 4020 )
-				{
-					++ChargerDuty;
-				}
-			}
-		}
-	}
-	else
+	if ( ( adc13 > dword_200000B4 + 10 ) || ( USBVolts < 400 ) )
 	{
 		if ( ChargerDuty )
 		{
 			--ChargerDuty;
 		}
 	}
+	else if ( adc13 < dword_200000B4 )
+	{
+		if ( ++dword_200000C4 > 10 )
+		{
+			dword_200000C4 = 0;
 
-LABEL_62:
+			if ( adc13 < 180 )
+			{
+				if ( ChargerDuty < MaxChargerDuty )
+				{
+					++ChargerDuty;
+				}
+				else
+				{
+					BatteryStatus = 4;
+					PF0 = 0;
+				}
+			}
+			else
+			{
+				if ( adc13 < 1005 )
+				{
+					if ( ChargerDuty < MaxChargerDuty )
+					{
+						++ChargerDuty;
+					}
+				}
+			}
+		}
+	}
+
 	PWM_SET_CMR( PWM0, BBC_PWMCH_CHARGER, ChargerDuty );
 }
 

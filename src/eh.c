@@ -1,5 +1,4 @@
 #include "myevic.h"
-#include "myprintf.h"
 #include "screens.h"
 #include "atomizer.h"
 #include "display.h"
@@ -162,6 +161,8 @@ __myevic__ void EventHandler()
 	if ( Event == 0 )
 		return;
 
+//	myprintf( "Event = %d\n", Event );
+
 	NoEventTimer = 200;
 	LastEvent = Event;
 	Event = 0;
@@ -280,13 +281,13 @@ __myevic__ void EventHandler()
 				byte_200000B3 = 0;
 				NewRez = AtoRez;
 
-				uint16_t rez = 0;
-				if 		( dfMode == 0 ) rez = dfRezLockedNI;
-				else if ( dfMode == 1 ) rez = dfRezLockedTI;
-				else if ( dfMode == 2 ) rez = dfRezLockedSS;
-				else if ( dfMode == 3 ) rez = dfRezLockedTCR;
+				uint8_t lock = 0;
+				if 		( dfMode == 0 ) lock = dfRezLockedNI;
+				else if ( dfMode == 1 ) lock = dfRezLockedTI;
+				else if ( dfMode == 2 ) lock = dfRezLockedSS;
+				else if ( dfMode == 3 ) lock = dfRezLockedTCR;
 
-				if ( !rez || dfMode == 4 || dfMode == 5 || dfMode == 6 )
+				if ( !lock || dfMode == 4 || dfMode == 5 || dfMode == 6 )
 				{
 					dfResistance = AtoRez;
 					UpdateDFTimer = 50;
@@ -295,7 +296,7 @@ __myevic__ void EventHandler()
 
 //------------------------------------------------------------------------------
 
-			if ( (gFlags.check_rez_ni) && dfMode == 0 )
+			if ( gFlags.check_rez_ni && dfMode == 0 )
 			{
 				gFlags.check_rez_ni = 0;
 
@@ -346,7 +347,7 @@ __myevic__ void EventHandler()
 				}
 			}
 
-			if ( (gFlags.check_rez_ti) && dfMode == 1 )
+			if ( gFlags.check_rez_ti && dfMode == 1 )
 			{
 				gFlags.check_rez_ti = 0;
 
@@ -397,7 +398,7 @@ __myevic__ void EventHandler()
 				}
 			}
 
-			if ( (gFlags.check_rez_ss) && dfMode == 2 )
+			if ( gFlags.check_rez_ss && dfMode == 2 )
 			{
 				gFlags.check_rez_ss = 0;
 
@@ -447,7 +448,7 @@ __myevic__ void EventHandler()
 				}
 			}
 
-			if ( (gFlags.check_rez_tcr) && dfMode == 3 )
+			if ( gFlags.check_rez_tcr && dfMode == 3 )
 			{
 				gFlags.check_rez_tcr = 0;
 

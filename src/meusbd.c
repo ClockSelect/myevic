@@ -1,5 +1,4 @@
 #include "myevic.h"
-#include "myprintf.h"
 #include "myrtc.h"
 #include "dataflash.h"
 #include "display.h"

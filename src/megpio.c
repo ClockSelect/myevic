@@ -1,5 +1,4 @@
 #include "myevic.h"
-#include "myprintf.h"
 #include "dataflash.h"
 #include "events.h"
 #include "atomizer.h"
@@ -109,9 +108,9 @@ __myevic__ void InitGPIO()
 		GPIO_SetMode( PF, GPIO_PIN_PIN0_Msk, GPIO_MODE_OUTPUT );
 	}
 
+	// PD1 = Data transmitter output pin for UART0
 	#if (ENABLE_UART)
-		// PD1 = Data transmitter output pin for UART0
-		SYS->GPD_MFPL |= SYS_GPD_MFPL_PD1MFP_UART0_TXD;
+	SYS->GPD_MFPL |= SYS_GPD_MFPL_PD1MFP_UART0_TXD;
 	#endif
 
 	// PC0 = PWM0 CH0
@@ -131,9 +130,8 @@ __myevic__ void InitGPIO()
 	GPIO_SetMode( PD, GPIO_PIN_PIN2_Msk, GPIO_MODE_INPUT );
 	GPIO_SetMode( PD, GPIO_PIN_PIN3_Msk, GPIO_MODE_INPUT );
 
-	GPIO_ENABLE_DEBOUNCE( PE, GPIO_PIN_PIN0_Msk );
-	GPIO_ENABLE_DEBOUNCE( PD, GPIO_PIN_PIN2_Msk );
-	GPIO_ENABLE_DEBOUNCE( PD, GPIO_PIN_PIN3_Msk );
+	GPIO_ENABLE_DEBOUNCE( PE, BIT0 );
+	GPIO_ENABLE_DEBOUNCE( PD, BIT2|BIT3 );
 
 	// BUCK/BOOST CONVERTER CONTROL LINES
 	if ( ISCUBOID || ISRX200S )

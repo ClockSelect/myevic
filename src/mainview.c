@@ -1,5 +1,4 @@
 #include "myevic.h"
-#include "myprintf.h"
 #include "dataflash.h"
 #include "screens.h"
 #include "display.h"
@@ -303,7 +302,7 @@ __myevic__ void DrawAPTLine( int line )
 		case 4:	// Atomizer voltage
 		{
 			DrawString( String_VOUT_s, 0, line+2 );
-			DrawValue( 27, line, (gFlags.firing)?AtoVolts:0, 2, 0x1F, 3 );
+			DrawValue( 27, line, gFlags.firing?AtoVolts:0, 2, 0x1F, 3 );
 			DrawImage( 57, line+2, 0x97 );
 			break;
 		}
@@ -311,7 +310,7 @@ __myevic__ void DrawAPTLine( int line )
 		case 5:	// Battery voltage
 		{
 			DrawString( String_BATT_s, 0, line+2 );
-			DrawValue( 27, line, (gFlags.firing)?RTBattVolts:BatteryVoltage, 2, 0x1F, 3 );
+			DrawValue( 27, line, gFlags.firing?RTBattVolts:BatteryVoltage, 2, 0x1F, 3 );
 			DrawImage( 57, line+2, 0x97 );
 			break;
 		}

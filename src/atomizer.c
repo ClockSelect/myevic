@@ -1,7 +1,6 @@
 #include "myevic.h"
 #include "screens.h"
 #include "events.h"
-#include "myprintf.h"
 #include "dataflash.h"
 #include "battery.h"
 #include "timers.h"
@@ -148,11 +147,11 @@ __myevic__ void InitPWM()
 
 		if ( ISRX200S )
 		{
-			MaxChargerDuty = 511;
+			MaxChargerDuty = 512;
 		}
 		else
 		{
-			MaxChargerDuty = 255;
+			MaxChargerDuty = 256;
 		}
 	}
 }
@@ -399,13 +398,13 @@ __myevic__ void ReadAtoCurrent()
 			adcShunt2 = ADC_Read( 15 );
 			if ( gFlags.firing && BuckDuty <= 25 && adcShunt2 > 200 )
 				adcShunt2 = 0;
+			CLK_SysTickDelay( 10 );
 		}
 		else
 		{
 			adcShunt2 = 0;
 		}
 
-		CLK_SysTickDelay( 10 );
 		adcShunt1 = ADC_Read( 2 );
 		CLK_SysTickDelay( 10 );
 		adcAtoVolts = ADC_Read( 1 );
@@ -619,10 +618,6 @@ __myevic__ void ReadAtomizer()
 			if ( AtoProbeCount == 10 )
 			{
 				NumShuntSamples = 50;
-			}
-			else if ( AtoProbeCount >= 12 )
-			{
-				NumShuntSamples = 5;
 			}
 			else
 			{
@@ -962,7 +957,7 @@ __myevic__ void AtoWarmUp()
 
 	ProbeDuty = PWMCycles / NumBatteries / 8;
 
-	WarmUpCounter = ( NumBatteries > 1 ) ? 2000 : 3000;
+	WarmUpCounter = ( !gFlags.pwm_pll || NumBatteries > 1 ) ? 2000 : 3000;
 
 	// Loop time around 19us on atomizer probing
 	//  and around 26.4us (37.86kHz) on firing.
@@ -972,7 +967,7 @@ __myevic__ void AtoWarmUp()
 		if ( !gFlags.probing_ato && !gFlags.firing )
 			break;
 
-		if ( gFlags.firing || !( WarmUpCounter % 20 ) )
+		if ( gFlags.firing || !gFlags.pwm_pll || !( WarmUpCounter % 20 ) )
 		{
 			RegulateBuckBoost();
 		}

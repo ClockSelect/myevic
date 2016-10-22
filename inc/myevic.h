@@ -2,6 +2,7 @@
 #define __MYEVIC_H__
 
 #include "M451Series.h"
+#include "myprintf.h"
 #include "dtmacros.h"
 
 //=========================================================================
@@ -42,16 +43,16 @@
 enum
 {
 	BOX_VTCMINI,
-    BOX_VTWOMINI,
-    BOX_VTWO,
+	BOX_VTWOMINI,
+	BOX_VTWO,
 	BOX_VTCDUAL,
-    BOX_PRESA75W,
-    BOX_WRX75TC,
-    BOX_EVICAIO,
-    BOX_EGRIPII,
-    BOX_CUBOMINI,
-    BOX_CUBOID,
-    BOX_EVICBASIC,
+	BOX_PRESA75W,
+	BOX_WRX75TC,
+	BOX_EVICAIO,
+	BOX_EGRIPII,
+	BOX_CUBOMINI,
+	BOX_CUBOID,
+	BOX_EVICBASIC,
 	BOX_RX200S
 };
 

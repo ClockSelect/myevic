@@ -1,7 +1,6 @@
 #ifndef __MEUSBD_H__
 #define __MEUSBD_H__
 
-#include "myprintf.h"
 #include "vcom.h"
 #include "storage.h"
 

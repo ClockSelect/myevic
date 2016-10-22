@@ -1,5 +1,4 @@
 #include "myevic.h"
-#include "myprintf.h"
 #include "myrtc.h"
 #include "screens.h"
 #include "atomizer.h"
