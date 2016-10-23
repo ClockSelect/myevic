@@ -72,6 +72,7 @@ typedef struct
 /* 00800000 */	int logomid:1;
 
 /* 01000000 */	int timebig:1;
+/* 02000000 */	int usbchgoff:1;
 
 // Do not exceed 32 bits;
 // if you may do so, create another bitfield.

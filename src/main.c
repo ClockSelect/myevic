@@ -28,6 +28,41 @@ __myevic__ void CustomStartup()
 {
 
 //-------------------------------------------------------------------------
+// EADC test
+
+	if ( 0 )
+	{
+		uint32_t s1, s2, s3;
+
+		SetADCState( 0, 1 );
+		SetADCState( 4, 1 );
+
+		do
+		{
+			ClearScreenBuffer();
+
+			CLK_SysTickDelay( 10 );
+			s3 = ADC_Read( 4 );
+
+			CLK_SysTickDelay( 10 );
+			s1 = ADC_Read( 18 );
+
+			CLK_SysTickDelay( 10 );
+			s2 = ADC_Read( 0 );
+
+			DrawValue( 8,  0, s1, 0, 0x29, 4 );
+			DrawValue( 8, 20, s2, 0, 0x29, 4 );
+			DrawValue( 8, 40, s3, 0, 0x29, 4 );
+
+			DisplayRefresh();
+
+			WaitOnTMR2( 1000 );
+		}
+		while ( PD3 );
+	}
+
+	
+//-------------------------------------------------------------------------
 // Timer test 1
 
 	if ( 0 )
@@ -110,8 +145,7 @@ void InitDevices()
 	CLK_SetHCLK( CLK_CLKSEL0_HCLKSEL_HIRC, CLK_CLKDIV0_HCLK( 1 ) );
 
 	// 12.000MHz external crystal
-	CLK_EnableXtalRC( CLK_PWRCTL_HXTEN_Msk|CLK_PWRCTL_LXTEN_Msk );
-	CLK_DisableXtalRC( CLK_PWRCTL_LXTEN_Msk );
+	CLK_EnableXtalRC( CLK_PWRCTL_HXTEN_Msk );
 	CLK_WaitClockReady( CLK_STATUS_HXTSTB_Msk );
 
 	// FMC Frequency Optimisation mode <= 72MHz
@@ -175,15 +209,7 @@ void InitDevices()
 //----- (00000C48) --------------------------------------------------------
 __myevic__ void InitHardware()
 {
-	if ( ISCUBOID || ISRX200S )
-	{
-		// Cuboid uses the PF.0 pin as part of
-		// its battery management system, and thus
-		// cannot have an X32.
-		// RX200S uses PF.1 pin and also cannot have
-		// an X32.
-		dfStatus.x32off = 1;
-	}
+	SYS_UnlockReg();
 
 	//  32.768kHz external crystal
 	if ( dfStatus.x32off )
@@ -199,8 +225,12 @@ __myevic__ void InitHardware()
 		CLK_WaitClockReady( CLK_STATUS_LXTSTB_Msk );
 	}
 
+	SetPWMClock();
+
+	SYS_LockReg();
+
 	#if (ENABLE_UART)
-		InitUART0();
+	InitUART0();
 	#endif
 
 	InitGPIO();
@@ -213,9 +243,8 @@ __myevic__ void InitHardware()
 	InitSPI0();
 	InitEADC();
 	InitPWM();
-	InitUSB();
-
 	InitTimers();
+	InitUSB();
 }
 
 

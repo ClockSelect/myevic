@@ -45,7 +45,6 @@
         <File name="inc\vcom.h" />
         <File name="src\vcom.c" />
         <File name="src\myevic.s" />
-        <File name="src\rodata.s" />
     </Project>
     <Project name="ldrom">
         <File name="H:\cygwin\home\Ferox\ldrom\Makefile" />

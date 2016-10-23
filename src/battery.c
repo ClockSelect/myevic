@@ -466,9 +466,9 @@ __myevic__ void ReadBatteryVoltage()
 	{
 		while ( VbatSampleCnt < 16 )
 		{
-			VbatSample3 += ReadBatterySample( 2 );
 			VbatSample1 += ReadBatterySample( 0 );
 			VbatSample2 += ReadBatterySample( 1 );
+			VbatSample3 += ReadBatterySample( 2 );
 
 			++VbatSampleCnt;
 
@@ -523,8 +523,8 @@ __myevic__ void ReadBatteryVoltage()
 		}
 		else if ( ISRX200S )
 		{
-			myprintf( "S1=%d S2=%d S3=%d\n",
-				VbatSample1, VbatSample2, VbatSample3 );
+		//	myprintf( "S1=%d S2=%d S3=%d\n",
+		//		VbatSample1, VbatSample2, VbatSample3 );
 
 			VbatSample1 = 125 * ( VbatSample1 >> 7 ) / 100;
 			VbatSample2 = 139 * ( VbatSample2 >> 4 ) / 624;
@@ -546,9 +546,9 @@ __myevic__ void ReadBatteryVoltage()
 				if ( BattVolts[i] )
 					BattVolts[i] += dfBVOffset[i];
 
-			myprintf( "S1=%d S2=%d S3=%d V1=%d V2=%d V3=%d\n",
-				VbatSample1, VbatSample2, VbatSample3,
-				BattVolts[0], BattVolts[1], BattVolts[2] );
+		//	myprintf( "S1=%d S2=%d S3=%d V1=%d V2=%d V3=%d\n",
+		//		VbatSample1, VbatSample2, VbatSample3,
+		//		BattVolts[0], BattVolts[1], BattVolts[2] );
 		}
 		else
 		{
@@ -923,7 +923,7 @@ LABEL_29:
 
 	if ( gFlags.battery_charging )
 	{
-		if ( byte_20000056 == 4 && BattVoltsHighest > 422 )
+		if (( byte_20000056 == 4 && BattVoltsHighest > 422 ) || dfStatus.usbchgoff )
 		{
 			if ( NumBatteries != 2 )
 				goto LABEL_61;
@@ -1022,7 +1022,7 @@ LABEL_90:
 	if ( BattVoltsHighest >= 420 || byte_20000056 == 5 )
 		goto LABEL_60;
 
-	if ( NumBatteries == 2 )
+	if (( NumBatteries == 2 ) && !dfStatus.usbchgoff )
 	{
 		Event = 12;
 		byte_20000056 = 0;
@@ -1119,7 +1119,9 @@ LABEL_24:
 
 LABEL_28:
 		if ( gFlags.battery_charging )
+		{
 			goto LABEL_29;
+		}
 
 		byte_20000056 = 6;
 		gFlags.battery_charging = 0;
@@ -1138,7 +1140,7 @@ LABEL_39:
 		if ( byte_20000056 != 6 )
 		{
 			gFlags.refresh_display = 1;
-			Screen = 58;
+			Screen = 58;	// Charge Error
 			ScreenDuration = 2;
 			goto LABEL_28;
 		}
@@ -1152,13 +1154,17 @@ LABEL_39:
 
 	if ( !gFlags.battery_charging )
 	{
-		if ( BattVoltsHighest < 420 && byte_20000056 != 5 )
+		if ( !dfStatus.usbchgoff )
 		{
-			Event = 12;
-			byte_20000056 = 0;
+			if ( ( BattVoltsHighest < 420 ) && ( byte_20000056 != 5 ) )
+			{
+				Event = 12;
+				byte_20000056 = 0;
+			}
 		}
 		goto LABEL_39;
 	}
+
 	if ( byte_20000056 != 4 )
 	{
 LABEL_29:
@@ -1166,7 +1172,8 @@ LABEL_29:
 			goto LABEL_39;
 		goto LABEL_31;
 	}
-	if ( BattVoltsHighest > 422 )
+
+	if ( ( BattVoltsHighest > 422 ) || dfStatus.usbchgoff )
 	{
 		Event = 13;
 		byte_20000056 = 5;

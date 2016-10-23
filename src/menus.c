@@ -700,11 +700,18 @@ __myevic__ void ExpertMenuIDraw( int it, int line, int sel )
 				InvertRect( 0, line, 63, line+12 );
 			break;
 
-		case 6:	// BAT
+		case 6:	// UCH
+			if ( dfStatus.usbchgoff )
+				DrawString( String_OFF, 36, line+2 );
+			else
+				DrawString( String_ON, 36, line+2 );
+			break;
+
+		case 7:	// BAT
 			DrawString( GetBatteryName(), 36, line+2 );
 			break;
 
-		case 7:	// BVO
+		case 8:	// BVO
 		default:
 			break;
 	}
@@ -748,12 +755,16 @@ __myevic__ void ExpertMenuOnClick()
 			dfStatus.nfe ^= 1;
 			break;
 
-		case 5:	// Shunt Rez Value
+		case 5:	// SHR
 			if ( !(gFlags.edit_value ^= 1) )
 				dfShuntRez = AtoShuntRez;
 			break;
 
-		case 6:	// BAT
+		case 6:	// UCH
+			dfStatus.usbchgoff ^= 1;
+			break;
+
+		case 7:	// BAT
 			if ( ++dfBatteryModel >= GetNBatteries() )
 				dfBatteryModel = 0;
 			SetBatteryModel();
@@ -762,10 +773,10 @@ __myevic__ void ExpertMenuOnClick()
 			SetBatMaxPower();
 			break;
 
-		case 7:	// BVO
+		case 8:	// BVO
 			break;
 
-		case 8:	// Exit
+		case 9:	// Exit
 			UpdateDataFlash();
 			MainView();
 			break;
@@ -816,6 +827,7 @@ __myevic__ int ExpertMenuOnEvent( int event )
 				case 5:	// Shunt Rez
 					AtoShuntRez = GetShuntRezValue();
 					dfShuntRez = 0;
+					gFlags.edit_value = 0;
 					vret = 1;
 					break;
 			}
@@ -1638,7 +1650,7 @@ const menu_t ExpertMenu =
 	0,
 	ExpertMenuOnClick+1,
 	ExpertMenuOnEvent+1,
-	9,
+	10,
 	{
 		{ String_USB, 0, 0, 0 },
 		{ String_DBG, 0, 0, 0 },
@@ -1646,6 +1658,7 @@ const menu_t ExpertMenu =
 		{ String_LSL, 0, 0, 0 },
 		{ String_NFE, 0, 0, 0 },
 		{ String_SHR, 0, 0, 0 },
+		{ String_UCH, 0, 0, 0 },
 		{ String_BAT, 0, 0, 0 },
 		{ String_BVO, &BVOMenu, 0, MACTION_SUBMENU },
 		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }

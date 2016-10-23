@@ -390,18 +390,24 @@ Main menu screen
         Enables or disables partial compatibility with the [NFirmwareEditor 5.0+](https://github.com/TBXin/NFirmwareEditor/releases) myEvic Configuration Editor.  
         This option is disabled by default; set it to "ON" if you plan to use developpement features of the NFE. You'll have access to monitoring, screenshot, and COM terminal.  
  
-  * BAT
-
-        Battery model.  
-        You can specify your battery brand and model among several ones: 25R, 30Q, HG2, HE4, VTC4 and VTC5. "GEN" is the generic battery used by default and should be used for any other model of battery.  
-        At the moment, this information is used by the firmware to compute a more accurate state-of-charge than the generic setting.
-
   * SHR
   
         Shunt Resistance (in mΩ).  
         *Warning: This item is dangerous to your box. Messing with this parameter may cause overcurrent in the atomizer circuitry and lead to definitive box failure.*  
         This item let you edit the value of the Atomizer's circuit shunt resistance. This resistance is involved in every resistance/current/power measures and computation in the whole firmware. This value should only be changed if you know exactly what you are doing.  
         To reset the shunt value, select the SHR menu item and press the fire button during 2 seconds. This will revert the value to the default hardware setting.
+
+  * UCH
+
+        USB Battery Charging.  
+        *Multi-cell boxes only. This option has no effect on single-cell boxes.*  
+        Enables or disables battery charging via the USB port. The USB port is still usable for all other purposes: firmware management, debugging, etc.
+
+  * BAT
+
+        Battery model.  
+        You can specify your battery brand and model among several ones: 25R, 30Q, HG2, HE4, VTC4 and VTC5. "GEN" is the generic battery used by default and should be used for any other model of battery.  
+        At the moment, this information is used by the firmware to compute a more accurate state-of-charge than the generic setting.
 
   * BVO
 

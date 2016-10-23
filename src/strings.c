@@ -167,3 +167,4 @@ __string__ String_M1		[] = { 0xA8, 0x0C, 0 };
 __string__ String_M2		[] = { 0xA8, 0x0D, 0 };
 __string__ String_M3		[] = { 0xA8, 0x0E, 0 };
 __string__ String_DEF		[] = { 0x9F, 0xA0, 0xA1, 0 };
+__string__ String_UCH		[] = { 0xB0, 0x9E, 0xA3, 0 };

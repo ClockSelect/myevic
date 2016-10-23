@@ -61,6 +61,7 @@ extern const uint8_t TempCoefsTI[];
 //-------------------------------------------------------------------------
 
 extern void InitPWM();
+extern void SetPWMClock();
 extern void BBC_Configure( uint32_t chan, uint32_t mode );
 
 extern void StopFire();

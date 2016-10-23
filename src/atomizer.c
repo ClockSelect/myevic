@@ -78,8 +78,7 @@ const uint8_t TempCoefsTI[] =
 
 
 //=========================================================================
-//----- (00005C4C) --------------------------------------------------------
-__myevic__ void InitPWM()
+__myevic__ void SetPWMClock()
 {
 	uint32_t clk;
 
@@ -108,7 +107,13 @@ __myevic__ void InitPWM()
 	CLK_EnableModuleClock( PWM0_MODULE );
 	CLK_SetModuleClock( PWM0_MODULE, clk, 0 );
 	SYS_ResetModule( PWM0_RST );
+}
 
+
+//=========================================================================
+//----- (00005C4C) --------------------------------------------------------
+__myevic__ void InitPWM()
+{
 	PWM_ConfigOutputChannel( PWM0, BBC_PWMCH_BUCK, BBC_PWM_FREQ, 0 );
 	PWM_ConfigOutputChannel( PWM0, BBC_PWMCH_BOOST, BBC_PWM_FREQ, 0 );
 	if ( ISVTCDUAL || ISCUBOID || ISRX200S )

@@ -161,7 +161,7 @@ __myevic__ void EventHandler()
 	if ( Event == 0 )
 		return;
 
-//	myprintf( "Event = %d\n", Event );
+	myprintf( "Event = %d\n", Event );
 
 	NoEventTimer = 200;
 	LastEvent = Event;
@@ -507,7 +507,7 @@ __myevic__ void EventHandler()
 				GPIO_SetMode( PD, GPIO_PIN_PIN1_Msk, GPIO_MODE_OUTPUT );
 				PD1 = 0;
 			}
-			else if ( !ISCUBOID )
+			else if ( !ISCUBOID && !ISRX200S )
 			{
 				GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_OUTPUT );
 				PD7 = 0;
