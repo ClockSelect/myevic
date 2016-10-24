@@ -627,13 +627,24 @@ __myevic__ void ShowBatCharging()
 		}
 	}
 
-	DrawValue( 6, 105, BatteryVoltage, 2, 0x0B, 3 );
-	DrawImage( 27, 106, 0x7D );
+	if (( dfScreenSaver == 1 ) || ( dfScreenSaver == 3 ))
+	{
+		DrawValue(  6, 104, BatteryVoltage, 2, 0x0B, 3 );
+		DrawImage( 27, 104, 0x7D );
+	}
+	else
+	{
+		for ( int i = 0 ; i < NumBatteries ; ++i )
+		{
+			DrawValue(  6, 104 - i * 12, BattVolts[i], 2, 0x0B, 3 );
+			DrawImage( 27, 104 - i * 12, 0x7D );
+		}
+	}
 
 	int t = dfIsCelsius ? BoardTemp : CelsiusToF( BoardTemp );
 
-	DrawValue( 38, 105, t, 0, 0x0B, t > 99 ? 3 : 2 );
-	DrawImage( t > 99 ? 57 : 51, 104, dfIsCelsius ? 0xC9 : 0xC8 );
+	DrawValueRight( 52, 104, t, 0, 0x0B, 0 );
+	DrawImage( 54, 104, dfIsCelsius ? 0xC9 : 0xC8 );
 }
 
 

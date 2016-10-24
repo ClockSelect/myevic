@@ -557,7 +557,7 @@ __myevic__ void ShowMainView()
 			amps = 10 * BattVoltsTotal
 				/ ( 10 * AtoRez + NumBatteries * BatteryIntRez );
 			BypassVolts = AtoRez * amps;
-			if ( BypassVolts > MaxVolts ) BypassVolts = MaxVolts;
+			if ( BypassVolts > AtoMaxVolts ) BypassVolts = AtoMaxVolts;
 			pwr  = ClampPower( BypassVolts, 0 );
 		}
 	}

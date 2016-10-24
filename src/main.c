@@ -895,9 +895,14 @@ __myevic__ void Main()
 				AnimateScreenSaver();
 			}
 
-			if ( gFlags.firing && PreheatTimer )
+			if ( gFlags.firing )
 			{
-				if ( !--PreheatTimer )
+				if ( gFlags.read_bir && ( FireDuration > 10 ) )
+				{
+					ReadInternalResistance();
+				}
+
+				if ( PreheatTimer && !--PreheatTimer )
 				{
 					uint16_t pwr;
 
@@ -941,11 +946,6 @@ __myevic__ void Main()
 			if ( gFlags.firing )
 			{
 				++FireDuration;
-
-				if ( ( FireDuration > 10 ) && gFlags.read_bir )
-				{
-					ReadInternalResistance();
-				}
 
 				if ( gFlags.monitoring )
 				{

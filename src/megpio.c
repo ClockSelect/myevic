@@ -185,7 +185,7 @@ __myevic__ void InitGPIO()
 		SYS->GPF_MFPL &= ~SYS_GPF_MFPL_PF1MFP_Msk;
 		SYS->GPF_MFPL |= SYS_GPF_MFPL_PF1MFP_GPIO;
 		PF1 = 1;
-		GPIO_SetMode( PF, GPIO_PIN_PIN0_Msk, GPIO_MODE_OUTPUT );
+		GPIO_SetMode( PF, GPIO_PIN_PIN1_Msk, GPIO_MODE_OUTPUT );
 	}
 	else
 	{

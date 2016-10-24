@@ -49,7 +49,7 @@ const char pid_egripii	[4]	__PIDATTR__	= { 'E','0','8','3' };
 const char pid_cubomini	[4]	__PIDATTR__	= { 'E','0','5','6' };
 const char pid_cuboid	[4]	__PIDATTR__	= { 'E','0','6','0' };
 const char pid_evicbasic[4]	__PIDATTR__	= { 'E','1','5','0' };
-const char pid_rx200s	[4]	__PIDATTR__	= { 'X','0','3','3' };
+const char pid_rx200s	[4]	__PIDATTR__	= { 'W','0','3','3' };
 
 #define MAKEPID(p) (((p)[0])|((p)[1]<<8)|((p)[2]<<16)|((p)[3]<<24))
 
@@ -80,6 +80,7 @@ __myevic__ void SetProductID()
 	BoxModel = BOX_VTCMINI;
 	NumBatteries = 1;
 	MaxBatteries = 1;
+	MaxCurrent = 25;
 
 	for ( uint32_t offset = 0 ; offset < LDROM_SIZE ; offset += 4 )
 	{
@@ -184,18 +185,19 @@ __myevic__ void SetProductID()
 			X32Off = 1;
 			break;
 		}
-//		else if ( u32Data == PID_RX200S )
-//		{
-//			dfProductID = u32Data;
-//			dfMaxHWVersion = 0x00000001;
-//			DFMagicNumber = 0x14;
-//			BoxModel = BOX_RX200S;
-//			NumBatteries = 3;
-//			MaxBatteries = 3;
-//			gFlags.pwm_pll = 1;
-//			X32Off = 1;
-//			break;
-//		}
+		else if ( u32Data == PID_RX200S )
+		{
+			dfProductID = u32Data;
+			dfMaxHWVersion = 0x00000001;
+			DFMagicNumber = 0x14;
+			BoxModel = BOX_RX200S;
+			NumBatteries = 3;
+			MaxBatteries = 3;
+			MaxCurrent = 50;
+			gFlags.pwm_pll = 1;
+			X32Off = 1;
+			break;
+		}
 	}
 
 	FMC_DISABLE_ISP();
@@ -543,7 +545,7 @@ __myevic__ void DFCheckValuesValidity()
 		dfBatteryModel = 0;
 
 	for ( i = 0 ; i < 3 ; ++i )
-		if ( dfBVOffset[i] < -5 || dfBVOffset[i] > 5 )
+		if ( dfBVOffset[i] < BVO_MIN || dfBVOffset[i] > BVO_MAX )
 			dfBVOffset[i] = 0;
 
 	if ( dfStatus.phpct )

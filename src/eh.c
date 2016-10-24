@@ -161,7 +161,7 @@ __myevic__ void EventHandler()
 	if ( Event == 0 )
 		return;
 
-	myprintf( "Event = %d\n", Event );
+//	myprintf( "Event = %d\n", Event );
 
 	NoEventTimer = 200;
 	LastEvent = Event;
@@ -656,14 +656,7 @@ __myevic__ void EventHandler()
 
 			if ( ISMODEBY(dfMode) )
 			{
-				if ( ( NumBatteries > 1 ) && ( ISVTCDUAL || ISCUBOID ) )
-				{
-					TargetVolts = 900;
-				}
-				else
-				{
-					TargetVolts = 450;
-				}
+				TargetVolts = AtoMaxVolts;
 			}
 
 			SetADCState( 1, 1 );
@@ -870,19 +863,22 @@ __myevic__ void EventHandler()
 			gFlags.battery_charging = 1;
 			gFlags.refresh_display = 1;
 			BatAnimLevel = BatteryTenth;
-			if ( BatteryStatus == 1 )
+			if ( !IsMenuScreen() )
 			{
-				Screen = 55;
-				ScreenDuration = 2;
-			}
-			else if ( dfStatus.off )
-			{
-				ChargeView();
-			}
-			else
-			{
-				if ( Screen != 5 )
-					MainView();
+				if ( BatteryStatus == 1 )
+				{
+					Screen = 55;
+					ScreenDuration = 2;
+				}
+				else if ( dfStatus.off )
+				{
+					ChargeView();
+				}
+				else
+				{
+					if ( Screen != 5 )
+						MainView();
+				}
 			}
 			return;
 

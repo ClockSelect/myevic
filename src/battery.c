@@ -5,6 +5,7 @@
 #include "meadc.h"
 #include "atomizer.h"
 #include "timers.h"
+#include "miscs.h"
 #include "battery.h"
 
 
@@ -215,6 +216,7 @@ uint8_t		MaxBatteries;
 uint16_t	ChargerDuty;
 uint16_t	MaxChargerDuty;
 uint16_t	RTBattVolts;
+uint16_t	RTBVTotal;
 
 uint8_t		BattProbeCount;
 
@@ -328,45 +330,35 @@ __myevic__ void SetBatMaxPower()
 //-------------------------------------------------------------------------
 __myevic__ void ReadInternalResistance()
 {
-	int sample, i;
-	int iato, ibat, vato, vbat, rez;
+	static filter_t filter;
 
-	sample = 0;
-	for ( i = 0 ; i < 16 ; ++i )
-		sample += ADC_Read( 1 );
-	// V * 100
-	vato = ( 13 * sample / 48 ) >> 4;
+	uint32_t ibat, rez;
 
-	sample = 0;
-	for ( i = 0 ; i < 16 ; ++i )
-		sample += ADC_Read( 2 );
-	// A * 1000
-	iato = ( 625 * sample / AtoShuntRez ) >> 4;
-
-//	sample = 0;
-//	for ( i = 0 ; i < 16 ; ++i )
-//		sample += ReadBatterySample( 0 );
-//	// V * 100
-//	vbat = ( sample >> 7 ) + dfBVOffset[0];
-//
-//	if ( ISVTCDUAL ) vbat += 2;
-
-	vbat = RTBattVolts;
-
+	// mA
 	// Assume 90% efficiency of the circuitry
-	ibat = ( 10 * vato * iato ) / ( 9 * vbat );
+	ibat = ( 1000 * AtoVolts * AtoCurrent ) / ( 9 * RTBVTotal );
 
-	rez = ( 10000 * ( BatteryVoltage - vbat ) ) / ibat;
+	// mOhm
+	rez = ( 10000 * ( BattVoltsTotal - RTBVTotal ) ) / ibat;
 
-	// There's no battery with internal resistance
-	// less than 20mOhm.
-	if ( rez >= 20 /* BatteryIntRez */ )
+	rez = FilterData( &filter, rez );
+
+	if ( filter.count >= FILTER_SIZE )
 	{
-		BatteryIntRez = rez;
-		SetBatMaxPower();
-	}
+		// Mean rez per battery, rounded up
+		rez = ( rez + NumBatteries / 2 ) / NumBatteries;
 
-	gFlags.read_bir = 0;
+		// There's no battery with internal resistance
+		// less than 20mOhm.
+		if ( rez >= 20 /* BatteryIntRez */ )
+		{
+			BatteryIntRez = rez;
+			SetBatMaxPower();
+		}
+
+		InitFilter( &filter );
+		gFlags.read_bir = 0;
+	}
 }
 
 
@@ -466,9 +458,9 @@ __myevic__ void ReadBatteryVoltage()
 	{
 		while ( VbatSampleCnt < 16 )
 		{
+			VbatSample3 += ReadBatterySample( 2 );
 			VbatSample1 += ReadBatterySample( 0 );
 			VbatSample2 += ReadBatterySample( 1 );
-			VbatSample3 += ReadBatterySample( 2 );
 
 			++VbatSampleCnt;
 
@@ -620,6 +612,7 @@ __myevic__ int CheckBattery()
 	}
 
 	RTBattVolts = 0;
+	RTBVTotal = 0;
 
 	i = 0;
 	do
@@ -636,11 +629,15 @@ __myevic__ int CheckBattery()
 				bv  += dfBVOffset[1];
 				bv2 += dfBVOffset[2];
 
+				RTBVTotal = bv + bv2;
+
 				if ( bv2 < bv ) bv = bv2;
 			}
 			else
 			{
 				bv  += dfBVOffset[0];
+
+				RTBVTotal = bv;
 			}
 		}
 		else if ( ISCUBOID )
@@ -660,6 +657,8 @@ __myevic__ int CheckBattery()
 
 			bv  += dfBVOffset[0];
 			bv2 += dfBVOffset[1];
+
+			RTBVTotal = bv + bv2;
 
 			if ( bv2 < bv ) bv = bv2;
 		}
@@ -683,12 +682,16 @@ __myevic__ int CheckBattery()
 			bv2 += dfBVOffset[1];
 			bv3 += dfBVOffset[2];
 
+			RTBVTotal = bv + bv2 + bv3;
+
 			if ( bv2 < bv ) bv = bv2;
 			if ( bv3 < bv ) bv = bv3;
 		}
 		else
 		{
 			bv = ( ReadBatterySample( 0 ) >> 3 ) + dfBVOffset[0];
+
+			RTBVTotal = bv;
 		}
 
 		if ( bv > BatteryCutOff )
@@ -929,7 +932,7 @@ LABEL_29:
 				goto LABEL_61;
 
 			Event = 13;
-			byte_20000056 = 5;
+			byte_20000056 = 6;
 			goto LABEL_64;
 		}
 LABEL_60:
@@ -1176,7 +1179,7 @@ LABEL_29:
 	if ( ( BattVoltsHighest > 422 ) || dfStatus.usbchgoff )
 	{
 		Event = 13;
-		byte_20000056 = 5;
+		byte_20000056 = 6;
 		goto LABEL_39;
 	}
 

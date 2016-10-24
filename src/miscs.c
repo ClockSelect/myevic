@@ -124,6 +124,48 @@ __myevic__ void NextMode()
 
 
 //=========================================================================
+// Median filter
+//-------------------------------------------------------------------------
+
+__myevic__ void InitFilter( filter_t *filter )
+{
+	filter->count = 0;
+	filter->oldest = 0;
+}
+
+__myevic__ uint16_t FilterData( filter_t *filter, uint16_t data )
+{
+	filter->data[filter->oldest] = data;
+	filter->oldest = ( filter->oldest + 1 ) % FILTER_SIZE;
+
+	if ( filter->count < FILTER_SIZE )
+	{
+		++filter->count;
+		return data;
+	}
+
+	filter->order[0] = 0;
+
+	for ( int i = 0 ; i <= FILTER_SIZE / 2 ; ++i )
+	{
+		for ( int j = i + 1 ; j < FILTER_SIZE ; ++j )
+		{
+			if ( i == 0 ) filter->order[j] = j;
+
+			if ( filter->data[filter->order[i]] > filter->data[filter->order[j]] )
+			{
+				uint8_t k = filter->order[i];
+				filter->order[i] = filter->order[j];
+				filter->order[j] = k;
+			}
+		}
+	}
+	
+	return filter->data[filter->order[FILTER_SIZE / 2]];
+}
+
+
+//=========================================================================
 // Bhaskara I's approximation of sine
 // returns sin(x) in 16.16 fixed point format
 __myevic__ int32_t BhaskaraI( int32_t x )

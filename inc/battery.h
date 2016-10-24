@@ -5,9 +5,13 @@
 
 #define BBC_PWMCH_CHARGER	5
 
+#define BVO_MIN -10
+#define BVO_MAX  10
+
 //-------------------------------------------------------------------------
 
 extern uint16_t RTBattVolts;
+extern uint16_t	RTBVTotal;
 extern uint16_t LowBatVolts;
 extern uint32_t	PowerScale;
 extern uint16_t	BatteryVoltage;

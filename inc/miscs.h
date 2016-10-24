@@ -2,8 +2,20 @@
 #define __MISCS_H__
 
 
+#define FILTER_SIZE 5
+
+typedef struct {
+	uint16_t	data[FILTER_SIZE];
+	uint8_t		order[FILTER_SIZE];
+	uint8_t		oldest;
+	uint8_t		count;
+} filter_t;
+
 extern void ModeChange();
 extern void NextMode();
+
+extern void InitFilter( filter_t *filter );
+extern uint16_t FilterData( filter_t *filter, uint16_t data );
 
 extern uint8_t Object3D;
 extern void anim3d( int );

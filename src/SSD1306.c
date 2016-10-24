@@ -253,15 +253,19 @@ __myevic__ uint32_t SSD1306_Bitmap( int x, int y, const image_t *image, int colo
 __myevic__ void SSD1306_WriteBytes( const int isData, const uint8_t data[], const int len )
 {
 	register int is_data = ( isData == 0x40 );
+	register int byte;
 
 	PE10 = is_data ? 1 : 0;
 
 	for ( int l = 0 ; l < len ; ++l )
 	{
-		SPI_WRITE_TX( SPI0, data[l] ^ ( is_data ? DisplayEorByte : 0 ) );
+		byte = data[l] ^ ( is_data ? DisplayEorByte : 0 );
 		while ( SPI_IS_BUSY( SPI0 ) )
 			;
+		SPI_WRITE_TX( SPI0, byte );
 	}
+	while ( SPI_IS_BUSY( SPI0 ) )
+		;
 }
 
 

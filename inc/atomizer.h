@@ -1,7 +1,6 @@
 #ifndef __ATOMIZER_H__
 #define __ATOMIZER_H__
 
-
 //=============================================================================
 
 /* DC/DC converters PWM channels */
@@ -31,6 +30,7 @@ extern uint32_t	AtoMaxPower;
 extern uint32_t	MaxTCPower;
 extern uint32_t	MaxVolts;
 extern uint32_t	MaxPower;
+extern uint32_t	MaxCurrent;
 extern uint16_t	TCR;
 extern uint16_t	FireDuration;
 extern uint16_t	AtoTemp;

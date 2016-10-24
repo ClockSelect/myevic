@@ -12,7 +12,8 @@ This is My eVic VTC Mini.
 * Cuboid
 * Cuboid Mini
 * Wismec Presa 75W
-* Wismec Releaux RX75
+* Wismec Reuleaux RX75
+* Wismec Reuleaux RX200S
 
 
 ### Based on:
@@ -77,7 +78,7 @@ Some changes has been made to the overall behavior of the firmware from the orig
 
 * Temperature setting in TEMP mode:  
   The temperature no longer wraps-around by switching between °C and °F; the temperature unit has to be chosen once and for all in the Interface menu. Default is °C.  
-  The temperature setting can vary by +/1 °C or +/-5 °F when edited if configured to do so inthe Interface menu (see below).
+  The temperature setting can vary by +/1 °C or +/-5 °F when edited if configured to do so in the Interface menu (see below).
 
 * Fire button Multi-Clicks:  
   Clicking rapidly 2, 3 or 4 times on the fire button may now have some effect - see below in the Interface menu description to see those effects and how to set (or unset) them up.  
@@ -179,9 +180,6 @@ Main menu screen
 
   * Miscs  
       Sub-menu
-      * LOGO
-
-            Guenuine menu
       * Game
 
             Flappy bird. Guenuine menu.
@@ -189,7 +187,7 @@ Main menu screen
 
             ![3D cube](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/cube_zpsf9apfiun.png)
 
-            Cool 3D spinning shape.  
+            Cool 3D spinning shapes.  
             Come back to this menu and set it to "None" to cancel animation.  
             Or reset the box.  
 
@@ -221,7 +219,7 @@ Main menu screen
         ![](https://www.dropbox.com/s/n09iy9nu57jnv18/tcrset.png?dl=1)  
 
         TCR Set menu.  
-        *The guenuine menu from the original firmware is still accessible by switching off the box and pressing both Fire and Right regulatory button (+) for 5 seconds (but maybe not for long^^).*  
+        *This menu is also accessible by switching off the box and pressing both Fire and Right regulatory button (+) for 5 seconds.*  
         
         In addition to the three usual TCR modes (M1, M2 & M3), the box standard presets for TEMP NI, TI and SS are editable. To edit one of the three preset modes:
         * Select the mode you want to edit,
@@ -265,13 +263,18 @@ Main menu screen
         There is some other ways to setup time:
         * use the ```evic-usb time``` command, if you installed the [python-evic](https://github.com/ClockSelect/python-evic "python-evic") command-line utility;
         * use the Configuration Editor of the [NFirmwareEditor 5.0](https://github.com/TBXin/NFirmwareEditor/releases); open the Configuration Editor and click "Upload settings" to upload the current time.
-        * MicroSur's [FWUpdater](https://www.dropbox.com/s/ze0z9isrmaegva4/FWUpdater.zip?dl=1) also as a "Set current time" function.
+        * MicroSur's [FWUpdater](https://www.dropbox.com/s/83zd19gu05pl3r6/EvicVTCFont.rar?dl=1) also as a "Set current time" function.
 
-        Joyetech's official firmware updater also sets date & time when uploading a firmware.
+        * Joyetech's official firmware updater also sets date & time when uploading a firmware.  
+
         
   * Fmt (date format)
 
         Toggle date display format between day/month/year (default, logical, universal) format and month/day/year (US) format.
+
+  * Size
+
+        Toggle time display format of the digital dial between a small hh:mm:ss and a big HH:MM.
 
   * Dial
 
@@ -285,7 +288,7 @@ Main menu screen
 
         *This setting is useless on RTC-enabled boxes (VTwo/Dual, AIO, Basic, eGrip II)*  
         *This setting is only usefull if you have set the Light Sleep mode "OFF" in the Expert menu. See below the "LSL" setting in the Expert menu description. As long as the Light Sleep mode is "ON" (default setting), there is no real need to adjust the Clock Speed Ratio.*  
-        Some boxes (VTC-Mini, Cuboid/Mini, Presa 75W, RX75) does not have the needed 32kHz crystal soldered on the pcb to regulate the clock speed; so, another time source is used to drive the clock. Since its frequency is quite different, a clock speed ratio is needed to regulate the clock. As long as the box is awake (you're using it), the clock is regulated by the external 12.000MHz crystal, which is an accurate time source. Problem arises when the box enters sleep mode, since the crystal is switched off and the only clock source is the somewhat unreliable 10kHz internal oscillator of the processor. Clock drift mostly occurs when the box is switched off or sleeping.
+        Some boxes (VTC-Mini, Cuboid/Mini, Presa 75W, RX75, RX200S) does not have the needed 32kHz crystal soldered on the pcb to regulate the clock speed; so, another time source is used to drive the clock. Since its frequency is quite different, a clock speed ratio is needed to regulate the clock. As long as the box is awake (you're using it), the clock is regulated by the external 12.000MHz crystal, which is an accurate time source. Problem arises when the box enters sleep mode, since the crystal is switched off and the only clock source is the somewhat unreliable 10kHz internal oscillator of the processor. Clock drift mostly occurs when the box is switched off or sleeping.
     
         The procedure to adjust the clock speed ratio is as follow:
         * First, setup time accurately via the date/time menu or the "```evic-usb time```" command line.
@@ -401,7 +404,8 @@ Main menu screen
 
         USB Battery Charging.  
         *Multi-cell boxes only. This option has no effect on single-cell boxes.*  
-        Enables or disables battery charging via the USB port. The USB port is still usable for all other purposes: firmware management, debugging, etc.
+        Enables or disables battery charging via the USB port. The USB port is still usable for all other purposes: firmware management, debugging, etc.  
+        If you have an external battery charger and want to take care of your batteries, it is recommended to switch off the USB charging feature to avoid potentialy unbalanced charges, or unadapted charge currents at end of charge.
 
   * BAT
 
@@ -414,10 +418,10 @@ Main menu screen
         Battery Voltage Offset submenu  
         Corrective offset value of the battery voltage. Depending on your box, the displayed battery voltage may be off by a few tens of millivolts. It's usually not a concern, but it may make the box locking the vape too early (wasting some battery capacity) or too late (box resets due to low voltage when firing).  
         Use an external accurate voltmeter (your battery charger may do the job) to compare the displayed voltages on the box to the actual battery voltages, then adjust the displayed voltages with this item.  
-        Range is -50 to +50 milliVolts.  
+        Range is -100 to +100 milliVolts by step of 10mV (displayed as -10 to +10).  
         * On a single-cell box, only the first setting (B1) is significant. B2 and B3 are ignored.  
         * On a fixed dual-cells box, the two first settings (B1 & B2) are used, respectively, for the first and the second battery (depending on the box, you'll have to determine wich one wich with your voltmeter). B3 is ignored.  
-        * On a mixed single/dual-cells box, B1 is used for the lone battery in single-cell setting, and B2 & B3 for the two cells in a dual-cells setting.  
+        * On a mixed single/dual-cells box, B1 is used for the lone battery in single-cell setting, and B2 & B3 for the two cells in a dual-cell setting.  
         * On a triple-cell box, I let you guess.  
 
 

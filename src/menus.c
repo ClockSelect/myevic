@@ -640,7 +640,7 @@ __myevic__ void BVOMenuIDraw( int it, int line, int sel )
 
 	uint16_t bvo = ( dfBVOffset[it] >= 0 ) ? dfBVOffset[it] : -dfBVOffset[it];
 	DrawImage( 36, line+2, ( dfBVOffset[it] >= 0 ) ? 0xFC : 0xFD );
-	DrawValue( 44, line+2, bvo * 10, 0, 0x0B, 2 );
+	DrawValue( 44, line+2, bvo, 0, 0x0B, 2 );
 	if ( gFlags.edit_value && sel )
 		InvertRect( 0, line, 63, line+12 );
 }
@@ -1590,7 +1590,7 @@ const mvaluedesc_t BVODesc =
 {
 	32, 56,
 	2, 0,
-	-5, 5,
+	BVO_MIN, BVO_MAX,
 	0,
 	0,
 	0,
