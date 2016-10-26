@@ -41,7 +41,7 @@ __myevic__ void GPD_IRQHandler()
 	{
 		GPIO_CLR_INT_FLAG( PD, GPIO_PIN_PIN0_Msk );
 
-		if ( ISPRESA75W || ISVTCDUAL || ISCUBOID || ISRX200S )
+		if ( ISPRESA75W || ISVTCDUAL || ISCUBOID || ISRX200S || ISRX23 )
 		{
 			if ( gFlags.firing || gFlags.probing_ato )
 			{
@@ -100,7 +100,7 @@ __myevic__ void InitGPIO()
 		GPIO_SetMode( PA, GPIO_PIN_PIN3_Msk, GPIO_MODE_OUTPUT );
 	}
 
-	if ( ISCUBOID || ISRX200S )
+	if ( ISCUBOID || ISRX200S || ISRX23 )
 	{
 		SYS->GPF_MFPL &= ~SYS_GPF_MFPL_PF0MFP_Msk;
 		SYS->GPF_MFPL |= SYS_GPF_MFPL_PF0MFP_GPIO;
@@ -118,7 +118,7 @@ __myevic__ void InitGPIO()
 	// PC2 = PWM0 CH2
 	BBC_Configure( BBC_PWMCH_BOOST, 1 );
 
-	if ( ISVTCDUAL || ISCUBOID || ISRX200S )
+	if ( ISVTCDUAL || ISCUBOID || ISRX200S || ISRX23 )
 	{
 		PD7 = 0;
 		BBC_Configure( BBC_PWMCH_CHARGER, 0 );
@@ -130,10 +130,7 @@ __myevic__ void InitGPIO()
 	GPIO_SetMode( PD, GPIO_PIN_PIN2_Msk, GPIO_MODE_INPUT );
 	GPIO_SetMode( PD, GPIO_PIN_PIN3_Msk, GPIO_MODE_INPUT );
 
-	GPIO_ENABLE_DEBOUNCE( PE, BIT0 );
-	GPIO_ENABLE_DEBOUNCE( PD, BIT2|BIT3 );
-
-	if ( ISCUBOID || ISRX200S )
+	if ( ISCUBOID || ISRX200S || ISRX23 )
 	{
 		PF2 = 1;
 		GPIO_SetMode( PF, GPIO_PIN_PIN2_Msk, GPIO_MODE_OUTPUT );
@@ -167,7 +164,7 @@ __myevic__ void InitGPIO()
 		GPIO_EnableInt( PD, 1, GPIO_INT_RISING );
 		GPIO_ENABLE_DEBOUNCE( PD, GPIO_PIN_PIN1_Msk );
 	}
-	else if ( !ISCUBOID && !ISRX200S )
+	else if ( !ISCUBOID && !ISRX200S && !ISRX23 )
 	{
 		GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_INPUT );
 		GPIO_EnableInt( PD, 7, GPIO_INT_RISING );
@@ -180,7 +177,7 @@ __myevic__ void InitGPIO()
 	PE12 = 0;
 	GPIO_SetMode( PE, GPIO_PIN_PIN12_Msk, GPIO_MODE_OUTPUT );
 
-	if ( ISRX200S )
+	if ( ISRX200S || ISRX23 )
 	{
 		SYS->GPF_MFPL &= ~SYS_GPF_MFPL_PF1MFP_Msk;
 		SYS->GPF_MFPL |= SYS_GPF_MFPL_PF1MFP_GPIO;

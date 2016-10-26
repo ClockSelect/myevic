@@ -14,6 +14,7 @@ This is My eVic VTC Mini.
 * Wismec Presa 75W
 * Wismec Reuleaux RX75
 * Wismec Reuleaux RX200S
+* Wismec Reuleaux RX2/3
 
 
 ### Based on:
@@ -59,6 +60,7 @@ OR
     * Daveee10
     * Eugene San
     * MarkyAD
+    * bluenazgul
 
 
 
@@ -92,6 +94,9 @@ Some changes has been made to the overall behavior of the firmware from the orig
 * Bypass mode:  
   Power is now displayed on top of screen instead of voltage, as it's a more relevant information regarding vaping quality. Real-time output voltage information is still available as a third-line option (VOUT).  
   Predicted power and voltage are also more accurate, especially on multi-cells boxes. It needs a few puffs to reach max accuracy, time for the box to estimate battery behavior under high load.
+
+* Logo:  
+  The myevic firmware accepts logos sizes of 64 pixels wide and from 40 to 63 lines high. Tall logo may partially recover lines of information in the center of the screen; it's up to you to choose the correct design and dimensions so that the display looks fine.
 
 * Menus:  
   Menus accessed by pressing Fire and Right button have been completely revamped. See below for new menus description.
@@ -288,7 +293,7 @@ Main menu screen
 
         *This setting is useless on RTC-enabled boxes (VTwo/Dual, AIO, Basic, eGrip II)*  
         *This setting is only usefull if you have set the Light Sleep mode "OFF" in the Expert menu. See below the "LSL" setting in the Expert menu description. As long as the Light Sleep mode is "ON" (default setting), there is no real need to adjust the Clock Speed Ratio.*  
-        Some boxes (VTC-Mini, Cuboid/Mini, Presa 75W, RX75, RX200S) does not have the needed 32kHz crystal soldered on the pcb to regulate the clock speed; so, another time source is used to drive the clock. Since its frequency is quite different, a clock speed ratio is needed to regulate the clock. As long as the box is awake (you're using it), the clock is regulated by the external 12.000MHz crystal, which is an accurate time source. Problem arises when the box enters sleep mode, since the crystal is switched off and the only clock source is the somewhat unreliable 10kHz internal oscillator of the processor. Clock drift mostly occurs when the box is switched off or sleeping.
+        Some boxes (VTC-Mini, Cuboid/Mini, Presa 75W, RX75, RX200S, RX2/3) does not have the needed 32kHz crystal soldered on the pcb to regulate the clock speed; so, another time source is used to drive the clock. Since its frequency is quite different, a clock speed ratio is needed to regulate the clock. As long as the box is awake (you're using it), the clock is regulated by the external 12.000MHz crystal, which is an accurate time source. Problem arises when the box enters sleep mode, since the crystal is switched off and the only clock source is the somewhat unreliable 10kHz internal oscillator of the processor. Clock drift mostly occurs when the box is switched off or sleeping.
     
         The procedure to adjust the clock speed ratio is as follow:
         * First, setup time accurately via the date/time menu or the "```evic-usb time```" command line.
@@ -321,7 +326,7 @@ Main menu screen
 
   * Font A/B
 
-        Change the display font. The font A is the new bold cool-looking font, font B is the guenuine Joyetech's font.
+        Change the display font. You have two fonts available; choose what pleases you more. Choice is purely aesthetic. One may find the bolder font B more readable on some displays.
 
   * Temp °C/°F
 
@@ -378,7 +383,7 @@ Main menu screen
         Enables or disables usage of the X32 crystal of the PCB.  
         If this setting is "OFF", the firmware won't try to drive the Real-Time Clock with the 32.768kHz crystal. This may solve freezing issues on some malfunctionning boxes. This setting will be active at next reset.  
         After reset, if the box cannot use the X32 to drive the RTC, this option will be set back to "OFF" and the Light Sleep feature will be enabled (see "LSL" below).  
-        *This option is useless and forced to "OFF" on boxes known not to have an X32 crystal. Those are all boxes for which the manufacturer did not enable the RTC feature, i.e: VTC-Mini, Cuboid/Mini, Presa 75W and RX75.*  
+        *This option is useless and forced to "OFF" on boxes known not to have an X32 crystal. Those are all boxes for which the manufacturer did not enable the RTC feature, i.e: VTC-Mini, Cuboid/Mini, Presa 75W and RX series.*  
 
   * LSL
   
@@ -418,7 +423,7 @@ Main menu screen
         Battery Voltage Offset submenu  
         Corrective offset value of the battery voltage. Depending on your box, the displayed battery voltage may be off by a few tens of millivolts. It's usually not a concern, but it may make the box locking the vape too early (wasting some battery capacity) or too late (box resets due to low voltage when firing).  
         Use an external accurate voltmeter (your battery charger may do the job) to compare the displayed voltages on the box to the actual battery voltages, then adjust the displayed voltages with this item.  
-        Range is -100 to +100 milliVolts by step of 10mV (displayed as -10 to +10).  
+        Range is -300 to +300 milliVolts by step of 10mV (displayed as -30 to +30).  
         * On a single-cell box, only the first setting (B1) is significant. B2 and B3 are ignored.  
         * On a fixed dual-cells box, the two first settings (B1 & B2) are used, respectively, for the first and the second battery (depending on the box, you'll have to determine wich one wich with your voltmeter). B3 is ignored.  
         * On a mixed single/dual-cells box, B1 is used for the lone battery in single-cell setting, and B2 & B3 for the two cells in a dual-cell setting.  

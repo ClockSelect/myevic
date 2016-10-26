@@ -39,7 +39,7 @@ __myevic__ void KeyRepeat()
 {
 	static uint8_t KRDelay = 0;
 
-	
+
 	if ( !PE0 )
 		return;
 
@@ -72,6 +72,11 @@ __myevic__ void KeyRepeat()
 	}
 	else if ( !KRDelay || !--KRDelay )
 	{
+		if ( KeyTicks < 205 )
+		{
+			++KeyTicks;
+		}
+
 		// First event has been emitted by GetUserInput()
 
 		// +0.60s
@@ -97,11 +102,6 @@ __myevic__ void KeyRepeat()
 			KRDelay = ( KRDelay * KRDelay ) / 1089 + 1;
 		}
 
-		if ( KeyTicks < 205 )
-		{
-			++KeyTicks;
-		}
-
 		if ( !PD2 )
 		{
 			Event = 2;
@@ -124,6 +124,10 @@ __myevic__ void GetUserInput()
 	if ( ( !PE0 || AutoPuffTimer ) && PD2 && PD3 )
 	{
 		if ( !PE0 ) AutoPuffTimer = 0;
+
+		if (( LastInputs == 5 ) || ( LastInputs == 6 ))
+			return;
+
 		UserInputs = 1;
 	}
 	else
@@ -162,6 +166,11 @@ __myevic__ void GetUserInput()
 			{
 				UserInputs = 10;
 				BattProbeCount = 0;
+				
+				if ( dfStatus.off && FireClickCount == 1 )
+				{
+					FireClickCount = 0;
+				}
 			}
 		}
 		else
@@ -193,7 +202,7 @@ __myevic__ void GetUserInput()
 					}
 				}
 			}
-			else if ( !ISCUBOID && !ISRX200S )
+			else if ( !ISCUBOID && !ISRX200S && !ISRX23 )
 			{
 				if ( !PD7 && !gFlags.battery_charging )
 				{
@@ -236,7 +245,7 @@ __myevic__ void GetUserInput()
 	// 60 milliseconds before an event is emitted.
 	// (Taking into account the 50ms debounce time)
 
-	if ( KeyPressTime == 1 )
+	if ( KeyPressTime == 6 )
 	{
 		gFlags.user_idle = 0;
 
@@ -463,7 +472,7 @@ __myevic__ void GetUserInput()
 			}
 		}
 	}
-	else if ( ( KeyPressTime & 0x8000 ) || ( KeyPressTime & 0x7fff ) >= 210 )
+	else if ( ( KeyPressTime & 0x8000 ) || ( KeyPressTime & 0x7fff ) > 200 )
 	{
 		if ( UserInputs == 1 )
 		{
@@ -472,7 +481,7 @@ __myevic__ void GetUserInput()
 				KeyPressTime = 1100;
 				gFlags.user_idle = 1;
 			}
-			else if ( FireDuration >= dfProtec )
+			else if ( gFlags.firing && FireDuration >= dfProtec )
 			{
 				Event = 24;	// 10s protection
 			}

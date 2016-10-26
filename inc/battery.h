@@ -5,8 +5,8 @@
 
 #define BBC_PWMCH_CHARGER	5
 
-#define BVO_MIN -10
-#define BVO_MAX  10
+#define BVO_MIN -30
+#define BVO_MAX  30
 
 //-------------------------------------------------------------------------
 
@@ -39,6 +39,7 @@ extern uint8_t	BatteryStatus;
 //-------------------------------------------------------------------------
 
 extern void ReadBatteryVoltage();
+extern void NewBatteryData();
 extern void NewBatteryVoltage();
 extern int CheckBattery();
 extern int GetNBatteries();

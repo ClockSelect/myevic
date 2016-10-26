@@ -161,7 +161,7 @@ __myevic__ void EventHandler()
 	if ( Event == 0 )
 		return;
 
-//	myprintf( "Event = %d\n", Event );
+	myprintf( "Event = %d\n", Event );
 
 	NoEventTimer = 200;
 	LastEvent = Event;
@@ -507,7 +507,7 @@ __myevic__ void EventHandler()
 				GPIO_SetMode( PD, GPIO_PIN_PIN1_Msk, GPIO_MODE_OUTPUT );
 				PD1 = 0;
 			}
-			else if ( !ISCUBOID && !ISRX200S )
+			else if ( !ISCUBOID && !ISRX200S && !ISRX23 )
 			{
 				GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_OUTPUT );
 				PD7 = 0;
@@ -661,7 +661,7 @@ __myevic__ void EventHandler()
 
 			SetADCState( 1, 1 );
 			SetADCState( 2, 1 );
-			if ( ISRX200S )
+			if ( ISRX200S || ISRX23 )
 			{
 				SetADCState( 15, 1 );
 			}
@@ -753,9 +753,12 @@ __myevic__ void EventHandler()
 			StopFire();
 			if ( AtoError )
 				return;
-			gFlags.refresh_display = 1;
-			Screen = 23;
-			ScreenDuration = 10;
+			if ( FireDuration > 99 )
+			{
+				gFlags.refresh_display = 1;
+				Screen = 23;
+				ScreenDuration = 10;
+			}
 			return;
 
 		case 23:	// Reset Time counter
@@ -846,7 +849,7 @@ __myevic__ void EventHandler()
 			MainView();
 			return;
 
-		case 13:	// Battery removed
+		case 13:	// Battery charge stop
 			gFlags.battery_charging = 0;
 			if ( Screen == 5 )
 			{
@@ -859,7 +862,7 @@ __myevic__ void EventHandler()
 			}
 			return;
 
-		case 12:	// Battery charging
+		case 12:	// Battery charge start
 			gFlags.battery_charging = 1;
 			gFlags.refresh_display = 1;
 			BatAnimLevel = BatteryTenth;

@@ -363,7 +363,7 @@ __myevic__ void DrawLOGO( const int x, const int y )
 	FMC_DISABLE_ISP();
 	SYS_LockReg();
 
-	if ( img->width == 64 && img->height == 40 )
+	if ( img->width == 64 && img->height >= 40 && img->height <= 63 )
 	{
 		switch ( DisplayModel )
 		{
@@ -660,11 +660,11 @@ __myevic__ void DisplaySetFont()
 {
 	if ( dfStatus.font )
 	{
-		Images = font1_1306;
+		Images = font0_1306;
 	}
 	else
 	{
-		Images = font0_1306;
+		Images = font1_1306;
 	}
 }
 

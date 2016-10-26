@@ -6,6 +6,7 @@
 #include "battery.h"
 #include "atomizer.h"
 #include "flappy.h"
+#include "display.h"
 
 //=========================================================================
 
@@ -19,6 +20,7 @@ volatile uint32_t	TickCount;
 
 uint16_t	SleepTimer;
 uint16_t	AutoPuffTimer;
+uint16_t	FadeOutTimer;
 
 
 //=========================================================================
@@ -166,7 +168,7 @@ __myevic__ void TimedItems()
 		if ( !PD1 && ( BattProbeCount >= 2 ) && ( BattProbeCount < 50 ) && ( NumBatteries == 1 ) )
 			++BattProbeCount;
 	}
-	else if ( !ISCUBOID && !ISRX200S )
+	else if ( !ISCUBOID && !ISRX200S && !ISRX23 )
 	{
 		if ( !PD7 && ( BattProbeCount >= 2 ) && ( BattProbeCount < 50 ) )
 			++BattProbeCount;
@@ -248,6 +250,16 @@ __myevic__ void TimedItems()
 			{
 				gFlags.refresh_display = 1;
 			}
+		}
+	}
+
+	if ( FadeOutTimer )
+	{
+		--FadeOutTimer;
+
+		if ( FadeOutTimer < dfContrast )
+		{
+			DisplaySetContrast( FadeOutTimer );
 		}
 	}
 }

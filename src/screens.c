@@ -212,6 +212,21 @@ __myevic__ void DrawScreen()
 		ScreenDuration = EditModeTimer / 10 + 1;
 	}
 
+	if ( ( Screen == 1 || Screen == 60 ) && ( ScreenDuration <= 4 ) )
+	{
+		if ( !gFlags.fading  )
+		{
+			FadeOutTimer = 300;
+			gFlags.fading = 1;
+		}
+	}
+	else if ( gFlags.fading )
+	{
+		FadeOutTimer = 0;
+		DisplaySetContrast( dfContrast );
+		gFlags.fading = 0;
+	}
+
 	if ( ScreenDuration && --ScreenDuration )
 		return;
 
@@ -266,7 +281,16 @@ __myevic__ void DrawScreen()
 			{
 				// Switch box off after 10s if no response
 				// have been given to a long fire.
-				Event = 17;
+				if ( !PE0 && gFlags.user_idle )
+				{
+					Event = 17;
+				}
+				else
+				{
+					Screen = 0;
+					SleepTimer = 18000;
+					gFlags.refresh_display = 1;
+				}
 			}
 			break;
 
@@ -572,18 +596,8 @@ __myevic__ void ShowBatCharging()
 	switch ( dfScreenSaver )
 	{
 		case 1:
-			if ( dfStatus.digclk )
-			{
-				DrawDigitClock( 40 );
-			}
-			else
-			{
-				DrawClock( 25 );
-			}
-			break;
-
 		case 3:
-			DrawLOGO( 0, 32 );
+			ShowScreenSaver();
 			break;
 
 		default:
@@ -875,8 +889,14 @@ __myevic__ void ShowScreenSaver()
 			break;
 
 		case SSAVER_LOGO:
-			DrawLOGO( 0, 32 );
+		{
+			int h = GetLogoHeight();
+			if ( h )
+			{
+				DrawLOGO( 0, 32 - ( h - 48 )/2 );
+			}
 			break;
+		}
 
 		case SSAVER_QIX:
 			qix( 1 );

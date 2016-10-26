@@ -53,7 +53,8 @@ enum
 	BOX_CUBOMINI,
 	BOX_CUBOID,
 	BOX_EVICBASIC,
-	BOX_RX200S
+	BOX_RX200S,
+	BOX_RX23
 };
 
 #define ISVTCMINI		(BoxModel==BOX_VTCMINI)
@@ -68,6 +69,7 @@ enum
 #define ISCUBOID		(BoxModel==BOX_CUBOID)
 #define ISEVICBASIC		(BoxModel==BOX_EVICBASIC)
 #define ISRX200S		(BoxModel==BOX_RX200S)
+#define ISRX23			(BoxModel==BOX_RX23)
 
 
 //=========================================================================
@@ -115,7 +117,7 @@ typedef struct
 /* 00000001 */	int edit_value:1;
 /* 00000002 */	int check_rez_tcr:1;
 /* 00000004 */	int unused34:1;
-/* 00000008 */	int unused35:1;
+/* 00000008 */	int bit35:1;
 /* 00000010 */	int edit_capture_evt:1;
 /* 00000020 */	int osc_1hz:1;
 /* 00000040 */	int unused38:1;
@@ -136,6 +138,7 @@ typedef struct
 /* 00080000 */	int light_sleep:1;
 /* 00100000 */	int wake_up:1;
 /* 00200000 */	int scr_noinv:1;
+/* 00400000 */	int fading:1;
 }
 
 gFlags_t;

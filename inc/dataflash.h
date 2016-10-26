@@ -353,6 +353,7 @@ extern void UpdateDataFlash();
 extern void UpdatePTCounters();
 extern void DataFlashUpdateTick();
 extern uint16_t GetShuntRezValue();
+extern int GetLogoHeight();
 
 //-------------------------------------------------------------------------
 

@@ -61,7 +61,7 @@ __myevic__ void CustomStartup()
 		while ( PD3 );
 	}
 
-	
+
 //-------------------------------------------------------------------------
 // Timer test 1
 
@@ -389,12 +389,12 @@ __myevic__ void DevicesOnOff( int off )
 		SetADCState( 2, 0 );
 		SetADCState( 14, 0 );
 
-		if ( ISVTCDUAL || ISCUBOID || ISRX200S )
+		if ( ISVTCDUAL || ISCUBOID || ISRX200S || ISRX23 )
 		{
 			SetADCState( 3, 0 );
 			SetADCState( 13, 0 );
-			
-			if ( ISRX200S )
+
+			if ( ISRX200S || ISRX23 )
 			{
 				SetADCState( 15, 0 );
 			}
@@ -403,7 +403,7 @@ __myevic__ void DevicesOnOff( int off )
 			BBC_Configure( BBC_PWMCH_CHARGER, 0 );
 			PD7 = 0;
 
-			if ( ISCUBOID || ISRX200S )
+			if ( ISCUBOID || ISRX200S || ISRX23 )
 			{
 				PF2 = 0;
 			}
@@ -417,7 +417,7 @@ __myevic__ void DevicesOnOff( int off )
 		PC2 = 0;
 		BBC_Configure( BBC_PWMCH_BOOST, 0 );
 
-		if ( ISRX200S )
+		if ( ISRX200S || ISRX23 )
 		{
 			PF1 = 0;
 		}
@@ -436,7 +436,7 @@ __myevic__ void DevicesOnOff( int off )
 			PD1 = 0;
 			GPIO_SetMode( PD, GPIO_PIN_PIN1_Msk, GPIO_MODE_OUTPUT );
 		}
-		else if ( !ISCUBOID && !ISRX200S )
+		else if ( !ISCUBOID && !ISRX200S && !ISRX23 )
 		{
 			GPIO_DisableInt( PD, 7 );
 			PD7 = 0;
@@ -464,7 +464,7 @@ __myevic__ void DevicesOnOff( int off )
 			PF2 = 0;
 			PA2 = 0;
 		}
-		else if ( ISCUBOID || ISRX200S )
+		else if ( ISCUBOID || ISRX200S || ISRX23 )
 		{
 			PF0 = 0;
 		}
@@ -494,7 +494,7 @@ __myevic__ void DevicesOnOff( int off )
 		GPIO_DisableInt( PD, 2 );
 		GPIO_DisableInt( PD, 3 );
 
-		if ( ISCUBOID || ISRX200S )
+		if ( ISCUBOID || ISRX200S || ISRX23 )
 		{
 			PF2 = 1;
 		}
@@ -511,14 +511,14 @@ __myevic__ void DevicesOnOff( int off )
 			GPIO_EnableInt( PD, 1, GPIO_INT_RISING );
 			GPIO_ENABLE_DEBOUNCE( PD, GPIO_PIN_PIN1_Msk );
 		}
-		else if ( !ISCUBOID && !ISRX200S )
+		else if ( !ISCUBOID && !ISRX200S && !ISRX23 )
 		{
 			GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_INPUT );
 			GPIO_EnableInt( PD, 7, GPIO_INT_RISING );
 			GPIO_ENABLE_DEBOUNCE( PD, GPIO_PIN_PIN7_Msk );
 		}
 
-		if ( ISRX200S )
+		if ( ISRX200S || ISRX23 )
 		{
 			PF1 = 1;
 		}
@@ -531,12 +531,12 @@ __myevic__ void DevicesOnOff( int off )
 		SetADCState( 2, 1 );
 		SetADCState( 14, 1 );
 
-		if ( ISVTCDUAL || ISCUBOID || ISRX200S )
+		if ( ISVTCDUAL || ISCUBOID || ISRX200S || ISRX23 )
 		{
 			SetADCState( 3, 1 );
 			SetADCState( 13, 1 );
-			
-			if ( ISRX200S )
+
+			if ( ISRX200S || ISRX23 )
 			{
 				SetADCState( 15, 1 );
 			}
@@ -654,7 +654,7 @@ __myevic__ void SleepIfIdle()
 {
 	if ( !gFlags.firing && !NoEventTimer )
 	{
-		if ( ( Screen == 0 && SleepTimer == 0 ) && ( gFlags.user_idle ) )
+		if ( ( Screen == 0 ) && ( SleepTimer == 0 ) && ( gFlags.user_idle ) )
 		{
 			GoToSleep();
 
@@ -880,7 +880,7 @@ __myevic__ void Main()
 			{
 				BatteryChargeDual();
 			}
-			else if ( ISCUBOID || ISRX200S )
+			else if ( ISCUBOID || ISRX200S || ISRX23 )
 			{
 				BatteryCharge();
 			}
@@ -956,7 +956,7 @@ __myevic__ void Main()
 			if ( ShowWeakBatFlag )
 				--ShowWeakBatFlag;
 
-			if ( ! (gFlags.firing && ISMODETC(dfMode)) )
+			if ( !( gFlags.firing && ISMODETC(dfMode) ) )
 			{
 				DrawScreen();
 			}

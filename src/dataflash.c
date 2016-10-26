@@ -50,6 +50,7 @@ const char pid_cubomini	[4]	__PIDATTR__	= { 'E','0','5','6' };
 const char pid_cuboid	[4]	__PIDATTR__	= { 'E','0','6','0' };
 const char pid_evicbasic[4]	__PIDATTR__	= { 'E','1','5','0' };
 const char pid_rx200s	[4]	__PIDATTR__	= { 'W','0','3','3' };
+const char pid_rx23		[4]	__PIDATTR__	= { 'W','0','1','8' };
 
 #define MAKEPID(p) (((p)[0])|((p)[1]<<8)|((p)[2]<<16)|((p)[3]<<24))
 
@@ -65,6 +66,7 @@ const char pid_rx200s	[4]	__PIDATTR__	= { 'W','0','3','3' };
 #define PID_CUBOID		MAKEPID(pid_cuboid)
 #define PID_EVICBASIC	MAKEPID(pid_evicbasic)
 #define PID_RX200S		MAKEPID(pid_rx200s)
+#define PID_RX23		MAKEPID(pid_rx23)
 
 
 //=============================================================================
@@ -74,26 +76,27 @@ __myevic__ void SetProductID()
 	SYS_UnlockReg();
 	FMC_ENABLE_ISP();
 
-	dfProductID = PID_VTCMINI;
-	dfMaxHWVersion = 0x00010101;
-	DFMagicNumber = 0x36;
-	BoxModel = BOX_VTCMINI;
 	NumBatteries = 1;
 	MaxBatteries = 1;
 	MaxCurrent = 25;
 
-	for ( uint32_t offset = 0 ; offset < LDROM_SIZE ; offset += 4 )
+	uint32_t offset;
+	uint32_t u32Data;
+
+	for ( offset = 0 ; offset < LDROM_SIZE ; offset += 4 )
 	{
-		uint32_t u32Data = FMC_Read( LDROM_BASE + offset );
+		u32Data = FMC_Read( LDROM_BASE + offset );
 
 		if ( u32Data == PID_VTCMINI )
 		{
+			dfMaxHWVersion = 0x00010101;
+			DFMagicNumber = 0x36;
+			BoxModel = BOX_VTCMINI;
 			X32Off = 1;
 			break;
 		}
 		else if ( u32Data == PID_VTWOMINI )
 		{
-			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00000001;
 			DFMagicNumber = 0x10;
 			BoxModel = BOX_VTWOMINI;
@@ -101,7 +104,6 @@ __myevic__ void SetProductID()
 		}
 		else if ( u32Data == PID_VTWO )
 		{
-			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00010001;
 			DFMagicNumber = 0x40;
 			BoxModel = BOX_VTWO;
@@ -109,7 +111,6 @@ __myevic__ void SetProductID()
 		}
 		else if ( u32Data == PID_VTCDUAL )
 		{
-			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00010001;
 			DFMagicNumber = 0x12;
 			BoxModel = BOX_VTCDUAL;
@@ -120,7 +121,6 @@ __myevic__ void SetProductID()
 		}
 		else if ( u32Data == PID_EVICAIO )
 		{
-			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00010001;
 			DFMagicNumber = 0x50;
 			BoxModel = BOX_EVICAIO;
@@ -129,7 +129,6 @@ __myevic__ void SetProductID()
 		}
 		else if ( u32Data == PID_EGRIPII )
 		{
-			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00000001;
 			DFMagicNumber = 0x15;
 			BoxModel = BOX_EGRIPII;
@@ -137,7 +136,6 @@ __myevic__ void SetProductID()
 		}
 		else if ( u32Data == PID_CUBOMINI )
 		{
-			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00020001;
 			DFMagicNumber = 0x50;
 			BoxModel = BOX_CUBOMINI;
@@ -147,7 +145,6 @@ __myevic__ void SetProductID()
 		}
 		else if ( u32Data == PID_CUBOID )
 		{
-			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00020001;
 			DFMagicNumber = 0x39;
 			BoxModel = BOX_CUBOID;
@@ -160,7 +157,6 @@ __myevic__ void SetProductID()
 		}
 		else if ( u32Data == PID_EVICBASIC )
 		{
-			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00010001;
 			DFMagicNumber = 0x13;
 			BoxModel = BOX_EVICBASIC;
@@ -169,7 +165,6 @@ __myevic__ void SetProductID()
 		}
 		else if ( u32Data == PID_PRESA75W )
 		{
-			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00030001;
 			DFMagicNumber = 0x30;
 			BoxModel = BOX_PRESA75W;
@@ -178,7 +173,6 @@ __myevic__ void SetProductID()
 		}
 		else if ( u32Data == PID_WRX75TC )
 		{
-			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00010001;
 			DFMagicNumber = 0x32;
 			BoxModel = BOX_WRX75TC;
@@ -187,7 +181,6 @@ __myevic__ void SetProductID()
 		}
 		else if ( u32Data == PID_RX200S )
 		{
-			dfProductID = u32Data;
 			dfMaxHWVersion = 0x00000001;
 			DFMagicNumber = 0x14;
 			BoxModel = BOX_RX200S;
@@ -198,6 +191,32 @@ __myevic__ void SetProductID()
 			X32Off = 1;
 			break;
 		}
+		else if ( u32Data == PID_RX23 )
+		{
+			dfMaxHWVersion = 0x00010001;
+			DFMagicNumber = 0x14;
+			BoxModel = BOX_RX23;
+			NumBatteries = 3;
+			MaxBatteries = 3;
+			MaxCurrent = 50;
+			gFlags.pwm_pll = 1;
+			X32Off = 1;
+			break;
+		}
+	}
+
+	if ( offset < LDROM_SIZE )
+	{
+		dfProductID = u32Data;
+	}
+	else
+	{
+		dfBootFlag = 1;
+		UpdateDataFlash();
+		SYS_UnlockReg();
+		SYS_ResetChip();
+		while ( 1 )
+			;
 	}
 
 	FMC_DISABLE_ISP();
@@ -902,7 +921,7 @@ __myevic__ void InitDataFlash()
 	{
 		MaxPower = 2000;
 	}
-	else if ( ISRX200S )
+	else if ( ISRX200S || ISRX23 )
 	{
 		MaxPower = 2500;
 	}
@@ -1084,6 +1103,20 @@ __myevic__ uint16_t GetShuntRezValue()
 				break;
 		}
 	}
+	else if ( ISRX23 )
+	{
+		switch ( dfHWVersion )
+		{
+			case 100:
+			default:
+				rez = 112;
+				break;
+
+			case 101:
+				rez = 109;
+				break;
+		}
+	}
 	else if ( ISRX200S )
 	{
 		rez = 110;
@@ -1121,5 +1154,34 @@ __myevic__ uint16_t GetShuntRezValue()
 	}
 
 	return rez;
+}
+
+
+//=========================================================================
+// Retrieve the Logo height (0=No logo)
+//-------------------------------------------------------------------------
+__myevic__ int GetLogoHeight()
+{
+	uint32_t data;
+	int w, h;
+
+	SYS_UnlockReg();
+	FMC_ENABLE_ISP();
+
+	data = FMC_Read( DATAFLASH_LOGO_1306_BASE );
+	
+	FMC_DISABLE_ISP();
+	SYS_LockReg();
+
+	h = 0;
+	w = data & 0xFF;
+
+	if ( w == 64 )
+	{
+		h = ( data & 0xFF00 ) >> 8;
+		if ( h < 40 || h > 63 ) h = 0;
+	}
+
+	return h;
 }
 

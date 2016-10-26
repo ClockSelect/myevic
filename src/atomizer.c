@@ -101,7 +101,7 @@ __myevic__ void SetPWMClock()
 	ProbeDuty	= PWMCycles / 8;
 	BoostWindow	= PWMCycles / 19;
 
-	if ( ISRX200S )
+	if ( ISRX200S || ISRX23 )
 	{
 		MaxDuty = 95 * PWMCycles / 100;
 	}
@@ -118,10 +118,6 @@ __myevic__ void InitPWM()
 {
 	PWM_ConfigOutputChannel( PWM0, BBC_PWMCH_BUCK, BBC_PWM_FREQ, 0 );
 	PWM_ConfigOutputChannel( PWM0, BBC_PWMCH_BOOST, BBC_PWM_FREQ, 0 );
-	if ( ISVTCDUAL || ISCUBOID || ISRX200S )
-	{
-		PWM_ConfigOutputChannel( PWM0, BBC_PWMCH_CHARGER, BBC_PWM_FREQ, 0 );
-	}
 
 	PWM_EnableOutput( PWM0, 1 << BBC_PWMCH_BUCK );
 	PWM_EnablePeriodInt( PWM0, BBC_PWMCH_BUCK, 0 );
@@ -129,17 +125,8 @@ __myevic__ void InitPWM()
 	PWM_EnableOutput( PWM0, 1 << BBC_PWMCH_BOOST );
 	PWM_EnablePeriodInt( PWM0, BBC_PWMCH_BOOST, 0 );
 
-	if ( ISVTCDUAL || ISCUBOID || ISRX200S )
-	{
-		PWM_EnableOutput( PWM0, 1 << BBC_PWMCH_CHARGER );
-	}
-
 	PWM_Start( PWM0, 1 << BBC_PWMCH_BUCK );
 	PWM_Start( PWM0, 1 << BBC_PWMCH_BOOST );
-	if ( ISVTCDUAL || ISCUBOID || ISRX200S )
-	{
-		PWM_Start( PWM0, 1 << BBC_PWMCH_CHARGER );
-	}
 
 	BoostDuty = 0;
 	PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, 0 );
@@ -147,12 +134,16 @@ __myevic__ void InitPWM()
 	BuckDuty = 0;
 	PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, 0 );
 
-	if ( ISVTCDUAL || ISCUBOID || ISRX200S )
+	if ( ISVTCDUAL || ISCUBOID || ISRX200S || ISRX23 )
 	{
+		PWM_ConfigOutputChannel( PWM0, BBC_PWMCH_CHARGER, BBC_PWM_FREQ, 0 );
+		PWM_EnableOutput( PWM0, 1 << BBC_PWMCH_CHARGER );
+		PWM_Start( PWM0, 1 << BBC_PWMCH_CHARGER );
+
 		ChargerDuty = 0;
 		PWM_SET_CMR( PWM0, BBC_PWMCH_CHARGER, 0 );
 
-		if ( ISRX200S )
+		if ( ISRX200S || ISRX23 )
 		{
 			MaxChargerDuty = 512;
 		}
@@ -298,6 +289,7 @@ __myevic__ uint16_t FarenheitToC( uint16_t tf )
 //----- (0000344C) --------------------------------------------------------
 __myevic__ void StopFire()
 {
+
 //	register const uint32_t lr __asm__("lr");
 //	uint32_t caller;
 
@@ -307,7 +299,7 @@ __myevic__ void StopFire()
 	{
 		GPIO_SetMode( PD, GPIO_PIN_PIN1_Msk, GPIO_MODE_INPUT );
 	}
-	else if ( !ISCUBOID && !ISRX200S )
+	else if ( !ISCUBOID && !ISRX200S && !ISRX23 )
 	{
 		GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_INPUT );
 	}
@@ -326,7 +318,7 @@ __myevic__ void StopFire()
 
 	SetADCState( 1, 0 );
 	SetADCState( 2, 0 );
-	if ( ISRX200S )
+	if ( ISRX200S || ISRX23 )
 	{
 		SetADCState( 15, 0 );
 	}
@@ -401,7 +393,7 @@ __myevic__ void ReadAtoCurrent()
 
 	if ( gFlags.firing || gFlags.probing_ato )
 	{
-		if ( ISRX200S )
+		if ( ISRX200S || ISRX23 )
 		{
 			CLK_SysTickDelay( 10 );
 			adcShunt2 = ADC_Read( 15 );
@@ -418,7 +410,7 @@ __myevic__ void ReadAtoCurrent()
 		CLK_SysTickDelay( 10 );
 		adcAtoVolts = ADC_Read( 1 );
 
-		if ( ISRX200S )
+		if ( ISRX200S || ISRX23 )
 		{
 			current1 = ( ( 10 * 2560 * adcShunt2 ) >> 12 ) / AtoShuntRez;
 			if ( gFlags.firing )
@@ -645,7 +637,7 @@ __myevic__ void ReadAtomizer()
 
 		for ( int count = 0 ; count < NumShuntSamples ; ++count )
 		{
-			if ( ISRX200S )
+			if ( ISRX200S || ISRX23 )
 			{
 				CLK_SysTickDelay( 10 );
 				ADCShuntSum2 += ADC_Read( 15 );
@@ -656,12 +648,9 @@ __myevic__ void ReadAtomizer()
 			ADCAtoSum += ADC_Read( 1 );
 		}
 
-		if ( !ADCShuntSum1 ) ADCShuntSum1 = 1;
+		if ( !ADCShuntSum1 && !ADCShuntSum2 ) ADCShuntSum1 = 1;
 
-		AtoRezMilli = 1300 * AtoShuntRez / 100 * ADCAtoSum / ( 3 * ( ADCShuntSum1 + ADCShuntSum2 ) );
-
-	//	myprintf( "ARM=%d, sh1=%d, sh2=%d, ato=%d, apc=%d\n",
-	//				AtoRezMilli, ADCShuntSum1, ADCShuntSum2, ADCAtoSum, AtoProbeCount );
+		AtoRezMilli = 13 * AtoShuntRez * ADCAtoSum / ( 3 * ( ADCShuntSum1 + ADCShuntSum2 ) );
 
 		ReadAtoCurrent();
 
@@ -802,7 +791,7 @@ __myevic__ void RegulateBuckBoost()
 	AtoVoltsADC = ADC_Read( 1 );
 	AtoVolts = ( 1109 * AtoVoltsADC ) >> 12;
 
-	if ( ISRX200S )
+	if ( ISRX200S || ISRX23 )
 	{
 		RegulateDualBuck();
 		return;
@@ -962,23 +951,26 @@ __myevic__ void RegulateBuckBoost()
 //----- (00002EBC) --------------------------------------------------------
 __myevic__ void AtoWarmUp()
 {
+	uint32_t WUC;
+
 	BBCNextMode = 2;
 	BBCMode = 0;
 
 	ProbeDuty = PWMCycles / NumBatteries / 8;
 
+	WUC = 0;
 	WarmUpCounter = ( !gFlags.pwm_pll || NumBatteries > 1 ) ? 2000 : 3000;
 
 	// Loop time around 19us on atomizer probing
 	//  and around 26.4us (37.86kHz) on firing.
-	// With fast ADC modifs: 16.7us (59.85kHz)
 	do
 	{
 		if ( !gFlags.probing_ato && !gFlags.firing )
 			break;
 
-		if ( gFlags.firing || !gFlags.pwm_pll || !( WarmUpCounter % 20 ) )
+		if ( gFlags.firing || !gFlags.pwm_pll || !WUC || ( WUC - WarmUpCounter >= 20 ) )
 		{
+			WUC = WarmUpCounter;
 			RegulateBuckBoost();
 		}
 
@@ -1330,7 +1322,7 @@ __myevic__ void SetAtoLimits()
 __myevic__ void ProbeAtomizer()
 {
 	if (( ISVTCDUAL && ( BatteryStatus == 2 || !PA3 ) )
-	||  ( ( ISCUBOID || ISRX200S )  && ( BatteryStatus == 2 || !PF0 ) ))
+	||  ( ( ISCUBOID || ISRX200S || ISRX23 ) && ( BatteryStatus == 2 || !PF0 ) ))
 	{
 		AtoStatus = 0;
 	}
@@ -1338,7 +1330,7 @@ __myevic__ void ProbeAtomizer()
 	{
 		SetADCState( 1, 1 );
 		SetADCState( 2, 1 );
-		if ( ISRX200S )
+		if ( ISRX200S || ISRX23 )
 		{
 			SetADCState( 15, 1 );
 		}
@@ -1381,7 +1373,7 @@ __myevic__ void ProbeAtomizer()
 				PC3 = 0;
 			SetADCState( 1, 0 );
 			SetADCState( 2, 0 );
-			if ( ISRX200S )
+			if ( ISRX200S || ISRX23 )
 			{
 				SetADCState( 15, 0 );
 			}
@@ -1409,7 +1401,7 @@ __myevic__ void ProbeAtomizer()
 			AtoError = 0;
 			break;
 	}
-
+	
 	if ( AtoProbeCount < 12 )
 	{
 		++AtoProbeCount;

@@ -717,7 +717,16 @@ __myevic__ void ShowMainView()
 
 		if (( Screen == 1 ) && ( !HideLogo ))
 		{
-			DrawLOGO( 0, dfStatus.logomid ? 46 : 0 );
+			int h = GetLogoHeight();
+
+			if ( h > 0 )
+			{
+				if ( h > 40 )
+				{
+					DrawFillRect( 0, 48, 63, h, 0 );
+				}
+				DrawLOGO( 0, dfStatus.logomid ? 46 : 0 );
+			}
 		}
 	}
 
