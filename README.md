@@ -11,7 +11,8 @@ This is My eVic VTC Mini.
 * eGrip II
 * Cuboid
 * Cuboid Mini
-* Wismec Presa 75W
+* Wismec Presa TC75W
+* Wismec Presa TC100W
 * Wismec Reuleaux RX75
 * Wismec Reuleaux RX200S
 * Wismec Reuleaux RX2/3
@@ -250,10 +251,10 @@ Main menu screen
          Click on each menu item to set 'Y' or 'N' if you want to see any given mode proposed while cycling between modes in menu mode.  
          Typically, you'll set "SMART" mode to 'N'. Typically.
 
-    * Protec.
+    * Prot.
 
-         Set the long fire protection time. Default and Max is 10.0s.  
-         Admissible values are 2.0s to 10.0s.
+         Set the long fire protection time. Default is 10.0s.  
+         Admissible values are 2.0s to 15.0s.
 
 ----------
 

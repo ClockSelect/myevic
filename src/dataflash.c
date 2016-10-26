@@ -51,6 +51,7 @@ const char pid_cuboid	[4]	__PIDATTR__	= { 'E','0','6','0' };
 const char pid_evicbasic[4]	__PIDATTR__	= { 'E','1','5','0' };
 const char pid_rx200s	[4]	__PIDATTR__	= { 'W','0','3','3' };
 const char pid_rx23		[4]	__PIDATTR__	= { 'W','0','1','8' };
+const char pid_presa100w[4]	__PIDATTR__	= { 'W','0','1','7' };
 
 #define MAKEPID(p) (((p)[0])|((p)[1]<<8)|((p)[2]<<16)|((p)[3]<<24))
 
@@ -67,6 +68,7 @@ const char pid_rx23		[4]	__PIDATTR__	= { 'W','0','1','8' };
 #define PID_EVICBASIC	MAKEPID(pid_evicbasic)
 #define PID_RX200S		MAKEPID(pid_rx200s)
 #define PID_RX23		MAKEPID(pid_rx23)
+#define PID_PRESA100W	MAKEPID(pid_presa100w)
 
 
 //=============================================================================
@@ -168,6 +170,14 @@ __myevic__ void SetProductID()
 			dfMaxHWVersion = 0x00030001;
 			DFMagicNumber = 0x30;
 			BoxModel = BOX_PRESA75W;
+			X32Off = 1;
+			break;
+		}
+		else if ( u32Data == PID_PRESA100W )
+		{
+			dfMaxHWVersion = 0x00000001;
+			DFMagicNumber = 0x40;
+			BoxModel = BOX_PRESA100W;
 			X32Off = 1;
 			break;
 		}
@@ -315,7 +325,7 @@ __myevic__ void ResetDataFlash()
 
 	dfMagic = DFMagicNumber;
 	dfMode = 4;
-	dfProtec = 100;
+	dfProtec = FIRE_PROTEC_DEF;
 	dfVWVolts = 330;
 	dfPower = 200;
 	dfTCPower = 200;
@@ -397,8 +407,8 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfMode >= 7 )
 		dfMode = 4;
 
-	if (( dfProtec < 20 ) || ( dfProtec > 100 ))
-		dfProtec = 100;
+	if (( dfProtec < FIRE_PROTEC_MIN ) || ( dfProtec > FIRE_PROTEC_MAX ))
+		dfProtec = FIRE_PROTEC_DEF;
 
 	if ( dfVWVolts > MaxVolts || dfVWVolts < 50 )
 		dfVWVolts = 330;
@@ -912,6 +922,10 @@ __myevic__ void InitDataFlash()
 	{
 		MaxPower = 800;
 	}
+	else if ( ISPRESA100W )
+	{
+		MaxPower = 1000;
+	}
 	else if ( ISVTCDUAL )
 	{
 		MaxPower = 1500;
@@ -1047,6 +1061,10 @@ __myevic__ uint16_t GetShuntRezValue()
 	if ( ISPRESA75W || ISEVICAIO )
 	{
 		rez = 100;
+	}
+	else if ( ISPRESA100W )
+	{
+		rez = 92;
 	}
 	else if ( ISVTWOMINI || ISVTWO )
 	{

@@ -476,9 +476,9 @@ __myevic__ void GetUserInput()
 	{
 		if ( UserInputs == 1 )
 		{
-			if ( KeyPressTime > 1100 )
+			if ( KeyPressTime > FIRE_PROTEC_MAX * 10 + 100 )
 			{
-				KeyPressTime = 1100;
+				KeyPressTime = FIRE_PROTEC_MAX * 10 + 100;
 				gFlags.user_idle = 1;
 			}
 			else if ( gFlags.firing && FireDuration >= dfProtec )

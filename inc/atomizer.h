@@ -18,6 +18,11 @@
 #define VVEL_MIN_RATIO	200
 #define VVEL_MAX_RATIO	500
 
+#define FIRE_PROTEC_MIN  20
+#define FIRE_PROTEC_DEF 100
+#define FIRE_PROTEC_MAX 150
+
+
 //-------------------------------------------------------------------------
 
 extern uint32_t	AtoVolts;

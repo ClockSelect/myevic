@@ -753,7 +753,7 @@ __myevic__ void EventHandler()
 			StopFire();
 			if ( AtoError )
 				return;
-			if ( FireDuration > 99 )
+			if ( FireDuration >= FIRE_PROTEC_MAX )
 			{
 				gFlags.refresh_display = 1;
 				Screen = 23;

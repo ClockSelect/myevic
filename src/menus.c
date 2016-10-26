@@ -154,10 +154,10 @@ __myevic__ int VapingMenuOnEvent( int event )
 			switch ( CurrentMenuItem )
 			{
 				case 2: // Protec
-					if ( ++dfProtec > 100 )
+					if ( ++dfProtec > FIRE_PROTEC_MAX )
 					{
-						if ( KeyTicks < 5 ) dfProtec = 20;
-						else dfProtec = 100;
+						if ( KeyTicks < 5 ) dfProtec = FIRE_PROTEC_MIN;
+						else dfProtec = FIRE_PROTEC_MAX;
 					}
 					vret = 1;
 					break;
@@ -177,10 +177,10 @@ __myevic__ int VapingMenuOnEvent( int event )
 			switch ( CurrentMenuItem )
 			{
 				case 2: // Protec
-					if ( --dfProtec < 20 )
+					if ( --dfProtec < FIRE_PROTEC_MIN )
 					{
-						if ( KeyTicks < 5 ) dfProtec = 100;
-						else dfProtec = 20;
+						if ( KeyTicks < 5 ) dfProtec = FIRE_PROTEC_MAX;
+						else dfProtec = FIRE_PROTEC_MIN;
 					}
 					vret = 1;
 					break;
