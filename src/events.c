@@ -400,6 +400,26 @@ __myevic__ void GetUserInput()
 			}
 		}
 	}
+	else if ( KeyPressTime == 100 )
+	{
+		if ( UserInputs == 5 )
+		{
+			if ( !dfStatus.off )
+			{
+				if ( !gFlags.playing_fb )
+				{
+					Event = EVENT_ENTER_MENUS;
+				}
+				else
+				{
+					gFlags.playing_fb = 0;
+					Event = 0;
+					fbInitTimeouts();
+					MainView();
+				}
+			}
+		}
+	}
 	else if ( KeyPressTime == 200 )
 	{
 		if ( UserInputs == 1 )
@@ -428,23 +448,6 @@ __myevic__ void GetUserInput()
 					Event = 18;	// flip display
 				else
 					Event = 4;	// key (un)lock
-			}
-		}
-		else if ( UserInputs == 5 )
-		{
-			if ( !dfStatus.off )
-			{
-				if ( !gFlags.playing_fb )
-				{
-					Event = EVENT_ENTER_MENUS;
-				}
-				else
-				{
-					gFlags.playing_fb = 0;
-					Event = 0;
-					fbInitTimeouts();
-					MainView();
-				}
 			}
 		}
 		else if ( UserInputs == 6 )

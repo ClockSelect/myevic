@@ -123,6 +123,22 @@ const BatV2P_t VTC5_VTable[] =
 	{ 100, 420 }
 };
 
+const BatV2P_t VTC6_VTable[] =
+{
+	{   0, 324 },
+	{  11, 342 },
+	{  14, 348 },
+	{  35, 366 },
+	{  36, 368 },
+	{  53, 383 },
+	{  63, 389 },
+	{  78, 403 },
+	{  91, 409 },
+	{  99, 416 },
+	{ 100, 420 }
+};
+
+
 typedef struct
 {
 	const uint16_t	*name;
@@ -189,6 +205,14 @@ const Battery_t Batteries[] =
 		280,
 		20,
 		30
+	},
+
+	{
+		String_VT6,
+		VTC6_VTable,
+		280,
+		20,
+		25
 	}
 };
 
@@ -528,13 +552,15 @@ __myevic__ void ReadBatteryVoltage()
 			BattVolts[0] = VbatSample1;
 
 			if ( VbatSample1 > 250 )
-				BattVolts[0] = 20 * (VbatSample1 - 250) / 154 + VbatSample1 + dfBVOffset[0];
+				BattVolts[0] = 20 * (VbatSample1 - 250) / 154 + VbatSample1;
 
 			if ( VbatSample2 <= BattVolts[0] )
 				BattVolts[1] = 0;
 			else
-				BattVolts[1] = VbatSample2 - BattVolts[0] + dfBVOffset[1];
+				BattVolts[1] = VbatSample2 - BattVolts[0];
 
+			BattVolts[0] += dfBVOffset[0];
+			BattVolts[1] += dfBVOffset[1];
 		}
 		else if ( ISRX200S || ISRX23 )
 		{
