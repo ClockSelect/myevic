@@ -33,7 +33,7 @@ extern uint16_t	MaxChargerDuty;
 extern uint8_t	BattProbeCount;
 
 extern uint8_t	byte_20000055;
-extern uint8_t	byte_20000056;
+extern uint8_t	ChargeStatus;
 extern uint8_t	BatteryStatus;
 
 //-------------------------------------------------------------------------

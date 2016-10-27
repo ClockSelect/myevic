@@ -720,15 +720,8 @@ __myevic__ uint32_t hidResetSysCmd( CMD_T *pCmd )
 
 	SYS_UnlockReg();
 
-	if ( dfBootFlag )
-	{
-		SYS_ResetChip();
-	}
-	else
-	{
-		FMC_SELECT_NEXT_BOOT( 0 );
-		SCB->AIRCR = 0x05FA0004;
-	}
+	FMC_SELECT_NEXT_BOOT( dfBootFlag );
+	SCB->AIRCR = 0x05FA0004;
 
 	while ( 1 )
 		;

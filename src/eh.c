@@ -891,7 +891,7 @@ __myevic__ void EventHandler()
 				PF2 = 0;
 				PA2 = 0;
 			}
-			byte_20000056 = 0;
+			ChargeStatus = 0;
 			if ( BatteryStatus == 3 || BatteryStatus == 4 )
 			{
 				BatteryStatus = 0;
@@ -918,7 +918,7 @@ __myevic__ void EventHandler()
 			return;
 
 		case 10:	// USB cable attach
-			byte_20000056 = 1;
+			ChargeStatus = 1;
 			byte_20000055 = 1;
 			gFlags.low_battery = 0;
 			gFlags.usb_attached = 1;

@@ -9,7 +9,7 @@
 
 #include "dataflash.h"
 
-//=============================================================================
+//=========================================================================
 // DataFlash parameters global structure
 
 dfStruct_t DataFlash;
@@ -38,40 +38,76 @@ uint16_t	fmcCntrsIndex;
 	__attribute__((aligned(4))) \
 	__attribute__((section (".productid")))
 
-const char pid_vtcmini	[4]	__PIDATTR__	= { 'E','0','5','2' };
-const char pid_vtwomini	[4]	__PIDATTR__	= { 'E','1','1','5' };
-const char pid_vtwo		[4]	__PIDATTR__	= { 'E','0','4','3' };
-const char pid_vtcdual	[4]	__PIDATTR__	= { 'E','0','7','9' };
-const char pid_presa75w	[4]	__PIDATTR__	= { 'W','0','0','7' };
-const char pid_wrx75tc	[4]	__PIDATTR__	= { 'W','0','2','6' };
-const char pid_evicaio	[4]	__PIDATTR__	= { 'E','0','9','2' };
-const char pid_egripii	[4]	__PIDATTR__	= { 'E','0','8','3' };
-const char pid_cubomini	[4]	__PIDATTR__	= { 'E','0','5','6' };
-const char pid_cuboid	[4]	__PIDATTR__	= { 'E','0','6','0' };
-const char pid_evicbasic[4]	__PIDATTR__	= { 'E','1','5','0' };
-const char pid_rx200s	[4]	__PIDATTR__	= { 'W','0','3','3' };
-const char pid_rx23		[4]	__PIDATTR__	= { 'W','0','1','8' };
-const char pid_presa100w[4]	__PIDATTR__	= { 'W','0','1','7' };
+const char pid_vtcmini	[8]	__PIDATTR__	= { 'E','0','5','2', 1, 1, 1, 0 };
+const char pid_vtwomini	[8]	__PIDATTR__	= { 'E','1','1','5', 1, 0, 0, 0 };
+const char pid_vtwo		[8]	__PIDATTR__	= { 'E','0','4','3', 1, 0, 1, 0 };
+const char pid_evicaio	[8]	__PIDATTR__	= { 'E','0','9','2', 1, 0, 1, 0 };
+const char pid_egripii	[8]	__PIDATTR__	= { 'E','0','8','3', 1, 0, 0, 0 };
+const char pid_cubomini	[8]	__PIDATTR__	= { 'E','0','5','6', 1, 0, 2, 0 };
+const char pid_evicbasic[8]	__PIDATTR__	= { 'E','1','5','0', 1, 0, 1, 0 };
+const char pid_presa75w	[8]	__PIDATTR__	= { 'W','0','0','7', 1, 0, 3, 0 };
+const char pid_presa100w[8]	__PIDATTR__	= { 'W','0','1','7', 1, 0, 0, 0 };
+const char pid_wrx75tc	[8]	__PIDATTR__	= { 'W','0','2','6', 1, 0, 3, 0 };
+const char pid_vtcdual	[8]	__PIDATTR__	= { 'E','0','7','9', 1, 0, 1, 0 };
+const char pid_cuboid	[8]	__PIDATTR__	= { 'E','0','6','0', 1, 0, 2, 0 };
+const char pid_rx200s	[8]	__PIDATTR__	= { 'W','0','3','3', 1, 0, 0, 0 };
+const char pid_rx23		[8]	__PIDATTR__	= { 'W','0','1','8', 1, 0, 1, 0 };
 
 #define MAKEPID(p) (((p)[0])|((p)[1]<<8)|((p)[2]<<16)|((p)[3]<<24))
+#define MAKEHWV(p) (((p)[4])|((p)[5]<<8)|((p)[6]<<16)|((p)[7]<<24))
+
+#define HWV2INT(v) (((v)&0xff)*100+(((v)>>8)&0xff)*10+(((v)>>16)&0xff))
 
 #define PID_VTCMINI		MAKEPID(pid_vtcmini)
 #define PID_VTWOMINI	MAKEPID(pid_vtwomini)
 #define PID_VTWO		MAKEPID(pid_vtwo)
-#define PID_VTCDUAL		MAKEPID(pid_vtcdual)
-#define PID_PRESA75W	MAKEPID(pid_presa75w)
-#define PID_WRX75TC		MAKEPID(pid_wrx75tc)
 #define PID_EVICAIO		MAKEPID(pid_evicaio)
 #define PID_EGRIPII		MAKEPID(pid_egripii)
 #define PID_CUBOMINI	MAKEPID(pid_cubomini)
-#define PID_CUBOID		MAKEPID(pid_cuboid)
 #define PID_EVICBASIC	MAKEPID(pid_evicbasic)
+#define PID_PRESA75W	MAKEPID(pid_presa75w)
+#define PID_PRESA100W	MAKEPID(pid_presa100w)
+#define PID_WRX75TC		MAKEPID(pid_wrx75tc)
+#define PID_VTCDUAL		MAKEPID(pid_vtcdual)
+#define PID_CUBOID		MAKEPID(pid_cuboid)
 #define PID_RX200S		MAKEPID(pid_rx200s)
 #define PID_RX23		MAKEPID(pid_rx23)
-#define PID_PRESA100W	MAKEPID(pid_presa100w)
+
+#define HWV_VTCMINI		MAKEHWV(pid_vtcmini)
+#define HWV_VTWOMINI	MAKEHWV(pid_vtwomini)
+#define HWV_VTWO		MAKEHWV(pid_vtwo)
+#define HWV_EVICAIO		MAKEHWV(pid_evicaio)
+#define HWV_EGRIPII		MAKEHWV(pid_egripii)
+#define HWV_CUBOMINI	MAKEHWV(pid_cubomini)
+#define HWV_EVICBASIC	MAKEHWV(pid_evicbasic)
+#define HWV_PRESA75W	MAKEHWV(pid_presa75w)
+#define HWV_PRESA100W	MAKEHWV(pid_presa100w)
+#define HWV_WRX75TC		MAKEHWV(pid_wrx75tc)
+#define HWV_VTCDUAL		MAKEHWV(pid_vtcdual)
+#define HWV_CUBOID		MAKEHWV(pid_cuboid)
+#define HWV_RX200S		MAKEHWV(pid_rx200s)
+#define HWV_RX23		MAKEHWV(pid_rx23)
 
 
-//=============================================================================
+//=========================================================================
+// Reset device to LDROM
+//-------------------------------------------------------------------------
+__myevic__ void ResetToLDROM()
+{
+	dfBootFlag = 1;
+	UpdateDataFlash();
+
+	SYS_UnlockReg();
+
+	FMC_SELECT_NEXT_BOOT( 1 );
+	SCB->AIRCR = 0x05FA0004;
+
+	while ( 1 )
+		;
+}
+
+
+//=========================================================================
 //----- (00002064) --------------------------------------------------------
 __myevic__ void SetProductID()
 {
@@ -91,7 +127,7 @@ __myevic__ void SetProductID()
 
 		if ( u32Data == PID_VTCMINI )
 		{
-			dfMaxHWVersion = 0x00010101;
+			dfMaxHWVersion = HWV_VTCMINI;
 			DFMagicNumber = 0x36;
 			BoxModel = BOX_VTCMINI;
 			X32Off = 1;
@@ -99,21 +135,21 @@ __myevic__ void SetProductID()
 		}
 		else if ( u32Data == PID_VTWOMINI )
 		{
-			dfMaxHWVersion = 0x00000001;
+			dfMaxHWVersion = HWV_VTWOMINI;
 			DFMagicNumber = 0x10;
 			BoxModel = BOX_VTWOMINI;
 			break;
 		}
 		else if ( u32Data == PID_VTWO )
 		{
-			dfMaxHWVersion = 0x00010001;
+			dfMaxHWVersion = HWV_VTWO;
 			DFMagicNumber = 0x40;
 			BoxModel = BOX_VTWO;
 			break;
 		}
 		else if ( u32Data == PID_VTCDUAL )
 		{
-			dfMaxHWVersion = 0x00010001;
+			dfMaxHWVersion = HWV_VTCDUAL;
 			DFMagicNumber = 0x12;
 			BoxModel = BOX_VTCDUAL;
 			NumBatteries = 0;
@@ -123,7 +159,7 @@ __myevic__ void SetProductID()
 		}
 		else if ( u32Data == PID_EVICAIO )
 		{
-			dfMaxHWVersion = 0x00010001;
+			dfMaxHWVersion = HWV_EVICAIO;
 			DFMagicNumber = 0x50;
 			BoxModel = BOX_EVICAIO;
 			ScrFlip = 1;
@@ -131,14 +167,14 @@ __myevic__ void SetProductID()
 		}
 		else if ( u32Data == PID_EGRIPII )
 		{
-			dfMaxHWVersion = 0x00000001;
+			dfMaxHWVersion = HWV_EGRIPII;
 			DFMagicNumber = 0x15;
 			BoxModel = BOX_EGRIPII;
 			break;
 		}
 		else if ( u32Data == PID_CUBOMINI )
 		{
-			dfMaxHWVersion = 0x00020001;
+			dfMaxHWVersion = HWV_CUBOMINI;
 			DFMagicNumber = 0x50;
 			BoxModel = BOX_CUBOMINI;
 			ScrFlip = 1;
@@ -147,7 +183,7 @@ __myevic__ void SetProductID()
 		}
 		else if ( u32Data == PID_CUBOID )
 		{
-			dfMaxHWVersion = 0x00020001;
+			dfMaxHWVersion = HWV_CUBOID;
 			DFMagicNumber = 0x39;
 			BoxModel = BOX_CUBOID;
 			NumBatteries = 2;
@@ -159,7 +195,7 @@ __myevic__ void SetProductID()
 		}
 		else if ( u32Data == PID_EVICBASIC )
 		{
-			dfMaxHWVersion = 0x00010001;
+			dfMaxHWVersion = HWV_EVICBASIC;
 			DFMagicNumber = 0x13;
 			BoxModel = BOX_EVICBASIC;
 			ScrFlip = 1;
@@ -167,7 +203,7 @@ __myevic__ void SetProductID()
 		}
 		else if ( u32Data == PID_PRESA75W )
 		{
-			dfMaxHWVersion = 0x00030001;
+			dfMaxHWVersion = HWV_PRESA75W;
 			DFMagicNumber = 0x30;
 			BoxModel = BOX_PRESA75W;
 			X32Off = 1;
@@ -175,7 +211,7 @@ __myevic__ void SetProductID()
 		}
 		else if ( u32Data == PID_PRESA100W )
 		{
-			dfMaxHWVersion = 0x00000001;
+			dfMaxHWVersion = HWV_PRESA100W;
 			DFMagicNumber = 0x40;
 			BoxModel = BOX_PRESA100W;
 			X32Off = 1;
@@ -183,7 +219,7 @@ __myevic__ void SetProductID()
 		}
 		else if ( u32Data == PID_WRX75TC )
 		{
-			dfMaxHWVersion = 0x00010001;
+			dfMaxHWVersion = HWV_WRX75TC;
 			DFMagicNumber = 0x32;
 			BoxModel = BOX_WRX75TC;
 			X32Off = 1;
@@ -191,7 +227,7 @@ __myevic__ void SetProductID()
 		}
 		else if ( u32Data == PID_RX200S )
 		{
-			dfMaxHWVersion = 0x00000001;
+			dfMaxHWVersion = HWV_RX200S;
 			DFMagicNumber = 0x14;
 			BoxModel = BOX_RX200S;
 			NumBatteries = 3;
@@ -203,7 +239,7 @@ __myevic__ void SetProductID()
 		}
 		else if ( u32Data == PID_RX23 )
 		{
-			dfMaxHWVersion = 0x00010001;
+			dfMaxHWVersion = HWV_RX23;
 			DFMagicNumber = 0x14;
 			BoxModel = BOX_RX23;
 			NumBatteries = 3;
@@ -215,26 +251,29 @@ __myevic__ void SetProductID()
 		}
 	}
 
+	FMC_DISABLE_ISP();
+	SYS_LockReg();
+
 	if ( offset < LDROM_SIZE )
 	{
 		dfProductID = u32Data;
+
+	//	What's the right behavior in case of bad
+	//	hardware version?
+	//
+	//	if ( HWV2INT(dfMaxHWVersion) < dfHWVersion )
+	//	{
+	//		ResetToLDROM();
+	//	}
 	}
 	else
 	{
-		dfBootFlag = 1;
-		UpdateDataFlash();
-		SYS_UnlockReg();
-		SYS_ResetChip();
-		while ( 1 )
-			;
+		ResetToLDROM();
 	}
-
-	FMC_DISABLE_ISP();
-	SYS_LockReg();
 }
 
 
-//=============================================================================
+//=========================================================================
 //----- (00002080) --------------------------------------------------------
 __myevic__ void FMCReadCounters()
 {
@@ -269,7 +308,7 @@ __myevic__ void FMCReadCounters()
 }
 
 
-//=============================================================================
+//=========================================================================
 //----- (000020CC) --------------------------------------------------------
 __myevic__ void UpdatePTCounters()
 {
@@ -292,7 +331,7 @@ __myevic__ void UpdatePTCounters()
 }
 
 
-//=============================================================================
+//=========================================================================
 //----- (0000388C) --------------------------------------------------------
 __myevic__ void CpyTmpCoefsNI()
 {
@@ -301,7 +340,7 @@ __myevic__ void CpyTmpCoefsNI()
 }
 
 
-//=============================================================================
+//=========================================================================
 //----- (000038D8) --------------------------------------------------------
 __myevic__ void CpyTmpCoefsTI()
 {
@@ -310,7 +349,7 @@ __myevic__ void CpyTmpCoefsTI()
 }
 
 
-//=============================================================================
+//=========================================================================
 //----- (00001C30) --------------------------------------------------------
 __myevic__ void ResetDataFlash()
 {
@@ -398,7 +437,7 @@ __myevic__ void ResetDataFlash()
 }
 
 
-//=============================================================================
+//=========================================================================
 
 __myevic__ void DFCheckValuesValidity()
 {
@@ -597,7 +636,7 @@ __myevic__ void DFCheckValuesValidity()
 }
 
 
-//=============================================================================
+//=========================================================================
 //----- (000018D0) --------------------------------------------------------
 __myevic__ int FMCCheckConfig( unsigned long cfg[] )
 {
@@ -623,7 +662,7 @@ __myevic__ int FMCCheckConfig( unsigned long cfg[] )
 }
 
 
-//=============================================================================
+//=========================================================================
 //----- (00001926) --------------------------------------------------------
 __myevic__ void FMCRead256( uint32_t u32Addr, uint32_t *pu32Buf )
 {
@@ -635,7 +674,7 @@ __myevic__ void FMCRead256( uint32_t u32Addr, uint32_t *pu32Buf )
 }
 
 
-//=============================================================================
+//=========================================================================
 //----- (00001CEC) --------------------------------------------------------
 __myevic__ uint32_t ReadDataFlash( uint32_t u32Addr, uint32_t *pu32Buf )
 {
@@ -664,7 +703,7 @@ __myevic__ uint32_t ReadDataFlash( uint32_t u32Addr, uint32_t *pu32Buf )
 }
 
 
-//=============================================================================
+//=========================================================================
 //----- (0000119C) --------------------------------------------------------
 __myevic__ uint32_t CalcPageCRC( uint32_t *pu32Addr )
 {
@@ -691,7 +730,7 @@ __myevic__ uint32_t CalcPageCRC( uint32_t *pu32Addr )
 }
 
 
-//=============================================================================
+//=========================================================================
 //----- (00001FD0) --------------------------------------------------------
 // Writes 256 bytes from address from pu32Data to first free page
 // in DF after u32Addr
@@ -729,7 +768,7 @@ __myevic__ void WriteDataFlash( uint32_t u32Addr, const uint32_t *pu32Data )
 }
 
 
-//=============================================================================
+//=========================================================================
 //----- (00001D30) --------------------------------------------------------
 __myevic__ void UpdateDataFlash()
 {
@@ -759,11 +798,11 @@ __myevic__ void UpdateDataFlash()
 	}
 }
 
-//=============================================================================
+//=========================================================================
 
 const uint32_t GCUID[3] = { 0x000F00EF, 0xFF25C498, 0x00002574 };
 
-//=============================================================================
+//=========================================================================
 //----- (00001940) --------------------------------------------------------
 __myevic__ void InitDataFlash()
 {
@@ -990,7 +1029,7 @@ __myevic__ void InitDataFlash()
 }
 
 
-//=============================================================================
+//=========================================================================
 //----- (0000169C) --------------------------------------------------------
 // Writes 2kB from RAM R1 to DF R0
 __myevic__ void FMCWritePage( uint32_t u32Addr, uint32_t *pu32Data )
@@ -1001,7 +1040,7 @@ __myevic__ void FMCWritePage( uint32_t u32Addr, uint32_t *pu32Data )
 	}
 }
 
-//=============================================================================
+//=========================================================================
 //----- (000016D0) --------------------------------------------------------
 // Compares 2kB (0x800) DF @R0 with RAM @R1
 __myevic__ uint32_t FMCVerifyPage( uint32_t u32Addr, uint32_t *pu32Data )
