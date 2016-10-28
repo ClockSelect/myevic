@@ -633,6 +633,15 @@ __myevic__ int PreheatMEvent( int event )
 
 __myevic__ void BVOMenuIDraw( int it, int line, int sel )
 {
+	if ( !it )
+	{
+		for ( int i = 0 ; i < NumBatteries ; ++i )
+		{
+			DrawValue( 19, 80 + i * 12, BattVolts[i], 2, 0x0B, 3 );
+			DrawImage( 40, 80 + i * 12, 0x7D );
+		}
+	}
+
 	if ( it >= CurrentMenu->nitems - 1 )
 		return;
 

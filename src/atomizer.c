@@ -310,11 +310,11 @@ __myevic__ void StopFire()
 
 	BuckDuty = 0;
 	PC0 = 0;
-	BBC_Configure( 0, 0 );
+	BBC_Configure( BBC_PWMCH_BUCK, 0 );
 
 	BoostDuty = 0;
 	PC2 = 0;
-	BBC_Configure( 2, 0 );
+	BBC_Configure( BBC_PWMCH_BOOST, 0 );
 
 	SetADCState( 1, 0 );
 	SetADCState( 2, 0 );
@@ -651,6 +651,9 @@ __myevic__ void ReadAtomizer()
 		if ( !ADCShuntSum1 && !ADCShuntSum2 ) ADCShuntSum1 = 1;
 
 		AtoRezMilli = 13 * AtoShuntRez * ADCAtoSum / ( 3 * ( ADCShuntSum1 + ADCShuntSum2 ) );
+
+	//	myprintf( "ARM=%d ato=%d sh1=%d sh2=%d\n",
+	//		AtoRezMilli, ADCAtoSum, ADCShuntSum1, ADCShuntSum2 );
 
 		ReadAtoCurrent();
 
@@ -1325,6 +1328,7 @@ __myevic__ void ProbeAtomizer()
 	||  ( ( ISCUBOID || ISRX200S || ISRX23 ) && ( BatteryStatus == 2 || !PF0 ) ))
 	{
 		AtoStatus = 0;
+	//	myprintf( "Can't Probe: BS=%d PF0=%d\n", BatteryStatus, PF0 );
 	}
 	else
 	{
@@ -1401,7 +1405,9 @@ __myevic__ void ProbeAtomizer()
 			AtoError = 0;
 			break;
 	}
-	
+
+//	myprintf( "Probe: %2d. ARM=%d AS=%d\n", AtoProbeCount, AtoRezMilli, AtoStatus );
+
 	if ( AtoProbeCount < 12 )
 	{
 		++AtoProbeCount;

@@ -704,39 +704,44 @@ __myevic__ int CheckBattery()
 		}
 		else if ( ISRX200S || ISRX23 )
 		{
-			bvtot = 3 * ReadBatterySample( 2 ) >> 3;
-			bv2 = 139 * ReadBatterySample( 1 ) / 624;
 			bv  = 125 * ( ReadBatterySample( 0 ) >> 3 ) / 100;
 
-			if ( bv2 <= bv )
-				bv2 = 0;
-			else
-				bv2 = bv2 - bv;
-
-			if ( NumBatteries == 2 )
+			if ( NumBatteries > 1 )
 			{
-				bv  += dfBVOffset[0];
-				bv2 += dfBVOffset[1];
+				bv2 = 139 * ReadBatterySample( 1 ) / 624;
 
-				RTBVTotal = bv + bv2;
-			}
-			else
-			{
-				if ( bv + bv2 >= bvtot )
-					bv3 = 0;
+				if ( bv2 <= bv )
+					bv2 = 0;
 				else
-					bv3 = bvtot - bv - bv2;
+					bv2 = bv2 - bv;
 
-				bv  += dfBVOffset[0];
-				bv2 += dfBVOffset[1];
-				bv3 += dfBVOffset[2];
+				if ( NumBatteries == 2 )
+				{
+					bv  += dfBVOffset[0];
+					bv2 += dfBVOffset[1];
 
-				RTBVTotal = bv + bv2 + bv3;
+					RTBVTotal = bv + bv2;
+				}
+				else
+				{
+					bvtot = 3 * ReadBatterySample( 2 ) >> 3;
 
-				if ( bv3 < bv ) bv = bv3;
+					if ( bv + bv2 >= bvtot )
+						bv3 = 0;
+					else
+						bv3 = bvtot - bv - bv2;
+
+					bv  += dfBVOffset[0];
+					bv2 += dfBVOffset[1];
+					bv3 += dfBVOffset[2];
+
+					RTBVTotal = bv + bv2 + bv3;
+
+					if ( bv3 < bv ) bv = bv3;
+				}
+
+				if ( bv2 < bv ) bv = bv2;
 			}
-
-			if ( bv2 < bv ) bv = bv2;
 		}
 		else
 		{
@@ -813,32 +818,28 @@ __myevic__ int CheckBattery()
 //-------------------------------------------------------------------------
 __myevic__ void BatteryChargeDual()
 {
-	uint32_t sample13, adc13, sample3, USBVolts;
+	uint32_t ChargeCurrent, USBVolts;
 
 	static uint32_t ChargerTarget = 0;
 	static uint32_t ChargerTempo = 0;
 
-	sample13 = ADC_Read( 13 );
-	adc13 = sample13 >> 2;
+	ChargeCurrent = ADC_Read( 13 ) >> 2;
+	USBVolts = 147 * ADC_Read( 3 ) / 752 + 5;
 
-	sample3 = ADC_Read( 3 );
-	USBVolts = 147 * sample3 / 752 + 5;
-
-//	myprintf( "nb=%d, adc13=%d USBVolts=%d, b55=%d, b56=%d, BS=%d PD1=%d\n",
-//			NumBatteries, adc13, USBVolts,
+//	myprintf( "nb=%d, CC=%d USBVolts=%d, 1A=%d, CS=%d, BS=%d PD1=%d\n",
+//			NumBatteries, ChargeCurrent, USBVolts,
 //			byte_20000055, ChargeStatus, BatteryStatus, PD1 );
 
-	if ( NumBatteries == 0 )
+	if (( NumBatteries == 0 ) || (( NumBatteries == 2 ) && ( BatteryVoltage < 250u )) )
 	{
 		BatteryStatus = 2;
+
 		PA3 = 0;
 		PA2 = 0;
 		PF2 = 0;
 		PC3 = 0;
-		goto LABEL_29;
 	}
-
-	if ( NumBatteries == 1 )
+	else if ( NumBatteries == 1 )
 	{
 		PC3 = 1;
 		PA2 = 0;
@@ -852,246 +853,236 @@ __myevic__ void BatteryChargeDual()
 			SetAtoLimits();
 		}
 
-LABEL_14:
-		if ( BatteryStatus == 2 || BatteryStatus == 3 || BatteryStatus == 4 )
+		if ( BatteryStatus != 2 && BatteryStatus != 3 && BatteryStatus != 4 )
 		{
-			goto LABEL_29;
+			PA3 = 1;
+
+			if ( dfStatus.usbchgoff )
+			{
+				PF2 = 0;
+				gFlags.battery_charging = 0;
+			}
+			else
+			{
+				PF2 = !( gFlags.battery_charging && ( BatteryVoltage >= 430 ) );
+			}
 		}
-
-		goto LABEL_17;
 	}
-
-	if ( NumBatteries == 2 )
+	else if (( NumBatteries == 2 ) && ( !gFlags.batt_unk ))
 	{
-		if ( BatteryVoltage < 250u )
+		PC3 = 0;
+
+		gFlags.batt_unk = 1;
+
+		MaxPower = 1500;
+		MaxTCPower = 1500;
+		SetAtoLimits();
+
+		if ( BatteryStatus != 2 && BatteryStatus != 3 && BatteryStatus != 4 )
 		{
-			BatteryStatus = 2;
-			PA3 = 0;
-			PC3 = 0;
-			PA2 = 0;
+			PA3 = 1;
 			PF2 = 0;
-			goto LABEL_29;
-		}
-
-		if ( !gFlags.batt_unk )
-		{
-			PC3 = 0;
-			gFlags.batt_unk = 1;
-
-			MaxPower = 1500;
-			MaxTCPower = 1500;
-			SetAtoLimits();
-
-			goto LABEL_14;
+			PA2 = 1;
 		}
 	}
-
-	if ( gFlags.usb_attached && ( USBVolts > 580 ) )
+	else if ( gFlags.usb_attached &&  USBVolts > 580 )
 	{
 		BatteryStatus = 3;
+
 		PA3 = 0;
 		PC3 = 0;
 		PA2 = 0;
 		PF2 = 0;
-LABEL_47:
+
 		if ( ChargeStatus != 6 )
 		{
 			gFlags.refresh_display = 1;
 			Screen = 57;
 			ScreenDuration = 2;
 		}
+
 		ChargeStatus = 6;
-LABEL_53:
-		gFlags.battery_charging = 0;
-		goto LABEL_60;
 	}
-
-	if ( BatteryStatus == 4 )
-		goto LABEL_29;
-
-	if ( gFlags.batteries_ooe )
+	else if ( BatteryStatus != 4 )
 	{
-		BatteryStatus = 1;
-	}
-	else if ( BatteryStatus )
-	{
-		BatteryStatus = 0;
-	}
+		if ( gFlags.batteries_ooe )
+		{
+			BatteryStatus = 1;
+		}
+		else if ( BatteryStatus )
+		{
+			BatteryStatus = 0;
+		}
 
-LABEL_17:
-
-	PA3 = 1;
-
-	if ( NumBatteries == 2 )
-	{
+		PA3 = 1;
 		PF2 = 0;
 		PA2 = 1;
 	}
-	else if ( NumBatteries == 1 )
+
+	if ( gFlags.usb_attached )
 	{
-		PF2 = (( BatteryVoltage < 430 ) || !gFlags.battery_charging );
-		PA2 = 0;
-	}
-	else
-	{
-		PA2 = 0;
-		PF2 = 0;
-	}
-
-LABEL_29:
-
-	if ( !gFlags.usb_attached )
-		goto LABEL_60;
-
-	if ( BatteryStatus == 2 )
-	{
-		ChargeStatus = 6;
-
-		if ( gFlags.battery_charging )
-			gFlags.battery_charging = 0;
-
-		if ( adc13 > 250 )
+		if ( dfStatus.usbchgoff )
 		{
-			gFlags.refresh_display = 1;
-			Screen = 58;
-			ScreenDuration = 2;
-		}
-
-		goto LABEL_60;
-	}
-
-	if ( BatteryStatus == 3 )
-		goto LABEL_47;
-
-	if ( BatteryStatus == 4 )
-	{
-		if ( ChargeStatus != 6 )
-		{
-			gFlags.refresh_display = 1;
-			Screen = 58;
-			ScreenDuration = 2;
-		}
-		ChargeStatus = 6;
-		goto LABEL_53;
-	}
-
-	if ( gFlags.battery_charging )
-	{
-		if (( ChargeStatus == 4 && BattVoltsHighest > 422 ) || dfStatus.usbchgoff )
-		{
-			if ( NumBatteries != 2 )
-				goto LABEL_61;
-
-			Event = 13;
-			ChargeStatus = 6;
-			goto LABEL_64;
-		}
-LABEL_60:
-		if ( NumBatteries != 2 )
-			goto LABEL_61;
-LABEL_64:
-		PF2 = 0;
-		if ( !gFlags.battery_charging || ChargeStatus == 5 || ChargeStatus == 6 )
-		{
-			PD7 = 0;
-			BBC_Configure( BBC_PWMCH_CHARGER, 0 );
-			PD7 = 0;
-			ChargerDuty = 0;
-			return;
-		}
-
-		if ( BatteryVoltage >= 290 )
-		{
-			if ( BattVoltsHighest < 416 )
+			if ( ChargeStatus != 5 && ChargeStatus != 6 )
 			{
-				if ( ChargeStatus != 4 )
-				{
-					if ( byte_20000055 )
-					{
-						if ( USBVolts <= 420 )
-						{
-							ChargerTarget = 500;
-							byte_20000055 = 0;
-						}
-						else
-						{
-							ChargerTarget = 1000;
-						}
-					}
-					ChargeStatus = 3;
-				}
+				Event = 13;
+				ChargeStatus = 6;
 			}
-			else
+		}
+		else if ( BatteryStatus == 2 )
+		{
+			if ( ChargeCurrent > 250 )
 			{
-				ChargerTarget = 400;
-				ChargeStatus = 4;
+				gFlags.refresh_display = 1;
+				Screen = 58;
+				ScreenDuration = 2;
+			}
+
+			ChargeStatus = 6;
+		}
+		else if ( BatteryStatus == 3 )
+		{
+			if ( ChargeStatus != 6 )
+			{
+				gFlags.refresh_display = 1;
+				Screen = 57;
+				ScreenDuration = 2;
+			}
+
+			ChargeStatus = 6;
+		}
+		else if ( BatteryStatus == 4 )
+		{
+			if ( ChargeStatus != 6 )
+			{
+				gFlags.refresh_display = 1;
+				Screen = 58;
+				ScreenDuration = 2;
+			}
+
+			ChargeStatus = 6;
+		}
+		else if ( !gFlags.battery_charging )
+		{
+			if ( BattVoltsHighest < 420 && ChargeStatus != 5 )
+			{
+				if ( NumBatteries == 2 )
+				{
+					Event = 12;
+					ChargeStatus = 0;
+				}
 			}
 		}
 		else
 		{
-			ChargerTarget = 300;
-			ChargeStatus = 2;
-		}
-
-		BBC_Configure( 5, 1 );
-
-		if ( adc13 <= ChargerTarget + 10 && USBVolts >= 400 )
-		{
-			if ( adc13 >= ChargerTarget )
-				goto LABEL_90;
-
-			if ( ++ChargerTempo > 10 )
+			if ( NumBatteries == 2 )
 			{
-				ChargerTempo = 0;
+				if ( ( ChargeStatus == 4 ) && ( BattVoltsHighest > 422 ) )
+				{
+					Event = 13;
+					ChargeStatus = 6;
+				}
 
-				if ( adc13 >= 180 )
+				PF2 = 0;
+
+				if ( ChargeStatus != 5 && ChargeStatus != 6 )
 				{
-					if ( ChargerDuty >= MaxChargerDuty )
-						goto LABEL_90;
-				}
-				else if ( ChargerDuty >= MaxChargerDuty )
-				{
-					BatteryStatus = 4;
-					PA3 = 0;
-					PC3 = 0;
-					PA2 = 0;
-					PF2 = 0;
-					goto LABEL_90;
-				}
-				if ( adc13 < 1005 )
-				{
-					++ChargerDuty;
+					if ( gFlags.battery_charging )
+					{
+						if ( BatteryVoltage < 290 )
+						{
+							ChargerTarget = 300;
+							ChargeStatus = 2;
+						}
+						else if ( BattVoltsHighest < 416 )
+						{
+							if ( ChargeStatus != 4 )
+							{
+								if ( byte_20000055 )
+								{
+									if ( USBVolts > 420 )
+									{
+										ChargerTarget = 1000;
+									}
+									else
+									{
+										ChargerTarget = 500;
+										byte_20000055 = 0;
+									}
+								}
+								ChargeStatus = 3;
+							}
+						}
+						else
+						{
+							ChargerTarget = 400;
+							ChargeStatus = 4;
+						}
+
+						BBC_Configure( BBC_PWMCH_CHARGER, 1 );
+
+						if ( ChargeCurrent > ChargerTarget + 10 || USBVolts < 400 )
+						{
+							if ( ChargerDuty )
+							{
+								--ChargerDuty;
+							}
+						}
+						else if ( ChargeCurrent < ChargerTarget )
+						{
+							if ( ++ChargerTempo > 10 )
+							{
+								ChargerTempo = 0;
+
+								if ( ChargeCurrent < 180 )
+								{
+									if ( ChargerDuty < MaxChargerDuty )
+									{
+										++ChargerDuty;
+									}
+									else
+									{
+										BatteryStatus = 4;
+
+										PA3 = 0;
+										PC3 = 0;
+										PA2 = 0;
+										PF2 = 0;
+									}
+								}
+								else if ( ChargeCurrent < 1005 )
+								{
+									if ( ChargerDuty < MaxChargerDuty )
+									{
+										++ChargerDuty;
+									}
+								}
+							}
+						}
+
+						PWM_SET_CMR( PWM0, BBC_PWMCH_CHARGER, ChargerDuty );
+
+						return;
+					}
 				}
 			}
 		}
-		else if ( ChargerDuty )
-		{
-			--ChargerDuty;
-		}
-LABEL_90:
-		PWM_SET_CMR( PWM0, BBC_PWMCH_CHARGER, ChargerDuty );
-		return;
 	}
 
-	if ( BattVoltsHighest >= 420 || ChargeStatus == 5 )
-		goto LABEL_60;
-
-	if (( NumBatteries == 2 ) && !dfStatus.usbchgoff )
+	if ( NumBatteries == 2 )
 	{
-		Event = 12;
-		ChargeStatus = 0;
-		goto LABEL_64;
+		PF2 = 0;
+		gFlags.battery_charging = 0;
 	}
-
-LABEL_61:
-	if ( NumBatteries == 1 )
+	else if ( NumBatteries == 1 )
 	{
-		PD7 = 0;
-		BBC_Configure( BBC_PWMCH_CHARGER, 0 );
-		PD7 = 0;
-		ChargerDuty = 0;
 		PA2 = 0;
 	}
+
+	PD7 = 0;
+	BBC_Configure( BBC_PWMCH_CHARGER, 0 );
+	PD7 = 0;
+	ChargerDuty = 0;
 }
 
 
@@ -1100,17 +1091,17 @@ LABEL_61:
 //-------------------------------------------------------------------------
 __myevic__ void BatteryCharge()
 {
-	uint32_t USBVolts, adc13;
+	uint32_t USBVolts, ChargeCurrent;
 
 	static uint32_t ChargerTarget = 0;
 	static uint32_t ChargerTempo = 0;
 
-	adc13 = ADC_Read( 13 ) >> 2;
+	ChargeCurrent = ADC_Read( 13 ) >> 2;
 
 	USBVolts = 147 * ADC_Read( 3 ) / 752 + 5;
 
-//	myprintf( "adc13=%d usbv=%d, b55=%d, b56=%d, BS=%d PF0=%d CD=%d\n",
-//		adc13, USBVolts,
+//	myprintf( "ChargeCurrent=%d usbv=%d, b55=%d, b56=%d, BS=%d PF0=%d CD=%d\n",
+//		ChargeCurrent, USBVolts,
 //		byte_20000055, ChargeStatus, BatteryStatus,
 //		PF0, ChargerDuty );
 
@@ -1164,8 +1155,8 @@ __myevic__ void BatteryCharge()
 		NewBatteryData();
 
 		MaxVolts = 450;
-		MaxPower = 75;
-		MaxTCPower = 75;
+		MaxPower = 750;
+		MaxTCPower = 750;
 		SetAtoLimits();
 
 		if ( BatteryStatus != 2 && BatteryStatus != 3 && BatteryStatus != 4 )
@@ -1183,7 +1174,7 @@ __myevic__ void BatteryCharge()
 	{
 		if ( dfStatus.usbchgoff )
 		{
-			if ( ChargeStatus == 4 )
+			if ( ChargeStatus != 5 && ChargeStatus != 6 )
 			{
 				Event = 13;
 				ChargeStatus = 6;
@@ -1191,7 +1182,7 @@ __myevic__ void BatteryCharge()
 		}
 		else if ( BatteryStatus == 2 )
 		{
-			if ( adc13 > 250 )
+			if ( ChargeCurrent > 250 )
 			{
 				gFlags.refresh_display = 1;
 				Screen = 58;	// Charge Error
@@ -1266,22 +1257,22 @@ __myevic__ void BatteryCharge()
 				ChargerTarget = 400;
 			}
 
-			BBC_Configure( 5, 1 );
+			BBC_Configure( BBC_PWMCH_CHARGER, 1 );
 
-			if ( ( adc13 > ChargerTarget + 10 ) || ( USBVolts < 400 ) )
+			if ( ( ChargeCurrent > ChargerTarget + 10 ) || ( USBVolts < 400 ) )
 			{
 				if ( ChargerDuty )
 				{
 					--ChargerDuty;
 				}
 			}
-			else if ( adc13 < ChargerTarget )
+			else if ( ChargeCurrent < ChargerTarget )
 			{
 				if ( ++ChargerTempo > 10 )
 				{
 					ChargerTempo = 0;
 
-					if ( adc13 < 180 )
+					if ( ChargeCurrent < 180 )
 					{
 						if ( ChargerDuty < MaxChargerDuty )
 						{
@@ -1295,7 +1286,7 @@ __myevic__ void BatteryCharge()
 					}
 					else
 					{
-						if ( adc13 < 1005 )
+						if ( ChargeCurrent < 1005 )
 						{
 							if ( ChargerDuty < MaxChargerDuty )
 							{
