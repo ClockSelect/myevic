@@ -92,11 +92,11 @@ uint8_t CurrentMenuItem;
 
 //-----------------------------------------------------------------------------
 
-__myevic__ void VapingMenuIDraw( int it, int line, int sel )
+__myevic__ void AlgoMenuIDraw( int it, int line, int sel )
 {
 	switch ( it )
 	{
-		case 2:	// Algo
+		case 0:	// Algo
 			DrawFillRect( 30, line, 63, line+12, 0 );
 			switch ( dfTCAlgo )
 			{
@@ -113,28 +113,37 @@ __myevic__ void VapingMenuIDraw( int it, int line, int sel )
 					DrawStringRight( String_Boost, 64, line + 2 );
 					break;
 
+				case TCALGO_PID:
+					DrawStringRight( String_PID, 64, line + 2 );
+					break;
+
 				case TCALGO_AUTO:
 					DrawStringRight( String_Auto, 64, line + 2 );
 					break;
 			}
 			break;
+	}
+}
 
-		case 3:	// Boost
-			DrawFillRect( 34, line, 63, line+12, 0 );
-			DrawImage( 54, line+2, 0xC2 );
-			if ( dfTCAlgo == TCALGO_BOOST )
-			{
-				DrawValueRight( 53, line+2, dfTCBoost, 0, 0x0B, 0 );
-				if ( sel && gFlags.edit_value )
-					InvertRect( 0, line, 63, line+12 );
-			}
-			else
-			{
-				DrawImage( 47, line+2, 0xFD );
-			}
+__myevic__ void AlgoMenuOnClick()
+{
+	switch ( CurrentMenuItem )
+	{
+		case 0: // Algo
+			if ( ++dfTCAlgo >= TCALGO_MAX ) dfTCAlgo = 0;
 			break;
+	}
 
-		case 4:	// Protec
+	gFlags.refresh_display = 1;
+}
+
+//-----------------------------------------------------------------------------
+
+__myevic__ void VapingMenuIDraw( int it, int line, int sel )
+{
+	switch ( it )
+	{
+		case 3:	// Protec
 			DrawFillRect( 34, line, 63, line+12, 0 );
 			DrawImage( 58, line+2, 0x94 );
 			DrawValueRight( 56, line+2, dfProtec, 1, 0x0B, 0 );
@@ -142,12 +151,12 @@ __myevic__ void VapingMenuIDraw( int it, int line, int sel )
 				InvertRect( 0, line, 63, line+12 );
 			break;
 
-		case 5:	// Vaped
+		case 4:	// Vaped
 			DrawFillRect( 39, line, 63, line+12, 0 );
 			DrawString( dfStatus.vapedml ? String_ml : String_mld, 43, line+2 );
 			break;
 
-		case 6: // mL/kJ
+		case 5: // mL/kJ
 			DrawFillRect( 39, line, 63, line+12, 0 );
 			DrawValueRight( 61, line+2, dfVVRatio, 0, 0x0B, 0 );
 			if ( sel && gFlags.edit_value )
@@ -161,25 +170,16 @@ __myevic__ void VapingMenuOnClick()
 {
 	switch ( CurrentMenuItem )
 	{
-		case 2:	// Algo
-			if ( ++dfTCAlgo >= TCALGO_MAX ) dfTCAlgo = 0;
-			break;
-
-		case 3:	// Boost
-			if ( dfTCAlgo == TCALGO_BOOST )
-				gFlags.edit_value ^= 1;
-			break;
-
-		case 4:	// Protec
+		case 3:	// Protec
 			gFlags.edit_value ^= 1;
 			break;
 
-		case 5:	// Vaped
+		case 4:	// Vaped
 			dfStatus.vapedml ^= 1;
 			UpdateDFTimer = 50;
 			break;
 
-		case 6: // mL/kJ
+		case 5: // mL/kJ
 			gFlags.edit_value ^= 1;
 			break;
 	}
@@ -200,16 +200,7 @@ __myevic__ int VapingMenuOnEvent( int event )
 		case 2:	// Plus
 			switch ( CurrentMenuItem )
 			{
-				case 3:	// Boost
-					if ( ++dfTCBoost > 100 )
-					{
-						if ( KeyTicks < 5 ) dfTCBoost = 0;
-						else dfTCBoost = 100;
-					}
-					vret = 1;
-					break;
-
-				case 4: // Protec
+				case 3: // Protec
 					if ( ++dfProtec > FIRE_PROTEC_MAX )
 					{
 						if ( KeyTicks < 5 ) dfProtec = FIRE_PROTEC_MIN;
@@ -218,7 +209,7 @@ __myevic__ int VapingMenuOnEvent( int event )
 					vret = 1;
 					break;
 
-				case 6: // mL/kJ
+				case 4: // mL/kJ
 					if ( ++dfVVRatio > VVEL_MAX_RATIO )
 					{
 						if ( KeyTicks < 5 ) dfVVRatio = VVEL_MIN_RATIO;
@@ -232,16 +223,7 @@ __myevic__ int VapingMenuOnEvent( int event )
 		case 3:	// Minus
 			switch ( CurrentMenuItem )
 			{
-				case 3: // Boost
-					if ( !dfTCBoost-- )
-					{
-						if ( KeyTicks < 5 ) dfTCBoost = 100;
-						else dfTCBoost = 0;
-					}
-					vret = 1;
-					break;
-
-				case 4: // Protec
+				case 3: // Protec
 					if ( --dfProtec < FIRE_PROTEC_MIN )
 					{
 						if ( KeyTicks < 5 ) dfProtec = FIRE_PROTEC_MAX;
@@ -250,7 +232,7 @@ __myevic__ int VapingMenuOnEvent( int event )
 					vret = 1;
 					break;
 
-				case 6: // mL/kJ
+				case 4: // mL/kJ
 					if ( --dfVVRatio < VVEL_MIN_RATIO )
 					{
 						if ( KeyTicks < 5 ) dfVVRatio = VVEL_MAX_RATIO;
@@ -710,11 +692,12 @@ __myevic__ void BVOMenuIDraw( int it, int line, int sel )
 	if ( it >= CurrentMenu->nitems - 1 )
 		return;
 
-	DrawFillRect( 32, line, 63, line+12, 0 );
+	DrawFillRect( 22, line, 63, line+12, 0 );
 
 	uint16_t bvo = ( dfBVOffset[it] >= 0 ) ? dfBVOffset[it] : -dfBVOffset[it];
-	DrawImage( 36, line+2, ( dfBVOffset[it] >= 0 ) ? 0xFC : 0xFD );
-	DrawValue( 44, line+2, bvo, 0, 0x0B, 2 );
+	DrawImage( 26, line+2, ( dfBVOffset[it] >= 0 ) ? 0xFC : 0xFD );
+	DrawValue( 34, line+2, bvo, 2, 0x0B, 3 );
+	DrawImage( 55, line+2, 0x97 );
 	if ( gFlags.edit_value && sel )
 		InvertRect( 0, line, 63, line+12 );
 }
@@ -1870,6 +1853,111 @@ const menu_t IFMenu =
 };
 
 
+const mvaluedesc_t BoostDesc =
+{
+	34, 53,
+	0, 0,
+	0, 100,
+	0,
+	0,
+	0xC2,
+	0x0B,
+	1,
+	101, 50
+};
+
+const mdata_t BoostData =
+{
+	&dfTCBoost,
+	&BoostDesc,
+	MITYPE_WORD,
+	0
+};
+
+const mvaluedesc_t PIDPDesc =
+{
+	32, 60,
+	0, 0,
+	PID_P_MIN, PID_P_MAX,
+	0,
+	0,
+	0,
+	0x0B,
+	1,
+	PID_P_MAX+1, PID_P_DEF
+};
+
+const mdata_t PIDPData =
+{
+	&dfPID.P,
+	&PIDPDesc,
+	MITYPE_WORD,
+	0
+};
+
+const mvaluedesc_t PIDIDesc =
+{
+	32, 60,
+	0, 0,
+	PID_I_MIN, PID_I_MAX,
+	0,
+	0,
+	0,
+	0x0B,
+	1,
+	PID_I_MAX+1, PID_I_DEF
+};
+
+const mdata_t PIDIData =
+{
+	&dfPID.I,
+	&PIDIDesc,
+	MITYPE_WORD,
+	0
+};
+
+const mvaluedesc_t PIDDDesc =
+{
+	32, 60,
+	0, 0,
+	PID_D_MIN, PID_D_MAX,
+	0,
+	0,
+	0,
+	0x0B,
+	1,
+	PID_D_MAX+1, PID_D_DEF
+};
+
+const mdata_t PIDDData =
+{
+	&dfPID.D,
+	&PIDDDesc,
+	MITYPE_WORD,
+	0
+};
+
+const menu_t AlgoMenu =
+{
+	String_Algo,
+	&VapingMenu,
+	0,
+	AlgoMenuIDraw+1,
+	0,
+	AlgoMenuOnClick+1,
+	0,
+	6,
+	{
+		{ String_Algo, 0, 0, 0 },
+		{ String_Boost, &BoostData, 0, MACTION_DATA },
+		{ String_P, &PIDPData, 0, MACTION_DATA },
+		{ String_I, &PIDIData, 0, MACTION_DATA },
+		{ String_D, &PIDDData, 0, MACTION_DATA },
+		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+	}
+};
+
+
 const menu_t VapingMenu =
 {
 	String_Vaping,
@@ -1879,12 +1967,11 @@ const menu_t VapingMenu =
 	0,
 	VapingMenuOnClick+1,
 	VapingMenuOnEvent+1,
-	8,
+	7,
 	{
 		{ String_Preheat, &PreheatMenu, 0, MACTION_SUBMENU },
 		{ String_Modes, &ModesMenu, 0, MACTION_SUBMENU },
-		{ String_Algo, 0, 0, 0 },
-		{ String_Boost, 0, 0, MACTION_DATA },
+		{ String_Algo, &AlgoMenu, 0, MACTION_SUBMENU },
 		{ String_Prot, 0, 0, 0 },
 		{ String_Vaped, 0, 0, 0 },
 		{ String_mlkJ, 0, 0, 0 },
@@ -1955,6 +2042,14 @@ __myevic__ void DrawMenuData( int line, int sel, const mdata_t *data )
 			else
 			{
 				DrawValueRight( desc->posr, line + 2, v, desc->dp, desc->z, desc-> nd );
+				if ( desc->unit_s )
+				{
+					DrawString( desc->unit_s, desc->posr + 1, line + 2 );
+				}
+				else if ( desc->unit_c )
+				{
+					DrawImage( desc->posr + 1, line + 2, desc->unit_c );
+				}
 			}
 			if ( sel && gFlags.edit_value )
 			{

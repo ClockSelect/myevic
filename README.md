@@ -240,7 +240,7 @@ Main menu screen
 ----------
 * Vaping  
  
-    ![Vaping menu](https://www.dropbox.com/s/0qeqq41li9j5hpa/vaping.png?dl=1)  
+    ![Vaping menu](https://www.dropbox.com/s/5nafopmyhl6m8as/vaping2.png?dl=1)  
 
     * Preheat:
     
@@ -259,18 +259,30 @@ Main menu screen
     * Algo
     
          *Temperature Control only*  
-         Choose betwen several algorythms for temperature control.
-         * Off: use the default standard agorythm from stock firmware.
-         * Sweet: much like the default, but smoothes out oscillations in regulation phase.
-         * Boost: speeds up temperature ramp-up and reduces oscillations, but with the risk of overshooting the target temperature if not configured properly. See the Boost option below.
-         
-         There is no "best" algorythm; it will essentialy depend on your setup and on your personnal taste. Test and experiment to see what fits best to you. The device monitor of the [NFirmwareEditor](https://github.com/TBXin/NFirmwareEditor/releases) is a great tool to observe the behavior of the algorythms with different setups and parameters.  
-         More algorythms may be implemented with time. Stay tuned.  
+         TC Algorithms submenu  
 
-    * Boost
+         ![Algo submenu](https://www.dropbox.com/s/ecy9oqapftnfwh3/algo.png?dl=1)  
+
+         * Algo  
+         Choose betwen several algorithms for temperature control.
+           * Off: use the default standard agorythm from stock firmware.
+           * Sweet: much like the default, but smoothes out oscillations in regulation phase.
+           * Boost: speeds up temperature ramp-up and reduces oscillations, but with the risk of overshooting the target temperature if not configured properly. See the Boost option below.
+           * PID: A standard PID algorithm
+         
+             There is no "best" algorithm; it will essentialy depend on your setup and on your personnal taste. Test and experiment to see what fits best to you. The device monitor of the [NFirmwareEditor](https://github.com/TBXin/NFirmwareEditor/releases) is a great tool to observe the behavior of the algorithms with different setups and parameters.  
+             More algorithms may be implemented with time. Stay tuned.  
+
+      * Boost
     
-         A parameter controling the Boost algorythm (see above).  
-         Set the limit, in percentage of the target temperature, at wich the Boost alorythm will stop speeding up the temperature ramp-up phase. The more the value, the faster the ramp-up time, but with a higher risk of overshooting the target temperature. High values are best with heavy resistances such as clapton builds, lower are prefered with light resistances such as single high gauge wire. Also, choosing the right power/wattage setup (not too high nor too low) will help prevent overshooting while keeping a fast ramp-up. You'll have to experiment to see what fits the best for your setup and personal taste.
+             A parameter controling the Boost algorithm (see above).  
+             Set the limit, in percentage of the target temperature, at wich the Boost algorithm will stop speeding up the temperature ramp-up phase. The more the value, the faster the ramp-up time, but with a higher risk of overshooting the target temperature. High values are best with heavy resistances such as clapton builds, lower are prefered with light resistances such as single high gauge wire. Also, choosing the right power/wattage setup (not too high nor too low) will help prevent overshooting while keeping a fast ramp-up. You'll have to experiment to see what fits the best for your setup and personal taste.  
+             A long fire resets the parameter to its default value.
+
+      * P, I, D
+      
+            The 3 parameters controlling the Proportional, Integral and Derivative part of the PID algorithm. You should familiarize yourself with the PID algorithm before playing with those parameters. Many papers exist over the internet on the subject.  
+            A long fire resets the parameter to its default value.
 
     * Prot.
 

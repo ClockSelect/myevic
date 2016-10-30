@@ -79,6 +79,14 @@ typedef struct
 }
 dfStatus_t;
 
+typedef struct
+{
+	uint16_t P;
+	uint16_t I;
+	uint16_t D;
+}
+dfPID_t;
+
 typedef struct dfParams
 {
 /* 0000 */	uint32_t	PCRC;
@@ -140,6 +148,7 @@ typedef struct dfParams
 /* 00D2 */	uint8_t		TCAlgo;
 /* 00D3 */	uint8_t		TCBoost;
 /* 00D4 */	uint16_t	TCRP[3];
+/* 00DA */	dfPID_t		PID;
 }
 dfParams_t;
 
@@ -316,6 +325,7 @@ extern dfStruct_t DataFlash;
 #define dfTCAlgo		DFP(TCAlgo)
 #define dfTCBoost		DFP(TCBoost)
 #define dfTCRP			DFP(TCRP)
+#define dfPID			DFP(PID)
 
 #define dfFWVersion		DFI(FWVersion)
 #define dffmcCID        DFI(fmcCID)

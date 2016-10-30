@@ -1643,6 +1643,9 @@ typedef struct algoctl
 	uint16_t	mvolts;
 	uint16_t	power;
 	uint32_t	counter;
+	int32_t		error;
+	int32_t		integ;
+	uint8_t		start;
 }
 algoctl_t;
 
@@ -1724,6 +1727,12 @@ algostage_t tabStagesSegments[]=
 
 __myevic__ void InitTCAlgo()
 {
+	AlgoCtl.start = 0;
+	AlgoCtl.boost = TCBoost;
+	AlgoCtl.ttemp = dfIsCelsius ? dfTemp : FarenheitToC( dfTemp );
+
+	AlgoCtl.counter = 0;
+
 	switch ( dfTCAlgo )
 	{
 		case TCALGO_AUTO:
@@ -1748,6 +1757,13 @@ __myevic__ void InitTCAlgo()
 			AlgoCtl.nbtests = 3;
 			break;
 
+		case TCALGO_PID:
+			ReadAtoTemp();
+			AlgoCtl.atemp = FarenheitToC( AtoTemp );
+			AlgoCtl.error = AlgoCtl.ttemp - AlgoCtl.atemp;
+			AlgoCtl.integ = 0;
+			break;
+
 		case TCALGO_JOY:
 		default:
 			AlgoCtl.nstages = sizeof( tabStagesSegments ) / sizeof( algostage_t );
@@ -1757,18 +1773,17 @@ __myevic__ void InitTCAlgo()
 			break;
 	}
 
-	AlgoCtl.boost = TCBoost;
-	AlgoCtl.ttemp = dfIsCelsius ? dfTemp : FarenheitToC( dfTemp );
-
-	AlgoCtl.counter = 0;
-
 	AlgoCtl.nstage = 0;
-	AlgoCtl.stage = &AlgoCtl.stages[0];
 
-	for ( int i = 0 ; i < AlgoCtl.nstages ; ++i )
+	if ( AlgoCtl.nstages )
 	{
-		AlgoCtl.stages[i].counter = 0;
-		AlgoCtl.stages[i].tests = 0;
+		AlgoCtl.stage = &AlgoCtl.stages[0];
+
+		for ( int i = 0 ; i < AlgoCtl.nstages ; ++i )
+		{
+			AlgoCtl.stages[i].counter = 0;
+			AlgoCtl.stages[i].tests = 0;
+		}
 	}
 
 	AlgoCtl.mvolts = TargetVolts * 10;
@@ -1891,6 +1906,69 @@ __myevic__ void TweakTargetVoltsSegments()
 }
 
 
+__myevic__ void TweakTargetVoltsPID()
+{
+	int32_t pwr;
+	int32_t error;
+	int32_t ediff;
+	uint32_t volts;
+
+	++AlgoCtl.counter;
+
+	// 50Hz refresh
+	if ( AlgoCtl.counter % 20 )
+		return;
+
+	AlgoCtl.atemp = FarenheitToC( AtoTemp );
+
+	error = AlgoCtl.ttemp - AlgoCtl.atemp;
+	ediff = error - AlgoCtl.error;
+
+//	if ( !AlgoCtl.start )
+//	{
+//		if ( error > 60 )
+//		{
+//			TweakTargetVoltsJT();
+//			return;
+//		}
+//		else
+//		{
+//			AlgoCtl.start = 1;
+//		}
+//	}
+
+	AlgoCtl.error = error;
+	AlgoCtl.integ += error;
+
+	pwr = AlgoCtl.error * dfPID.P
+		+ AlgoCtl.integ * dfPID.I / 50
+		+ ediff * dfPID.D * 50;
+
+	pwr /= 100;
+
+	if ( pwr < 10 ) pwr = 10;
+	pwr = AtoPowerLimit( pwr );
+	if ( pwr > dfTCPower ) pwr = dfTCPower;
+
+	volts = GetVoltsForPower( pwr );
+
+	if ( volts < 50 ) volts = 50;
+
+	myprintf( "PWR=%d V=%d E=%d I=%d D=%d\n",
+		pwr, volts, AlgoCtl.error, AlgoCtl.integ, ediff );
+
+	if ( gFlags.decrease_voltage )
+	{
+		if ( volts < TargetVolts ) TargetVolts = volts;
+		else if ( TargetVolts ) --TargetVolts;
+	}
+	else
+	{
+		TargetVolts = volts;
+	}
+}
+
+
 __myevic__ void TweakTargetVoltsTC()
 {
 	if ( !TargetVolts )
@@ -1908,6 +1986,10 @@ __myevic__ void TweakTargetVoltsTC()
 		case TCALGO_BOOST:
 		case TCALGO_AUTO:
 			TweakTargetVoltsSegments();
+			break;
+
+		case TCALGO_PID:
+			TweakTargetVoltsPID();
 			break;
 
 		default:

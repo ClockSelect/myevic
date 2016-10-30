@@ -27,11 +27,24 @@ enum
 	TCALGO_JOY	= 0,
 	TCALGO_SWEET,
 	TCALGO_BOOST,
+	TCALGO_PID,
 	TCALGO_MAX,
 	TCALGO_AUTO
 };
 
 #define TCALGO_DEF TCALGO_JOY
+
+#define PID_P_DEF	600
+#define PID_P_MIN	1
+#define PID_P_MAX	2000
+
+#define PID_I_DEF	850
+#define PID_I_MIN	0
+#define PID_I_MAX	3000
+
+#define PID_D_DEF	0
+#define PID_D_MIN	0
+#define PID_D_MAX	1000
 
 
 //-------------------------------------------------------------------------

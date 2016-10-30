@@ -429,6 +429,9 @@ __myevic__ void ResetDataFlash()
 	dfPreheatPwr = 200;
 	dfTCAlgo = TCALGO_DEF;
 	dfTCBoost = 50;
+	dfPID.P = PID_P_DEF;
+	dfPID.I = PID_I_DEF;
+	dfPID.D = PID_D_DEF;
 	UpdateDataFlash();
 
 	dfPuffCount = 0;
@@ -641,6 +644,15 @@ __myevic__ void DFCheckValuesValidity()
 	for ( i = 0 ; i < 3 ; ++i )
 		if ( dfTCRP[i] > 999 )
 			dfTCRP[i] = 0;
+
+	if (( dfPID.P < PID_P_MIN || dfPID.P > PID_P_MAX )
+	||	( dfPID.I > PID_I_MAX )
+	||	( dfPID.D > PID_D_MAX ))
+	{
+		dfPID.P = PID_P_DEF;
+		dfPID.I = PID_I_DEF;
+		dfPID.D = PID_D_DEF;
+	}
 }
 
 
