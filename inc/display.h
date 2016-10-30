@@ -72,6 +72,7 @@ extern void DrawValueInv( int x, int y, int v, uint8_t dp, uint16_t z, uint8_t n
 extern void DrawString( const uint16_t s[], int x, int y );
 extern void DrawStringInv( const uint16_t s[], int x, int y );
 extern void DrawStringCentered( const uint16_t s[], int y );
+extern void DrawStringRight( const uint16_t s[], int x, int y );
 extern void DrawLine( int x1, int y1, int x2, int y2, int color, int thick );
 extern void DrawCircle( int xc, int yc, int r, int color, int fill );
 

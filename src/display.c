@@ -508,7 +508,14 @@ __myevic__ void DrawStringInv( const uint16_t s[], int x, int y )
 //----- (00005A92) --------------------------------------------------------
 __myevic__ void DrawStringCentered( const uint16_t s[], int y )
 {
-	DrawString( s, GetStrCenteredX( s ), y);
+	DrawString( s, GetStrCenteredX( s ), y );
+}
+
+
+//=========================================================================
+__myevic__ void DrawStringRight( const uint16_t s[], int x, int y )
+{
+	DrawString( s, x - GetStringWidth( s ), y );
 }
 
 

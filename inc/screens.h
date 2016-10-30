@@ -263,6 +263,10 @@ extern const uint16_t String_M2[];
 extern const uint16_t String_M3[];
 extern const uint16_t String_DEF[];
 extern const uint16_t String_UCH[];
+extern const uint16_t String_Algo[];
+extern const uint16_t String_Auto[];
+extern const uint16_t String_Sweet[];
+extern const uint16_t String_Boost[];
 
 
 //==============================================================================

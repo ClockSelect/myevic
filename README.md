@@ -62,6 +62,9 @@ OR
     * Eugene San
     * MarkyAD
     * bluenazgul
+    * gdb
+    
+    And many others, supporting this project and taking the time to open or help solving issues.
 
 
 
@@ -235,7 +238,9 @@ Main menu screen
 
 
 ----------
-* Vaping
+* Vaping  
+ 
+    ![Vaping menu](https://www.dropbox.com/s/0qeqq41li9j5hpa/vaping.png?dl=1)  
 
     * Preheat:
     
@@ -251,10 +256,35 @@ Main menu screen
          Click on each menu item to set 'Y' or 'N' if you want to see any given mode proposed while cycling between modes in menu mode.  
          Typically, you'll set "SMART" mode to 'N'. Typically.
 
+    * Algo
+    
+         *Temperature Control only*  
+         Choose betwen several algorythms for temperature control.
+         * Off: use the default standard agorythm from stock firmware.
+         * Sweet: much like the default, but smoothes out oscillations in regulation phase.
+         * Boost: speeds up temperature ramp-up and reduces oscillations, but with the risk of overshooting the target temperature if not configured properly. See the Boost option below.
+         
+         There is no "best" algorythm; it will essentialy depend on your setup and on your personnal taste. Test and experiment to see what fits best to you. The device monitor of the [NFirmwareEditor](https://github.com/TBXin/NFirmwareEditor/releases) is a great tool to observe the behavior of the algorythms with different setups and parameters.  
+         More algorythms may be implemented with time. Stay tuned.  
+
+    * Boost
+    
+         A parameter controling the Boost algorythm (see above).  
+         Set the limit, in percentage of the target temperature, at wich the Boost alorythm will stop speeding up the temperature ramp-up phase. The more the value, the faster the ramp-up time, but with a higher risk of overshooting the target temperature. High values are best with heavy resistances such as clapton builds, lower are prefered with light resistances such as single high gauge wire. Also, choosing the right power/wattage setup (not too high nor too low) will help prevent overshooting while keeping a fast ramp-up. You'll have to experiment to see what fits the best for your setup and personal taste.
+
     * Prot.
 
          Set the long fire protection time. Default is 10.0s.  
          Admissible values are 2.0s to 15.0s.
+
+    * Vaped
+
+         Choose the unit in wich the liquid consumption (on the 3rd info line of the main screen) is dislayed. You can choose between raw total ml, or consumption speed in ml/day. You must have setup the date and time of the RTC for the ml/d to behave correctly.
+
+    * ml/kJ
+
+         The speed at wich the liquid is vaporized in function of the energy dissipated by the coil. The value is in milliliters per KiloJoules. The proposed value of 360 is rtaher accurate for a standard 30W factory coil. It may need to be adjusted depending on your setup.  
+
 
 ----------
 

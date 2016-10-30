@@ -312,6 +312,7 @@ __myevic__ void InitVariables()
 	AtoMinPower = 10;
 	AtoMaxPower = MaxPower;
 	Object3D = 1;
+	AtoTemp = 70;
 }
 
 
@@ -697,7 +698,7 @@ __myevic__ void Monitor()
 						AtoPower( AtoVolts ),
 						dfIsCelsius ? 1 : 0,
 						dfTemp,
-						AtoTemp
+						dfIsCelsius ? FarenheitToC( AtoTemp ) : AtoTemp
 					);
 		}
 		else if ( ISMODEBY(dfMode) )
@@ -721,7 +722,7 @@ __myevic__ void Monitor()
 					"RES=%d RESM=%d MODE=%d",
 					BatteryVoltage,
 					gFlags.battery_charging ? 1 : 0,
-					BoardTemp,
+					dfIsCelsius ? BoardTemp : CelsiusToF( BoardTemp ),
 					AtoStatus,
 					AtoRez,
 					AtoRezMilli,
@@ -734,7 +735,7 @@ __myevic__ void Monitor()
 						dfTCPower,
 						dfIsCelsius ? 1 : 0,
 						dfTemp,
-						AtoTemp
+						dfIsCelsius ? FarenheitToC( AtoTemp ) : AtoTemp
 					);
 		}
 		else if ( ISMODEBY(dfMode) )

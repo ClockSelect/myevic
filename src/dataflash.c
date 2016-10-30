@@ -420,13 +420,15 @@ __myevic__ void ResetDataFlash()
 //	dfModesSel = 0;
 	dfClkRatio = RTC_DEF_CLK_RATIO;
 	dfVVRatio = VVEL_DEF_RATIO;
-	dfPreheatPwr = 200;
 //	dfPreheatTime = 0;
 	dfClick[0] = CLICK_ACTION_CLOCK;
 	dfClick[1] = CLICK_ACTION_EDIT;
 //	dfClick[2] = CLICK_ACTION_NONE;
 	dfDimTimeout = 30;
 //	dfBatteryModel = 0;
+	dfPreheatPwr = 200;
+	dfTCAlgo = TCALGO_DEF;
+	dfTCBoost = 50;
 	UpdateDataFlash();
 
 	dfPuffCount = 0;
@@ -629,6 +631,12 @@ __myevic__ void DFCheckValuesValidity()
 
 	if ( dfPreheatTime > 200 )
 		dfPreheatTime = 0;
+
+	if ( dfTCAlgo >= TCALGO_MAX )
+		dfTCAlgo = TCALGO_DEF;
+
+	if ( dfTCBoost > 100 )
+		dfTCBoost = 50;
 
 	for ( i = 0 ; i < 3 ; ++i )
 		if ( dfTCRP[i] > 999 )

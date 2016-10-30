@@ -600,6 +600,10 @@ __myevic__ void EventHandler()
 					return;
 				}
 			}
+			else
+			{
+				InitTCAlgo();
+			}
 
 			if ( dfMode == 6 )
 			{

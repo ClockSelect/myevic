@@ -22,6 +22,17 @@
 #define FIRE_PROTEC_DEF 100
 #define FIRE_PROTEC_MAX 150
 
+enum
+{
+	TCALGO_JOY	= 0,
+	TCALGO_SWEET,
+	TCALGO_BOOST,
+	TCALGO_MAX,
+	TCALGO_AUTO
+};
+
+#define TCALGO_DEF TCALGO_JOY
+
 
 //-------------------------------------------------------------------------
 
@@ -107,6 +118,11 @@ extern uint16_t FarenheitToC( uint16_t tf );
 
 extern const uint16_t SMARTRezValues[];
 extern const uint16_t SMARTPowers[];
+
+extern void InitTCAlgo();
+extern void TweakTargetVoltsSegments();
+extern void TweakTargetVoltsAlgo();
+
 
 //=============================================================================
 

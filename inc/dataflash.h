@@ -129,7 +129,7 @@ typedef struct dfParams
 /* 00BF */	uint8_t		ModesSel;
 /* 00C0 */	uint16_t	ClkRatio;
 /* 00C2 */	uint16_t	VVRatio;
-/* 00C4 */	uint8_t		unused[1];		//	unused
+/* 00C4 */	uint8_t		unusedC4;		// unused
 /* 00C5 */	uint8_t		Clicks[3];
 /* 00C8 */	uint8_t		DimTimeout;
 /* 00C9 */	uint8_t		BatteryModel;
@@ -137,7 +137,8 @@ typedef struct dfParams
 /* 00CD */	uint8_t		PreheatTime;
 /* 00CE */	uint16_t	PreheatPwr;
 /* 00D0 */	uint16_t	AtoPreheatPwr;
-/* 00D2 */	uint8_t		unused2[2];		// unused
+/* 00D2 */	uint8_t		TCAlgo;
+/* 00D3 */	uint8_t		TCBoost;
 /* 00D4 */	uint16_t	TCRP[3];
 }
 dfParams_t;
@@ -312,6 +313,8 @@ extern dfStruct_t DataFlash;
 #define dfPreheatTime	DFP(PreheatTime)
 #define dfPreheatPwr	DFP(PreheatPwr)
 #define dfAtoPreheatPwr	DFP(AtoPreheatPwr)
+#define dfTCAlgo		DFP(TCAlgo)
+#define dfTCBoost		DFP(TCBoost)
 #define dfTCRP			DFP(TCRP)
 
 #define dfFWVersion		DFI(FWVersion)

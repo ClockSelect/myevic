@@ -17,6 +17,7 @@
 uint32_t	AtoVoltsADC;
 uint32_t	AtoVolts;
 uint32_t	TargetVolts;
+uint32_t	TargetTemp;
 uint32_t	AtoRezMilli;
 uint32_t	AtoMinVolts;
 uint32_t	AtoMaxVolts;
@@ -1046,9 +1047,9 @@ __myevic__ void TweakTargetVoltsVW()
 
 
 //=========================================================================
-//----- (00003658) ------------------------------------------------------------
+//----- (00003658) --------------------------------------------------------
 
-__myevic__ void TweakTargetVoltsTC()
+__myevic__ void TweakTargetVoltsJT()
 {
 	unsigned int pwr;
 	unsigned int volts;
@@ -1060,29 +1061,9 @@ __myevic__ void TweakTargetVoltsTC()
 
 		if ( pwr < 10 ) pwr = 10;
 
-		if ( gFlags.check_mode )
-		{
-			if ( pwr > 400 ) pwr = 400;
-			if ( pwr < 300 ) pwr = 300;
-		}
-
 		pwr = AtoPowerLimit( pwr );
 
-		if ( gFlags.check_mode )
-		{
-			if ( FireDuration <= 2 )
-			{
-				if ( pwr > 300 ) pwr = 300;
-			}
-		}
-
 		volts = GetVoltsForPower( pwr );
-
-		if ( gFlags.check_mode )
-		{
-			TargetVolts = volts;
-			return;
-		}
 
 		temp = ( dfIsCelsius == 1 ) ? CelsiusToF( dfTemp ) : dfTemp;
 
@@ -1631,3 +1612,307 @@ __myevic__ void ResetResistance()
 	}
 }
 
+
+//=========================================================================
+// Algo
+//-------------------------------------------------------------------------
+
+static filter_t	TempFilter;
+static uint8_t TCBoost;
+
+typedef struct algostage
+{
+	int dec;
+	int inc;
+	int (*cond)();
+	int counter;
+	int tests;
+}
+algostage_t;
+
+typedef struct algoctl
+{
+	algostage_t *stages;
+	algostage_t *stage;
+	uint8_t		nstages;
+	uint8_t		nstage;
+	uint8_t		nbtests;
+	uint8_t		boost;
+	uint16_t	ttemp;
+	uint16_t	atemp;
+	uint16_t	mvolts;
+	uint16_t	power;
+	uint32_t	counter;
+}
+algoctl_t;
+
+static algoctl_t AlgoCtl;
+
+
+int condTrue()
+{
+	return 1;
+}
+
+int condFalse()
+{
+	return 0;
+}
+
+// Simulate Joyetech with segments
+
+int condCross1()
+{
+	return ( AlgoCtl.atemp > AlgoCtl.ttemp );
+}
+
+int condCross2()
+{
+	return (( AlgoCtl.atemp < AlgoCtl.ttemp ) && ( AlgoCtl.stage->counter > 100 ));
+}
+
+int condFinal()
+{
+	return 0;
+}
+
+algostage_t tabStagesSim[]=
+{
+	{ 10, 10, condCross1 }, // climb
+	{ 10, 10, condCross2 }, // drop
+	{ 10, 10, condFinal  }, // regulate
+};
+
+algostage_t tabStagesSweet[]=
+{
+	{ 10, 10, condCross1 }, // climb
+	{ 10, 10, condCross2 }, // drop
+	{  2,  2, condFinal  }, // regulate
+};
+
+// Auto algo
+
+int condBoostEnd()
+{
+	return (( AlgoCtl.atemp > AlgoCtl.ttemp * AlgoCtl.boost / 100 ) || gFlags.decrease_voltage );
+}
+
+int condNearCross1()
+{
+	return ( AlgoCtl.atemp > AlgoCtl.ttemp - 60 );
+}
+
+int condNearCross2()
+{
+	return (( AlgoCtl.atemp < AlgoCtl.ttemp + 5 )
+	//	&&	( AlgoCtl.atemp > AlgoCtl.ttemp - 5 )
+		&&	( AlgoCtl.stage->counter > 100 ));
+}
+
+algostage_t tabStagesSegments[]=
+{
+	/* 0 */ {  3, 30, condTrue,      }, // calibration (not yet used)
+	/* 1 */ {  3, 30, condBoostEnd,  }, // boost
+	/* 2 */ {  3,  5, condNearCross1 }, // climb
+	/* 3 */ {  10, 3, condCross1     }, // nearCross1
+	/* 4 */ {  5,  3, condNearCross2 }, // drop
+	/* 5 */ {  2,  3, condCross2     }, // nearCross2
+	/* 6 */ {  2,  2, condFinal      }, // regulate
+};
+
+//-------------------------------------------------------------------------
+
+__myevic__ void InitTCAlgo()
+{
+	switch ( dfTCAlgo )
+	{
+		case TCALGO_AUTO:
+			AlgoCtl.nstages = sizeof( tabStagesSegments ) / sizeof( algostage_t );
+			AlgoCtl.stages = tabStagesSegments;
+			AlgoCtl.power = dfTCPower; // MaxPower;
+			AlgoCtl.nbtests = 3;
+			break;
+
+		case TCALGO_BOOST:
+			TCBoost = dfTCBoost;
+			AlgoCtl.nstages = sizeof( tabStagesSegments ) / sizeof( algostage_t );
+			AlgoCtl.stages = tabStagesSegments;
+			AlgoCtl.power = dfTCPower;
+			AlgoCtl.nbtests = 3;
+			break;
+
+		case TCALGO_SWEET:
+			AlgoCtl.nstages = sizeof( tabStagesSweet ) / sizeof( algostage_t );
+			AlgoCtl.stages = tabStagesSweet;
+			AlgoCtl.power = dfTCPower;
+			AlgoCtl.nbtests = 3;
+			break;
+
+		case TCALGO_JOY:
+		default:
+			AlgoCtl.nstages = sizeof( tabStagesSegments ) / sizeof( algostage_t );
+			AlgoCtl.stages = tabStagesSim;
+			AlgoCtl.power = dfTCPower;
+			AlgoCtl.nbtests = 1;
+			break;
+	}
+
+	AlgoCtl.boost = TCBoost;
+	AlgoCtl.ttemp = dfIsCelsius ? dfTemp : FarenheitToC( dfTemp );
+
+	AlgoCtl.counter = 0;
+
+	AlgoCtl.nstage = 0;
+	AlgoCtl.stage = &AlgoCtl.stages[0];
+
+	for ( int i = 0 ; i < AlgoCtl.nstages ; ++i )
+	{
+		AlgoCtl.stages[i].counter = 0;
+		AlgoCtl.stages[i].tests = 0;
+	}
+
+	AlgoCtl.mvolts = TargetVolts * 10;
+
+	InitFilter( &TempFilter );
+}
+
+
+__myevic__ void CheckModeSeg()
+{
+	unsigned int pwr;
+	unsigned int volts;
+
+	pwr = dfTCPower;
+
+	if ( pwr < 10 ) pwr = 10;
+
+	if ( pwr > 400 ) pwr = 400;
+	if ( pwr < 300 ) pwr = 300;
+
+	pwr = AtoPowerLimit( pwr );
+
+	if ( FireDuration <= 2 )
+	{
+		if ( pwr > 300 ) pwr = 300;
+	}
+
+	volts = GetVoltsForPower( pwr );
+
+	TargetVolts = volts;
+
+	return;
+}
+
+
+__myevic__ void TweakTargetVoltsSegments()
+{
+	unsigned int pwr;
+	unsigned int volts;
+	unsigned int onlast;
+
+	pwr = AlgoCtl.power;
+
+	if ( pwr < 10 ) pwr = 10;
+
+	pwr   = AtoPowerLimit( pwr );
+	volts = GetVoltsForPower( pwr );
+
+	AlgoCtl.atemp = FarenheitToC( AtoTemp );
+
+	if ( AlgoCtl.nstage < AlgoCtl.nstages - 1 )
+	{
+		AlgoCtl.atemp = FilterData( &TempFilter, AlgoCtl.atemp );
+	}
+
+	onlast = 0;
+
+	if ( AlgoCtl.stage->cond() )
+	{
+		if ( ++AlgoCtl.stage->tests >= AlgoCtl.nbtests )
+		{
+		//	myprintf( "%d. CNT=%d TV=%d TEMP=%d\n",
+		//		AlgoCtl.nstage, AlgoCtl.counter, AlgoCtl.mvolts, AlgoCtl.atemp );
+
+			AlgoCtl.stage = &AlgoCtl.stages[++AlgoCtl.nstage];
+
+			if ( AlgoCtl.nstage == AlgoCtl.nstages - 1 )
+			{
+				onlast = 1;
+			}
+		}
+	}
+	else
+	{
+		AlgoCtl.stage->tests = 0;
+	}
+
+	if ( gFlags.decrease_voltage )
+	{
+		if ( TargetVolts )
+		{
+			AlgoCtl.mvolts -= 10;
+			TargetVolts = AlgoCtl.mvolts / 10;
+		}
+	}
+	else if ( AlgoCtl.atemp < AlgoCtl.ttemp )
+	{
+		AlgoCtl.mvolts += AlgoCtl.stage->inc;
+		TargetVolts = AlgoCtl.mvolts / 10;
+	}
+	else if ( AlgoCtl.atemp > AlgoCtl.ttemp )
+	{
+		AlgoCtl.mvolts -= AlgoCtl.stage->dec;
+		TargetVolts = AlgoCtl.mvolts / 10;
+	}
+
+	if ( TargetVolts > volts )
+	{
+		TargetVolts = volts;
+		AlgoCtl.mvolts = TargetVolts * 10;
+	}
+
+	++AlgoCtl.stage->counter;
+	++AlgoCtl.counter;
+
+	if ( onlast )
+	{
+		if ( dfTCAlgo == TCALGO_AUTO )
+		{
+			int raise	= AlgoCtl.stages[0].counter
+						+ AlgoCtl.stages[1].counter
+						+ AlgoCtl.stages[2].counter;
+
+			if ( raise > 100 ) TCBoost += 10;
+			else if ( raise > 50 ) TCBoost += 5;
+
+			if ( TCBoost > 100 ) TCBoost = 100;
+		}
+	}
+}
+
+
+__myevic__ void TweakTargetVoltsTC()
+{
+	if ( !TargetVolts )
+		return;
+
+	if ( gFlags.check_mode )
+	{
+		CheckModeSeg();
+		return;
+	}
+
+	switch ( dfTCAlgo )
+	{
+		case TCALGO_SWEET:
+		case TCALGO_BOOST:
+		case TCALGO_AUTO:
+			TweakTargetVoltsSegments();
+			break;
+
+		default:
+		case TCALGO_JOY:
+			TweakTargetVoltsJT();
+			break;
+	}
+}
