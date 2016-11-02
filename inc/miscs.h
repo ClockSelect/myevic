@@ -15,7 +15,9 @@ extern void ModeChange();
 extern void NextMode();
 
 extern void InitFilter( filter_t *filter );
-extern uint16_t FilterData( filter_t *filter, uint16_t data );
+extern uint16_t FilterMedian( filter_t *filter, uint16_t data );
+extern uint16_t FilterTriangle( filter_t *filter, uint16_t data );
+extern uint16_t FilterWMean( filter_t *filter, uint16_t data );
 
 extern uint8_t Object3D;
 extern void anim3d( int );

@@ -17,7 +17,6 @@
 uint32_t	AtoVoltsADC;
 uint32_t	AtoVolts;
 uint32_t	TargetVolts;
-uint32_t	TargetTemp;
 uint32_t	AtoRezMilli;
 uint32_t	AtoMinVolts;
 uint32_t	AtoMaxVolts;
@@ -101,6 +100,9 @@ __myevic__ void SetPWMClock()
 	MaxBoost	= PWMCycles / 12;
 	ProbeDuty	= PWMCycles / 8;
 	BoostWindow	= PWMCycles / 19;
+
+#define MaxBuck  MaxDuty
+#define MinBoost MaxDuty
 
 	if ( ISRX200S || ISRX23 )
 	{
@@ -306,8 +308,7 @@ __myevic__ void StopFire()
 	}
 
 	PC1 = 0;
-	if ( !ISVTCDUAL )
-		PC3 = 0;
+	if ( !ISVTCDUAL ) PC3 = 0;
 
 	BuckDuty = 0;
 	PC0 = 0;
@@ -578,10 +579,10 @@ __myevic__ void CheckMode()
 			dfVWVolts = GetAtoVWVolts( 200 );
 		}
 
-		if ( !gFlags.check_rez_ti  ) dfRezTI  = word_200000B8;
-		if ( !gFlags.check_rez_ni  ) dfRezNI  = word_200000BA;
-		if ( !gFlags.check_rez_ss  ) dfRezSS  = word_200000BC;
-		if ( !gFlags.check_rez_tcr ) dfRezTCR = word_200000BE;
+		if ( !gFlags.new_rez_ti  ) dfRezTI  = word_200000B8;
+		if ( !gFlags.new_rez_ni  ) dfRezNI  = word_200000BA;
+		if ( !gFlags.new_rez_ss  ) dfRezSS  = word_200000BC;
+		if ( !gFlags.new_rez_tcr ) dfRezTCR = word_200000BE;
 
 		if ( AtoRez < 10 )
 		{
@@ -608,6 +609,7 @@ __myevic__ void CheckMode()
 //----- (00003250) --------------------------------------------------------
 __myevic__ void ReadAtomizer()
 {
+	uint32_t ADCShuntSum;
 	uint32_t ADCShuntSum1;
 	uint32_t ADCShuntSum2;
 	uint32_t ADCAtoSum;
@@ -649,14 +651,9 @@ __myevic__ void ReadAtomizer()
 			ADCAtoSum += ADC_Read( 1 );
 		}
 
-		if ( !ADCShuntSum1 && !ADCShuntSum2 ) ADCShuntSum1 = 1;
+		ADCShuntSum = ( ADCShuntSum1 + ADCShuntSum2 ) ? : 1;
 
-		AtoRezMilli = 13 * AtoShuntRez * ADCAtoSum / ( 3 * ( ADCShuntSum1 + ADCShuntSum2 ) );
-
-	//	myprintf( "ARM=%d ato=%d sh1=%d sh2=%d\n",
-	//		AtoRezMilli, ADCAtoSum, ADCShuntSum1, ADCShuntSum2 );
-
-		ReadAtoCurrent();
+		AtoRezMilli = 13 * AtoShuntRez * ADCAtoSum / ( 3 * ( ADCShuntSum ) );
 
 		if ( gFlags.firing )
 		{
@@ -727,7 +724,7 @@ __myevic__ void ReadAtomizer()
 //=========================================================================
 // Dual Buck converter regulation
 //-----------------------------------------------------------------------------
-// (RX200S)
+// (RX200S|RX2/3)
 //-----------------------------------------------------------------------------
 __myevic__ void RegulateDualBuck()
 {
@@ -807,13 +804,38 @@ __myevic__ void RegulateBuckBoost()
 			{
 				if ( BBCMode != 1 )
 				{
-					PC2 = 1;
-					BBC_Configure( BBC_PWMCH_BOOST, 0 );
-					if ( !ISVTCDUAL )
-						PC3 = 1;
+					/*
+					if ( ISPRESA100W )
+					{
+						BBC_Configure( BBC_PWMCH_BOOST, 1 );
+						BoostDuty = MinBoost;
+						PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, BoostDuty );
 
-					PC0 = 1;
-					BBC_Configure( BBC_PWMCH_BUCK, 0 );
+						BBC_Configure( BBC_PWMCH_BUCK, 1 );
+						BuckDuty = MaxBuck;
+						PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, BuckDuty );
+					}
+					else
+					{
+						PC2 = 1;
+						BBC_Configure( BBC_PWMCH_BOOST, 0 );
+					
+						PC0 = 1;
+						BBC_Configure( BBC_PWMCH_BUCK, 0 );
+					}
+
+					if ( !ISVTCDUAL ) PC3 = 1;
+					PC1 = 1;
+					*/
+
+					BBC_Configure( BBC_PWMCH_BOOST, 1 );
+					BoostDuty = MinBoost;
+					PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, BoostDuty );
+					if ( !ISVTCDUAL ) PC3 = 1;
+
+					BBC_Configure( BBC_PWMCH_BUCK, 1 );
+					BuckDuty = MaxBuck;
+					PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, BuckDuty );
 					PC1 = 1;
 				}
 
@@ -837,16 +859,36 @@ __myevic__ void RegulateBuckBoost()
 			{
 				if ( BBCMode != 2 )
 				{
-					PC2 = 1;
-					BBC_Configure( BBC_PWMCH_BOOST, 0 );
-					if ( !ISVTCDUAL )
-						PC3 = 1;
+					/*
+					if ( ISPRESA100W )
+					{
+						BBC_Configure( BBC_PWMCH_BOOST, 1 );
+						BoostDuty = MinBoost;
+						PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, BoostDuty );
+					}
+					else
+					{
+						PC2 = 1;
+						BBC_Configure( BBC_PWMCH_BOOST, 0 );
+					}
+					if ( !ISVTCDUAL ) PC3 = 1;
 
 					BBC_Configure( BBC_PWMCH_BUCK, 1 );
-
-					BuckDuty = ( BBCMode == 0 ) ? MinBuck : MaxDuty;
+					BuckDuty = ( BBCMode == 0 ) ? MinBuck : MaxBuck;
 					PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, BuckDuty );
+					PC1 = 1;
 
+					BBCMode = 2;
+					*/
+
+					BBC_Configure( BBC_PWMCH_BOOST, 1 );
+					BoostDuty = MinBoost;
+					PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, BoostDuty );
+					if ( !ISVTCDUAL ) PC3 = 1;
+
+					BBC_Configure( BBC_PWMCH_BUCK, 1 );
+					BuckDuty = ( BBCMode == 0 ) ? MinBuck : MaxBuck;
+					PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, BuckDuty );
 					PC1 = 1;
 
 					BBCMode = 2;
@@ -854,7 +896,7 @@ __myevic__ void RegulateBuckBoost()
 
 				if ( AtoVolts < TargetVolts )
 				{
-					if ( BuckDuty < MaxDuty )
+					if ( BuckDuty < MaxBuck )
 					{
 						++BuckDuty;
 					}
@@ -886,19 +928,39 @@ __myevic__ void RegulateBuckBoost()
 			{
 				if ( BBCMode != 3 )
 				{
-					BBCMode = 3;
+					/*
+					BBC_Configure( BBC_PWMCH_BOOST, 1 );
+					BoostDuty = MinBoost;
+					PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, BoostDuty );
+					if ( !ISVTCDUAL ) PC3 = 1;
 
-					PC0 = 1;
-					BBC_Configure( BBC_PWMCH_BUCK, 0 );
+					if ( ISPRESA100W )
+					{
+						BBC_Configure( BBC_PWMCH_BUCK, 1 );
+						BuckDuty = MaxBuck;
+						PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, BuckDuty );
+					}
+					else
+					{
+						PC0 = 1;
+						BBC_Configure( BBC_PWMCH_BUCK, 0 );
+					}
 					PC1 = 1;
 
+					BBCMode = 3;
+					*/
+
 					BBC_Configure( BBC_PWMCH_BOOST, 1 );
-
-					BoostDuty = MaxDuty;
+					BoostDuty = MinBoost;
 					PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, BoostDuty );
+					if ( !ISVTCDUAL ) PC3 = 1;
 
-					if ( !ISVTCDUAL )
-						PC3 = 1;
+					BBC_Configure( BBC_PWMCH_BUCK, 1 );
+					BuckDuty = MaxBuck;
+					PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, BuckDuty );
+					PC1 = 1;
+
+					BBCMode = 3;
 
 					bd = 0;
 				}
@@ -931,7 +993,7 @@ __myevic__ void RegulateBuckBoost()
 				}
 				else if ( AtoVolts > TargetVolts )
 				{
-					if ( BoostDuty < MaxDuty )
+					if ( BoostDuty < MinBoost )
 					{
 						++BoostDuty;
 					}
@@ -960,7 +1022,12 @@ __myevic__ void AtoWarmUp()
 	BBCNextMode = 2;
 	BBCMode = 0;
 
+	// Theorical:
+	// ProbeDuty > 3124 * PWMCycles / AtoShuntRez / NumBatteries / 250
+	// to read rez > 500000Ω if no atomizer (simplified).
 	ProbeDuty = PWMCycles / NumBatteries / 8;
+	// For real-time atomizer measure accuracy (10 bits).
+	if ( AtoProbeCount >= 12 ) ProbeDuty <<= 1;
 
 	WUC = 0;
 	WarmUpCounter = ( !gFlags.pwm_pll || NumBatteries > 1 ) ? 2000 : 3000;
@@ -1082,8 +1149,7 @@ __myevic__ void TweakTargetVoltsJT()
 			{
 				gFlags.limit_ato_temp = 0;
 				TargetVolts = 0;
-				if ( !ISVTCDUAL )
-					PC3 = 0;
+				if ( !ISVTCDUAL ) PC3 = 0;
 				PC1 = 0;
 				BuckDuty = 0;
 				PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, 0 );
@@ -1309,7 +1375,7 @@ __myevic__ void ProbeAtomizer()
 	||  ( ( ISCUBOID || ISRX200S || ISRX23 ) && ( BatteryStatus == 2 || !PF0 ) ))
 	{
 		AtoStatus = 0;
-	//	myprintf( "Can't Probe: BS=%d PF0=%d\n", BatteryStatus, PF0 );
+//		myprintf( "Can't Probe: BS=%d PF0=%d\n", BatteryStatus, PF0 );
 	}
 	else
 	{
@@ -1354,8 +1420,7 @@ __myevic__ void ProbeAtomizer()
 		if ( !gFlags.firing )
 		{
 			PC1 = 0;
-			if ( !ISVTCDUAL )
-				PC3 = 0;
+			if ( !ISVTCDUAL ) PC3 = 0;
 			SetADCState( 1, 0 );
 			SetADCState( 2, 0 );
 			if ( ISRX200S || ISRX23 )
@@ -1441,10 +1506,10 @@ __myevic__ void ProbeAtomizer()
 				UpdateDFTimer = 50;
 			}
 		}
-		gFlags.check_rez_ni = 1;
-		gFlags.check_rez_ti = 1;
-		gFlags.check_rez_ss = 1;
-		gFlags.check_rez_tcr = 1;
+		gFlags.new_rez_ni = 1;
+		gFlags.new_rez_ti = 1;
+		gFlags.new_rez_ss = 1;
+		gFlags.new_rez_tcr = 1;
 		gFlags.check_mode = 1;
 	}
 }
@@ -1735,13 +1800,6 @@ __myevic__ void InitTCAlgo()
 
 	switch ( dfTCAlgo )
 	{
-		case TCALGO_AUTO:
-			AlgoCtl.nstages = sizeof( tabStagesSegments ) / sizeof( algostage_t );
-			AlgoCtl.stages = tabStagesSegments;
-			AlgoCtl.power = dfTCPower; // MaxPower;
-			AlgoCtl.nbtests = 3;
-			break;
-
 		case TCALGO_BOOST:
 			TCBoost = dfTCBoost;
 			AlgoCtl.nstages = sizeof( tabStagesSegments ) / sizeof( algostage_t );
@@ -1823,7 +1881,6 @@ __myevic__ void TweakTargetVoltsSegments()
 {
 	unsigned int pwr;
 	unsigned int volts;
-	unsigned int onlast;
 
 	pwr = AlgoCtl.power;
 
@@ -1836,24 +1893,14 @@ __myevic__ void TweakTargetVoltsSegments()
 
 	if ( AlgoCtl.nstage < AlgoCtl.nstages - 1 )
 	{
-		AlgoCtl.atemp = FilterData( &TempFilter, AlgoCtl.atemp );
+		AlgoCtl.atemp = FilterWMean( &TempFilter, AlgoCtl.atemp );
 	}
-
-	onlast = 0;
 
 	if ( AlgoCtl.stage->cond() )
 	{
 		if ( ++AlgoCtl.stage->tests >= AlgoCtl.nbtests )
 		{
-		//	myprintf( "%d. CNT=%d TV=%d TEMP=%d\n",
-		//		AlgoCtl.nstage, AlgoCtl.counter, AlgoCtl.mvolts, AlgoCtl.atemp );
-
 			AlgoCtl.stage = &AlgoCtl.stages[++AlgoCtl.nstage];
-
-			if ( AlgoCtl.nstage == AlgoCtl.nstages - 1 )
-			{
-				onlast = 1;
-			}
 		}
 	}
 	else
@@ -1888,21 +1935,6 @@ __myevic__ void TweakTargetVoltsSegments()
 
 	++AlgoCtl.stage->counter;
 	++AlgoCtl.counter;
-
-	if ( onlast )
-	{
-		if ( dfTCAlgo == TCALGO_AUTO )
-		{
-			int raise	= AlgoCtl.stages[0].counter
-						+ AlgoCtl.stages[1].counter
-						+ AlgoCtl.stages[2].counter;
-
-			if ( raise > 100 ) TCBoost += 10;
-			else if ( raise > 50 ) TCBoost += 5;
-
-			if ( TCBoost > 100 ) TCBoost = 100;
-		}
-	}
 }
 
 
@@ -1915,6 +1947,8 @@ __myevic__ void TweakTargetVoltsPID()
 
 	++AlgoCtl.counter;
 
+	AtoTemp = FilterWMean( &TempFilter, AtoTemp );
+
 	// 50Hz refresh
 	if ( AlgoCtl.counter % 20 )
 		return;
@@ -1923,19 +1957,6 @@ __myevic__ void TweakTargetVoltsPID()
 
 	error = AlgoCtl.ttemp - AlgoCtl.atemp;
 	ediff = error - AlgoCtl.error;
-
-//	if ( !AlgoCtl.start )
-//	{
-//		if ( error > 60 )
-//		{
-//			TweakTargetVoltsJT();
-//			return;
-//		}
-//		else
-//		{
-//			AlgoCtl.start = 1;
-//		}
-//	}
 
 	AlgoCtl.error = error;
 	AlgoCtl.integ += error;
@@ -1953,9 +1974,6 @@ __myevic__ void TweakTargetVoltsPID()
 	volts = GetVoltsForPower( pwr );
 
 	if ( volts < 50 ) volts = 50;
-
-	myprintf( "PWR=%d V=%d E=%d I=%d D=%d\n",
-		pwr, volts, AlgoCtl.error, AlgoCtl.integ, ediff );
 
 	if ( gFlags.decrease_voltage )
 	{
@@ -1984,7 +2002,6 @@ __myevic__ void TweakTargetVoltsTC()
 	{
 		case TCALGO_SWEET:
 		case TCALGO_BOOST:
-		case TCALGO_AUTO:
 			TweakTargetVoltsSegments();
 			break;
 

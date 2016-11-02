@@ -24,7 +24,7 @@ __myevic__ void ModeChange()
 			}
 			if ( dfRezNI )
 			{
-				if ( ( dfRezLockedNI ) || !( gFlags.check_rez_ni ))
+				if ( ( dfRezLockedNI ) || !( gFlags.new_rez_ni ))
 				{
 					dfResistance = dfRezNI;
 				}
@@ -42,7 +42,7 @@ __myevic__ void ModeChange()
 			}
 			if ( dfRezTI )
 			{
-				if (( dfRezLockedTI ) || !( gFlags.check_rez_ti ))
+				if (( dfRezLockedTI ) || !( gFlags.new_rez_ti ))
 				{
 					dfResistance = dfRezTI;
 				}
@@ -60,7 +60,7 @@ __myevic__ void ModeChange()
 			}
 			if ( dfRezSS )
 			{
-				if (( dfRezLockedSS ) || !( gFlags.check_rez_ss ))
+				if (( dfRezLockedSS ) || !( gFlags.new_rez_ss ))
 				{
 					dfResistance = dfRezSS;
 				}
@@ -71,7 +71,7 @@ __myevic__ void ModeChange()
 			dfTempAlgo = 4;
 			if ( dfRezTCR )
 			{
-				if (( dfRezLockedTCR ) || !( gFlags.check_rez_tcr ))
+				if (( dfRezLockedTCR ) || !( gFlags.new_rez_tcr ))
 				{
 					dfResistance = dfRezTCR;
 				}
@@ -133,7 +133,7 @@ __myevic__ void InitFilter( filter_t *filter )
 	filter->oldest = 0;
 }
 
-__myevic__ uint16_t FilterData( filter_t *filter, uint16_t data )
+__myevic__ uint16_t FilterMedian( filter_t *filter, uint16_t data )
 {
 	filter->data[filter->oldest] = data;
 	filter->oldest = ( filter->oldest + 1 ) % FILTER_SIZE;
@@ -162,6 +162,52 @@ __myevic__ uint16_t FilterData( filter_t *filter, uint16_t data )
 	}
 	
 	return filter->data[filter->order[FILTER_SIZE / 2]];
+}
+
+__myevic__ uint16_t FilterTriangle( filter_t *filter, uint16_t data )
+{
+	const char coefs[FILTER_SIZE] = { 1, 2, 3, 2, 1 };
+
+	filter->data[filter->oldest] = data;
+	filter->oldest = ( filter->oldest + 1 ) % FILTER_SIZE;
+
+	if ( filter->count < FILTER_SIZE )
+	{
+		++filter->count;
+		return data;
+	}
+
+	data = 0;
+
+	int i,j;
+	for ( i = 0, j = filter->oldest ; i < FILTER_SIZE ; ++i )
+	{
+		data += coefs[i] * filter->data[j];
+		if ( ++j >= FILTER_SIZE ) j = 0;
+	}
+
+	return ( data / 9 );
+}
+
+__myevic__ uint16_t FilterWMean( filter_t *filter, uint16_t data )
+{
+	filter->data[filter->oldest] = data;
+	filter->oldest = ( filter->oldest + 1 ) % FILTER_SIZE;
+
+	if ( filter->count < FILTER_SIZE )
+	{
+		++filter->count;
+		return data;
+	}
+
+	data = 0;
+
+	for ( int i = 0 ; i < filter->count ; ++i )
+	{
+		data += filter->data[i];
+	}
+
+	return ( data / filter->count );
 }
 
 

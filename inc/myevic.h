@@ -110,14 +110,14 @@ typedef struct
 /* 01000000 */	int unused24:1;
 /* 02000000 */	int unused25:1;
 /* 04000000 */	int limit_ato_temp:1;
-/* 08000000 */	int check_rez_ti:1;
-/* 10000000 */	int check_rez_ni:1;
+/* 08000000 */	int new_rez_ti:1;
+/* 10000000 */	int new_rez_ni:1;
 /* 20000000 */	int limit_power:1;
 /* 40000000 */	int batteries_ooe:1;
-/* 80000000 */	int check_rez_ss:1;
+/* 80000000 */	int new_rez_ss:1;
 
 /* 00000001 */	int edit_value:1;
-/* 00000002 */	int check_rez_tcr:1;
+/* 00000002 */	int new_rez_tcr:1;
 /* 00000004 */	int unused34:1;
 /* 00000008 */	int bad_cell:1;
 /* 00000010 */	int edit_capture_evt:1;

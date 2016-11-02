@@ -413,8 +413,7 @@ __myevic__ void DevicesOnOff( int off )
 		PC1 = 0;
 		PC0 = 0;
 		BBC_Configure( BBC_PWMCH_BUCK, 0 );
-		if ( !ISVTCDUAL )
-			PC3 = 0;
+		if ( !ISVTCDUAL ) PC3 = 0;
 		PC2 = 0;
 		BBC_Configure( BBC_PWMCH_BOOST, 0 );
 
@@ -980,12 +979,16 @@ __myevic__ void Main()
 					ProbeAtomizer();
 				}
 			}
-			else if
-			(	!( dfStatus.off )
-				&& Event == 0
-				&& ( Screen == 0 || Screen == 1 || Screen == 5 ) )
+			else
 			{
-				ProbeAtomizer();
+				if
+				(	!dfStatus.off
+					&& Event == 0
+					&& ( AtoProbeCount < 12 )
+					&& ( Screen == 0 || Screen == 1 || Screen == 5 ) )
+				{
+					ProbeAtomizer();
+				}
 			}
 
 			if ( IsClockOnScreen() )
@@ -1022,9 +1025,21 @@ __myevic__ void Main()
 					DrawScreen();
 				}
 			}
-			else if ( gFlags.monitoring )
+			else
 			{
-				Monitor();
+				if
+				(	!dfStatus.off
+					&& Event == 0
+					&& ( AtoProbeCount >= 12 )
+					&& ( Screen == 0 || Screen == 1 || Screen == 5 ) )
+				{
+					ProbeAtomizer();
+				}
+
+				if ( gFlags.monitoring )
+				{
+					Monitor();
+				}
 			}
 		}
 

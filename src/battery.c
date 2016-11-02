@@ -363,7 +363,7 @@ __myevic__ void ReadInternalResistance()
 	// mOhm
 	rez = ( 10000 * ( BattVoltsTotal - RTBVTotal ) ) / ibat;
 
-	rez = FilterData( &filter, rez );
+	rez = FilterMedian( &filter, rez );
 
 	if ( filter.count >= FILTER_SIZE )
 	{

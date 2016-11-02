@@ -161,7 +161,7 @@ __myevic__ void EventHandler()
 	if ( Event == 0 )
 		return;
 
-	myprintf( "Event = %d\n", Event );
+//	myprintf( "Event = %d\n", Event );
 
 	NoEventTimer = 200;
 	LastEvent = Event;
@@ -296,9 +296,9 @@ __myevic__ void EventHandler()
 
 //------------------------------------------------------------------------------
 
-			if ( gFlags.check_rez_ni && dfMode == 0 )
+			if ( gFlags.new_rez_ni && dfMode == 0 )
 			{
-				gFlags.check_rez_ni = 0;
+				gFlags.new_rez_ni = 0;
 
 				if ( !dfRezNI )
 				{
@@ -314,7 +314,7 @@ __myevic__ void EventHandler()
 							&&	dfRezNI + 1 < NewRez
 							&&	!dfRezLockedNI )
 						{
-							gFlags.check_rez_ni = 1;
+							gFlags.new_rez_ni = 1;
 							Event = 32;
 							return;
 						}
@@ -347,9 +347,9 @@ __myevic__ void EventHandler()
 				}
 			}
 
-			if ( gFlags.check_rez_ti && dfMode == 1 )
+			if ( gFlags.new_rez_ti && dfMode == 1 )
 			{
-				gFlags.check_rez_ti = 0;
+				gFlags.new_rez_ti = 0;
 
 				if ( !dfRezTI )
 				{
@@ -365,7 +365,7 @@ __myevic__ void EventHandler()
 							&&	dfRezTI + 1 < NewRez
 							&&	!dfRezLockedTI )
 						{
-							gFlags.check_rez_ti = 1;
+							gFlags.new_rez_ti = 1;
 							Event = 32;
 							return;
 						}
@@ -398,9 +398,9 @@ __myevic__ void EventHandler()
 				}
 			}
 
-			if ( gFlags.check_rez_ss && dfMode == 2 )
+			if ( gFlags.new_rez_ss && dfMode == 2 )
 			{
-				gFlags.check_rez_ss = 0;
+				gFlags.new_rez_ss = 0;
 
 				if ( !dfRezSS )
 				{
@@ -416,7 +416,7 @@ __myevic__ void EventHandler()
 							&&	dfRezSS + 1 < NewRez
 							&&	!dfRezLockedSS )
 						{
-							gFlags.check_rez_ss = 1;
+							gFlags.new_rez_ss = 1;
 							Event = 32;
 							return;
 						}
@@ -448,9 +448,9 @@ __myevic__ void EventHandler()
 				}
 			}
 
-			if ( gFlags.check_rez_tcr && dfMode == 3 )
+			if ( gFlags.new_rez_tcr && dfMode == 3 )
 			{
-				gFlags.check_rez_tcr = 0;
+				gFlags.new_rez_tcr = 0;
 
 				if ( !dfRezTCR )
 				{
@@ -466,7 +466,7 @@ __myevic__ void EventHandler()
 							&&	dfRezTCR + 1 < NewRez
 							&&	!dfRezLockedTCR )
 						{
-							gFlags.check_rez_tcr = 1;
+							gFlags.new_rez_tcr = 1;
 							Event = 32;
 							return;
 						}
@@ -563,10 +563,10 @@ __myevic__ void EventHandler()
 							tempf = dfTemp;
 							if ( dfIsCelsius == 1 ) tempf = CelsiusToF( dfTemp );
 
-							int a  = ( 100 * ( tempf - 200 ) / 400 );
-							int b = 300 * a;
+							// 10W - 40W on full temp range
+							int p  = 100 + ( 3 * ( tempf - 200 ) / 4 );
 
-							TargetVolts = GetAtoVWVolts( b / 100 + 100 );
+							TargetVolts = GetAtoVWVolts( p );
 						}
 						else
 						{
@@ -989,19 +989,19 @@ __myevic__ void EventHandler()
 				{
 					case 0:
 						dfResistance = dfRezNI;
-						gFlags.check_rez_ni = 0;
+						gFlags.new_rez_ni = 0;
 						break;
 					case 1:
 						dfResistance = dfRezTI;
-						gFlags.check_rez_ti = 0;
+						gFlags.new_rez_ti = 0;
 						break;
 					case 2:
 						dfResistance = dfRezSS;
-						gFlags.check_rez_ss = 0;
+						gFlags.new_rez_ss = 0;
 						break;
 					case 3:
 						dfResistance = dfRezTCR;
-						gFlags.check_rez_tcr = 0;
+						gFlags.new_rez_tcr = 0;
 						break;
 					default:
 						break;
@@ -1114,19 +1114,19 @@ __myevic__ void EventHandler()
 				{
 					case 0:
 						dfRezNI = NewRez;
-						gFlags.check_rez_ni = 0;
+						gFlags.new_rez_ni = 0;
 						break;
 					case 1:
 						dfRezTI = NewRez;
-						gFlags.check_rez_ti = 0;
+						gFlags.new_rez_ti = 0;
 						break;
 					case 2:
 						dfRezSS = NewRez;
-						gFlags.check_rez_ss = 0;
+						gFlags.new_rez_ss = 0;
 						break;
 					case 3:
 						dfRezTCR = NewRez;
-						gFlags.check_rez_tcr = 0;
+						gFlags.new_rez_tcr = 0;
 						break;
 					default:
 						break;

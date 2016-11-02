@@ -116,10 +116,6 @@ __myevic__ void AlgoMenuIDraw( int it, int line, int sel )
 				case TCALGO_PID:
 					DrawStringRight( String_PID, 64, line + 2 );
 					break;
-
-				case TCALGO_AUTO:
-					DrawStringRight( String_Auto, 64, line + 2 );
-					break;
 			}
 			break;
 	}
@@ -1148,20 +1144,40 @@ __myevic__ void CoilsMEnter()
 
 __myevic__ void CoilsIDraw( int it, int line, int sel )
 {
-	if ( it > 3 ) return;
-	int rez = 0;
-	short img = 0xC0;
-	CoilsSelectRez( it );
-	rez = *CoilSelectedRez;
-	if ( *CoilSelectedLock ) img = 0xC3;
-	DrawFillRect( 32, line, 63, line+12, 0 );
-	DrawValue( 34, line+2, rez, 2, 0x0B, 3 );
-	DrawImage( 56, line+2, img );
+	switch ( it )
+	{
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+		{
+			int rez = 0;
+			short img = 0xC0;
+			CoilsSelectRez( it );
+			rez = *CoilSelectedRez;
+			if ( *CoilSelectedLock ) img = 0xC3;
+			DrawFillRect( 32, line, 63, line+12, 0 );
+			DrawValue( 34, line+2, rez, 2, 0x0B, 3 );
+			DrawImage( 56, line+2, img );
+			CoilsSelectRez( CurrentMenuItem );
+			break;
+		}
+		
+		case 5:	// Check
+		{
+			const uint16_t *s;
+			DrawFillRect( 40, line, 63, line+12, 0 );
+			s = ( ISMODETC(dfMode) && gFlags.check_mode ) ?
+				String_Yes : String_No;
+			DrawString( s, 44, line+2 );
+			break;
+		}
+	}
+
 	if ( gFlags.edit_value && sel )
 	{
 		InvertRect( 0, line, 63, line+12 );
 	}
-	CoilsSelectRez( CurrentMenuItem );
 }
 
 __myevic__ void CoilsIClick()
@@ -1177,6 +1193,13 @@ __myevic__ void CoilsIClick()
 			{
 				dfSavedCfgRez[i] = 0;
 				dfSavedCfgPwr[i] = 0;
+			}
+			break;
+
+		case 5:	// Check
+			if ( ISMODETC(dfMode) )
+			{
+				gFlags.check_mode ^= 1;
 			}
 			break;
 	}
@@ -1525,13 +1548,14 @@ const menu_t CoilsMgmtMenu =
 	CoilsISelect+1,
 	CoilsIClick+1,
 	CoilsMEvent+1,
-	6,
+	7,
 	{
 		{ String_NI, 0, 0, 0 },
 		{ String_TI, 0, 0, 0 },
 		{ String_SS, 0, 0, 0 },
 		{ String_TCR, 0, 0, 0 },
 		{ String_Zero_All, 0, 0, 0 },
+		{ String_Check, 0, 0, 0 },
 		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };

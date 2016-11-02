@@ -81,11 +81,6 @@ __myevic__ void TMR1_IRQHandler()
 	{
 		TIMER_ClearIntFlag( TIMER1 );
 
-	//	if ( !gFlags.has_x32 )
-	//	{
-	//		ClockCorrection += 2;
-	//	}
-
 		gFlags.tick_5khz = 1;
 		++TMR1Counter;
 	}

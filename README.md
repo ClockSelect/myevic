@@ -219,9 +219,18 @@ Main menu screen
             You may also fire two seconds on one of the four resistances to reset its value; if the selected resistance corresponds to the current vaping mode, this will force an immediate reading of the atomizer, setting and lock of the new value.  
               
             When entering the Coils Management menu, the resistance corresponfing to the current vaping mode (if applicable) will be pre-selected.
+
       * Zero All:
 
             Zeroes all resistances; also zeroes all "SMART" and "POWER" modes saved resistance settings.
+
+      * Check: Yes/No
+      
+            *If you feel you need to use this feature in any other situation than a really heavy build with low TCR value (SS and such), you surely have an issue with your coil. Using this feature may be risky and therefore is not recommended. Check your build first.*  
+            In TC modes, the box checks for suitability of the resistance the first time it is fired (i.e. each time the atomizer in screwed on or after box reset). The test is done in a way that can make heavy builds with low TCR value fail the test (really heavy, like dual twisted clapton or such; more than around 1.7 grams of metal). If a coil fails the first fire test, the box will enforce the power mode.  
+            If you know your heavy build is well done and suitable for temp control, first set the mode you wich to use it in, then go to the menu and set this option to "No". The box will bypass the first fire test for this particular coil.  
+            The check is re-enforeced if you unscrew the atomizer or reset the box.  
+
 
     * TCR Set:
 
@@ -282,7 +291,8 @@ Main menu screen
       * P, I, D
       
             The 3 parameters controlling the Proportional, Integral and Derivative part of the PID algorithm. You should familiarize yourself with the PID algorithm before playing with those parameters. Many papers exist over the internet on the subject.  
-            A long fire resets the parameter to its default value.
+            A long fire resets the parameter to its default value.  
+            Default values are (600,850,0). They are general-purpose values that should work in most cases, but may not be perfect and need to be tuned for any particular setup.
 
     * Prot.
 

@@ -100,8 +100,6 @@ extern const uint16_t String_Version[];
 extern const uint16_t String_Device[];
 extern const uint16_t String_TooHot[];
 extern const uint16_t String_Stealth[];
-extern const uint16_t String_TiON[];
-extern const uint16_t String_TiOFF[];
 extern const uint16_t String_Temp[];
 extern const uint16_t String_Battery[];
 extern const uint16_t String_Atomizer[];
@@ -271,6 +269,7 @@ extern const uint16_t String_PID[];
 extern const uint16_t String_P[];
 extern const uint16_t String_I[];
 extern const uint16_t String_D[];
+extern const uint16_t String_Yes[];
 
 
 //==============================================================================
