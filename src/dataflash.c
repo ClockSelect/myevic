@@ -383,6 +383,7 @@ __myevic__ void ResetDataFlash()
 //	dfStealthOn = 0;
 	CpyTmpCoefsNI();
 	CpyTmpCoefsTI();
+	dfLEDColor = 25 << 10;
 //	dfStatus.off = 0;
 //	dfStatus.keylock = 0;
 	dfStatus.flipped = ScrFlip;

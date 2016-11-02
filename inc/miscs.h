@@ -36,4 +36,16 @@ extern void qix_diddle(int16_t *ptr );
 
 extern void Snow( int );
 
+extern uint8_t LEDRed;
+extern uint8_t LEDGreen;
+extern uint8_t LEDBlue;
+extern volatile uint8_t LEDTimer;
+
+extern void LEDGetColor();
+extern void LEDSetColor();
+extern void LEDWhite();
+extern void LEDControl();
+extern void LEDOff();
+extern void LEDTimerTick();
+
 #endif /* __MISCS_H__ */

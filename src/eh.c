@@ -513,6 +513,15 @@ __myevic__ void EventHandler()
 				PD7 = 0;
 			}
 
+			if ( ISEGRIPII )
+			{
+				if ( !dfStealthOn )
+				{
+					LEDTimer = 0;
+					gFlags.led_on = 1;
+				}
+			}
+
 		//	myprintf( "StartFire\n" );
 
 			gFlags.firing = 1;
@@ -809,6 +818,7 @@ __myevic__ void EventHandler()
 			{
 				dfStatus.off = 1;
 				gFlags.refresh_display = 1;
+				LEDOff();
 				if ( gFlags.battery_charging )
 				{
 					ChargeView();

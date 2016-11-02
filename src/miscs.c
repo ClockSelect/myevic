@@ -716,3 +716,60 @@ __myevic__ void Snow( int redraw )
 	}
 }
 
+
+//=========================================================================
+// LED Stuff
+//-------------------------------------------------------------------------
+
+uint8_t LEDRed;
+uint8_t LEDGreen;
+uint8_t LEDBlue;
+
+volatile uint8_t LEDTimer;
+
+__myevic__ void LEDGetColor()
+{
+	LEDBlue = dfLEDColor & 0x1F;
+	LEDGreen = ( dfLEDColor & ( 0x1F << 5 ) ) >> 5;
+	LEDRed = ( dfLEDColor & ( 0x1F << 10 ) ) >> 10;
+}
+
+__myevic__ void LEDSetColor()
+{
+	dfLEDColor = ( LEDRed << 10 ) | ( LEDGreen << 5 ) | LEDBlue;
+}
+
+__myevic__ void LEDWhite()
+{
+	LEDBlue = 25;
+	LEDGreen = 25;
+	LEDRed = 25;
+}
+
+__myevic__ void LEDOff()
+{
+	gFlags.led_on = 0;
+	PB->DOUT &= ~0x38;
+}
+
+// LED PWM
+// Called by Timer 1 @ 5kHz
+__myevic__ void LEDControl()
+{
+	uint32_t phase = TMR1Counter % 25;
+	PB3 = ( phase < LEDBlue );
+	PB4 = ( phase < LEDRed );
+	PB5 = ( phase < LEDGreen );
+}
+
+__myevic__ void LEDTimerTick()
+{
+	if ( LEDTimer )
+	{
+		if ( !--LEDTimer )
+		{
+			LEDOff();
+		}
+	}
+}
+

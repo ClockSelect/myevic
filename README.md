@@ -8,7 +8,7 @@ This is My eVic VTC Mini.
 * eVic VTwo
 * eVic AIO
 * eVic Basic
-* eGrip II
+* eGrip II / Light
 * Cuboid
 * Cuboid Mini
 * Wismec Presa TC75W
@@ -192,6 +192,11 @@ Main menu screen
       * Game
 
             Flappy bird. Guenuine menu.
+
+      * Led  
+
+            eGrip II LED Color setting.
+
       * 3D
 
             ![3D cube](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/cube_zpsf9apfiun.png)

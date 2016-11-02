@@ -205,7 +205,7 @@ __myevic__ int VapingMenuOnEvent( int event )
 					vret = 1;
 					break;
 
-				case 4: // mL/kJ
+				case 5: // mL/kJ
 					if ( ++dfVVRatio > VVEL_MAX_RATIO )
 					{
 						if ( KeyTicks < 5 ) dfVVRatio = VVEL_MIN_RATIO;
@@ -228,7 +228,7 @@ __myevic__ int VapingMenuOnEvent( int event )
 					vret = 1;
 					break;
 
-				case 4: // mL/kJ
+				case 5: // mL/kJ
 					if ( --dfVVRatio < VVEL_MIN_RATIO )
 					{
 						if ( KeyTicks < 5 ) dfVVRatio = VVEL_MAX_RATIO;
@@ -1333,6 +1333,27 @@ __myevic__ int TCRSetOnEvent( int event )
 
 
 //-----------------------------------------------------------------------------
+
+__myevic__ void DrawLedColor( int x, int y, int v, uint8_t dp, uint16_t z, uint8_t nd )
+{
+	DrawValueRight( x, y + 2, v * 4, dp, z, nd );
+	DrawImage( x + 1, y + 2, 0xC2 );
+}
+
+__myevic__ void LedMenuEnter()
+{
+	LEDGetColor();
+	if ( ISEGRIPII ) gFlags.led_on = 1;
+}
+
+__myevic__ int LedMenuEvent( int event )
+{
+	LEDSetColor();
+	return 0;
+}
+
+
+//-----------------------------------------------------------------------------
 // Forward declarations for parent menu pointers
 
 const menu_t MainMenu;
@@ -1596,6 +1617,61 @@ const menu_t Object3DMenu =
 	}
 };
 
+const mvaluedesc_t LedDesc =
+{
+	34, 53,
+	0, 0,
+	0, 25,
+	DrawLedColor+1,
+	0,
+	0xC2,
+	0x0B,
+	1,
+	26, 26
+};
+
+const mdata_t LedRedData =
+{
+	&LEDRed,
+	&LedDesc,
+	MITYPE_BYTE,
+	0
+};
+
+const mdata_t LedGreenData =
+{
+	&LEDGreen,
+	&LedDesc,
+	MITYPE_BYTE,
+	0
+};
+
+const mdata_t LedBlueData =
+{
+	&LEDBlue,
+	&LedDesc,
+	MITYPE_BYTE,
+	0
+};
+
+const menu_t LedMenu =
+{
+	String_Led,
+	&MiscsMenu,
+	LedMenuEnter+1,
+	0,
+	0,
+	0,
+	LedMenuEvent+1,
+	4,
+	{
+		{ String_Red, &LedRedData, 0, MACTION_DATA },
+		{ String_Green, &LedGreenData, 0, MACTION_DATA },
+		{ String_Blue, &LedBlueData, 0, MACTION_DATA },
+		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+	}
+};
+
 const menu_t MiscsMenu =
 {
 	String_Miscs,
@@ -1605,9 +1681,10 @@ const menu_t MiscsMenu =
 	0,
 	0,
 	0,
-	3,
+	4,
 	{
 		{ String_Game, &GameMenu, 0, MACTION_SUBMENU },
+		{ String_Led, &LedMenu, 0, MACTION_SUBMENU },
 		{ String_3D, &Object3DMenu, 0, MACTION_SUBMENU },
 		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
@@ -2054,11 +2131,24 @@ __myevic__ void DrawMenuData( int line, int sel, const mdata_t *data )
 			break;
 		}
 
+		case MITYPE_BYTE:
 		case MITYPE_WORD:
 		{
-			uint16_t v = *(const uint16_t*)p;
+			uint16_t v;
+
+			if ( data->type == MITYPE_BYTE )
+			{
+				v = *(const uint8_t*)p;
+			}
+			else
+			{
+				v = *(const uint16_t*)p;
+			}
+
 			const mvaluedesc_t *desc = data->desc;
+
 			DrawFillRect( desc->div, line, 63, line+12, 0 );
+
 			if ( desc->draw )
 			{
 				desc->draw( desc->posr, line, v, desc->dp, desc->z, desc-> nd );
@@ -2075,10 +2165,12 @@ __myevic__ void DrawMenuData( int line, int sel, const mdata_t *data )
 					DrawImage( desc->posr + 1, line + 2, desc->unit_c );
 				}
 			}
+
 			if ( sel && gFlags.edit_value )
 			{
 				InvertRect( 0, line, 63, line+12 );
 			}
+
 			break;
 		}
 	}
@@ -2493,6 +2585,7 @@ __myevic__ int MenuEvent( int event )
 			EditModeTimer = 0;
 			gFlags.edit_capture_evt = 0;
 			gFlags.edit_value = 0;
+			LEDOff();
 			UpdateDataFlash();
 			MainView();
 			vret = 1;
@@ -2539,6 +2632,9 @@ __myevic__ int MenuEvent( int event )
 			}
 
 			EditModeTimer = 0;
+			gFlags.edit_capture_evt = 0;
+			gFlags.edit_value = 0;
+			LEDOff();
 			vret = 1;
 			break;
 		}

@@ -141,6 +141,7 @@ typedef struct
 /* 00100000 */	int wake_up:1;
 /* 00200000 */	int scr_noinv:1;
 /* 00400000 */	int fading:1;
+/* 00800000 */	int led_on:1;
 }
 
 gFlags_t;

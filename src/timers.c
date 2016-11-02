@@ -7,6 +7,7 @@
 #include "atomizer.h"
 #include "flappy.h"
 #include "display.h"
+#include "miscs.h"
 
 //=========================================================================
 
@@ -83,6 +84,11 @@ __myevic__ void TMR1_IRQHandler()
 
 		gFlags.tick_5khz = 1;
 		++TMR1Counter;
+
+		if ( gFlags.led_on )
+		{
+			LEDControl();
+		}
 	}
 }
 

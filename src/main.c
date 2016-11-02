@@ -299,6 +299,7 @@ __myevic__ void InitRTC()
 __myevic__ void InitVariables()
 {
 	InitDataFlash();
+	LEDGetColor();
 	KeyPressTime |= 0x8000;
 	LastInputs |= 0x80;
 	byte_200000B3 = 1;
@@ -626,6 +627,7 @@ void GoToSleep()
 	gFlags.light_sleep = !( gFlags.has_x32 || dfStatus.lsloff || gFlags.noclock );
 
 	ScreenOff();
+	LEDOff();
 	gFlags.firing = 0;
 	BatReadTimer = 50;
 	RTCSleep();
@@ -730,6 +732,7 @@ __myevic__ void Monitor()
 
 		if ( ISMODETC(dfMode) )
 		{
+			ReadAtoTemp();
 			myprintf( " SPWR=%d CELS=%d STEMP=%d RTEMP=%d\n",
 						dfTCPower,
 						dfIsCelsius ? 1 : 0,
@@ -942,6 +945,7 @@ __myevic__ void Main()
 			gFlags.tick_10hz = 0;
 
 			DataFlashUpdateTick();
+			LEDTimerTick();
 
 			if ( gFlags.firing )
 			{

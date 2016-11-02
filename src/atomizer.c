@@ -325,6 +325,11 @@ __myevic__ void StopFire()
 		SetADCState( 15, 0 );
 	}
 
+	if ( ISEGRIPII )
+	{
+		LEDTimer = 30;
+	}
+
 	if ( gFlags.firing )
 	{
 		gFlags.firing = 0;
@@ -804,30 +809,6 @@ __myevic__ void RegulateBuckBoost()
 			{
 				if ( BBCMode != 1 )
 				{
-					/*
-					if ( ISPRESA100W )
-					{
-						BBC_Configure( BBC_PWMCH_BOOST, 1 );
-						BoostDuty = MinBoost;
-						PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, BoostDuty );
-
-						BBC_Configure( BBC_PWMCH_BUCK, 1 );
-						BuckDuty = MaxBuck;
-						PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, BuckDuty );
-					}
-					else
-					{
-						PC2 = 1;
-						BBC_Configure( BBC_PWMCH_BOOST, 0 );
-					
-						PC0 = 1;
-						BBC_Configure( BBC_PWMCH_BUCK, 0 );
-					}
-
-					if ( !ISVTCDUAL ) PC3 = 1;
-					PC1 = 1;
-					*/
-
 					BBC_Configure( BBC_PWMCH_BOOST, 1 );
 					BoostDuty = MinBoost;
 					PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, BoostDuty );
@@ -859,28 +840,6 @@ __myevic__ void RegulateBuckBoost()
 			{
 				if ( BBCMode != 2 )
 				{
-					/*
-					if ( ISPRESA100W )
-					{
-						BBC_Configure( BBC_PWMCH_BOOST, 1 );
-						BoostDuty = MinBoost;
-						PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, BoostDuty );
-					}
-					else
-					{
-						PC2 = 1;
-						BBC_Configure( BBC_PWMCH_BOOST, 0 );
-					}
-					if ( !ISVTCDUAL ) PC3 = 1;
-
-					BBC_Configure( BBC_PWMCH_BUCK, 1 );
-					BuckDuty = ( BBCMode == 0 ) ? MinBuck : MaxBuck;
-					PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, BuckDuty );
-					PC1 = 1;
-
-					BBCMode = 2;
-					*/
-
 					BBC_Configure( BBC_PWMCH_BOOST, 1 );
 					BoostDuty = MinBoost;
 					PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, BoostDuty );
@@ -928,28 +887,6 @@ __myevic__ void RegulateBuckBoost()
 			{
 				if ( BBCMode != 3 )
 				{
-					/*
-					BBC_Configure( BBC_PWMCH_BOOST, 1 );
-					BoostDuty = MinBoost;
-					PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, BoostDuty );
-					if ( !ISVTCDUAL ) PC3 = 1;
-
-					if ( ISPRESA100W )
-					{
-						BBC_Configure( BBC_PWMCH_BUCK, 1 );
-						BuckDuty = MaxBuck;
-						PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, BuckDuty );
-					}
-					else
-					{
-						PC0 = 1;
-						BBC_Configure( BBC_PWMCH_BUCK, 0 );
-					}
-					PC1 = 1;
-
-					BBCMode = 3;
-					*/
-
 					BBC_Configure( BBC_PWMCH_BOOST, 1 );
 					BoostDuty = MinBoost;
 					PWM_SET_CMR( PWM0, BBC_PWMCH_BOOST, BoostDuty );

@@ -314,6 +314,7 @@ __myevic__ void DrawScreen()
 		case 106: // Set Date
 			gFlags.edit_capture_evt = 0;
 			gFlags.edit_value = 0;
+			LEDOff();
 			UpdateDataFlash();
 			// NOBREAK
 		case   1: // Main view

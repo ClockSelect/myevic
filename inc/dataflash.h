@@ -112,7 +112,7 @@ typedef struct dfParams
 /* 0021 */	uint8_t		StealthOn;
 /* 0022 */	uint16_t	TempCoefsNI[21];
 /* 004C */	uint16_t	TempCoefsTI[21];
-/* 0076 */	//	2-bytes pad
+/* 0076 */	uint16_t	LEDColor;		//	2-bytes pad
 /* 0078 */	dfStatus_t	Status;
 /* 007C */	uint16_t	AtoRez;
 /* 007E */	uint8_t		AtoStatus;
@@ -291,6 +291,7 @@ extern dfStruct_t DataFlash;
 #define dfStealthOn		DFP(StealthOn)
 #define dfTempCoefsNI	DFP(TempCoefsNI)
 #define dfTempCoefsTI	DFP(TempCoefsTI)
+#define dfLEDColor		DFP(LEDColor)
 #define dfStatus		DFP(Status)
 #define dfAtoRez		DFP(AtoRez)
 #define dfAtoStatus		DFP(AtoStatus)

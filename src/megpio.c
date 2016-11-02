@@ -177,6 +177,15 @@ __myevic__ void InitGPIO()
 	PE12 = 0;
 	GPIO_SetMode( PE, GPIO_PIN_PIN12_Msk, GPIO_MODE_OUTPUT );
 
+	// LED Control
+	if ( ISEGRIPII )
+	{
+		PB3 = 0;	// Blue
+		PB4 = 0;	// Red
+		PB5 = 0;	// Green
+		GPIO_SetMode( PB, GPIO_PIN_PIN3_Msk|GPIO_PIN_PIN4_Msk|GPIO_PIN_PIN5_Msk, GPIO_MODE_OUTPUT );
+	}
+
 	if ( ISRX200S || ISRX23 )
 	{
 		SYS->GPF_MFPL &= ~SYS_GPF_MFPL_PF1MFP_Msk;

@@ -270,6 +270,10 @@ extern const uint16_t String_P[];
 extern const uint16_t String_I[];
 extern const uint16_t String_D[];
 extern const uint16_t String_Yes[];
+extern const uint16_t String_Led[];
+extern const uint16_t String_Red[];
+extern const uint16_t String_Green[];
+extern const uint16_t String_Blue[];
 
 
 //==============================================================================

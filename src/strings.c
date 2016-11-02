@@ -176,3 +176,7 @@ __string__ String_P			[] = { 0xAB, 0 };
 __string__ String_I			[] = { 0xA4, 0 };
 __string__ String_D			[] = { 0x9F, 0 };
 __string__ String_Yes		[] = { 0xB4, 0x86, 0x94, 0 };
+__string__ String_Led		[] = { 0xA7, 0x86, 0x85, 0 };
+__string__ String_Red		[] = { 0xAD, 0x86, 0x85, 0 };
+__string__ String_Green		[] = { 0xA2, 0x93, 0x86, 0x86, 0x8F, 0 };
+__string__ String_Blue		[] = { 0x9D, 0x8D, 0x96, 0x86, 0 };
