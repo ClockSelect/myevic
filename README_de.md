@@ -204,7 +204,7 @@ Main Menü
 
       * Led  
 
-            eGrip II eGrip II / eVic AIO LED Farbeinstellung.
+            eGrip II / eVic AIO LED Farbeinstellung.
 
       * 3D
 
