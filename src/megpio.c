@@ -178,7 +178,7 @@ __myevic__ void InitGPIO()
 	GPIO_SetMode( PE, GPIO_PIN_PIN12_Msk, GPIO_MODE_OUTPUT );
 
 	// LED Control
-	if ( ISEGRIPII )
+	if ( ISEGRIPII || ISEVICAIO )
 	{
 		PB3 = 0;	// Blue
 		PB4 = 0;	// Red

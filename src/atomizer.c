@@ -325,7 +325,7 @@ __myevic__ void StopFire()
 		SetADCState( 15, 0 );
 	}
 
-	if ( ISEGRIPII )
+	if ( ISEGRIPII || ISEVICAIO )
 	{
 		LEDTimer = 30;
 	}

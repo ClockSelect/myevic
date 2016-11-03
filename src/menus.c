@@ -1343,7 +1343,7 @@ __myevic__ void DrawLedColor( int x, int y, int v, uint8_t dp, uint16_t z, uint8
 __myevic__ void LedMenuEnter()
 {
 	LEDGetColor();
-	if ( ISEGRIPII ) gFlags.led_on = 1;
+	if ( ISEGRIPII || ISEVICAIO ) gFlags.led_on = 1;
 }
 
 __myevic__ int LedMenuEvent( int event )

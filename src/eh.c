@@ -513,7 +513,7 @@ __myevic__ void EventHandler()
 				PD7 = 0;
 			}
 
-			if ( ISEGRIPII )
+			if ( ISEGRIPII || ISEVICAIO )
 			{
 				if ( !dfStealthOn )
 				{

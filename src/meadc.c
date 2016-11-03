@@ -34,13 +34,27 @@ __myevic__ void InitEADC()
 		// Disable PB.0 - PB.7 digital input paths to avoid leakage currents
 		GPIO_DISABLE_DIGITAL_PATH( PB, 0xFF );
 	}
+	else if ( ISEGRIPII || ISEVICAIO )
+	{
+		// Configure PB.0 - PB.7 analog input pins
+		SYS->GPB_MFPL &= ~(SYS_GPB_MFPL_PB0MFP_Msk | SYS_GPB_MFPL_PB1MFP_Msk |
+						   SYS_GPB_MFPL_PB2MFP_Msk |
+						   SYS_GPB_MFPL_PB6MFP_Msk );
+
+		SYS->GPB_MFPL |= (SYS_GPB_MFPL_PB0MFP_EADC_CH0  | SYS_GPB_MFPL_PB1MFP_EADC_CH1  |
+						  SYS_GPB_MFPL_PB2MFP_EADC_CH2  |
+						  SYS_GPB_MFPL_PB6MFP_EADC_CH14 );
+
+		// Disable PB.0 - PB.7 digital input paths to avoid leakage currents
+		GPIO_DISABLE_DIGITAL_PATH( PB, 0x47 );
+	}
 	else
 	{
 		// Configure PB.0 - PB.6 analog input pins
 		SYS->GPB_MFPL &= ~(SYS_GPB_MFPL_PB0MFP_Msk | SYS_GPB_MFPL_PB1MFP_Msk |
 						   SYS_GPB_MFPL_PB2MFP_Msk | SYS_GPB_MFPL_PB3MFP_Msk |
 						   SYS_GPB_MFPL_PB4MFP_Msk | SYS_GPB_MFPL_PB5MFP_Msk |
-						   SYS_GPB_MFPL_PB6MFP_Msk);
+						   SYS_GPB_MFPL_PB6MFP_Msk );
 
 		SYS->GPB_MFPL |= (SYS_GPB_MFPL_PB0MFP_EADC_CH0 | SYS_GPB_MFPL_PB1MFP_EADC_CH1  |
 						  SYS_GPB_MFPL_PB2MFP_EADC_CH2 | SYS_GPB_MFPL_PB3MFP_EADC_CH3  |
