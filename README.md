@@ -195,7 +195,7 @@ Main menu screen
 
       * Led  
 
-            eGrip II LED Color setting.
+            eGrip II / eVic AIO LED Color setting.
 
       * 3D
 

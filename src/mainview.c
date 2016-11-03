@@ -459,27 +459,13 @@ __myevic__ void DrawTemp()
 		{
 			int tempc = FarenheitToC( AtoTemp );
 
-			if ( dfTemp <= tempc )
-			{
-				DrawString( String_Protection, 2, 20 );
-			}
-			else
-			{
-				DrawValue( 0, 13, tempc, 0, 0x48, 3 );
-				DrawImage( 48, 20, 0xE0 );
-			}
+			DrawValue( 0, 13, tempc, 0, 0x48, 3 );
+			DrawImage( 48, 20, 0xE0 );
 		}
 		else
 		{
-			if ( dfTemp <= AtoTemp )
-			{
-				DrawString( String_Protection, 2, 20 );
-			}
-			else
-			{
-				DrawValue( 0, 13, AtoTemp, 0, 0x48, 3 );
-				DrawImage( 48, 20, 0xE1 );
-			}
+			DrawValue( 0, 13, AtoTemp, 0, 0x48, 3 );
+			DrawImage( 48, 20, 0xE1 );
 		}
 	}
 	else
