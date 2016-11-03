@@ -280,38 +280,40 @@ Main Menü
         Klicke auf ein Menü Item, um es auf “Y” oder ”N” zu stellen, wenn du sehen willst, welche Vorschläge dir gegeben werden.
 
         Im Beispiel wollen wir den "SMART" Modus auf „N“ stellen. 
-
+   
     * Algo
     
-         *Temperature Control only*  
-         TC Algorithms submenu  
+         *Nur im Temperaturmodus*  
+         TC Algorithmus Untermenü 
 
          ![Algo submenu](https://www.dropbox.com/s/ecy9oqapftnfwh3/algo.png?dl=1)  
 
          * Algo  
-         Choose betwen several algorithms for temperature control.
-           * Off: use the default standard agorythm from stock firmware.
-           * Sweet: much like the default, but smoothes out oscillations in regulation phase.
-           * Boost: speeds up temperature ramp-up and reduces oscillations, but with the risk of overshooting the target temperature if not configured properly. See the Boost option below.
-           * PID: A standard PID algorithm
-         
-             There is no "best" algorithm; it will essentialy depend on your setup and on your personnal taste. Test and experiment to see what fits best to you. The device monitor of the [NFirmwareEditor](https://github.com/TBXin/NFirmwareEditor/releases) is a great tool to observe the behavior of the algorithms with different setups and parameters.  
-             More algorithms may be implemented with time. Stay tuned.  
+         Wähle zwischen verschiedenen Temperatur Algorithmen aus:
+           * Off: Nutzt den Standard Algorithmus der originalen Firmware.
+           * Sweet: ungefähr wie der Standard, aber die Oszillation ist etwas „weicher“ als in der Regulären Variante.
+           * Boost: Erhöht die Schnelligkeit bis zur gewünschten Temperatur und reduziert die Oszillation, aber das Risiko einer Überhitzung besteht. Siehe auch den Punkt „Boost“ weiter unten.
+
+           * PID: Ein Standard PID Algorithmus.         
+             Es gibt keinen Algorithmus der, der "Beste" ist; es liegt an deinen Einstellungen und deinem persönlichen Gefühl. Probiere es einfach aus und finde heraus welcher dir am besten gefällt.
+Derer [NFirmwareEditor](https://github.com/TBXin/NFirmwareEditor/releases) ist ein super Tool, um den die eingestellten Algorithmen einfach darstellen zu lassen. Weitere Algorithmen werden nach und nach eingebaut.  
 
       * Boost
     
-             A parameter controling the Boost algorithm (see above).  
-             Set the limit, in percentage of the target temperature, at wich the Boost algorithm will stop speeding up the temperature ramp-up phase. The more the value, the faster the ramp-up time, but with a higher risk of overshooting the target temperature. High values are best with heavy resistances such as clapton builds, lower are prefered with light resistances such as single high gauge wire. Also, choosing the right power/wattage setup (not too high nor too low) will help prevent overshooting while keeping a fast ramp-up. You'll have to experiment to see what fits the best for your setup and personal taste.  
-             A long fire resets the parameter to its default value.
+             Ein Parameter kontrolliert den Boos Algorithmus (siehe oben).  
+             Setze das Limit in Prozent der Ziel Temperatur, wo der Boost Algorithmus stoppen soll. Je höher der Wert, desto schneller wird die Ziel Temperatur erreicht, aber mit einem erhöhten Risiko der Überhitzung. Hohe Werte setzt man am besten bei hohen Widerständen ein, wie z.B. bei Clapton Coils, kleinere Werte werden bei einfachen Wicklungen bevorzugt. Also, finde das Richtige Power/Leistungsverhältnis (nicht zu hoch und nicht zu niedrig) dies hilft dir, ein Überhitzen vorzubeugen. Du musst einfach probieren was das Beste für dich ist.
+Längeres drücken der Feuertaste bringt euch wieder zu den Standardeinstellungen.
 
       * P, I, D
       
-            The 3 parameters controlling the Proportional, Integral and Derivative part of the PID algorithm. You should familiarize yourself with the PID algorithm before playing with those parameters. Many papers exist over the internet on the subject.  
-            A long fire resets the parameter to its default value.  
-            Default values are (600,850,0). They are general-purpose values that should work in most cases, but may not be perfect and need to be tuned for any particular setup.  
-            Algorithm is implemented in its independant form.  
-            Sample time (50Hz) is scaled to one for parameters uniformity.  
-            Units: **P** is expressed in mW/°C, **I** in mW/°C/s, **D** in mW.s/°C.
+            Diese drei Parameter kontrollieren den Proportionalen, Integralen und Derivaten Teil des PID Algorithmus. Du solltest dich erst mit dem PID Algorithmus anfreunden, bevor du mit seinen Parametern herumspielst.
+Es gibt vieles dazu im Internet zu finden.  
+Längeres drücken der Feuertaste bringt euch wieder zu den Standardeinstellungen.
+
+            Standartwerte sind:(600,850,0). Dies sind generelle Werte die auf fast allen Boxen laufen sollten, leider nicht perfekt und mit speziellen Einstellungen sollte man vorsichtig sein.
+            Der Algorithmus ist in seiner Ursprungsform implementiert.  
+            Standard (50Hz) ist eingestellt.  
+            Einheiten: **P** bedeutet mW/°C, **I** bedeutet mW/°C/s, **D** bedeutet mW.s/°C.
 
     * Prot.
     
