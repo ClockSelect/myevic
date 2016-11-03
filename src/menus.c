@@ -1162,6 +1162,16 @@ __myevic__ void CoilsIDraw( int it, int line, int sel )
 			CoilsSelectRez( CurrentMenuItem );
 			break;
 		}
+		
+		case 5:	// Check
+		{
+			const uint16_t *s;
+			DrawFillRect( 36, line, 63, line+12, 0 );
+			s = ( ISMODETC(dfMode) && dfStatus.chkmodeoff ) ?
+				String_No : String_Yes;
+			DrawString( s, 44, line+2 );
+			break;
+		}
 	}
 
 	if ( gFlags.edit_value && sel )
@@ -1183,6 +1193,13 @@ __myevic__ void CoilsIClick()
 			{
 				dfSavedCfgRez[i] = 0;
 				dfSavedCfgPwr[i] = 0;
+			}
+			break;
+
+		case 5:	// Check
+			if ( ISMODETC(dfMode) )
+			{
+				dfStatus.chkmodeoff ^= 1;
 			}
 			break;
 	}
@@ -1552,13 +1569,14 @@ const menu_t CoilsMgmtMenu =
 	CoilsISelect+1,
 	CoilsIClick+1,
 	CoilsMEvent+1,
-	6,
+	7,
 	{
 		{ String_NI, 0, 0, 0 },
 		{ String_TI, 0, 0, 0 },
 		{ String_SS, 0, 0, 0 },
 		{ String_TCR, 0, 0, 0 },
 		{ String_Zero_All, 0, 0, 0 },
+		{ String_Check, 0, 0, 0 },
 		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
@@ -2627,3 +2645,5 @@ __myevic__ int MenuEvent( int event )
 
 	return vret;
 }
+
+

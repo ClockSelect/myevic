@@ -1,5 +1,5 @@
 ## **myevic**
-This is My eVic VTC Mini.
+This is myevic Custom Firmware.
 
 ### Compatible hardwares:
 * eVic VTC Mini
@@ -62,6 +62,7 @@ OR
     * Eugene San
     * MarkyAD
     * bluenazgul
+    * Sharky1980
     * gdb
     
     And many others, supporting this project and taking the time to open or help solving issues.
@@ -228,6 +229,15 @@ Main menu screen
       * Zero All:
 
             Zeroes all resistances; also zeroes all "SMART" and "POWER" modes saved resistance settings.
+
+      * Check: Yes/No
+
+            *If you feel you need to use this feature in any other situation than a really heavy build with low TCR value (SS and such), you surely have an issue with your coil. Using this feature may be risky and therefore is not recommended. Check your build first.*  
+
+            In TC modes, the box checks for suitability of the resistance the first time it is fired (i.e. each time the atomizer in screwed on or after box reset). The test is done in a way that can make heavy builds with low TCR value fail the test (really heavy, like dual twisted clapton or such; more than around 1.7 grams of metal). If a coil fails the first fire test, the box will enforce the power mode.  
+            If you know your heavy build is well done and suitable for temp control, you may set this option to "No". The box will bypass the first fire test and let you vape in the selected temp control mode.  
+
+            *Keeping the coil test disabled may get you into unpleasant situations. Use wisely.*
 
     * TCR Set:
 

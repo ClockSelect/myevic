@@ -1447,7 +1447,8 @@ __myevic__ void ProbeAtomizer()
 		gFlags.new_rez_ti = 1;
 		gFlags.new_rez_ss = 1;
 		gFlags.new_rez_tcr = 1;
-		gFlags.check_mode = 1;
+
+		if ( !dfStatus.chkmodeoff ) gFlags.check_mode = 1;
 	}
 }
 

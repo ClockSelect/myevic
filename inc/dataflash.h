@@ -73,6 +73,7 @@ typedef struct
 
 /* 01000000 */	int timebig:1;
 /* 02000000 */	int usbchgoff:1;
+/* 04000000 */	int chkmodeoff:1;
 
 // Do not exceed 32 bits;
 // if you may do so, create another bitfield.
