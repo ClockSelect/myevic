@@ -585,7 +585,7 @@ __myevic__ void EventHandler()
 					else
 					{
 						v21 = dfTCPower;
-						if ( v21 > 400 ) v21 = 400;
+						if ( v21 > 2 * MaxPower / 3 ) v21 = 2 * MaxPower / 3;
 						if ( v21 < 300 ) v21 = 300;
 
 						v22 = AtoPowerLimit( v21 );
