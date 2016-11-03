@@ -1,5 +1,5 @@
 ## **myevic**
-This is My eVic VTC Mini.
+This is myeVic Custom Firmware.
 
 ### Compatible hardwares:
 * eVic VTC Mini
@@ -62,6 +62,7 @@ OR
     * Eugene San
     * MarkyAD
     * bluenazgul
+    * Sharky1980
     * gdb
     
     And many others, supporting this project and taking the time to open or help solving issues.
