@@ -112,26 +112,21 @@ __myevic__ void DrawPwrLine( int pwr, int line )
 
     DrawString( String_PWR_s, 0, line+2 );
 
-	if ( pwr < 100 )
+	if ( pwr < 1000 )
 	{
-		DrawValue( 27, line, pwr, 1, 0x1F, 2 );
-		DrawImage( 48, line+2, 0x98 );
-	}
-	else if ( pwr < 1000 )
-	{
-		DrawValue( 25, line, pwr, 1, 0x1F, 3 );
-		DrawImage( 54, line+2, 0x98 );
+		DrawValueRight( 55, line, pwr, 1, 0x1F, 0 );
+		DrawImage( 56, line+2, 0x98 );
 	}
 	else
 	{
-		if ( ( !PD3 || !PD3 ) && EditItemIndex == 2 )
+		if ( EditModeTimer && ( EditItemIndex == 2 ) && ( !PD2 || !PD3 ) && !dfStatus.onewatt )
 		{
-			DrawValue( 25, line, pwr, 1, 0x1F, 4 );
+			DrawValueRight( 64, line, pwr, 1, 0x1F, 0 );
 		}
 		else
 		{
-			DrawValue( 27, line, pwr / 10, 0, 0x1F, 3 );
-			DrawImage( 53, line+2, 0x98 );
+			DrawValueRight( 55, line, pwr / 10, 0, 0x1F, 3 );
+			DrawImage( 56, line+2, 0x98 );
 		}
 	}
 }
@@ -209,9 +204,9 @@ __myevic__ void DrawCoilLine( int line )
 	}
 
 	if ( rez < 1000 )
-		DrawValue( 27, line, rez, 3, 0x1F, 3 );
+		DrawValueRight( 55, line, rez, 3, 0x1F, 3 );
 	else
-		DrawValue( 27, line, rez / 10, 2, 0x1F, 3 );
+		DrawValueRight( 55, line, rez / 10, 2, 0x1F, 3 );
 
 	if ((( dfMode == 0 ) && ( dfRezLockedNI ))
 	||	(( dfMode == 1 ) && ( dfRezLockedTI ))
@@ -331,8 +326,10 @@ __myevic__ void DrawAPTLine( int line )
 
 		case 7:	// Real-time atomizer resistance
 		{
+			int rez = AtoError ? 0 : AtoRezMilli;
+			int nd = ( rez < 1000 ) ? 3 : 4;
 			DrawString( String_RES_s, 0, line+2 );
-			DrawValue( 19, line, AtoError ? 0 : AtoRezMilli, 3, 0x1F, 4 );
+			DrawValueRight( 55, line, rez, 3, 0x1F, nd );
 			DrawImage( 56, line+2, 0xC0 );
 			// Refresh every second
 			ScreenRefreshTimer = 10;
