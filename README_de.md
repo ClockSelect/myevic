@@ -22,8 +22,8 @@ Dies ist die myeVic Custom Firmware.
 *Original VTC Mini 3.03 Firmware*
 
 ### Hauptfunktionen:
-Das Erscheinungsbild der myevic Firmware ist mehr oder weniger identisch mit der originalen Firmware, so dass du nicht verloren gehen solltest.
-Viele neue Funktionen und Optionen werden über das Menüsystem zur Verfügung gestellt; Ich empfehle, diese vorliegende Dokumentation vollständig zu lesen.
+Das Erscheinungsbild der myevic Firmware ist mehr oder weniger identisch mit der originalen Firmware, so dass du alles wie gewohnt nutzen kannst.
+Viele neue Funktionen und Optionen werden über das Menüsystem zur Verfügung gestellt; Ich empfehle, diese Dokumentation vollständig zu lesen.
 
 ### Nutzung:
 
@@ -95,7 +95,7 @@ Es wurden einige Änderungen am Gesamtverhalten der Firmware im Vergleich zum Or
   Coils können im Widerstand um ±10% variieren um noch erkannt zu werden, zwei unterschiedliche Coils innerhalb der 10% werden nicht unterschieden. Der Coil Speicher kann im Menüeintrag "Coils >> Manage >> Zero All" Menüeintrag (siehe unten) gelöscht werden.
 
 * Bypass Modus:
-  Die Leistung wird nun im oberen Display Bereich anstelle der Volt dargestellt, denn diese Information ist wichtiger als die Dampf Qualität. Die Echtzeit Ausgabe der Ausgangspannung ist stets als Option in der 3. Zeile (VOUT) verfügbar.
+  Die Leistung wird nun im oberen Display Bereich anstelle der Volt dargestellt, denn diese Information ist wichtiger für die Dampf Qualität. Die Echtzeit Ausgabe der Ausgangspannung ist stets als Option in der 3. Zeile (VOUT) verfügbar.
   Die vorhersagbaren Leistungen und Spannungen sind vor allem auch auf Multi-Akku-Boxen genauer. Es werden einige Züge benötigt, um die maximale Genauigkeit zu erreichen, damit die Box Zeit hat um das Batterieverhalten unter hoher Last abzuschätzen.
 
 * Logo:
@@ -108,10 +108,10 @@ Es wurden einige Änderungen am Gesamtverhalten der Firmware im Vergleich zum Or
 ### Über Multi-Akku-Boxen
 
 
-Im Moment stellt das Interface nur ein Akkusymbol da, entweder mit oder ohne Prozent/Spannung, als wenn nur ein Akku im Gerät wäre (diese könnte sich in Zukunft ändern).
+Im Moment stellt das Interface nur ein Akkusymbol da, entweder mit oder ohne Prozent/Spannung, als wenn nur ein Akku im Gerät wäre (dies könnte sich in Zukunft ändern).
 Die dargestellten Werte sind die des Akkus mit dem *niedrigsten Ladezustand* aus dem Akku Set.
-Ein Akku Set sollte immer Gleichgewicht sein. Eine Warnmeldung erscheint sobald ein Unterschied der Ladespannung zwischen der kleinsten und höchsten Spannung 0.3 Volt überschreitet.
-Solange du keine Warnung siehst (ein blinkendes "balance" im Akkusymbol oder eine "imbalanced batteries" Warnmeldung), weißt du das die Spannung alle Akkus innerhalb von 300mV ist.
+Ein Akku Set sollte immer im Gleichgewicht sein. Eine Warnmeldung erscheint sobald ein Unterschied der Ladespannung zwischen der kleinsten und höchsten Spannung 0.3 Volt überschreitet.
+Solange du keine Warnung siehst (ein blinkendes "balance" im Akkusymbol oder eine "imbalanced batteries" Warnmeldung), weißt du, dass die Spannung aller Akkus innerhalb der 300mV Toleranz ist.
 
 
 ----------
@@ -121,7 +121,7 @@ Solange du keine Warnung siehst (ein blinkendes "balance" im Akkusymbol oder ein
 * Doppel-Klick:
 
     Ein doppeltes klicken mit dem Feuertaster wechselt zwischen der Standard Ansicht und der Uhr Ansicht.
-    Die Uhr Ansicht ist sehr nahe an der Ansicht der VTwo Box angelehnt; nur mMn besser.
+    Die Uhr Ansicht ist sehr nahe an der Ansicht der VTwo Box angelehnt; nur meiner Meinung nach besser.
     Um die Uhr einzustellen bitte unten im "Clock Menü" nachsehen.
 
     ![](http://i345.photobucket.com/albums/p374/ClockSelect/mainscreen_zpsuoh0cthd.png) ![](http://i345.photobucket.com/albums/p374/ClockSelect/mainscreen3_zpsfunjeoct.png)
@@ -222,7 +222,7 @@ Main Menü
     * Management:
 
         ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/coils_zpsn29ef1h5.png)
-     * In jeder Teile des vier TC Modi:
+     * In jedem der vier TC Modi:
 
             Drücke Feuer um den Widerstand zu bearbeiten.  
             Wenn der Widerstand markiert ist, drücke (+) und (-) um ihn zu bearbeiten.  
@@ -339,7 +339,7 @@ Längeres drücken der Feuertaste bringt euch wieder zu den Standardeinstellunge
 
         Einstellung von Datum/Uhrzeit
         Mit der Feuertaste das einzustellende Feld wählen, + und – zum Einstellen. Langes drücken der Feuertaste speichert die Einstellungen.
-        Wenn die Feuertaste länger als 2 Sekunden gedrückt werden muss, gibt es noch andere Möglichkeiten.
+        Drücke die Feuertaste länger als 2 Sekunden für weitere Einstellungen.
 
         Hier ein paar Beispiele, wie die Uhr noch eingestellt werden kann:
         * Nutze den ```evic-usb time``` Befehl, wenn du die [python-evic](https://github.com/ClockSelect/python-evic "python-evic") installiert hast.     
@@ -356,7 +356,7 @@ Längeres drücken der Feuertaste bringt euch wieder zu den Standardeinstellunge
         Time Display Format stellt die Größe der anzuzeigenden Uhrzeit.
  
   * Dial
-        Ändert die Anzeigeart der Uhr. Entweder “Armbanduhr” Format (A) oder digital Uhr mit Datum (D). Diese Einstellung ändert die Anzeige der Uhr sowohl auf dem Hauptbildschirm als auch im Screensaver, wenn die Uhr als Screensaver eingestellt wurde.
+        Ändert die Anzeigeart der Uhr. Entweder analog Format (A) oder digital Uhr mit Datum (D). Diese Einstellung ändert die Anzeige der Uhr sowohl auf dem Hauptbildschirm als auch im Screensaver, wenn die Uhr als Screensaver eingestellt wurde.
  
   * Clk Adjust
         Anpassen der Uhr: Für kleinere Änderungen der Uhrzeit nutze die + und – Tasten der Box. Feuertaste zum Speichern.
@@ -415,7 +415,7 @@ Die Uhr wird erst ungenau, wenn die Box ausgeschaltet oder sich im Sleepmode bef
 
          Ein/ausschalten des bevorzugten Power Modus. Im TC Modus, ändert sich nur die Anzeige von Power und Temperatur. Der Powermodus steht oben im Display und ist direkt editierbar über die + und – Tasten sowie im Powermodus, und die Temperatur steht auf einer der 3 Infozeilen in der Mitte des Displays. Die Temp. lässt sich nur im Menü ändern.
  
-         Diese Funktion ähnelt der Preheat Funktion im PWR Modus sobald du deine korrekte Dampftemperatur eingestellt hast (verbrenne nicht deine trockene Watte), die Freude steigt mit dem Wärmeanstieg. Diese Funktion macht das anpassen wesentlich einfacher.
+         Diese Funktion ähnelt der Preheat Funktion im PWR Modus sobald du deine korrekte Dampftemperatur eingestellt hast (verbrenne nicht deine trockene Watte). Diese Funktion macht das anpassen wesentlich einfacher.
  
   * Clicks
  
@@ -515,7 +515,7 @@ Die Uhr wird erst ungenau, wenn die Box ausgeschaltet oder sich im Sleepmode bef
 ### Build:
 Folgt den Anweisungen [evic-sdk::Readme](https://github.com/ReservedField/evic-sdk/blob/master/README.md) :
  
-  * Setup the environment
+  * Installiert die Entwickler Umgebung
  
   * Installiert python-evic
  
