@@ -30,6 +30,7 @@ uint16_t	FireDuration;
 uint16_t	AtoTemp;
 uint16_t	AtoCurrent;
 uint16_t	AtoRez;
+uint8_t		AtoMillis;
 uint16_t	TCR;
 uint8_t		AtoProbeCount;
 uint8_t		AtoShuntRez;
@@ -37,19 +38,21 @@ uint8_t		AtoError;		// 0,1,2,3 = Ok,Open/Large,Short,Low
 uint8_t		AtoStatus;		// 0,1,2,3,4 = Open,Short,Low,Large,Ok
 uint8_t		BoardTemp;
 uint8_t		ConfigIndex;
-uint8_t		LastAtoError;
 uint8_t		PreheatTimer;
 uint16_t	PreheatPower;
 uint32_t	MilliJoules;
+uint8_t		RezMillis;
 
 uint8_t		byte_200000B3;
-uint16_t	LastAtoRez;
 uint16_t	word_200000B8;
 uint16_t	word_200000BA;
 uint16_t	word_200000BC;
 uint16_t	word_200000BE;
-uint16_t	NewRez;
+uint8_t		NewMillis;
 
+uint8_t		LastAtoError;
+uint16_t	LastAtoRez;
+uint8_t		LastAtoMillis;
 
 //-------------------------------------------------------------------------
 
@@ -488,30 +491,31 @@ __myevic__ void ReadAtoCurrent()
 //----- (00002F44) --------------------------------------------------------
 __myevic__ void ReadAtoTemp()
 {
-	long v;
+	long t;
+	long base_rez = dfResistance * 10 + RezMillis;
 
 	if (	AtoRezMilli
 		&&	AtoRezMilli <= 3000
 		&&	dfResistance <= 150
-		&&	AtoRezMilli <= 50 * dfResistance	)
+		&&	AtoRezMilli <= 5 * base_rez )
 	{
-		if ( AtoRezMilli / 10 <= dfResistance )
+		if ( AtoRezMilli <= base_rez )
 		{
 			AtoTemp = 70;
 		}
 		else if ( dfTempAlgo == 1 )
 		{
-			AtoTemp = 100 * ( AtoRezMilli - 10 * dfResistance ) / TCR + 140;
+			AtoTemp = 100 * ( AtoRezMilli - base_rez ) / TCR + 140;
 		}
 		else if ( dfTempAlgo == 2 )
 		{
-			AtoTemp = AtoRezMilli * TCR / dfResistance - 460;
+			AtoTemp = 10 * AtoRezMilli * TCR / dfResistance - 460;
 		}
 		else if ( dfTempAlgo == 3 || dfTempAlgo == 4 )
 		{
-			v = dfResistance * TCR;
-			v = 10000 * ( AtoRezMilli -10 * dfResistance ) / v + 20;
-			AtoTemp = CelsiusToF( v );
+			t = base_rez * TCR;
+			t = 100000 * ( AtoRezMilli - base_rez ) / t + 20;
+			AtoTemp = CelsiusToF( t );
 		}
 	}
 }
@@ -584,10 +588,30 @@ __myevic__ void CheckMode()
 			dfVWVolts = GetAtoVWVolts( 200 );
 		}
 
-		if ( !gFlags.new_rez_ti  ) dfRezTI  = word_200000B8;
-		if ( !gFlags.new_rez_ni  ) dfRezNI  = word_200000BA;
-		if ( !gFlags.new_rez_ss  ) dfRezSS  = word_200000BC;
-		if ( !gFlags.new_rez_tcr ) dfRezTCR = word_200000BE;
+		if ( !gFlags.new_rez_ni  )
+		{
+			dfRezNI  = word_200000BA / 10;
+			dfMillis &= ~0xf;
+			dfMillis |= word_200000B8 % 10;
+		}
+		if ( !gFlags.new_rez_ti  )
+		{
+			dfRezTI  = word_200000B8 / 10;
+			dfMillis &= ~0xf0;
+			dfMillis |= ( word_200000B8 % 10 ) << 4;
+		}
+		if ( !gFlags.new_rez_ss  )
+		{
+			dfRezSS  = word_200000BC / 10;
+			dfMillis &= ~0xf00;
+			dfMillis |= ( word_200000B8 % 10 ) << 8;
+		}
+		if ( !gFlags.new_rez_tcr )
+		{
+			dfRezTCR = word_200000BE / 10;
+			dfMillis &= ~0xf000;
+			dfMillis |= ( word_200000B8 % 10 ) << 12;
+		}
 
 		if ( AtoRez < 10 )
 		{
@@ -1401,6 +1425,7 @@ __myevic__ void ProbeAtomizer()
 		if ( AtoProbeCount != 11 )
 			return;
 		AtoRez = AtoRezMilli / 10;
+		AtoMillis = AtoRezMilli % 10;
 	}
 	else
 	{
@@ -1413,6 +1438,7 @@ __myevic__ void ProbeAtomizer()
 			&& ( AtoRez - AtoRez / 20 ) <= LastAtoRez )
 	{
 		AtoRez = LastAtoRez;
+		AtoMillis = LastAtoMillis;
 	}
 
 	if ( AtoRez != LastAtoRez
@@ -1423,6 +1449,7 @@ __myevic__ void ProbeAtomizer()
 			byte_200000B3 = 1;
 		}
 		LastAtoRez = AtoRez;
+		LastAtoMillis = AtoMillis;
 		LastAtoError = AtoError;
 		SetAtoLimits();
 		gFlags.refresh_display = 1;
@@ -1440,6 +1467,7 @@ __myevic__ void ProbeAtomizer()
 			if ( AtoRez )
 			{
 				dfResistance = AtoRez;
+				RezMillis = AtoMillis;
 				UpdateDFTimer = 50;
 			}
 		}
@@ -1464,8 +1492,14 @@ __myevic__ void _SwitchRezLock( uint8_t *plock, uint16_t *prez )
 	else if ( AtoRez )
 	{
 		*plock = 1;
-		if ( !dfResistance ) dfResistance = AtoRez;
+		if ( !dfResistance )
+		{
+			dfResistance = AtoRez;
+			RezMillis = AtoMillis;
+		}
 		*prez = dfResistance;
+		dfMillis &= ~( 0xf << ( dfMode << 2 ) );
+		dfMillis |= RezMillis << ( dfMode << 2 );
 	}
 }
 

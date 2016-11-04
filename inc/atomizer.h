@@ -64,24 +64,23 @@ extern uint16_t	FireDuration;
 extern uint16_t	AtoTemp;
 extern uint16_t	AtoCurrent;
 extern uint16_t	AtoRez;
+extern uint8_t	AtoMillis;
 extern uint8_t	AtoProbeCount;
 extern uint8_t	AtoShuntRez;
 extern uint8_t	AtoError;
 extern uint8_t	AtoStatus;
 extern uint8_t	BoardTemp;
 extern uint8_t	ConfigIndex;
-extern uint8_t	LastAtoError;
 extern uint8_t	PreheatTimer;
 extern uint16_t	PreheatPower;
 extern uint32_t	MilliJoules;
+extern uint8_t	RezMillis;
 
 extern uint8_t	byte_200000B3;
-extern uint16_t	LastAtoRez;
 extern uint16_t	word_200000B8;
 extern uint16_t	word_200000BA;
 extern uint16_t	word_200000BC;
 extern uint16_t	word_200000BE;
-extern uint16_t	NewRez;
 
 extern const uint8_t TempCoefsNI[];
 extern const uint8_t TempCoefsTI[];

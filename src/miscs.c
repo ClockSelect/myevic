@@ -10,6 +10,7 @@
 __myevic__ void ModeChange()
 {
 	dfResistance = AtoRez;
+	RezMillis = AtoMillis;
 
 	switch ( dfMode )
 	{
@@ -24,9 +25,10 @@ __myevic__ void ModeChange()
 			}
 			if ( dfRezNI )
 			{
-				if ( ( dfRezLockedNI ) || !( gFlags.new_rez_ni ))
+				if (( dfRezLockedNI ) || !( gFlags.new_rez_ni ))
 				{
 					dfResistance = dfRezNI;
+					RezMillis = dfMillis & 0xf;
 				}
 			}
 			break;
@@ -45,6 +47,7 @@ __myevic__ void ModeChange()
 				if (( dfRezLockedTI ) || !( gFlags.new_rez_ti ))
 				{
 					dfResistance = dfRezTI;
+					RezMillis = ( dfMillis & 0xf0 ) >> 4;
 				}
 			}
 			break;
@@ -63,6 +66,7 @@ __myevic__ void ModeChange()
 				if (( dfRezLockedSS ) || !( gFlags.new_rez_ss ))
 				{
 					dfResistance = dfRezSS;
+					RezMillis = ( dfMillis & 0xf00 ) >> 8;
 				}
 			}
 			break;
@@ -74,6 +78,7 @@ __myevic__ void ModeChange()
 				if (( dfRezLockedTCR ) || !( gFlags.new_rez_tcr ))
 				{
 					dfResistance = dfRezTCR;
+					RezMillis = ( dfMillis & 0xf000 ) >> 12;
 				}
 			}
 			break;
