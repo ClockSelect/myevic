@@ -19,6 +19,10 @@ uint8_t	LastEvent;
 
 uint8_t	WattsInc;
 
+//-------------------------------------------------------------------------
+
+uint16_t	NewRez;
+uint8_t		NewMillis;
 
 //=========================================================================
 
@@ -280,6 +284,7 @@ __myevic__ void EventHandler()
 			{
 				byte_200000B3 = 0;
 				NewRez = AtoRez;
+				NewMillis = AtoMillis;
 
 				uint8_t lock = 0;
 				if 		( dfMode == 0 ) lock = dfRezLockedNI;
@@ -290,6 +295,7 @@ __myevic__ void EventHandler()
 				if ( !lock || dfMode == 4 || dfMode == 5 || dfMode == 6 )
 				{
 					dfResistance = AtoRez;
+					RezMillis = AtoMillis;
 					UpdateDFTimer = 50;
 				}
 			}
@@ -303,10 +309,11 @@ __myevic__ void EventHandler()
 				if ( !dfRezNI )
 				{
 					dfRezNI = dfResistance;
+					dfMillis = ( dfMillis & ~0xf ) | RezMillis;
 				}
 				else
 				{
-					word_200000BA = dfRezNI;
+					word_200000BA = dfRezNI * 10 + ( dfMillis & 0xf );
 
 					if (  3 * dfRezNI >= NewRez )
 					{
@@ -329,20 +336,27 @@ __myevic__ void EventHandler()
 						)
 						{
 							dfResistance = dfRezNI;
+							RezMillis = dfMillis & 0xf;
 						}
 						else
 						{
 							if ( dfRezNI - dfRezNI / 20 > NewRez && dfRezNI - 1 > NewRez )
 							{
 								dfResistance = NewRez;
+								RezMillis = NewMillis;
+
 								dfRezNI = NewRez;
+								dfMillis = ( dfMillis & ~0xf ) | NewMillis;
 							}
 						}
 					}
 					else
 					{
 						dfResistance = NewRez;
+						RezMillis = NewMillis;
+
 						dfRezNI = NewRez;
+						dfMillis = ( dfMillis & ~0xf ) | NewMillis;
 					}
 				}
 			}
@@ -354,10 +368,11 @@ __myevic__ void EventHandler()
 				if ( !dfRezTI )
 				{
 					dfRezTI = dfResistance;
+					dfMillis = ( dfMillis & ~0xf0 ) | ( RezMillis << 4 );
 				}
 				else
 				{
-					word_200000B8 = dfRezTI;
+					word_200000B8 = dfRezTI * 10 + ( ( dfMillis >> 4 ) & 0xf );
 
 					if (  2 * dfRezTI >= NewRez )
 					{
@@ -380,20 +395,27 @@ __myevic__ void EventHandler()
 						)
 						{
 							dfResistance = dfRezTI;
+							RezMillis = ( dfMillis & 0xf0 ) >> 4;
 						}
 						else
 						{
 							if ( dfRezTI - dfRezTI / 20 > NewRez && dfRezTI - 1 > NewRez )
 							{
 								dfResistance = NewRez;
+								RezMillis = NewMillis;
+
 								dfRezTI = NewRez;
+								dfMillis = ( dfMillis & ~0xf0 ) | ( NewMillis << 4 );
 							}
 						}
 					}
 					else
 					{
 						dfResistance = NewRez;
+						RezMillis = NewMillis;
+
 						dfRezTI = NewRez;
+						dfMillis = ( dfMillis & ~0xf0 ) | ( NewMillis << 4 );
 					}
 				}
 			}
@@ -405,10 +427,11 @@ __myevic__ void EventHandler()
 				if ( !dfRezSS )
 				{
 					dfRezSS = dfResistance;
+					dfMillis = ( dfMillis & ~0xf00 ) | ( RezMillis << 8 );
 				}
 				else
 				{
-					word_200000BC = dfRezSS;
+					word_200000BC = dfRezSS * 10 + ( ( dfMillis >> 8 ) & 0xf );
 
 					if ( 3 * dfRezSS >= 2 * NewRez )
 					{
@@ -432,18 +455,25 @@ __myevic__ void EventHandler()
 							)
 							{
 								dfResistance = dfRezSS;
+								RezMillis = ( dfMillis & 0xf00 ) >> 8;
 							}
 							else if ( dfRezSS - dfRezSS / 20 > NewRez && dfRezSS - 1 > NewRez )
 							{
 								dfResistance = NewRez;
+								RezMillis = NewMillis;
+
 								dfRezSS = NewRez;
+								dfMillis = ( dfMillis & ~0xf00 ) | ( NewMillis << 8 );
 							}
 						}
 					}
 					else
 					{
 						dfResistance = NewRez;
+						RezMillis = NewMillis;
+
 						dfRezSS = NewRez;
+						dfMillis = ( dfMillis & ~0xf00 ) | ( NewMillis << 8 );
 					}
 				}
 			}
@@ -455,10 +485,11 @@ __myevic__ void EventHandler()
 				if ( !dfRezTCR )
 				{
 					dfRezTCR = dfResistance;
+					dfMillis = ( dfMillis & ~0xf000 ) | ( RezMillis << 12 );
 				}
 				else
 				{
-					word_200000BE = dfRezTCR;
+					word_200000BE = dfRezTCR * 10 + ( dfMillis >> 12 );
 
 					if ( 3 * dfRezTCR >= 2 * NewRez )
 					{
@@ -482,18 +513,25 @@ __myevic__ void EventHandler()
 							)
 							{
 								dfResistance = dfRezTCR;
+								RezMillis = ( dfMillis & 0xf000 ) >> 12;
 							}
 							else if ( dfRezTCR - dfRezTCR / 20 > NewRez && dfRezTCR - 1 > NewRez )
 							{
 								dfResistance = NewRez;
+								RezMillis = NewMillis;
+								
 								dfRezTCR = NewRez;
+								dfMillis = ( dfMillis & ~0xf000 ) | ( NewMillis << 12 );
 							}
 						}
 					}
 					else
 					{
 						dfResistance = NewRez;
+						RezMillis = NewMillis;
+
 						dfRezTCR = NewRez;
+						dfMillis = ( dfMillis & ~0xf000 ) | ( NewMillis << 12 );
 					}
 				}
 			}
@@ -999,18 +1037,22 @@ __myevic__ void EventHandler()
 				{
 					case 0:
 						dfResistance = dfRezNI;
+						RezMillis = dfMillis & 0xf;
 						gFlags.new_rez_ni = 0;
 						break;
 					case 1:
 						dfResistance = dfRezTI;
+						RezMillis = ( dfMillis & 0xf0 ) >> 4;
 						gFlags.new_rez_ti = 0;
 						break;
 					case 2:
 						dfResistance = dfRezSS;
+						RezMillis = ( dfMillis & 0xf00 ) >> 8;
 						gFlags.new_rez_ss = 0;
 						break;
 					case 3:
 						dfResistance = dfRezTCR;
+						RezMillis = ( dfMillis & 0xf000 ) >> 12;
 						gFlags.new_rez_tcr = 0;
 						break;
 					default:
@@ -1124,18 +1166,22 @@ __myevic__ void EventHandler()
 				{
 					case 0:
 						dfRezNI = NewRez;
+						dfMillis = ( dfMillis & ~0xf ) | NewMillis;
 						gFlags.new_rez_ni = 0;
 						break;
 					case 1:
 						dfRezTI = NewRez;
+						dfMillis = ( dfMillis & ~0xf0 ) | ( NewMillis << 4 );
 						gFlags.new_rez_ti = 0;
 						break;
 					case 2:
 						dfRezSS = NewRez;
+						dfMillis = ( dfMillis & ~0xf00 ) | ( NewMillis << 8 );
 						gFlags.new_rez_ss = 0;
 						break;
 					case 3:
 						dfRezTCR = NewRez;
+						dfMillis = ( dfMillis & ~0xf000 ) | ( NewMillis << 12 );
 						gFlags.new_rez_tcr = 0;
 						break;
 					default:

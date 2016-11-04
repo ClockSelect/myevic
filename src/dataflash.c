@@ -433,6 +433,7 @@ __myevic__ void ResetDataFlash()
 	dfPID.P = PID_P_DEF;
 	dfPID.I = PID_I_DEF;
 	dfPID.D = PID_D_DEF;
+	dfMillis = 0;
 	UpdateDataFlash();
 
 	dfPuffCount = 0;

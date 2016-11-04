@@ -1106,6 +1106,7 @@ __myevic__ void ModesIClick()
 
 //-----------------------------------------------------------------------------
 
+uint8_t CoilShift;
 uint8_t *CoilSelectedLock;
 uint16_t *CoilSelectedRez;
 
@@ -1120,6 +1121,7 @@ __myevic__ void CoilsSelectRez( uint8_t mode )
 		default:
 			break;
 	}
+	CoilShift = mode << 2;
 }
 
 
@@ -1154,15 +1156,16 @@ __myevic__ void CoilsIDraw( int it, int line, int sel )
 			int rez = 0;
 			short img = 0xC0;
 			CoilsSelectRez( it );
-			rez = *CoilSelectedRez;
+			rez = *CoilSelectedRez * 10;
+			rez += ( dfMillis >> CoilShift ) & 0xf;
 			if ( *CoilSelectedLock ) img = 0xC3;
-			DrawFillRect( 32, line, 63, line+12, 0 );
-			DrawValue( 34, line+2, rez, 2, 0x0B, 3 );
+			DrawFillRect( 26, line, 63, line+12, 0 );
+			DrawValue( 28, line+2, rez, 3, 0x0B, 4 );
 			DrawImage( 56, line+2, img );
 			CoilsSelectRez( CurrentMenuItem );
 			break;
 		}
-		
+
 		case 5:	// Check
 		{
 			const uint16_t *s;
@@ -1189,6 +1192,7 @@ __myevic__ void CoilsIClick()
 			dfRezTI  = 0; dfRezLockedTI  = 0;
 			dfRezSS  = 0; dfRezLockedSS  = 0;
 			dfRezTCR = 0; dfRezLockedTCR = 0;
+			dfMillis = 0;
 			for ( int i = 0 ; i < 10 ; ++i )
 			{
 				dfSavedCfgRez[i] = 0;
@@ -1223,6 +1227,9 @@ __myevic__ int CoilsMEvent( int event )
 	if ( CurrentMenuItem > 3 )
 		return vret;
 
+	int millis = ( dfMillis >> CoilShift ) & 0xf;
+	int rez = *CoilSelectedRez * 10 + millis;
+
 	if ( event != 1 ) rmodified = 0;
 
 	switch ( event )
@@ -1233,26 +1240,24 @@ __myevic__ int CoilsMEvent( int event )
 			{
 				*CoilSelectedLock ^= 1;
 			}
-			rmodified = 0;
 			gFlags.refresh_display = 1;
+			rmodified = 0;
 			vret = 1;
 			break;
 
 		case 2:
 			if ( gFlags.edit_value )
 			{
-				if ( *CoilSelectedRez == 0 )
+				if ( rez == 0 )
 				{
-					*CoilSelectedRez = 5;
+					rez = 50;
 				}
-				else if ( *CoilSelectedRez < 150 )
+				else if ( rez < 1500 )
 				{
-					++*CoilSelectedRez;
+					++rez;
 				}
 				*CoilSelectedLock = 1;
 				rmodified = 1;
-				UpdateDFTimer = 50;
-				gFlags.refresh_display = 1;
 				vret = 1;
 			}
 			break;
@@ -1260,38 +1265,35 @@ __myevic__ int CoilsMEvent( int event )
 		case 3:
 			if ( gFlags.edit_value )
 			{
-				if ( *CoilSelectedRez == 5 )
+				if ( rez == 50 )
 				{
-					*CoilSelectedRez = 0;
+					rez = 0;
 					*CoilSelectedLock = 0;
 				}
-				else if ( *CoilSelectedRez > 5 )
+				else if ( rez > 50 )
 				{
-					--*CoilSelectedRez;
+					--rez;
 					*CoilSelectedLock = 1;
 				}
 				rmodified = 1;
-				UpdateDFTimer = 50;
-				gFlags.refresh_display = 1;
 				vret = 1;
 			}
 			break;
 
 		case EVENT_LONG_FIRE:
-			*CoilSelectedRez = 0;
+			rez = 0;
 			*CoilSelectedLock = 0;
 			if ( CurrentMenuItem == dfMode )
 			{
 				ResetResistance();
 				if ( AtoStatus == 4 )
 				{
-					*CoilSelectedRez = AtoRez;
+					rez = 10 * AtoRez + AtoMillis;
 					*CoilSelectedLock = 1;
 				}
 			}
-			UpdateDFTimer = 50;
+			rmodified = 1;
 			gFlags.edit_value = 0;
-			gFlags.refresh_display = 1;
 			vret = 1;
 			break;
 
@@ -1299,10 +1301,22 @@ __myevic__ int CoilsMEvent( int event )
 
 	if ( rmodified )
 	{
+		*CoilSelectedRez = rez / 10;
+		millis = rez % 10;
+		dfMillis &= ~( 0xf << CoilShift );
+		dfMillis |= millis << CoilShift;
+
+		UpdateDFTimer = 50;
+		gFlags.refresh_display = 1;
+
 		if ( CurrentMenuItem == dfMode )
 		{
 			AtoRez = *CoilSelectedRez;
+			AtoMillis = millis;
+
 			dfResistance = *CoilSelectedRez;
+			RezMillis = millis;
+
 			SetAtoLimits();
 		}
 	}

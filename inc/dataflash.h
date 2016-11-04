@@ -150,6 +150,7 @@ typedef struct dfParams
 /* 00D3 */	uint8_t		TCBoost;
 /* 00D4 */	uint16_t	TCRP[3];
 /* 00DA */	dfPID_t		PID;
+/* 00E0 */	uint16_t	Millis;
 }
 dfParams_t;
 
@@ -328,6 +329,7 @@ extern dfStruct_t DataFlash;
 #define dfTCBoost		DFP(TCBoost)
 #define dfTCRP			DFP(TCRP)
 #define dfPID			DFP(PID)
+#define dfMillis		DFP(Millis)
 
 #define dfFWVersion		DFI(FWVersion)
 #define dffmcCID        DFI(fmcCID)
