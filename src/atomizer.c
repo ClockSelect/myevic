@@ -509,7 +509,7 @@ __myevic__ void ReadAtoTemp()
 		}
 		else if ( dfTempAlgo == 2 )
 		{
-			AtoTemp = 10 * AtoRezMilli * TCR / dfResistance - 460;
+			AtoTemp = 10 * AtoRezMilli * TCR / base_rez - 460;
 		}
 		else if ( dfTempAlgo == 3 || dfTempAlgo == 4 )
 		{
