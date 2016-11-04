@@ -190,25 +190,28 @@ __myevic__ void DrawCoilLine( int line )
 
 	if ( gFlags.firing )
 	{
-		rez = AtoRezMilli / 10;
+		rez = AtoRezMilli;
 	}
 	else if ( ISMODETC(dfMode) )
 	{
 		if ( byte_200000B3 || !AtoRez )
 		{
-			rez = AtoRez;
+			rez = AtoRez * 10 + AtoMillis;
 		}
 		else
 		{
-			rez = dfResistance;
+			rez = dfResistance * 10 + RezMillis;
 		}
 	}
 	else
 	{
-		rez = AtoRez;
+		rez = AtoRez * 10 + AtoMillis;
 	}
 
-	DrawValue( 27, line, rez, 2, 0x1F, 3 );
+	if ( rez < 1000 )
+		DrawValue( 27, line, rez, 3, 0x1F, 3 );
+	else
+		DrawValue( 27, line, rez / 10, 2, 0x1F, 3 );
 
 	if ((( dfMode == 0 ) && ( dfRezLockedNI ))
 	||	(( dfMode == 1 ) && ( dfRezLockedTI ))
@@ -224,8 +227,8 @@ __myevic__ void DrawCoilLine( int line )
 
 	if ( rez )
 	{
-		if (   ( ISMODETC(dfMode) && ( rez > 150 ) )
-			|| ( ISMODEVW(dfMode) && ( rez <  10 ) ) )
+		if (   ( ISMODETC(dfMode) && ( rez > 1500 ) )
+			|| ( ISMODEVW(dfMode) && ( rez <  100 ) ) )
 		{
 			if ( gFlags.osc_1hz )
 			{

@@ -400,7 +400,7 @@ __myevic__ uint16_t* Value2Str( uint16_t *str, int v, int dp, uint16_t z, int nd
 	}
 	str[i] = 0;
 
-	if ( dp && dp < nd )
+	if ( dp && dp <= nd )
 	{
 		int dot_pos = nd - dp;
 
