@@ -767,7 +767,7 @@ __myevic__ void Main()
 	myprintf( "\n\nJoyetech APROM\n" );
 	myprintf( "CPU @ %dHz(PLL@ %dHz)\n", SystemCoreClock, PllClock );
 
-	SetBatteryModel( dfBatteryModel );
+	SetBatteryModel();
 
 	gFlags.sample_vbat = 1;
 	ReadBatteryVoltage();
