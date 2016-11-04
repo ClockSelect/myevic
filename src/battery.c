@@ -18,6 +18,23 @@ typedef struct
 }
 BatV2P_t;
 
+// Cuboid Mini / eVic Basic
+const BatV2P_t CMIB_VTable[] =
+{
+	{   0, 340 },
+	{  10, 357 },
+	{  20, 367 },
+	{  30, 370 },
+	{  40, 373 },
+	{  50, 377 },
+	{  60, 382 },
+	{  70, 389 },
+	{  80, 395 },
+	{  90, 402 },
+	{ 100, 410 }
+};
+
+// Generic 18650
 const BatV2P_t GENB_VTable[] =
 {
 	{   0, 310 },
@@ -149,6 +166,15 @@ typedef struct
 }
 Battery_t;
 
+const Battery_t BatteryCuboMini =
+{
+	String_GEN,
+	CMIB_VTable,
+	280,
+	25,
+	20
+};
+
 const Battery_t Batteries[] =
 {
 	{
@@ -261,7 +287,17 @@ __myevic__ int GetNBatteries()
 __myevic__ void SetBatteryModel()
 {
 	Battery = &Batteries[dfBatteryModel];
+
+	if ( dfBatteryModel == 0 )
+	{
+		if ( ISCUBOMINI || ISEVICBASIC || ISEGRIPII )
+		{
+			Battery = &BatteryCuboMini;
+		}
+	}
+
 	BatteryCutOff = Battery->cutoff;
+
 	if ( !BatteryIntRez )
 	{
 		BatteryIntRez = 20;

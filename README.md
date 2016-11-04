@@ -478,8 +478,9 @@ Main menu screen
   * BAT
 
         Battery model.  
-        You can specify your battery brand and model among several ones: 25R, 30Q, HG2, HE4, VTC4, VTC5 and VTC6. "GEN" is the generic battery used by default and should be used for any other model of battery.  
-        At the moment, this information is used by the firmware to compute a more accurate state-of-charge than the generic setting.
+        You can specify your battery brand and model among several ones: 25R, 30Q, HG2, HE4, VTC4, VTC5 and VTC6. "GEN" is the generic battery used by default and should be used for any other model of battery or for built-in batteries.  
+        At the moment, this information is used by the firmware to compute a more accurate state-of-charge than the generic setting.  
+        *On boxes with built-in battery (AIO, Basic, eGrip II, Cuboid Mini), this option should be kept on the "GEN" setting unless you've taken your box apart and manualy replaced the internal battery pack by something else.*  
 
   * BVO
 
