@@ -497,6 +497,7 @@ Die Uhr wird erst ungenau, wenn die Box ausgeschaltet oder sich im Sleepmode bef
         Batterie Model. 
         Du kannst Marke und Model deiner Akkus einstellen: 25R, 30Q, HG2, HE4, VTC4, VTC5 und VTC6. "GEN" ist eine Standarteinstellung und sollte bei allen anderen Akku Modellen genutzt werden.
         Zu Beginn nutzt die Firmware die Einstellung “GEN” um die Akkus so gut es geht zu schonen.
+        *Bei Boxen mit fest verbauten Akku (AIO, Basic, eGrip II, Cuboid Mini), sollte diese Option auf "GEN" stehen bleiben, es sei denn du hast die Box zerlegt und den Akku durch einen anderen ausgetauscht.*
  
   * BVO
  
