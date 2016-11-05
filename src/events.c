@@ -856,9 +856,12 @@ __myevic__ int EvtMinusButton()
 
 __myevic__ int EvtToggleClock()
 {
-	dfStatus.clock ^= 1;
-	UpdateDFTimer = 50;
-	MainView();
+	if ( !dfStatus.off )
+	{
+		dfStatus.clock ^= 1;
+		UpdateDFTimer = 50;
+		MainView();
+	}
 	return 1;
 }
 
@@ -1027,21 +1030,27 @@ __myevic__ int CustomEvents()
 			break;
 
 		case EVENT_NEXT_MODE:
-			NextMode();
-			gFlags.refresh_display = 1;
+			if ( !dfStatus.off )
+			{
+				NextMode();
+				gFlags.refresh_display = 1;
+			}
 			vret = 1;
 			break;
 
 		case EVENT_TOGGLE_TDOM:
-			if ( ISMODETC(dfMode) )
+			if ( !dfStatus.off )
 			{
-				dfStatus.priopwr ^= 1;
-				UpdateDFTimer = 50;
-				gFlags.refresh_display = 1;
-			}
-			else if ( ISMODEVW(dfMode) )
-			{
-				MenuEvent( LastEvent );
+				if ( ISMODETC(dfMode) )
+				{
+					dfStatus.priopwr ^= 1;
+					UpdateDFTimer = 50;
+					gFlags.refresh_display = 1;
+				}
+				else if ( ISMODEVW(dfMode) )
+				{
+					MenuEvent( LastEvent );
+				}
 			}
 			vret = 1;
 			break;
