@@ -252,6 +252,7 @@ extern const uint16_t String_Size[];
 extern const uint16_t String_hms[];
 extern const uint16_t String_HM[];
 extern const uint16_t String_Octa[];
+extern const uint16_t String_Dodeca[];
 extern const uint16_t String_Isoca[];
 extern const uint16_t String_B1[];
 extern const uint16_t String_B2[];

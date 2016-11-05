@@ -1621,12 +1621,13 @@ const menu_t Object3DMenu =
 	0,
 	Object3DOnClick+1,
 	0,
-	5,
+	6,
 	{
 		{ String_None, 0, EVENT_EXIT_MENUS, 0 },
 		{ String_Tetra, 0, EVENT_EXIT_MENUS, 0 },
 		{ String_Cube, 0, EVENT_EXIT_MENUS, 0 },
 		{ String_Octa, 0, EVENT_EXIT_MENUS, 0 },
+		{ String_Dodeca, 0, EVENT_EXIT_MENUS, 0 },
 		{ String_Isoca, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
@@ -2652,6 +2653,15 @@ __myevic__ int MenuEvent( int event )
 			vret = 1;
 			break;
 		}
+
+		case EVENT_TOGGLE_TDOM:
+			CurrentMenu = &PreheatMenu;
+			CurrentMenuItem = 1;
+			Screen = 102;
+			ScreenDuration = 30;
+			gFlags.refresh_display = 1;
+			vret = 1;
+			break;
 
 		default:
 			break;

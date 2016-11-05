@@ -1033,9 +1033,16 @@ __myevic__ int CustomEvents()
 			break;
 
 		case EVENT_TOGGLE_TDOM:
-			dfStatus.priopwr ^= 1;
-			UpdateDFTimer = 50;
-			gFlags.refresh_display = 1;
+			if ( ISMODETC(dfMode) )
+			{
+				dfStatus.priopwr ^= 1;
+				UpdateDFTimer = 50;
+				gFlags.refresh_display = 1;
+			}
+			else if ( ISMODEVW(dfMode) )
+			{
+				MenuEvent( LastEvent );
+			}
 			vret = 1;
 			break;
 
@@ -1094,6 +1101,7 @@ __myevic__ int CustomEvents()
 		default:
 			break;
 	}
+
 	return vret;
 }
 

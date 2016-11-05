@@ -1430,6 +1430,7 @@ __myevic__ void ProbeAtomizer()
 	else
 	{
 		AtoRez = 0;
+		AtoMillis = 0;
 		if ( AtoStatus == 0 ) AtoProbeCount = 0;
 	}
 

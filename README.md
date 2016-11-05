@@ -411,7 +411,7 @@ Main menu screen
         * Nothing
         * Enter edit mode
         * Toggle display of info lines / clock on the main display
-        * Toggle the "Priority Power" mode (basically, switches temperature and power on the main screen display in TC mode, see above "PPwr On/Off" doc)
+        * Toggle the "Priority Power" mode (basically, switches temperature and power on the main screen display in TC mode, see above "PPwr On/Off" doc), *OR* enters the Preheat menu if box is in POWER mode.
         * Switch to next vaping mode ( TC -> POWER -> BYPASS -> ... )
         * Switch box On or Off
 
