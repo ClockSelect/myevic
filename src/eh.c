@@ -663,7 +663,7 @@ __myevic__ void EventHandler()
 
 			if ( ISMODEVW(dfMode) )
 			{
-				if ( dfPreheatTime )
+				if ( !PreheatDelay && dfPreheatTime )
 				{
 					PreheatTimer = dfPreheatTime;
 

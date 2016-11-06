@@ -263,6 +263,14 @@ __myevic__ void TimedItems()
 			DisplaySetContrast( FadeOutTimer );
 		}
 	}
+
+	if ( PreheatDelay )
+	{
+		if ( ! ( --PreheatDelay % 25 ) )
+		{
+			gFlags.refresh_display = 1;
+		}
+	}
 }
 
 

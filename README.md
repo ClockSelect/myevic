@@ -260,9 +260,15 @@ Main menu screen
 
     * Preheat:
     
-        ![TCR Set Menu](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/preheat_zpsrpcu0fml.png)
+        ![TCR Set Menu](https://www.dropbox.com/s/d1ncqa9heec6grx/preheat1.png?dl=1)
         
-        Coil preheat function. Set at wich power and how long you want the coil to be preheated when you fire; after this delay, the atomizer will be powered by your regular setting. Set the delay to zero to switch preheating off. A small "P" icon will appear on the main screen next the the power setting to remind you the preheat function is enabled ("POWER" mode only). This function can only be active in "POWER" and "SMART" modes; it is ignored in all other modes.
+        Coil preheat function.  
+        *This function can only be active in "POWER" and "SMART" modes; it is ignored in all other modes.*  
+        Set at wich power ( **Pwr** ) and how long ( **Time** ) you want the coil to be preheated when you fire; after this delay, the atomizer will be powered by your regular setting. Set the **Time** to zero to switch preheating off.  
+        The **Unit** may be absolute Watts or percents of the main power setting.   
+        The **Delay** allows to configure a dead time after fire, during which the preheating function will be disabled. This dead time goes from zero (Off) to 3 minutes. The delay runs from the end of fire. Use this feature if you use high inertia (heavy) builds to prevent over-heating when chain-vaping.  
+        A small **P** icon will appear on the main screen next to the the power setting to remind you the preheat function is enabled ("POWER" mode only). A blinking **P** indicates the dead time period.  
+        *If you configured a **PPwr** action in the multi-clicks configuration (see **Interface** menu), this action will pop-up this menu when in "POWER" or "SMART" mode.*  
 
     * Modes
 

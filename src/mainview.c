@@ -480,31 +480,38 @@ __myevic__ void DrawTemp()
 
 __myevic__ void DrawPower( int pwr )
 {
+	int xp, yp;
+
 	if ( pwr < 100 )
 	{
+		xp = 45;
+		yp = 13;
+
 		DrawValue( 5, 13, pwr, 1, 0x48, 2 );
 		DrawImage( 45, 18, 0xB9 );
-		if ( ISMODEVW(dfMode) && dfPreheatTime )
-		{
-			DrawImage( 45, 13, 0x77 );
-		}
-	}
-	else if ( pwr < 1000 )
-	{
-		DrawValue( 0, 13, pwr, 1, 0x48, 3 );
-		DrawImage( 54, 26, 0x98 );
-		if ( ISMODEVW(dfMode) && dfPreheatTime )
-		{
-			DrawImage( 54, 13, 0x77 );
-		}
 	}
 	else
 	{
-		DrawValue( 0, 18, pwr, 1, 0x29, 4 );
-		DrawImage( 54, 26, 0x98 );
-		if ( ISMODEVW(dfMode) && dfPreheatTime )
+		xp = 54;
+		yp = 13;
+
+		if ( pwr < 1000 )
 		{
-			DrawImage( 54, 17, 0x77 );
+			DrawValue( 0, 13, pwr, 1, 0x48, 3 );
+		}
+		else
+		{
+			DrawValue( 0, 18, pwr, 1, 0x29, 4 );
+		}
+
+		DrawImage( 54, 26, 0x98 );
+	}
+
+	if ( ISMODEVW(dfMode) && dfPreheatTime )
+	{
+		if ( !PreheatDelay || gFlags.osc_1hz )
+		{
+			DrawImage( xp, yp, 0x77 );
 		}
 	}
 }

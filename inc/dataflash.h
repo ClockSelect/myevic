@@ -138,7 +138,7 @@ typedef struct dfParams
 /* 00BF */	uint8_t		ModesSel;
 /* 00C0 */	uint16_t	ClkRatio;
 /* 00C2 */	uint16_t	VVRatio;
-/* 00C4 */	uint8_t		unusedC4;		// unused
+/* 00C4 */	uint8_t		PHDelay;
 /* 00C5 */	uint8_t		Clicks[3];
 /* 00C8 */	uint8_t		DimTimeout;
 /* 00C9 */	uint8_t		BatteryModel;
@@ -318,6 +318,7 @@ extern dfStruct_t DataFlash;
 #define dfModesSel		DFP(ModesSel)
 #define dfClkRatio		DFP(ClkRatio)
 #define dfVVRatio		DFP(VVRatio)
+#define dfPHDelay		DFP(PHDelay)
 #define dfClick			DFP(Clicks)
 #define dfDimTimeout	DFP(DimTimeout)
 #define dfBatteryModel	DFP(BatteryModel)

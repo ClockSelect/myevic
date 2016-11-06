@@ -40,6 +40,7 @@ uint8_t		BoardTemp;
 uint8_t		ConfigIndex;
 uint8_t		PreheatTimer;
 uint16_t	PreheatPower;
+uint16_t	PreheatDelay;
 uint32_t	MilliJoules;
 uint8_t		RezMillis;
 
@@ -346,6 +347,11 @@ __myevic__ void StopFire()
 		}
 
 		RTCWriteRegister( RTCSPARE_VV_MJOULES, MilliJoules );
+		
+		if ( FireDuration * 10 >= dfPreheatTime )
+		{
+			PreheatDelay = dfPHDelay * 100;
+		}
 	}
 
 //	myprintf( "StopFire from 0x%08x\n", caller );

@@ -73,6 +73,7 @@ extern uint8_t	BoardTemp;
 extern uint8_t	ConfigIndex;
 extern uint8_t	PreheatTimer;
 extern uint16_t	PreheatPower;
+extern uint16_t	PreheatDelay;
 extern uint32_t	MilliJoules;
 extern uint8_t	RezMillis;
 

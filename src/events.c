@@ -317,6 +317,13 @@ __myevic__ void GetUserInput()
 							FireClicksEvent = 17;	// Switch On/Off
 							break;
 					}
+					if ( dfStatus.off )
+					{
+						if ( FireClicksEvent != 17 )
+						{
+							FireClicksEvent = 0;
+						}
+					}
 					break;
 
 				case 5:
@@ -856,12 +863,9 @@ __myevic__ int EvtMinusButton()
 
 __myevic__ int EvtToggleClock()
 {
-	if ( !dfStatus.off )
-	{
-		dfStatus.clock ^= 1;
-		UpdateDFTimer = 50;
-		MainView();
-	}
+	dfStatus.clock ^= 1;
+	UpdateDFTimer = 50;
+	MainView();
 	return 1;
 }
 
@@ -969,7 +973,7 @@ __myevic__ int CustomEvents()
 {
 	int vret;
 
-	vret = 0;
+	vret = 1;
 
 	switch ( LastEvent )
 	{
@@ -1030,29 +1034,21 @@ __myevic__ int CustomEvents()
 			break;
 
 		case EVENT_NEXT_MODE:
-			if ( !dfStatus.off )
-			{
-				NextMode();
-				gFlags.refresh_display = 1;
-			}
-			vret = 1;
+			NextMode();
+			gFlags.refresh_display = 1;
 			break;
 
 		case EVENT_TOGGLE_TDOM:
-			if ( !dfStatus.off )
+			if ( ISMODETC(dfMode) )
 			{
-				if ( ISMODETC(dfMode) )
-				{
-					dfStatus.priopwr ^= 1;
-					UpdateDFTimer = 50;
-					gFlags.refresh_display = 1;
-				}
-				else if ( ISMODEVW(dfMode) )
-				{
-					MenuEvent( LastEvent );
-				}
+				dfStatus.priopwr ^= 1;
+				UpdateDFTimer = 50;
+				gFlags.refresh_display = 1;
 			}
-			vret = 1;
+			else if ( ISMODEVW(dfMode) )
+			{
+				MenuEvent( LastEvent );
+			}
 			break;
 
 		case EVENT_RESET_VVEL:
@@ -1064,7 +1060,6 @@ __myevic__ int CustomEvents()
 			RTCWriteRegister( RTCSPARE_VV_BASE, t );
 			EditModeTimer = 0;
 			gFlags.refresh_display = 1;
-			vret = 1;
 			break;
 		}
 
@@ -1072,7 +1067,6 @@ __myevic__ int CustomEvents()
 			dfStatus.storage = 0;
 			dfStatus.vcom = 1;
 			InitUSB();
-			vret = 1;
 			break;
 
 		case EVENT_AUTO_PUFF:
@@ -1080,34 +1074,30 @@ __myevic__ int CustomEvents()
 				MainView();
 			else
 				StopFire();
-			vret = 1;
 			break;
 
 		case EVENT_CLK_ADJUST:
 			Screen = 104;
 			ScreenDuration = 120;
 			gFlags.refresh_display = 1;
-			vret = 1;
 			break;
 
 		case EVENT_CLK_SPEED:
 			Screen = 103;
 			ScreenDuration = 120;
 			gFlags.refresh_display = 1;
-			vret = 1;
 			break;
 
 		case EVENT_INVERT_SCREEN:
 			DisplaySetInverse( dfStatus.invert );
-			vret = 1;
 			break;
 
 		case EVENT_MODE_CHANGE:
 			ModeChange();
-			vret = 1;
 			break;
 
 		default:
+			vret = 0;
 			break;
 	}
 

@@ -594,6 +594,9 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfVVRatio < VVEL_MIN_RATIO || dfVVRatio > VVEL_MAX_RATIO )
 		dfVVRatio = VVEL_DEF_RATIO;
 
+	if ( dfPHDelay > 180 )
+		dfPHDelay = 0;
+
 	v = 0;
 	for ( i = 0 ; i < 3 ; ++i )
 	{

@@ -57,24 +57,24 @@ extern uint8_t	LastEvent;
 
 // Events 100+ are custom events not existing in the OFW
 
-#define EVENT_TOGGLE_CLOCK	100
-#define EVENT_DEBUG_MODE	101
-#define EVENT_EDIT_CONTRAST	102
-#define EVENT_ENTER_MENUS	103
-#define EVENT_LONG_FIRE		104
-#define EVENT_EXIT_MENUS	105
-#define EVENT_PARENT_MENU	106
-#define EVENT_SET_TIME		107
-#define EVENT_SET_DATE		108
-#define EVENT_NEXT_MODE		109
-#define EVENT_TOGGLE_TDOM	110
-#define EVENT_RESET_VVEL	111
-#define EVENT_FORCE_VCOM	112
-#define EVENT_AUTO_PUFF		113
-#define EVENT_CLK_SPEED		114
-#define EVENT_CLK_ADJUST	115
-#define EVENT_INVERT_SCREEN	116
-#define EVENT_MODE_CHANGE	117
+#define EVENT_TOGGLE_CLOCK		100
+#define EVENT_DEBUG_MODE		101
+#define EVENT_EDIT_CONTRAST		102
+#define EVENT_ENTER_MENUS		103
+#define EVENT_LONG_FIRE			104
+#define EVENT_EXIT_MENUS		105
+#define EVENT_PARENT_MENU		106
+#define EVENT_SET_TIME			107
+#define EVENT_SET_DATE			108
+#define EVENT_NEXT_MODE			109
+#define EVENT_TOGGLE_TDOM		110
+#define EVENT_RESET_VVEL		111
+#define EVENT_FORCE_VCOM		112
+#define EVENT_AUTO_PUFF			113
+#define EVENT_CLK_SPEED			114
+#define EVENT_CLK_ADJUST		115
+#define EVENT_INVERT_SCREEN		116
+#define EVENT_MODE_CHANGE		117
 
 
 //==============================================================================

@@ -275,6 +275,7 @@ extern const uint16_t String_Led[];
 extern const uint16_t String_Red[];
 extern const uint16_t String_Green[];
 extern const uint16_t String_Blue[];
+extern const uint16_t String_Delay[];
 
 
 //==============================================================================

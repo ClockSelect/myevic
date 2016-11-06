@@ -496,7 +496,7 @@ __myevic__ void IFMenuOnClick()
 
 __myevic__ void PreheatIDraw( int it, int line, int sel )
 {
-	if ( it > 2 ) return;
+	if ( it > 3 ) return;
 
 	int v, dp, img;
 
@@ -523,11 +523,11 @@ __myevic__ void PreheatIDraw( int it, int line, int sel )
 					p = p / 10;
 					dp = 0;
 				}
-				DrawImage(  4, 90, 0xAB );
-				DrawHLine(  12, 93, 14, 1 );
-				DrawHLine(  12, 96, 14, 1 );
-				DrawValueRight( 37, 90, p, dp, 0x0B, 0 );
-				DrawImage( 39, 90, 0x98 );
+				DrawImage(  4, 102, 0xAB );
+				DrawHLine(  12, 105, 14, 1 );
+				DrawHLine(  12, 108, 14, 1 );
+				DrawValueRight( 37, 102, p, dp, 0x0B, 0 );
+				DrawImage( 39, 102, 0x98 );
 
 				dp = 0;
 				img = 0xC2;
@@ -546,6 +546,22 @@ __myevic__ void PreheatIDraw( int it, int line, int sel )
 			img = 0x94;
 			break;
 
+		case 3:	// Delay
+			DrawFillRect( 34, line, 63, line+12, 0 );
+			if ( dfPHDelay == 0 )
+			{
+				DrawString( String_Off, 37, line+2 );
+			}
+			else
+			{
+				DrawValue( 38, line+2, dfPHDelay / 60, 0, 0x0B, 1 );
+				DrawImage( 43, line+2, 0x103 );
+				DrawValue( 46, line+2, dfPHDelay % 60, 0, 0x0B, 2 );
+			}
+			if ( sel && gFlags.edit_value )
+				InvertRect( 0, line, 63, line+12 );
+			return;
+
 		default:
 			return;
 	}
@@ -562,22 +578,20 @@ __myevic__ void PreheatIDraw( int it, int line, int sel )
 		DrawImage( 54, line+2, img );
 	}
 
-	if ( gFlags.edit_value && sel )
-	{
+	if ( sel && gFlags.edit_value )
 		InvertRect( 0, line, 63, line+12 );
-	}
 }
 
 
 __myevic__ int PreheatMEvent( int event )
 {
 	int vret = 0;
-	if ( CurrentMenuItem > 2 )
+	if ( CurrentMenuItem > 3 )
 		return vret;
 
 	switch ( event )
 	{
-		case 1:
+		case 1:	// Fire
 			if ( CurrentMenuItem == 0 )
 			{
 				dfStatus.phpct ^= 1;
@@ -603,7 +617,7 @@ __myevic__ int PreheatMEvent( int event )
 			vret = 1;
 			break;
 
-		case 2:
+		case 2:	// Plus
 			if ( gFlags.edit_value )
 			{
 				if ( CurrentMenuItem == 1 )
@@ -626,13 +640,18 @@ __myevic__ int PreheatMEvent( int event )
 					if ( dfPreheatTime < 200 ) dfPreheatTime += 10;
 					else if ( KeyTicks < 5 ) dfPreheatTime = 0;
 				}
+				else if ( CurrentMenuItem == 3 )
+				{
+					if ( dfPHDelay < 180 ) ++dfPHDelay;
+					else if ( KeyTicks < 5 ) dfPHDelay = 0;
+				}
 				UpdateDFTimer = 50;
 				gFlags.refresh_display = 1;
 				vret = 1;
 			}
 			break;
 
-		case 3:
+		case 3:	// Minus
 			if ( gFlags.edit_value )
 			{
 				if ( CurrentMenuItem == 1 )
@@ -654,6 +673,11 @@ __myevic__ int PreheatMEvent( int event )
 				{
 					if ( dfPreheatTime > 0 ) dfPreheatTime -= 10;
 					else if ( KeyTicks < 5 ) dfPreheatTime = 200;
+				}
+				else if ( CurrentMenuItem == 3 )
+				{
+					if ( dfPHDelay > 0 ) --dfPHDelay;
+					else if ( KeyTicks < 5 ) dfPHDelay = 180;
 				}
 				UpdateDFTimer = 50;
 				gFlags.refresh_display = 1;
@@ -1444,11 +1468,12 @@ const menu_t PreheatMenu =
 	0,
 	0,
 	PreheatMEvent+1,
-	4,
+	5,
 	{
 		{ String_Unit, 0, 0, 0 },
 		{ String_Pwr, 0, 0, 0 },
 		{ String_Time, 0, 0, 0 },
+		{ String_Delay, 0, 0, 0 },
 		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 },
 	}
 };
