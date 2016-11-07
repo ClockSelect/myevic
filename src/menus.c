@@ -2017,7 +2017,7 @@ const mdata_t BoostData =
 
 const mvaluedesc_t PIDPDesc =
 {
-	32, 60,
+	24, 60,
 	0, 0,
 	PID_P_MIN, PID_P_MAX,
 	0,
@@ -2038,7 +2038,7 @@ const mdata_t PIDPData =
 
 const mvaluedesc_t PIDIDesc =
 {
-	32, 60,
+	24, 60,
 	0, 0,
 	PID_I_MIN, PID_I_MAX,
 	0,
@@ -2059,7 +2059,7 @@ const mdata_t PIDIData =
 
 const mvaluedesc_t PIDDDesc =
 {
-	32, 60,
+	24, 60,
 	0, 0,
 	PID_D_MIN, PID_D_MAX,
 	0,

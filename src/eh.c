@@ -1062,7 +1062,7 @@ __myevic__ void EventHandler()
 			}
 			else if ( Screen == 1 )
 			{
-				KeyUpTimer = 5;
+				KeyUpTimer = 10;
 
 				if ( EditModeTimer )
 				{
@@ -1191,7 +1191,7 @@ __myevic__ void EventHandler()
 			}
 			else if ( Screen == 1 )
 			{
-				KeyUpTimer = 5;
+				KeyUpTimer = 10;
 
 				if ( EditModeTimer )
 				{

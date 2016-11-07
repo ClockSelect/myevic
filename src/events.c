@@ -33,7 +33,7 @@ uint16_t	KeyPressTime;
 
 //=========================================================================
 //----- (00003738) --------------------------------------------------------
-// Called at 5Hz untill KeyTicks >= 5 (1.4s), then at 100Hz.
+// Called at 10Hz untill KeyTicks >= 5 (1.4s), then at 100Hz.
 
 __myevic__ void KeyRepeat()
 {
@@ -68,7 +68,7 @@ __myevic__ void KeyRepeat()
 				MainView();
 		}
 		KeyTicks = 0;
-		KRDelay = 3;
+		KRDelay = 6;
 	}
 	else if ( !KRDelay || !--KRDelay )
 	{
@@ -80,10 +80,10 @@ __myevic__ void KeyRepeat()
 		// First event has been emitted by GetUserInput()
 
 		// +0.60s
-		// Polled every 200ms...
+		// Polled every 100ms...
 		if ( KeyTicks < 5 )
 		{
-			KRDelay = 0;
+			KRDelay = 2;
 		}
 		// then every 10ms.
 		// +0.40s (1.00s)
@@ -91,7 +91,7 @@ __myevic__ void KeyRepeat()
 		{
 			// Quadratic function having its minimum (1) at 104
 			KRDelay = 104 - KeyTicks;
-			KRDelay = ( KRDelay * KRDelay ) / 1089 + 1;
+			KRDelay = ( KRDelay * KRDelay ) / 545 + 1;
 		}
 		// +3.60s (4.60s)
 		else if ( KeyTicks < 205 )
@@ -99,7 +99,7 @@ __myevic__ void KeyRepeat()
 			// Step jumped from 1 to 10, ie. speed x10
 			// Recover this jump then smooth with same function as above
 			KRDelay = 204 - KeyTicks;
-			KRDelay = ( KRDelay * KRDelay ) / 1089 + 1;
+			KRDelay = ( KRDelay * KRDelay ) / 545 + 1;
 		}
 
 		if ( !PD2 )
@@ -608,7 +608,7 @@ __myevic__ int EvtPlusButton()
 				{
 					if ( dfMode < 3 )
 					{
-						KeyUpTimer = 5;
+						KeyUpTimer = 10;
 						EditModeTimer = 1000;
 
 						do

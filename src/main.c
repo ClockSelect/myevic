@@ -964,6 +964,11 @@ __myevic__ void Main()
 			{
 				DrawScreen();
 			}
+
+			if ( KeyTicks < 5 )
+			{
+				KeyRepeat();
+			}
 		}
 
 		if ( gFlags.tick_5hz )
@@ -1007,11 +1012,6 @@ __myevic__ void Main()
 					u8Seconds = (uint8_t)rtd.u32Second;
 					gFlags.refresh_display = 1;
 				}
-			}
-
-			if ( KeyTicks < 5 )
-			{
-				KeyRepeat();
 			}
 		}
 
