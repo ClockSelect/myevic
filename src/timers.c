@@ -266,7 +266,8 @@ __myevic__ void TimedItems()
 
 	if ( PreheatDelay )
 	{
-		if ( ! ( --PreheatDelay % 25 ) )
+		--PreheatDelay;
+		if ( ( Screen == 1 ) && !( PreheatDelay % 25 ) )
 		{
 			gFlags.refresh_display = 1;
 		}
