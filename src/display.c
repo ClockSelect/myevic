@@ -160,13 +160,14 @@ __myevic__ void DrawDate( int x, int y, S_RTC_TIME_DATA_T *rtd, int colors )
 {
 	uint32_t a = dfStatus.mdy ? rtd->u32Month : rtd->u32Day;
 	uint32_t b = dfStatus.mdy ? rtd->u32Day : rtd->u32Month;
+	uint32_t s = dfStatus.mdy ? 0x102 : 0xC1;
 
 	if ( gFlags.draw_edited_item ) colors = 0x1F;
 
 	if (colors&0x10) DrawValue( x   , y, a, 0, 0x0B, 2 );
-	if (colors&0x08) DrawImage( x+12, y, 0x102 );
+	if (colors&0x08) DrawImage( x+12, y, s );
 	if (colors&0x04) DrawValue( x+16, y, b, 0, 0x0B, 2 );
-	if (colors&0x02) DrawImage( x+28, y, 0x102 );
+	if (colors&0x02) DrawImage( x+28, y, s );
 	if (colors&0x01) DrawValue( x+32, y, rtd->u32Year, 0, 0x0B, 4 );
 }
 

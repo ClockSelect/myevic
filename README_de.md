@@ -1,4 +1,4 @@
-﻿## **myevic**
+## **myevic**
 Dies ist die myeVic Custom Firmware.
 
 ### Kompatible Hardware:
@@ -350,7 +350,7 @@ Längeres drücken der Feuertaste bringt euch wieder zu den Standardeinstellunge
  
             
   * Fmt (Datumsformat)
-        Ändert die Anzeige des Datumsformat Tag/Monat/Jahr(Standarteinstellung), Monat/Tag/Jahr ist das US Format.
+        Ändert die Anzeige des Datumsformat Tag.Monat.Jahr(Standarteinstellung), Monat/Tag/Jahr ist das US Format.
  
   * Size
         Time Display Format stellt die Größe der anzuzeigenden Uhrzeit.

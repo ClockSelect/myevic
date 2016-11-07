@@ -344,7 +344,7 @@ Main menu screen
         
   * Fmt (date format)
 
-        Toggle date display format between day/month/year (default, logical, universal) format and month/day/year (US) format.
+        Toggle date display format between day.month.year (default, logical, universal) format and month/day/year (US) format.
 
   * Size
 
