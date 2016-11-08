@@ -323,45 +323,37 @@ __myevic__ uint32_t DrawImageInv( const int x, const int y, const uint16_t img )
 }
 
 
+
 //=========================================================================
-//----- (000057D4) --------------------------------------------------------
+// Retrieve the Logo height (0=No logo)
+//-------------------------------------------------------------------------
+__myevic__ int GetLogoHeight()
+{
+	image_t *img;
+	int h;
+
+	img = (image_t*)DATAFLASH_LOGO_1306_BASE;
+
+	h = 0;
+
+	if ( img->width == 64 )
+	{
+		h = img->height;
+		if ( h < 40 || h > 63 ) h = 0;
+	}
+
+	return h;
+}
+
+
+//=========================================================================
 __myevic__ void DrawLOGO( const int x, const int y )
 {
-	uint8_t buffer[DATAFLASH_LOGO_SIZE];
 	image_t *img;
-	uint32_t base_addr;
 
 	if (( dfStatus.nologo ) && ( Screen != 60 )) return;
 
-	base_addr = DATAFLASH_LOGO_1306_BASE;
-
-//	switch ( DisplayModel )
-//	{
-//		case 0:
-//			base_addr = DATAFLASH_LOGO_1306_BASE;
-//			break;
-//
-//		case 1:
-//			base_addr = DATAFLASH_LOGO_1327_BASE;
-//			break;
-//
-//		default:
-//			return;
-//	}
-
-	MemClear( buffer, DATAFLASH_LOGO_SIZE );
-	img = (image_t*)buffer;
-
-	SYS_UnlockReg();
-	FMC_ENABLE_ISP();
-
-	for ( uint32_t addr = 0; addr < DATAFLASH_LOGO_SIZE ; addr += 0x100 )
-	{
-		FMCRead256( base_addr + addr, (uint32_t*)( buffer + addr ) );
-	}
-
-	FMC_DISABLE_ISP();
-	SYS_LockReg();
+	img = (image_t*)DATAFLASH_LOGO_1306_BASE;
 
 	if ( img->width == 64 && img->height >= 40 && img->height <= 63 )
 	{

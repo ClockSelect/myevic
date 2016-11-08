@@ -65,6 +65,7 @@ extern void DrawVLine( const int x, const int y1, const int y2, const int color 
 extern void DrawFillRect( const int x1, const int y1,const  int x2, const int y2, const int color);
 extern uint32_t DrawImage( const int x, const int y, const uint16_t img );
 extern uint32_t DrawImageInv( const int x, const int y, const uint16_t img );
+extern int GetLogoHeight();
 extern void DrawLOGO( const int x, const int y );
 extern void DrawValue( int x, int y, int v, uint8_t dp, uint16_t z, uint8_t nd );
 extern void DrawValueRight( int x, int y, int v, uint8_t dp, uint16_t z, uint8_t nd );

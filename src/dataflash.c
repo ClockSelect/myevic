@@ -1238,32 +1238,3 @@ __myevic__ uint16_t GetShuntRezValue()
 	return rez;
 }
 
-
-//=========================================================================
-// Retrieve the Logo height (0=No logo)
-//-------------------------------------------------------------------------
-__myevic__ int GetLogoHeight()
-{
-	uint32_t data;
-	int w, h;
-
-	SYS_UnlockReg();
-	FMC_ENABLE_ISP();
-
-	data = FMC_Read( DATAFLASH_LOGO_1306_BASE );
-	
-	FMC_DISABLE_ISP();
-	SYS_LockReg();
-
-	h = 0;
-	w = data & 0xFF;
-
-	if ( w == 64 )
-	{
-		h = ( data & 0xFF00 ) >> 8;
-		if ( h < 40 || h > 63 ) h = 0;
-	}
-
-	return h;
-}
-
