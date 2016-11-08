@@ -707,6 +707,7 @@ __myevic__ void BVOMenuIDraw( int it, int line, int sel )
 			DrawValue( 19, 80 + i * 12, BattVolts[i], 2, 0x0B, 3 );
 			DrawImage( 40, 80 + i * 12, 0x7D );
 		}
+		ScreenRefreshTimer = 10;
 	}
 
 	if ( it >= CurrentMenu->nitems - 1 )
