@@ -43,11 +43,8 @@ __myevic__ void DrawScreen()
 		TenthOfSecs = 0;
 		gFlags.refresh_display = 1;
 	}
-	else
-	{
-		if ( ScreenRefreshTimer && !--ScreenRefreshTimer )
-			gFlags.refresh_display = 1;
-	}
+	else if ( ScreenRefreshTimer && !--ScreenRefreshTimer )
+		gFlags.refresh_display = 1;
 
 	if ( gFlags.refresh_display )
 	{
@@ -194,13 +191,9 @@ __myevic__ void DrawScreen()
 	}
 
 	if (( gFlags.firing ) && ISMODETC(dfMode))
-	{
 		TenthOfSecs += 5;
-	}
 	else
-	{
 		TenthOfSecs += 1;
-	}
 
 	if ( TenthOfSecs < 10 )
 		return;
@@ -208,9 +201,7 @@ __myevic__ void DrawScreen()
 	TenthOfSecs = 0;
 
 	if (  10 * ScreenDuration < EditModeTimer )
-	{
 		ScreenDuration = EditModeTimer / 10 + 1;
-	}
 
 	if ( ( Screen == 1 || Screen == 60 ) && ( ScreenDuration <= 4 ) )
 	{
@@ -234,9 +225,7 @@ __myevic__ void DrawScreen()
 	{
 		case   0: // Black
 			if ( dfStatus.off )
-			{
 				SleepTimer = 0;
-			}
 			else
 			{
 				if (( !gFlags.firing )

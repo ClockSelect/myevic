@@ -389,11 +389,9 @@ __myevic__ void GetUserInput()
 		{
 			FireClicksEvent = 0;
 		}
-	}
-	else if ( KeyPressTime == 50 )
-	{
-		if ( UserInputs == 4 )
+		else if ( UserInputs == 4 )
 		{
+			// Left + Right button
 			if ( IsMenuScreen() )
 			{
 				Event = EVENT_PARENT_MENU;
@@ -401,17 +399,12 @@ __myevic__ void GetUserInput()
 		}
 		else if ( UserInputs == 5 )
 		{
+			// Fire + Right button
 			if ( IsMenuScreen() )
 			{
 				Event = EVENT_EXIT_MENUS;
 			}
-		}
-	}
-	else if ( KeyPressTime == 100 )
-	{
-		if ( UserInputs == 5 )
-		{
-			if ( !dfStatus.off )
+			else if ( !dfStatus.off )
 			{
 				if ( !gFlags.playing_fb )
 				{
