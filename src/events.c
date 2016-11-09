@@ -708,19 +708,27 @@ __myevic__ int EvtPlusButton()
 
 		case 106:
 		{
-			if (( EditItemIndex == 2 && dfStatus.mdy )
-				||( EditItemIndex == 1 && !dfStatus.mdy ))
+			int f = dfStatus.mdy | ( dfStatus.dfmt2 << 1 );
+			switch ( ( f << 2 | EditItemIndex ) )
 			{
-				SetTimeRTD.u32Month = SetTimeRTD.u32Month %12 + 1;
-			}
-			else if (( EditItemIndex == 1 && dfStatus.mdy )
-					|| ( EditItemIndex == 2 && !dfStatus.mdy ))
-			{
-				SetTimeRTD.u32Day = SetTimeRTD.u32Day %31 + 1;
-			}
-			else if ( EditItemIndex == 0 )
-			{
-				if ( SetTimeRTD.u32Year < RTC_YEAR2000 + 1000 ) ++SetTimeRTD.u32Year;
+				case  0:
+				case  4:
+				case  8:
+				case 14:
+					if ( SetTimeRTD.u32Year < RTC_YEAR2000 + 1000 ) ++SetTimeRTD.u32Year;
+					break;
+				case  1:
+				case  6:
+				case  9:
+				case 13:
+					SetTimeRTD.u32Month = SetTimeRTD.u32Month %12 + 1;
+					break;
+				case  2:
+				case  5:
+				case 10:
+				case 12:
+					SetTimeRTD.u32Day = SetTimeRTD.u32Day %31 + 1;
+					break;
 			}
 			gFlags.draw_edited_item = 1;
 			gFlags.refresh_display = 1;
@@ -826,19 +834,27 @@ __myevic__ int EvtMinusButton()
 
 		case 106:
 		{
-			if (( EditItemIndex == 2 && dfStatus.mdy )
-				||( EditItemIndex == 1 && !dfStatus.mdy ))
+			int f = dfStatus.mdy | ( dfStatus.dfmt2 << 1 );
+			switch ( ( f << 2 | EditItemIndex ) )
 			{
-				SetTimeRTD.u32Month = ( SetTimeRTD.u32Month + 11 ) %12;
-			}
-			else if (( EditItemIndex == 1 && dfStatus.mdy )
-					|| ( EditItemIndex == 2 && !dfStatus.mdy ))
-			{
-				SetTimeRTD.u32Day = ( SetTimeRTD.u32Day + 30 ) %31;
-			}
-			else if ( EditItemIndex == 0 )
-			{
-				if ( SetTimeRTD.u32Year > RTC_YEAR2000 ) --SetTimeRTD.u32Year;
+				case  0:
+				case  4:
+				case  8:
+				case 14:
+					if ( SetTimeRTD.u32Year > RTC_YEAR2000 ) --SetTimeRTD.u32Year;
+					break;
+				case  1:
+				case  6:
+				case  9:
+				case 13:
+					SetTimeRTD.u32Month = ( SetTimeRTD.u32Month + 10 ) % 12 + 1;
+					break;
+				case  2:
+				case  5:
+				case 10:
+				case 12:
+					SetTimeRTD.u32Day = ( SetTimeRTD.u32Day + 29 ) % 31 + 1;
+					break;
 			}
 			gFlags.draw_edited_item = 1;
 			gFlags.refresh_display = 1;

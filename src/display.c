@@ -156,19 +156,36 @@ __myevic__ void DrawTime( int x, int y, S_RTC_TIME_DATA_T *rtd, int colors )
 	if (colors&0x01) DrawValue( x+38, y, rtd->u32Second, 0, 0x1F, 2 );
 }
 
+typedef struct
+{
+	uint16_t separator;
+	uint8_t	dayoffset;
+	uint8_t	monthoffset;
+	uint8_t	yearoffset;
+	uint8_t sep1offset;
+	uint8_t sep2offset;
+}
+datefmt_t;
+
 __myevic__ void DrawDate( int x, int y, S_RTC_TIME_DATA_T *rtd, int colors )
 {
-	uint32_t a = dfStatus.mdy ? rtd->u32Month : rtd->u32Day;
-	uint32_t b = dfStatus.mdy ? rtd->u32Day : rtd->u32Month;
-	uint32_t s = dfStatus.mdy ? 0x102 : 0xC1;
+	const datefmt_t format[] =
+	{
+		{  0xC1,  0, 16, 32, 12, 28 },
+		{ 0x102, 16,  0, 32, 12, 28 },
+		{ 0x102,  0, 16, 32, 12, 28 },
+		{  0xD9, 44, 28,  0, 24, 40 }
+	};
+
+	const datefmt_t *f = &format[ dfStatus.mdy | ( dfStatus.dfmt2 << 1 ) ];
 
 	if ( gFlags.draw_edited_item ) colors = 0x1F;
 
-	if (colors&0x10) DrawValue( x   , y, a, 0, 0x0B, 2 );
-	if (colors&0x08) DrawImage( x+12, y, s );
-	if (colors&0x04) DrawValue( x+16, y, b, 0, 0x0B, 2 );
-	if (colors&0x02) DrawImage( x+28, y, s );
-	if (colors&0x01) DrawValue( x+32, y, rtd->u32Year, 0, 0x0B, 4 );
+	if (colors&0x10) DrawValue( x + f->dayoffset,   y, rtd->u32Day,   0, 0x0B, 2 );
+	if (colors&0x04) DrawValue( x + f->monthoffset, y, rtd->u32Month, 0, 0x0B, 2 );
+	if (colors&0x01) DrawValue( x + f->yearoffset,  y, rtd->u32Year,  0, 0x0B, 4 );
+	if (colors&0x08) DrawImage( x + f->sep1offset,  y, f->separator );
+	if (colors&0x02) DrawImage( x + f->sep2offset,  y, f->separator );
 }
 
 

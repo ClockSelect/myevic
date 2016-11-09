@@ -308,9 +308,15 @@ __myevic__ void ClockMenuIDraw( int it, int line, int sel )
 	switch ( it )
 	{
 		case 4:	// Format
-			DrawFillRect( 36, line, 63, line+12, 0 );
-			DrawString( dfStatus.mdy ? String_MDY : String_DMY, 40, line+2 );
+		{
+			const uint16_t *strings[] =
+				{ String_DMY1, String_MDY, String_DMY2, String_YMD };
+			int f = dfStatus.mdy | ( dfStatus.dfmt2 << 1 );
+			const uint16_t *s = strings[f];
+			DrawFillRect( 28, line, 63, line+12, 0 );
+			DrawString( s, 32, line+2 );
 			break;
+		}
 
 		case 6:	// Dial
 			DrawFillRect( 36, line, 63, line+12, 0 );
@@ -333,10 +339,15 @@ __myevic__ void ClockMenuOnClick()
 			break;
 
 		case 4:	// Format
-			dfStatus.mdy ^= 1;
+		{
+			int f = dfStatus.mdy | ( dfStatus.dfmt2 << 1 );
+			if ( ++f > 3 ) f = 0;
+			dfStatus.mdy = f & 1;
+			dfStatus.dfmt2 = f >> 1;
 			UpdateDFTimer = 50;
 			gFlags.refresh_display = 1;
 			break;
+		}
 
 		case 6:	// Dial
 			dfStatus.digclk ^= 1;

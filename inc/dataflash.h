@@ -44,36 +44,37 @@
 
 typedef struct
 {
-/* 00000001 */	int	off:1;
-/* 00000002 */	int	keylock:1;
-/* 00000004 */	int	flipped:1;
-/* 00000008 */	int	nologo:1;
-/* 00000010 */	int clock:1;
-/* 00000020 */	int vcom:1;
-/* 00000040 */	int storage:1;
-/* 00000080 */	int dbgena:1;
+/* 00000001 */	unsigned int off:1;
+/* 00000002 */	unsigned int keylock:1;
+/* 00000004 */	unsigned int flipped:1;
+/* 00000008 */	unsigned int nologo:1;
+/* 00000010 */	unsigned int clock:1;
+/* 00000020 */	unsigned int vcom:1;
+/* 00000040 */	unsigned int storage:1;
+/* 00000080 */	unsigned int dbgena:1;
 
-/* 00000100 */	int x32off:1;
-/* 00000200 */	int priopwr:1;
-/* 00000400 */	int onewatt:1;
-/* 00000800 */	int digclk:1;
-/* 00001000 */	int battpc:1;
-/* 00002000 */	int phpct:1;
-/* 00004000 */	int wakeonpm:1;
-/* 00008000 */	int font:1;
+/* 00000100 */	unsigned int x32off:1;
+/* 00000200 */	unsigned int priopwr:1;
+/* 00000400 */	unsigned int onewatt:1;
+/* 00000800 */	unsigned int digclk:1;
+/* 00001000 */	unsigned int battpc:1;
+/* 00002000 */	unsigned int phpct:1;
+/* 00004000 */	unsigned int wakeonpm:1;
+/* 00008000 */	unsigned int font:1;
 
-/* 00010000 */	int nfe:1;
-/* 00020000 */	int mdy:1;
-/* 00040000 */	int invert:1;
-/* 00080000 */	int vapedml:1;
-/* 00100000 */	int onedegree:1;
-/* 00200000 */	int battv:1;
-/* 00400000 */	int lsloff:1;
-/* 00800000 */	int logomid:1;
+/* 00010000 */	unsigned int nfe:1;
+/* 00020000 */	unsigned int mdy:1;
+/* 00040000 */	unsigned int invert:1;
+/* 00080000 */	unsigned int vapedml:1;
+/* 00100000 */	unsigned int onedegree:1;
+/* 00200000 */	unsigned int battv:1;
+/* 00400000 */	unsigned int lsloff:1;
+/* 00800000 */	unsigned int logomid:1;
 
-/* 01000000 */	int timebig:1;
-/* 02000000 */	int usbchgoff:1;
-/* 04000000 */	int chkmodeoff:1;
+/* 01000000 */	unsigned int timebig:1;
+/* 02000000 */	unsigned int usbchgoff:1;
+/* 04000000 */	unsigned int chkmodeoff:1;
+/* 08000000 */	unsigned int dfmt2:1;
 
 // Do not exceed 32 bits;
 // if you may do so, create another bitfield.
