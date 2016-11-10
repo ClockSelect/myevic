@@ -332,24 +332,6 @@ __myevic__ void UpdatePTCounters()
 
 
 //=========================================================================
-//----- (0000388C) --------------------------------------------------------
-__myevic__ void CpyTmpCoefsNI()
-{
-	for ( int i = 0 ; i <= 20 ; ++i )
-		dfTempCoefsNI[i] = TempCoefsNI[i];
-}
-
-
-//=========================================================================
-//----- (000038D8) --------------------------------------------------------
-__myevic__ void CpyTmpCoefsTI()
-{
-	for ( int i = 0 ; i <= 20 ; ++i )
-		dfTempCoefsTI[i] = TempCoefsTI[i];
-}
-
-
-//=========================================================================
 //----- (00001C30) --------------------------------------------------------
 __myevic__ void ResetDataFlash()
 {
@@ -381,8 +363,9 @@ __myevic__ void ResetDataFlash()
 //	dfRezLockedNI = 0;
 	dfTiOn = 1;
 //	dfStealthOn = 0;
-	CpyTmpCoefsNI();
-	CpyTmpCoefsTI();
+	dfTempCoefsNI = 201;
+	ResetCustomBattery();
+	dfTempCoefsTI = 101;
 	dfLEDColor = 25 << 10;
 //	dfStatus.off = 0;
 //	dfStatus.keylock = 0;
@@ -515,6 +498,23 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfStealthOn > 1 )
 		dfStealthOn = 0;
 
+	if (( dfTempCoefsNI <= 200 ) || ( dfTempCoefsNI <= 100 ))
+	{
+		dfTempCoefsNI = 201;
+		dfTempCoefsTI = 101;
+		
+		ResetCustomBattery();
+	}
+	else
+	{
+		LoadCustomBattery();
+
+		if ( !CheckCustomBattery() )
+		{
+			ResetCustomBattery();
+		}
+	}
+	
 	if ( dfShuntRez < SHUNT_MIN_VALUE || dfShuntRez > SHUNT_MAX_VALUE )
 		dfShuntRez = 0;
 
@@ -538,22 +538,6 @@ __myevic__ void DFCheckValuesValidity()
 
 	if ( dfScreenProt > 7 )
 		dfScreenProt = 0;
-
-	for ( i = 0 ; i < 21 ; ++i )
-	{
-		if ( dfTempCoefsNI[i] > 200 )
-			break;
-	}
-	if ( i != 21 )
-		CpyTmpCoefsNI();
-
-	for ( i = 0 ; i < 21 ; ++i )
-	{
-		if ( dfTempCoefsTI[i] > 100 )
-			break;
-	}
-	if ( i != 21 )
-		CpyTmpCoefsTI();
 
 	if ( dfTCRIndex > 2 )
 		dfTCRIndex = 0;
@@ -619,7 +603,7 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfDimTimeout < 5 || dfDimTimeout > 60 )
 		dfDimTimeout = ScrMainTimes[dfScrMainTime];
 
-	if ( dfBatteryModel >= GetNBatteries() )
+	if (( dfBatteryModel >= GetNBatteries() ) && ( dfBatteryModel != BATTERY_CUSTOM ))
 		dfBatteryModel = 0;
 
 	for ( i = 0 ; i < 3 ; ++i )

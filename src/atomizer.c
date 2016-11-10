@@ -529,7 +529,7 @@ __myevic__ void ReadAtoTemp()
 
 //=========================================================================
 //----- (00002FF0) --------------------------------------------------------
-__myevic__ void GetTempCoef( const uint16_t tc[] )
+__myevic__ void GetTempCoef( const uint8_t tc[] )
 {
 	int r; // r2@4
 	int v; // r4@6

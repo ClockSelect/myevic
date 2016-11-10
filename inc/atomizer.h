@@ -114,7 +114,7 @@ extern void ProbeAtomizer();
 extern void ReadAtoCurrent();
 extern void ReadAtoTemp();
 extern void ReadAtomizer();
-extern void GetTempCoef( const uint16_t tc[] );
+extern void GetTempCoef( const uint8_t tc[] );
 extern void CheckMode();
 extern void ReadBoardTemp();
 extern void Overtemp();

@@ -230,6 +230,7 @@ extern const uint16_t String_30Q[];
 extern const uint16_t String_VT4[];
 extern const uint16_t String_VT5[];
 extern const uint16_t String_VT6[];
+extern const uint16_t String_CUS[];
 extern const uint16_t String_Vaping[];
 extern const uint16_t String_Prot[];
 extern const uint16_t String_Snow[];

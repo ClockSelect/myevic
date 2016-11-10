@@ -177,7 +177,7 @@ __myevic__ void DrawDate( int x, int y, S_RTC_TIME_DATA_T *rtd, int colors )
 		{  0xD9, 44, 28,  0, 24, 40 }
 	};
 
-	const datefmt_t *f = &format[ dfStatus.mdy | ( dfStatus.dfmt2 << 1 ) ];
+	const datefmt_t *f = &format[ dfStatus.dfmt1 | ( dfStatus.dfmt2 << 1 ) ];
 
 	if ( gFlags.draw_edited_item ) colors = 0x1F;
 

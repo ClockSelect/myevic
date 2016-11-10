@@ -570,11 +570,11 @@ __myevic__ void EventHandler()
 			switch ( dfTempAlgo )
 			{
 				case 1:
-					GetTempCoef( dfTempCoefsNI );
+					GetTempCoef( TempCoefsNI );
 					break;
 
 				case 2:
-					GetTempCoef( dfTempCoefsTI );
+					GetTempCoef( TempCoefsTI );
 					break;
 
 				case 3:

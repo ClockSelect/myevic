@@ -708,7 +708,7 @@ __myevic__ int EvtPlusButton()
 
 		case 106:
 		{
-			int f = dfStatus.mdy | ( dfStatus.dfmt2 << 1 );
+			int f = dfStatus.dfmt1 | ( dfStatus.dfmt2 << 1 );
 			switch ( ( f << 2 | EditItemIndex ) )
 			{
 				case  0:
@@ -834,7 +834,7 @@ __myevic__ int EvtMinusButton()
 
 		case 106:
 		{
-			int f = dfStatus.mdy | ( dfStatus.dfmt2 << 1 );
+			int f = dfStatus.dfmt1 | ( dfStatus.dfmt2 << 1 );
 			switch ( ( f << 2 | EditItemIndex ) )
 			{
 				case  0:

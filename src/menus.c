@@ -311,7 +311,7 @@ __myevic__ void ClockMenuIDraw( int it, int line, int sel )
 		{
 			const uint16_t *strings[] =
 				{ String_DMY1, String_MDY, String_DMY2, String_YMD };
-			int f = dfStatus.mdy | ( dfStatus.dfmt2 << 1 );
+			int f = dfStatus.dfmt1 | ( dfStatus.dfmt2 << 1 );
 			const uint16_t *s = strings[f];
 			DrawFillRect( 28, line, 63, line+12, 0 );
 			DrawString( s, 32, line+2 );
@@ -340,9 +340,9 @@ __myevic__ void ClockMenuOnClick()
 
 		case 4:	// Format
 		{
-			int f = dfStatus.mdy | ( dfStatus.dfmt2 << 1 );
+			int f = dfStatus.dfmt1 | ( dfStatus.dfmt2 << 1 );
 			if ( ++f > 3 ) f = 0;
-			dfStatus.mdy = f & 1;
+			dfStatus.dfmt1 = f & 1;
 			dfStatus.dfmt2 = f >> 1;
 			UpdateDFTimer = 50;
 			gFlags.refresh_display = 1;
@@ -857,9 +857,6 @@ __myevic__ void ExpertMenuOnClick()
 			if ( ++dfBatteryModel >= GetNBatteries() )
 				dfBatteryModel = 0;
 			SetBatteryModel();
-			gFlags.read_battery = 1;
-			NewBatteryVoltage();
-			SetBatMaxPower();
 			break;
 
 		case 8:	// BVO
@@ -917,6 +914,12 @@ __myevic__ int ExpertMenuOnEvent( int event )
 					AtoShuntRez = GetShuntRezValue();
 					dfShuntRez = 0;
 					gFlags.edit_value = 0;
+					vret = 1;
+					break;
+				
+				case 7:	// Battery model
+					dfBatteryModel = BATTERY_CUSTOM;
+					SetBatteryModel();
 					vret = 1;
 					break;
 			}

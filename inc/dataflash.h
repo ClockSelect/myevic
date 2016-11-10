@@ -63,7 +63,7 @@ typedef struct
 /* 00008000 */	unsigned int font:1;
 
 /* 00010000 */	unsigned int nfe:1;
-/* 00020000 */	unsigned int mdy:1;
+/* 00020000 */	unsigned int dfmt1:1;
 /* 00040000 */	unsigned int invert:1;
 /* 00080000 */	unsigned int vapedml:1;
 /* 00100000 */	unsigned int onedegree:1;
@@ -89,6 +89,15 @@ typedef struct
 }
 dfPID_t;
 
+typedef struct
+{
+	uint8_t	percent[9];
+	uint8_t voltage[11];
+	uint8_t	cutoff;
+	uint8_t	maxamp;
+}
+dfBattery_t;
+
 typedef struct dfParams
 {
 /* 0000 */	uint32_t	PCRC;
@@ -96,7 +105,7 @@ typedef struct dfParams
 /* 0008 */	uint8_t		Magic;
 /* 0009 */	uint8_t		BootFlag;
 /* 000A */	uint8_t		Mode;
-/* 000B */	uint8_t		Protec;			//	1-byte pad
+/* 000B */	uint8_t		Protec;			//	former 1-byte pad
 /* 000C */	uint16_t	Power;
 /* 000E */	uint16_t	Temp;
 /* 0010 */	uint16_t	TCPower;
@@ -112,24 +121,26 @@ typedef struct dfParams
 /* 001F */	uint8_t		RezLockedNI;
 /* 0020 */	uint8_t		TiOn;			//	useless
 /* 0021 */	uint8_t		StealthOn;
-/* 0022 */	uint16_t	TempCoefsNI[21];
-/* 004C */	uint16_t	TempCoefsTI[21];
-/* 0076 */	uint16_t	LEDColor;		//	2-bytes pad
+/* 0022 */	uint16_t	TempCoefsNI;
+/* 0024 */	dfBattery_t	Battery;
+/* 003A */	uint8_t		Unused24[58];
+/* 0074 */	uint16_t	TempCoefsTI;
+/* 0076 */	uint16_t	LEDColor;		//	former 2-bytes pad
 /* 0078 */	dfStatus_t	Status;
 /* 007C */	uint16_t	AtoRez;
 /* 007E */	uint8_t		AtoStatus;
-/* 007F */	uint8_t		ShuntRez;		//	1-byte pad
+/* 007F */	uint8_t		ShuntRez;		//	former 1-byte pad
 /* 0080 */	uint16_t	RezSS;
 /* 0082 */	uint8_t		RezLockedSS;
 /* 0083 */	uint8_t		UIVersion;		//	useless
 /* 0084 */	uint8_t		TCRIndex;
-/* 0085 */	uint8_t		ScrMainTime;	//	1-byte pad
+/* 0085 */	uint8_t		ScrMainTime;	//	former 1-byte pad
 /* 0086 */	uint16_t	TCRM[3];
 /* 008C */	uint16_t	RezTCR;
 /* 008E */	uint8_t		RezLockedTCR;
-/* 008F */	uint8_t		ScreenSaver;	//	1-byte pad
+/* 008F */	uint8_t		ScreenSaver;	//	former LED color
 /* 0090 */	uint8_t		TCMode;
-/* 0091 */	uint8_t		ScreenProt;		//	1-byte pad
+/* 0091 */	uint8_t		ScreenProt;		//	former 1-byte pad
 /* 0092 */	uint16_t	SavedCfgRez[10];
 /* 00A6 */	uint16_t	SavedCfgPwr[10];
 /* 00BA */	uint16_t	FBBest;
@@ -293,6 +304,7 @@ extern dfStruct_t DataFlash;
 #define dfTiOn			DFP(TiOn)
 #define dfStealthOn		DFP(StealthOn)
 #define dfTempCoefsNI	DFP(TempCoefsNI)
+#define dfBattery		DFP(Battery)
 #define dfTempCoefsTI	DFP(TempCoefsTI)
 #define dfLEDColor		DFP(LEDColor)
 #define dfStatus		DFP(Status)

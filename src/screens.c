@@ -942,7 +942,7 @@ __myevic__ void ShowSetDate()
 		{ 0x0F, 0x1B, 0x1E }
 	};
 
-	int f = dfStatus.mdy | ( dfStatus.dfmt2 << 1 );
+	int f = dfStatus.dfmt1 | ( dfStatus.dfmt2 << 1 );
 	int col = cols[f][EditItemIndex];
 
 	S_RTC_TIME_DATA_T rtd;
