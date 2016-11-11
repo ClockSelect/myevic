@@ -109,7 +109,7 @@
 				.section .stack
 
 				.balign 8,0
-Stack_Bottom:	.ds.b	0x400	@ Stack	space
+Stack_Bottom:	.ds.b	0x1000	@ Stack	space
 Stack_Top:
 
 

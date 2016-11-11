@@ -1332,6 +1332,8 @@ __myevic__ void BatteryCharge()
 //=========================================================================
 // Custom Battery Profile management
 //-------------------------------------------------------------------------
+// Write Custom Battery data to the dataflash
+//-------------------------------------------------------------------------
 __myevic__ void SaveCustomBattery( const Battery_t *b )
 {
 	int i;
@@ -1355,6 +1357,8 @@ __myevic__ void SaveCustomBattery( const Battery_t *b )
 }
 
 
+//-------------------------------------------------------------------------
+// Read Custom Battery data from the dataflash
 //-------------------------------------------------------------------------
 __myevic__ void LoadCustomBattery()
 {
@@ -1380,6 +1384,8 @@ __myevic__ void LoadCustomBattery()
 
 
 //-------------------------------------------------------------------------
+// Reset Custom Battery data from Generic battery profile
+//-------------------------------------------------------------------------
 __myevic__ void ResetCustomBattery()
 {
 	SaveCustomBattery( &Batteries[0] );
@@ -1387,6 +1393,8 @@ __myevic__ void ResetCustomBattery()
 }
 
 
+//-------------------------------------------------------------------------
+// Check Custom Battery data consistency
 //-------------------------------------------------------------------------
 __myevic__ int CheckCustomBattery()
 {

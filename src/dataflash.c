@@ -6,6 +6,7 @@
 #include "events.h"
 #include "battery.h"
 #include "atomizer.h"
+#include "miscs.h"
 
 #include "dataflash.h"
 
@@ -416,7 +417,8 @@ __myevic__ void ResetDataFlash()
 	dfPID.P = PID_P_DEF;
 	dfPID.I = PID_I_DEF;
 	dfPID.D = PID_D_DEF;
-	dfMillis = 0;
+//	dfMillis = 0;
+//	dfProfile = 0;
 	UpdateDataFlash();
 
 	dfPuffCount = 0;
@@ -784,8 +786,8 @@ __myevic__ void UpdateDataFlash()
 	uint8_t *df;
 	uint32_t idx;
 
-	dfAtoRez = AtoRez;
-	dfAtoStatus = AtoStatus;
+//	dfAtoRez = AtoRez;
+//	dfAtoStatus = AtoStatus;
 
 	df = (uint8_t*)&DataFlash.params;
 
@@ -1222,3 +1224,84 @@ __myevic__ uint16_t GetShuntRezValue()
 	return rez;
 }
 
+
+//=========================================================================
+// Profile management
+//-------------------------------------------------------------------------
+__myevic__ void ApplyParameters()
+{
+	InitDisplay();
+	LEDGetColor();
+	SetBatteryModel();
+	ModeChange();
+
+	gFlags.refresh_display = 1;
+}
+
+
+__myevic__ void LoadProfile( int p )
+{
+	uint32_t addr;
+	dfParams_t *params;
+
+	if ( p >= DATAFLASH_PROFILES_MAX )
+		return;
+
+	addr = DATAFLASH_PROFILES_BASE + p * DATAFLASH_PARAMS_SIZE;
+
+	params = (dfParams_t*)addr;
+
+	if (( params->Magic == DFMagicNumber ) && ( params->PCRC == CalcPageCRC( (uint32_t*)params ) ))
+	{
+		MemCpy( DataFlash.params, params, DATAFLASH_PARAMS_SIZE );
+
+		DFCheckValuesValidity();
+		ApplyParameters();
+	}
+
+	dfProfile = p;
+	UpdateDataFlash();
+}
+
+
+__myevic__ void SaveProfile()
+{
+	uint8_t *df;
+	uint8_t *profile;
+
+	uint32_t idx;
+	uint32_t offset, addr;
+
+	uint8_t page[FMC_FLASH_PAGE_SIZE] __attribute__((aligned(4)));
+
+	offset = dfProfile * DATAFLASH_PARAMS_SIZE;
+	addr   = DATAFLASH_PROFILES_BASE + offset;
+
+	profile = (uint8_t*)addr;
+
+	df = (uint8_t*)&DataFlash.params;
+
+	for ( idx = 0 ; idx < DATAFLASH_PARAMS_SIZE ; ++idx )
+	{
+		if ( df[idx] != profile[idx] )
+			break;
+	}
+
+	if ( idx != DATAFLASH_PARAMS_SIZE )
+	{
+		dfCRC = CalcPageCRC( DataFlash.params );
+
+		MemCpy( page, (void*)DATAFLASH_PROFILES_BASE, FMC_FLASH_PAGE_SIZE );
+		MemCpy( page + offset, df, DATAFLASH_PARAMS_SIZE );
+
+		SYS_UnlockReg();
+		FMC_ENABLE_ISP();
+		FMC_ENABLE_AP_UPDATE();
+
+		FMCEraseWritePage( DATAFLASH_PROFILES_BASE, (uint32_t*)page );
+
+		FMC_DISABLE_AP_UPDATE();
+		FMC_DISABLE_ISP();
+		SYS_LockReg();
+	}
+}

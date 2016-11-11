@@ -445,26 +445,25 @@ __myevic__ void GetUserInput()
 			if ( !EditModeTimer )
 			{
 				if ( dfStatus.off )
+				{
 					Event = 18;	// flip display
+				}
 				else
+				{
 					Event = 4;	// key (un)lock
+				}
 			}
 		}
-		else if ( UserInputs == 6 )
+		else if ( UserInputs == 5 )
 		{
-			if ( !dfStatus.off )
-			{
-				Event = 6;	// stealth on/off
-			}
-		}
-	}
-	else if ( KeyPressTime == 250 )
-	{
-		if ( UserInputs == 5 )
-		{
+			// Fire + Right button
 			if ( dfStatus.off )
 			{
 				Event = 39;	// tcr set menu
+			}
+			else
+			{
+				Event = EVENT_PROFILE_MENU;	// profile selection
 			}
 		}
 		else if ( UserInputs == 6 )
@@ -472,6 +471,10 @@ __myevic__ void GetUserInput()
 			if ( dfStatus.off )
 			{
 				Event = 34;	// battery voltage screen
+			}
+			else
+			{
+				Event = 6;	// stealth on/off
 			}
 		}
 	}
@@ -1103,6 +1106,10 @@ __myevic__ int CustomEvents()
 
 		case EVENT_MODE_CHANGE:
 			ModeChange();
+			break;
+
+		case EVENT_PROFILE_MENU:
+			vret = MenuEvent( LastEvent );
 			break;
 
 		default:

@@ -19,6 +19,13 @@
 #define DATAFLASH_PARAMS_END		DATAFLASH_PUFFCNTR_BASE
 #define DATAFLASH_PARAMS_BASE		(DATAFLASH_PARAMS_END-DATAFLASH_PARAMS_SPACE)
 
+// Profiles
+#define DATAFLASH_PROFILES_SPACE	FMC_FLASH_PAGE_SIZE
+#define DATAFLASH_PROFILES_END		DATAFLASH_PARAMS_BASE
+#define DATAFLASH_PROFILES_BASE		(DATAFLASH_PROFILES_END-DATAFLASH_PROFILES_SPACE)
+
+#define DATAFLASH_PROFILES_MAX		5
+
 // Custom Logo space
 // Those addresses are hardcoded in Joyetech's custom logo utility so
 //  we have to hardcode them here too.
@@ -127,8 +134,8 @@ typedef struct dfParams
 /* 0074 */	uint16_t	TempCoefsTI;
 /* 0076 */	uint16_t	LEDColor;		//	former 2-bytes pad
 /* 0078 */	dfStatus_t	Status;
-/* 007C */	uint16_t	AtoRez;
-/* 007E */	uint8_t		AtoStatus;
+/* 007C */	uint16_t	AtoRez;			//	useless
+/* 007E */	uint8_t		AtoStatus;		//	useless
 /* 007F */	uint8_t		ShuntRez;		//	former 1-byte pad
 /* 0080 */	uint16_t	RezSS;
 /* 0082 */	uint8_t		RezLockedSS;
@@ -163,6 +170,7 @@ typedef struct dfParams
 /* 00D4 */	uint16_t	TCRP[3];
 /* 00DA */	dfPID_t		PID;
 /* 00E0 */	uint16_t	Millis;
+/* 00E2 */	uint8_t		Profile;
 }
 dfParams_t;
 
@@ -344,6 +352,7 @@ extern dfStruct_t DataFlash;
 #define dfTCRP			DFP(TCRP)
 #define dfPID			DFP(PID)
 #define dfMillis		DFP(Millis)
+#define dfProfile		DFP(Profile)
 
 #define dfFWVersion		DFI(FWVersion)
 #define dffmcCID        DFI(fmcCID)
@@ -384,6 +393,10 @@ extern void UpdateDataFlash();
 extern void UpdatePTCounters();
 extern void DataFlashUpdateTick();
 extern uint16_t GetShuntRezValue();
+
+extern void LoadProfile( int p );
+extern void SaveProfile();
+extern void ApplyParameters();
 
 //-------------------------------------------------------------------------
 

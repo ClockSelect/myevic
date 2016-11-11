@@ -73,6 +73,7 @@ extern void ShowFireDuration( int line );
 
 extern uint16_t GetScreenProtection();
 extern uint16_t GetMainScreenDuration();
+extern void SetScreen( int screen, int duration );
 
 //==============================================================================
 
@@ -279,6 +280,11 @@ extern const uint16_t String_Red[];
 extern const uint16_t String_Green[];
 extern const uint16_t String_Blue[];
 extern const uint16_t String_Delay[];
+extern const uint16_t String_Profile[];
+extern const uint16_t String_TC[];
+extern const uint16_t String_PW[];
+extern const uint16_t String_BY[];
+extern const uint16_t String_SM[];
 
 
 //==============================================================================

@@ -28,6 +28,16 @@ uint8_t		BatAnimLevel;
 
 
 //=========================================================================
+// Change Screen
+void SetScreen( int screen, int duration )
+{
+	Screen = screen;
+	ScreenDuration = duration;
+	gFlags.refresh_display = 1;
+}
+
+
+//=========================================================================
 // Called at a frequency of 10Hz except when firing in TC modes.
 // Called at a frequency of 2Hz when firing in TC modes.
 

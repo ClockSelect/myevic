@@ -140,14 +140,16 @@ So as long as you have no warning (a blinking "balance" on the battery icon or a
 ----------
 
 ###Menus:
-Holding fire and right button a few seconds enters menus.
-There's many more to LOGO and Game menus now. See below.
+Holding Fire and Right (+) buttons 1/5th of a second enters menus.  
 
-* At any time, you may press simultaneously fire and right button to get out of the menus and return to the main screen.
-* When navigating in sub-menus, you may press simultaneously left and right buttons for one second to return to the parent (upper level) menu.
+* At any time, you may press simultaneously Fire and Right buttons to get out of the menus and return to the main screen.
+* When navigating in sub-menus, you may press simultaneously Left and Right buttons to return to the parent (upper level) menu.
 
     ![](http://i345.photobucket.com/albums/p374/ClockSelect/menus_zpsb8gftzok.png)  
 Main menu screen
+
+If you continue holding Fire and Right (+) buttons after entering menus, after two seconds, you'll enter the Profile selection screen (see the **Profile** section for more informations about configuration profiles).  
+
 
 ----------
 
@@ -465,7 +467,8 @@ Main menu screen
  
         *Warning: You can't use Joyetech's firmware updater while this option is "ON". It may aloso cause issues with third-party firmware management systems.*  
         Enables or disables partial compatibility with the [NFirmwareEditor 5.0+](https://github.com/TBXin/NFirmwareEditor/releases) myEvic Configuration Editor.  
-        This option is disabled by default; set it to "ON" if you plan to use developpement features of the NFE. You'll have access to monitoring, screenshot, and COM terminal.  
+        This option is disabled by default; set it to "ON" if you plan to use developpement features of the NFE. You'll have access to Monitoring, Screenshot, COM terminal, and Custom Battery Profile editor.  
+        Since compatibility is only partial at the moment, editing parameters other than Battery Profile will have no effect.  
  
   * SHR
   
@@ -505,6 +508,22 @@ Main menu screen
         * On a mixed single/dual-cells box, B1 is used for the lone battery in single-cell setting, and B2 & B3 for the two cells in a dual-cell setting.  
         * On a triple-cell box, I let you guess.  
 
+
+
+----------
+### Profiles
+
+You can switch between five different configuration profiles.  
+A configuration profile saves all the box settings, including mode, coil resistance, display and interface settings, etc.
+
+To access the Profile selection screen, press and hold the Fire and (+) buttons for two seconds. On the Profile selection screen, select the profile and click Fire to activate it.  
+  
+![Profile Screen](https://www.dropbox.com/s/b4y1afx3vbmrgdp/profile.png?dl=1)
+
+Each line display the Profile number, the seleted mode and last used resistance.  
+Empty lines correspond to empty profiles.  
+By selecting an empty profile, the current profile will be duplicated.  
+To duplicate current profile onto an existing profile (thus erasing it), select the target profile and press fire during two seconds. The target profile will be selected with a copy of the current profile.
 
 ----------
 
