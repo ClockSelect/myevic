@@ -1228,6 +1228,50 @@ __myevic__ uint16_t GetShuntRezValue()
 //=========================================================================
 // Profile management
 //-------------------------------------------------------------------------
+// Reload data filter.
+// Filters relevant dataflash data for storage in a profile.
+// This array will have to be extended if parameters comes to be bigger
+// than 256 bytes one day.
+//-------------------------------------------------------------------------
+const uint8_t ProfileFilter[32] =
+{
+/* 0000 */	0b00000000,
+/* 0008 */	0b00101111,
+/* 0010 */	0b11111111,
+/* 0018 */	0b11111111,
+/* 0020 */	0b00000000,
+/* 0028 */	0b00000000,
+/* 0030 */	0b00000000,
+/* 0038 */	0b00000000,
+/* 0040 */	0b00000000,
+/* 0048 */	0b00000000,
+/* 0050 */	0b00000000,
+/* 0058 */	0b00000000,
+/* 0060 */	0b00000000,
+/* 0068 */	0b00000000,
+/* 0070 */	0b00000011,
+/* 0078 */	0b00000000,
+/* 0080 */	0b11101011,
+/* 0088 */	0b11111110,
+/* 0090 */	0b10000000,
+/* 0098 */	0b00000000,
+/* 00A0 */	0b00000000,
+/* 00A8 */	0b00000000,
+/* 00B0 */	0b00000000,
+/* 00B8 */	0b00000001,
+/* 00C0 */	0b00111000,
+/* 00C8 */	0b00000111,
+/* 00D0 */	0b11111111,
+/* 00D8 */	0b11111111,
+/* 00E0 */	0b11100000,
+/* 00E8 */	0b00000000,
+/* 00F0 */	0b00000000,
+/* 00F8 */	0b00000000
+};
+
+//-------------------------------------------------------------------------
+// Apply newly reloaded parameters
+//-------------------------------------------------------------------------
 __myevic__ void ApplyParameters()
 {
 	InitDisplay();
@@ -1239,10 +1283,14 @@ __myevic__ void ApplyParameters()
 }
 
 
+//-------------------------------------------------------------------------
+// Restore a given profile
+//-------------------------------------------------------------------------
 __myevic__ void LoadProfile( int p )
 {
-	uint32_t addr;
+	uint32_t addr, idx;
 	dfParams_t *params;
+	uint8_t *s, *d;
 
 	if ( p >= DATAFLASH_PROFILES_MAX )
 		return;
@@ -1253,7 +1301,12 @@ __myevic__ void LoadProfile( int p )
 
 	if (( params->Magic == DFMagicNumber ) && ( params->PCRC == CalcPageCRC( (uint32_t*)params ) ))
 	{
-		MemCpy( DataFlash.params, params, DATAFLASH_PARAMS_SIZE );
+		s = (uint8_t*)params;
+		d = (uint8_t*)DataFlash.params;
+
+		for ( idx = 0 ; idx < DATAFLASH_PARAMS_SIZE ; ++idx )
+			if ( ProfileFilter[idx/8] & ( 0x80 >> ( idx & 7 ) ) )
+				d[idx] = s[idx];
 
 		DFCheckValuesValidity();
 		ApplyParameters();
@@ -1264,6 +1317,9 @@ __myevic__ void LoadProfile( int p )
 }
 
 
+//-------------------------------------------------------------------------
+// Save the current profile
+//-------------------------------------------------------------------------
 __myevic__ void SaveProfile()
 {
 	uint8_t *df;
@@ -1281,10 +1337,13 @@ __myevic__ void SaveProfile()
 
 	df = (uint8_t*)&DataFlash.params;
 
+	// Only save profile if some of the relevant data has been modified
+
 	for ( idx = 0 ; idx < DATAFLASH_PARAMS_SIZE ; ++idx )
 	{
-		if ( df[idx] != profile[idx] )
-			break;
+		if ( ProfileFilter[idx/8] & ( 0x80 >> ( idx & 7 ) ) )
+			if ( df[idx] != profile[idx] )
+				break;
 	}
 
 	if ( idx != DATAFLASH_PARAMS_SIZE )
