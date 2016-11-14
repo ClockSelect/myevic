@@ -14,6 +14,7 @@ extern uint16_t	ScreenRefreshTimer;
 extern uint16_t	HideLogo;
 extern uint8_t	ShowWeakBatFlag;
 extern uint8_t	BatAnimLevel;
+extern uint8_t	ShowProfNum;
 
 extern uint8_t	EditItemIndex;
 extern uint16_t	EditModeTimer;
@@ -285,6 +286,7 @@ extern const uint16_t String_TC[];
 extern const uint16_t String_PW[];
 extern const uint16_t String_BY[];
 extern const uint16_t String_SM[];
+extern const uint16_t String_ProfPlus[];
 
 
 //==============================================================================

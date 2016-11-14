@@ -360,6 +360,10 @@ __myevic__ void ClicksMenuIDraw( int it, int line, int sel )
 		case CLICK_ACTION_ON_OFF:
 			DrawString( String_OnOff, 20, line+2 );
 			break;
+
+		case CLICK_ACTION_PROFILE:
+			DrawString( String_ProfPlus, 20, line+2 );
+			break;
 	}
 }
 

@@ -316,6 +316,10 @@ __myevic__ void GetUserInput()
 						case CLICK_ACTION_ON_OFF:
 							FireClicksEvent = 17;	// Switch On/Off
 							break;
+
+						case CLICK_ACTION_PROFILE:
+							FireClicksEvent = EVENT_NEXT_PROFILE;	// Cycle profile
+							break;
 					}
 					if ( dfStatus.off )
 					{
@@ -935,9 +939,7 @@ __myevic__ int EvtLongFire()
 
 __myevic__ int EvtContrastMenu()
 {
-	Screen = 101;
-	ScreenDuration = 10;
-	gFlags.refresh_display = 1;
+	SetScreen( 101, 10 );
 	return 1;
 }
 
@@ -947,9 +949,7 @@ __myevic__ int EvtEnterMenus()
 {
 	CurrentMenu = 0;
 	CurrentMenuItem = 0;
-	Screen = 102;
-	ScreenDuration = 30;
-	gFlags.refresh_display = 1;
+	SetScreen( 102, 30 );
 	return 1;
 }
 
@@ -960,9 +960,7 @@ S_RTC_TIME_DATA_T SetTimeRTD;
 __myevic__ int EvtSetTime()
 {
 	GetRTC( &SetTimeRTD );
-	Screen = 105;
-	ScreenDuration = 60;
-	gFlags.refresh_display = 1;
+	SetScreen( 105, 60 );
 	EditItemIndex = 2;
 	EditModeTimer = 6000;
 	return 1;
@@ -971,9 +969,7 @@ __myevic__ int EvtSetTime()
 __myevic__ int EvtSetDate()
 {
 	GetRTC( &SetTimeRTD );
-	Screen = 106;
-	ScreenDuration = 60;
-	gFlags.refresh_display = 1;
+	SetScreen( 106, 60 );
 	EditItemIndex = 2;
 	EditModeTimer = 6000;
 	return 1;
@@ -1089,15 +1085,11 @@ __myevic__ int CustomEvents()
 			break;
 
 		case EVENT_CLK_ADJUST:
-			Screen = 104;
-			ScreenDuration = 120;
-			gFlags.refresh_display = 1;
+			SetScreen( 104, 120 );
 			break;
 
 		case EVENT_CLK_SPEED:
-			Screen = 103;
-			ScreenDuration = 120;
-			gFlags.refresh_display = 1;
+			SetScreen( 103, 120 );
 			break;
 
 		case EVENT_INVERT_SCREEN:
@@ -1110,6 +1102,11 @@ __myevic__ int CustomEvents()
 
 		case EVENT_PROFILE_MENU:
 			vret = MenuEvent( LastEvent );
+			break;
+
+		case EVENT_NEXT_PROFILE:
+			LoadProfile( ( dfProfile + 1 ) % DATAFLASH_PROFILES_MAX );
+			ShowProfNum = 30;
 			break;
 
 		default:

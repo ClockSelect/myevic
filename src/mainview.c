@@ -12,6 +12,7 @@
 
 uint16_t	HideLogo = 0;
 uint16_t	BypassVolts;
+uint8_t		ShowProfNum;
 
 
 //=============================================================================
@@ -723,7 +724,13 @@ __myevic__ void ShowMainView()
 		}
 	}
 
-	if ( ShowWeakBatFlag )
+	if ( ShowProfNum )
+	{
+		DrawFillRect( 0, 108, 63, 127, 0 );
+		DrawString( String_Profile, 12, 114 );
+		DrawImage( 47, 114, dfProfile + 0x0C );
+	}
+	else if ( ShowWeakBatFlag )
 	{
 		DrawFillRect( 0, 107, 63, 127, 0 );
 		ShowWeakBat();

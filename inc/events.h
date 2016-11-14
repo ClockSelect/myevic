@@ -76,6 +76,7 @@ extern uint8_t	LastEvent;
 #define EVENT_INVERT_SCREEN		116
 #define EVENT_MODE_CHANGE		117
 #define EVENT_PROFILE_MENU		118
+#define EVENT_NEXT_PROFILE		119
 
 
 //==============================================================================
@@ -88,6 +89,7 @@ enum
 	CLICK_ACTION_TDOM,
 	CLICK_ACTION_NEXT_MODE,
 	CLICK_ACTION_ON_OFF,
+	CLICK_ACTION_PROFILE,
 	CLICK_ACTION_MAX
 };
 
