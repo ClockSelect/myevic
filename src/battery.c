@@ -11,231 +11,193 @@
 
 //=========================================================================
 
-typedef struct
-{
-	const uint16_t percent;
-	const uint16_t voltage;
-}
-BatV2P_t;
-
-// Cuboid Mini / eVic Basic
-const BatV2P_t CMIB_VTable[] =
-{
-	{   0, 340 },
-	{  10, 357 },
-	{  20, 367 },
-	{  30, 370 },
-	{  40, 373 },
-	{  50, 377 },
-	{  60, 382 },
-	{  70, 389 },
-	{  80, 395 },
-	{  90, 402 },
-	{ 100, 410 }
-};
-
-// Generic 18650
-const BatV2P_t GENB_VTable[] =
-{
-	{   0, 310 },
-	{  10, 330 },
-	{  20, 342 },
-	{  30, 350 },
-	{  40, 358 },
-	{  50, 363 },
-	{  60, 368 },
-	{  70, 379 },
-	{  80, 389 },
-	{  90, 400 },
-	{ 100, 410 }
-};
-
-const BatV2P_t S25R_VTable[] =
-{
-	{   0, 302 },
-	{   1, 310 },
-	{   5, 327 },
-	{   9, 341 },
-	{  25, 357 },
-	{  39, 365 },
-	{  70, 391 },
-	{  84, 405 },
-	{  93, 409 },
-	{  97, 417 },
-	{ 100, 419 }
-};
-
-const BatV2P_t LHG2_VTable[] =
-{
-	{   0, 312 },
-	{   4, 326 },
-	{   9, 338 },
-	{  13, 345 },
-	{  26, 356 },
-	{  38, 364 },
-	{  79, 401 },
-	{  96, 411 },
-	{  98, 414 },
-	{  99, 417 },
-	{ 100, 420 }
-};
-
-const BatV2P_t LHE4_VTable[] =
-{
-	{   0, 323 },
-	{   3, 332 },
-	{  11, 347 },
-	{  19, 352 },
-	{  27, 359 },
-	{  48, 369 },
-	{  62, 379 },
-	{  84, 400 },
-	{  96, 413 },
-	{  99, 418 },
-	{ 100, 420 }
-};
-
-const BatV2P_t S30Q_VTable[] =
-{
-	{   0, 312 },
-	{  15, 340 },
-	{  23, 352 },
-	{  54, 381 },
-	{  68, 391 },
-	{  75, 400 },
-	{  81, 403 },
-	{  94, 408 },
-	{  97, 411 },
-	{  99, 416 },
-	{ 100, 420 }
-};
-
-const BatV2P_t VTC4_VTable[] =
-{
-	{   0, 314 },
-	{   1, 321 },
-	{   2, 331 },
-	{   4, 339 },
-	{   6, 343 },
-	{  14, 351 },
-	{  22, 356 },
-	{  49, 367 },
-	{  66, 380 },
-	{  99, 419 },
-	{ 100, 421 }
-};
-
-const BatV2P_t VTC5_VTable[] =
-{
-	{   0, 305 },
-	{   1, 310 },
-	{   2, 320 },
-	{   4, 329 },
-	{  14, 342 },
-	{  23, 351 },
-	{  45, 365 },
-	{  79, 396 },
-	{  95, 411 },
-	{  99, 418 },
-	{ 100, 420 }
-};
-
-const BatV2P_t VTC6_VTable[] =
-{
-	{   0, 324 },
-	{  11, 342 },
-	{  14, 348 },
-	{  35, 366 },
-	{  36, 368 },
-	{  53, 383 },
-	{  63, 389 },
-	{  78, 403 },
-	{  91, 409 },
-	{  99, 416 },
-	{ 100, 420 }
-};
-
-
-typedef struct
-{
-	const uint16_t	*name;
-	const BatV2P_t	*V2P;
-	const uint16_t	cutoff;
-	const uint16_t	intrez;
-	const uint16_t	maxamp;
-}
-Battery_t;
-
+// Cuboid Mini / eVic Basic / eGrip II
 const Battery_t BatteryCuboMini =
 {
 	String_GEN,
-	CMIB_VTable,
+	{
+		{   0, 340 },
+		{  10, 357 },
+		{  20, 367 },
+		{  30, 370 },
+		{  40, 373 },
+		{  50, 377 },
+		{  60, 382 },
+		{  70, 389 },
+		{  80, 395 },
+		{  90, 402 },
+		{ 100, 410 }
+	},
 	280,
 	25,
 	20
 };
 
-const Battery_t Batteries[] =
+const Battery_t const Batteries[] =
 {
+	// Generic 18650
 	{
 		String_GEN,
-		GENB_VTable,
+		{
+			{   0, 310 },
+			{  10, 330 },
+			{  20, 342 },
+			{  30, 350 },
+			{  40, 358 },
+			{  50, 363 },
+			{  60, 368 },
+			{  70, 379 },
+			{  80, 389 },
+			{  90, 400 },
+			{ 100, 410 }
+		},
 		280,
 		25,
 		20
 	},
 
+	// Samsung 25R
 	{
 		String_25R,
-		S25R_VTable,
+		{
+			{   0, 302 },
+			{   1, 310 },
+			{   5, 327 },
+			{   9, 341 },
+			{  25, 357 },
+			{  39, 365 },
+			{  70, 391 },
+			{  84, 405 },
+			{  93, 409 },
+			{  97, 417 },
+			{ 100, 419 }
+		},
 		280,
 		20,
 		25
 	},
 
+	// LG HG2
 	{
 		String_HG2,
-		LHG2_VTable,
+		{
+			{   0, 312 },
+			{   4, 326 },
+			{   9, 338 },
+			{  13, 345 },
+			{  26, 356 },
+			{  38, 364 },
+			{  79, 401 },
+			{  96, 411 },
+			{  98, 414 },
+			{  99, 417 },
+			{ 100, 420 }
+		},
 		280,
 		20,
 		20
 	},
 
+	// LG HE4
 	{
 		String_HE4,
-		LHE4_VTable,
+		{
+			{   0, 323 },
+			{   3, 332 },
+			{  11, 347 },
+			{  19, 352 },
+			{  27, 359 },
+			{  48, 369 },
+			{  62, 379 },
+			{  84, 400 },
+			{  96, 413 },
+			{  99, 418 },
+			{ 100, 420 }
+		},
 		280,
 		20,
 		25
 	},
 
+	// Samsung 30Q
 	{
 		String_30Q,
-		S30Q_VTable,
+		{
+			{   0, 312 },
+			{  15, 340 },
+			{  23, 352 },
+			{  54, 381 },
+			{  68, 391 },
+			{  75, 400 },
+			{  81, 403 },
+			{  94, 408 },
+			{  97, 411 },
+			{  99, 416 },
+			{ 100, 420 }
+		},
 		280,
 		20,
 		25
 	},
 
+	// Sony VTC4
 	{
 		String_VT4,
-		VTC4_VTable,
+		{
+			{   0, 314 },
+			{   1, 321 },
+			{   2, 331 },
+			{   4, 339 },
+			{   6, 343 },
+			{  14, 351 },
+			{  22, 356 },
+			{  49, 367 },
+			{  66, 380 },
+			{  99, 419 },
+			{ 100, 421 }
+		},
 		280,
 		20,
 		30
 	},
 
+	// Sony VTC5
 	{
 		String_VT5,
-		VTC5_VTable,
+		{
+			{   0, 305 },
+			{   1, 310 },
+			{   2, 320 },
+			{   4, 329 },
+			{  14, 342 },
+			{  23, 351 },
+			{  45, 365 },
+			{  79, 396 },
+			{  95, 411 },
+			{  99, 418 },
+			{ 100, 420 }
+		},
 		280,
 		20,
 		30
 	},
 
+	// Sony VTC6
 	{
 		String_VT6,
-		VTC6_VTable,
+		{
+			{   0, 324 },
+			{  11, 342 },
+			{  14, 348 },
+			{  35, 366 },
+			{  36, 368 },
+			{  53, 383 },
+			{  63, 389 },
+			{  78, 403 },
+			{  91, 409 },
+			{  99, 416 },
+			{ 100, 420 }
+		},
 		280,
 		20,
 		25
@@ -270,6 +232,8 @@ uint16_t	RTBVTotal;
 
 uint8_t		BattProbeCount;
 
+Battery_t	CustomBattery;
+
 const Battery_t	*Battery;
 
 uint8_t		byte_20000055;
@@ -286,13 +250,21 @@ __myevic__ int GetNBatteries()
 
 __myevic__ void SetBatteryModel()
 {
-	Battery = &Batteries[dfBatteryModel];
-
-	if ( dfBatteryModel == 0 )
+	if ( dfBatteryModel == BATTERY_CUSTOM )
 	{
-		if ( ISCUBOMINI || ISEVICBASIC || ISEGRIPII )
+		LoadCustomBattery();
+		Battery = &CustomBattery;
+	}
+	else
+	{
+		Battery = &Batteries[dfBatteryModel];
+
+		if ( dfBatteryModel == 0 )
 		{
-			Battery = &BatteryCuboMini;
+			if ( ISCUBOMINI || ISEVICBASIC || ISEGRIPII )
+			{
+				Battery = &BatteryCuboMini;
+			}
 		}
 	}
 
@@ -309,12 +281,17 @@ __myevic__ void SetBatteryModel()
 
 		BatteryMaxAmp = Battery->maxamp * 100;
 	}
+
+	NewBatteryVoltage();
+	SetBatMaxPower();
+
+	gFlags.read_battery = 1;
 }
 
 
 __myevic__ const uint16_t *GetBatteryName()
 {
-	return Batteries[dfBatteryModel].name;
+	return Battery->name;
 }
 
 
@@ -1350,4 +1327,97 @@ __myevic__ void BatteryCharge()
 		ChargerDuty = 0;
 	}
 }
+
+
+//=========================================================================
+// Custom Battery Profile management
+//-------------------------------------------------------------------------
+// Write Custom Battery data to the dataflash
+//-------------------------------------------------------------------------
+__myevic__ void SaveCustomBattery( const Battery_t *b )
+{
+	int i;
+
+	for ( i = 0 ; i < 11 ; ++i )
+	{
+		// Voltages are offset by 250 so values run from 60 to 170
+		// and hold into a single byte.
+		dfBattery.voltage[i] = b->V2P[i].voltage - 250;
+
+		// First and last percents are mandatorily 0 and 100,
+		// so it's useless to save them. 2 bytes saved.
+		if ( i < 9 )
+			dfBattery.percent[i] = b->V2P[i+1].percent;
+	}
+
+	dfBattery.cutoff = b->cutoff - 250;
+	dfBattery.maxamp = b->maxamp;
+
+	UpdateDFTimer = 1;
+}
+
+
+//-------------------------------------------------------------------------
+// Read Custom Battery data from the dataflash
+//-------------------------------------------------------------------------
+__myevic__ void LoadCustomBattery()
+{
+	int i;
+
+	CustomBattery.name = String_CUS;
+
+	CustomBattery.V2P[ 0].percent = 0;
+	CustomBattery.V2P[10].percent = 100;
+
+	for ( i = 0 ; i < 11 ; ++i )
+	{
+		if ( i < 9 )
+			CustomBattery.V2P[i+1].percent = dfBattery.percent[i];
+
+		CustomBattery.V2P[i].voltage = dfBattery.voltage[i] + 250;
+	}
+
+	CustomBattery.cutoff = dfBattery.cutoff + 250;
+	CustomBattery.maxamp = dfBattery.maxamp;
+	CustomBattery.intrez = 20;
+}
+
+
+//-------------------------------------------------------------------------
+// Reset Custom Battery data from Generic battery profile
+//-------------------------------------------------------------------------
+__myevic__ void ResetCustomBattery()
+{
+	SaveCustomBattery( &Batteries[0] );
+	LoadCustomBattery();
+}
+
+
+//-------------------------------------------------------------------------
+// Check Custom Battery data consistency
+//-------------------------------------------------------------------------
+__myevic__ int CheckCustomBattery()
+{
+	int i;
+
+	if ( CustomBattery.V2P[0].percent != 0 ) return 0;
+	if ( CustomBattery.V2P[10].percent != 100 ) return 0;
+
+	for ( i = 0 ; i < 11 ; ++i )
+	{
+		if ( CustomBattery.V2P[i].percent > 100 )
+			return 0;
+
+		if ( CustomBattery.V2P[i].voltage < 310 || CustomBattery.V2P[i].voltage > 420 )
+			return 0;
+
+		if (( i > 0 ) && ( CustomBattery.V2P[i].percent <= CustomBattery.V2P[i-1].percent ))
+			return 0;
+	}
+
+	if ( CustomBattery.cutoff < 275 || CustomBattery.cutoff > 350 ) return 0;
+
+	return 1;
+}
+
 

@@ -14,9 +14,9 @@
 #define SHUNT_MIN_VALUE	75
 #define SHUNT_MAX_VALUE	150
 
-#define VVEL_DEF_RATIO	360
-#define VVEL_MIN_RATIO	200
-#define VVEL_MAX_RATIO	500
+#define VVEL_DEF_RATIO	 360
+#define VVEL_MIN_RATIO	  50
+#define VVEL_MAX_RATIO	1000
 
 #define FIRE_PROTEC_MIN  20
 #define FIRE_PROTEC_DEF 100
@@ -114,7 +114,7 @@ extern void ProbeAtomizer();
 extern void ReadAtoCurrent();
 extern void ReadAtoTemp();
 extern void ReadAtomizer();
-extern void GetTempCoef( const uint16_t tc[] );
+extern void GetTempCoef( const uint8_t tc[] );
 extern void CheckMode();
 extern void ReadBoardTemp();
 extern void Overtemp();

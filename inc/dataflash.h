@@ -19,6 +19,13 @@
 #define DATAFLASH_PARAMS_END		DATAFLASH_PUFFCNTR_BASE
 #define DATAFLASH_PARAMS_BASE		(DATAFLASH_PARAMS_END-DATAFLASH_PARAMS_SPACE)
 
+// Profiles
+#define DATAFLASH_PROFILES_SPACE	FMC_FLASH_PAGE_SIZE
+#define DATAFLASH_PROFILES_END		DATAFLASH_PARAMS_BASE
+#define DATAFLASH_PROFILES_BASE		(DATAFLASH_PROFILES_END-DATAFLASH_PROFILES_SPACE)
+
+#define DATAFLASH_PROFILES_MAX		5
+
 // Custom Logo space
 // Those addresses are hardcoded in Joyetech's custom logo utility so
 //  we have to hardcode them here too.
@@ -44,36 +51,37 @@
 
 typedef struct
 {
-/* 00000001 */	int	off:1;
-/* 00000002 */	int	keylock:1;
-/* 00000004 */	int	flipped:1;
-/* 00000008 */	int	nologo:1;
-/* 00000010 */	int clock:1;
-/* 00000020 */	int vcom:1;
-/* 00000040 */	int storage:1;
-/* 00000080 */	int dbgena:1;
+/* 00000001 */	unsigned int off:1;
+/* 00000002 */	unsigned int keylock:1;
+/* 00000004 */	unsigned int flipped:1;
+/* 00000008 */	unsigned int nologo:1;
+/* 00000010 */	unsigned int clock:1;
+/* 00000020 */	unsigned int vcom:1;
+/* 00000040 */	unsigned int storage:1;
+/* 00000080 */	unsigned int dbgena:1;
 
-/* 00000100 */	int x32off:1;
-/* 00000200 */	int priopwr:1;
-/* 00000400 */	int onewatt:1;
-/* 00000800 */	int digclk:1;
-/* 00001000 */	int battpc:1;
-/* 00002000 */	int phpct:1;
-/* 00004000 */	int wakeonpm:1;
-/* 00008000 */	int font:1;
+/* 00000100 */	unsigned int x32off:1;
+/* 00000200 */	unsigned int priopwr:1;
+/* 00000400 */	unsigned int onewatt:1;
+/* 00000800 */	unsigned int digclk:1;
+/* 00001000 */	unsigned int battpc:1;
+/* 00002000 */	unsigned int phpct:1;
+/* 00004000 */	unsigned int wakeonpm:1;
+/* 00008000 */	unsigned int font:1;
 
-/* 00010000 */	int nfe:1;
-/* 00020000 */	int mdy:1;
-/* 00040000 */	int invert:1;
-/* 00080000 */	int vapedml:1;
-/* 00100000 */	int onedegree:1;
-/* 00200000 */	int battv:1;
-/* 00400000 */	int lsloff:1;
-/* 00800000 */	int logomid:1;
+/* 00010000 */	unsigned int nfe:1;
+/* 00020000 */	unsigned int dfmt1:1;
+/* 00040000 */	unsigned int invert:1;
+/* 00080000 */	unsigned int vapedml:1;
+/* 00100000 */	unsigned int onedegree:1;
+/* 00200000 */	unsigned int battv:1;
+/* 00400000 */	unsigned int lsloff:1;
+/* 00800000 */	unsigned int logomid:1;
 
-/* 01000000 */	int timebig:1;
-/* 02000000 */	int usbchgoff:1;
-/* 04000000 */	int chkmodeoff:1;
+/* 01000000 */	unsigned int timebig:1;
+/* 02000000 */	unsigned int usbchgoff:1;
+/* 04000000 */	unsigned int chkmodeoff:1;
+/* 08000000 */	unsigned int dfmt2:1;
 
 // Do not exceed 32 bits;
 // if you may do so, create another bitfield.
@@ -88,6 +96,15 @@ typedef struct
 }
 dfPID_t;
 
+typedef struct
+{
+	uint8_t	percent[9];
+	uint8_t voltage[11];
+	uint8_t	cutoff;
+	uint8_t	maxamp;
+}
+dfBattery_t;
+
 typedef struct dfParams
 {
 /* 0000 */	uint32_t	PCRC;
@@ -95,7 +112,7 @@ typedef struct dfParams
 /* 0008 */	uint8_t		Magic;
 /* 0009 */	uint8_t		BootFlag;
 /* 000A */	uint8_t		Mode;
-/* 000B */	uint8_t		Protec;			//	1-byte pad
+/* 000B */	uint8_t		Protec;			//	former 1-byte pad
 /* 000C */	uint16_t	Power;
 /* 000E */	uint16_t	Temp;
 /* 0010 */	uint16_t	TCPower;
@@ -111,24 +128,26 @@ typedef struct dfParams
 /* 001F */	uint8_t		RezLockedNI;
 /* 0020 */	uint8_t		TiOn;			//	useless
 /* 0021 */	uint8_t		StealthOn;
-/* 0022 */	uint16_t	TempCoefsNI[21];
-/* 004C */	uint16_t	TempCoefsTI[21];
-/* 0076 */	uint16_t	LEDColor;		//	2-bytes pad
+/* 0022 */	uint16_t	TempCoefsNI;
+/* 0024 */	dfBattery_t	Battery;
+/* 003A */	uint8_t		Unused24[58];
+/* 0074 */	uint16_t	TempCoefsTI;
+/* 0076 */	uint16_t	LEDColor;		//	former 2-bytes pad
 /* 0078 */	dfStatus_t	Status;
-/* 007C */	uint16_t	AtoRez;
-/* 007E */	uint8_t		AtoStatus;
-/* 007F */	uint8_t		ShuntRez;		//	1-byte pad
+/* 007C */	uint16_t	AtoRez;			//	useless
+/* 007E */	uint8_t		AtoStatus;		//	useless
+/* 007F */	uint8_t		ShuntRez;		//	former 1-byte pad
 /* 0080 */	uint16_t	RezSS;
 /* 0082 */	uint8_t		RezLockedSS;
 /* 0083 */	uint8_t		UIVersion;		//	useless
 /* 0084 */	uint8_t		TCRIndex;
-/* 0085 */	uint8_t		ScrMainTime;	//	1-byte pad
+/* 0085 */	uint8_t		ScrMainTime;	//	former 1-byte pad
 /* 0086 */	uint16_t	TCRM[3];
 /* 008C */	uint16_t	RezTCR;
 /* 008E */	uint8_t		RezLockedTCR;
-/* 008F */	uint8_t		ScreenSaver;	//	1-byte pad
+/* 008F */	uint8_t		ScreenSaver;	//	former LED color
 /* 0090 */	uint8_t		TCMode;
-/* 0091 */	uint8_t		ScreenProt;		//	1-byte pad
+/* 0091 */	uint8_t		ScreenProt;		//	former 1-byte pad
 /* 0092 */	uint16_t	SavedCfgRez[10];
 /* 00A6 */	uint16_t	SavedCfgPwr[10];
 /* 00BA */	uint16_t	FBBest;
@@ -151,6 +170,7 @@ typedef struct dfParams
 /* 00D4 */	uint16_t	TCRP[3];
 /* 00DA */	dfPID_t		PID;
 /* 00E0 */	uint16_t	Millis;
+/* 00E2 */	uint8_t		Profile;
 }
 dfParams_t;
 
@@ -292,6 +312,7 @@ extern dfStruct_t DataFlash;
 #define dfTiOn			DFP(TiOn)
 #define dfStealthOn		DFP(StealthOn)
 #define dfTempCoefsNI	DFP(TempCoefsNI)
+#define dfBattery		DFP(Battery)
 #define dfTempCoefsTI	DFP(TempCoefsTI)
 #define dfLEDColor		DFP(LEDColor)
 #define dfStatus		DFP(Status)
@@ -331,6 +352,7 @@ extern dfStruct_t DataFlash;
 #define dfTCRP			DFP(TCRP)
 #define dfPID			DFP(PID)
 #define dfMillis		DFP(Millis)
+#define dfProfile		DFP(Profile)
 
 #define dfFWVersion		DFI(FWVersion)
 #define dffmcCID        DFI(fmcCID)
@@ -371,6 +393,10 @@ extern void UpdateDataFlash();
 extern void UpdatePTCounters();
 extern void DataFlashUpdateTick();
 extern uint16_t GetShuntRezValue();
+
+extern void LoadProfile( int p );
+extern void SaveProfile();
+extern void ApplyParameters();
 
 //-------------------------------------------------------------------------
 

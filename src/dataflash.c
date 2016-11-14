@@ -6,6 +6,7 @@
 #include "events.h"
 #include "battery.h"
 #include "atomizer.h"
+#include "miscs.h"
 
 #include "dataflash.h"
 
@@ -332,24 +333,6 @@ __myevic__ void UpdatePTCounters()
 
 
 //=========================================================================
-//----- (0000388C) --------------------------------------------------------
-__myevic__ void CpyTmpCoefsNI()
-{
-	for ( int i = 0 ; i <= 20 ; ++i )
-		dfTempCoefsNI[i] = TempCoefsNI[i];
-}
-
-
-//=========================================================================
-//----- (000038D8) --------------------------------------------------------
-__myevic__ void CpyTmpCoefsTI()
-{
-	for ( int i = 0 ; i <= 20 ; ++i )
-		dfTempCoefsTI[i] = TempCoefsTI[i];
-}
-
-
-//=========================================================================
 //----- (00001C30) --------------------------------------------------------
 __myevic__ void ResetDataFlash()
 {
@@ -381,8 +364,9 @@ __myevic__ void ResetDataFlash()
 //	dfRezLockedNI = 0;
 	dfTiOn = 1;
 //	dfStealthOn = 0;
-	CpyTmpCoefsNI();
-	CpyTmpCoefsTI();
+	dfTempCoefsNI = 201;
+	ResetCustomBattery();
+	dfTempCoefsTI = 101;
 	dfLEDColor = 25 << 10;
 //	dfStatus.off = 0;
 //	dfStatus.keylock = 0;
@@ -433,7 +417,8 @@ __myevic__ void ResetDataFlash()
 	dfPID.P = PID_P_DEF;
 	dfPID.I = PID_I_DEF;
 	dfPID.D = PID_D_DEF;
-	dfMillis = 0;
+//	dfMillis = 0;
+//	dfProfile = 0;
 	UpdateDataFlash();
 
 	dfPuffCount = 0;
@@ -515,6 +500,23 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfStealthOn > 1 )
 		dfStealthOn = 0;
 
+	if (( dfTempCoefsNI <= 200 ) || ( dfTempCoefsNI <= 100 ))
+	{
+		dfTempCoefsNI = 201;
+		dfTempCoefsTI = 101;
+		
+		ResetCustomBattery();
+	}
+	else
+	{
+		LoadCustomBattery();
+
+		if ( !CheckCustomBattery() )
+		{
+			ResetCustomBattery();
+		}
+	}
+	
 	if ( dfShuntRez < SHUNT_MIN_VALUE || dfShuntRez > SHUNT_MAX_VALUE )
 		dfShuntRez = 0;
 
@@ -538,22 +540,6 @@ __myevic__ void DFCheckValuesValidity()
 
 	if ( dfScreenProt > 7 )
 		dfScreenProt = 0;
-
-	for ( i = 0 ; i < 21 ; ++i )
-	{
-		if ( dfTempCoefsNI[i] > 200 )
-			break;
-	}
-	if ( i != 21 )
-		CpyTmpCoefsNI();
-
-	for ( i = 0 ; i < 21 ; ++i )
-	{
-		if ( dfTempCoefsTI[i] > 100 )
-			break;
-	}
-	if ( i != 21 )
-		CpyTmpCoefsTI();
 
 	if ( dfTCRIndex > 2 )
 		dfTCRIndex = 0;
@@ -619,7 +605,7 @@ __myevic__ void DFCheckValuesValidity()
 	if ( dfDimTimeout < 5 || dfDimTimeout > 60 )
 		dfDimTimeout = ScrMainTimes[dfScrMainTime];
 
-	if ( dfBatteryModel >= GetNBatteries() )
+	if (( dfBatteryModel >= GetNBatteries() ) && ( dfBatteryModel != BATTERY_CUSTOM ))
 		dfBatteryModel = 0;
 
 	for ( i = 0 ; i < 3 ; ++i )
@@ -800,8 +786,8 @@ __myevic__ void UpdateDataFlash()
 	uint8_t *df;
 	uint32_t idx;
 
-	dfAtoRez = AtoRez;
-	dfAtoStatus = AtoStatus;
+//	dfAtoRez = AtoRez;
+//	dfAtoStatus = AtoStatus;
 
 	df = (uint8_t*)&DataFlash.params;
 
@@ -1238,3 +1224,143 @@ __myevic__ uint16_t GetShuntRezValue()
 	return rez;
 }
 
+
+//=========================================================================
+// Profile management
+//-------------------------------------------------------------------------
+// Reload data filter.
+// Filters relevant dataflash data for storage in a profile.
+// This array will have to be extended if parameters comes to be bigger
+// than 256 bytes one day.
+//-------------------------------------------------------------------------
+const uint8_t ProfileFilter[32] =
+{
+/* 0000 */	0b00000000,
+/* 0008 */	0b00101111,
+/* 0010 */	0b11111111,
+/* 0018 */	0b11111111,
+/* 0020 */	0b00000000,
+/* 0028 */	0b00000000,
+/* 0030 */	0b00000000,
+/* 0038 */	0b00000000,
+/* 0040 */	0b00000000,
+/* 0048 */	0b00000000,
+/* 0050 */	0b00000000,
+/* 0058 */	0b00000000,
+/* 0060 */	0b00000000,
+/* 0068 */	0b00000000,
+/* 0070 */	0b00000011,
+/* 0078 */	0b00000000,
+/* 0080 */	0b11101011,
+/* 0088 */	0b11111110,
+/* 0090 */	0b10000000,
+/* 0098 */	0b00000000,
+/* 00A0 */	0b00000000,
+/* 00A8 */	0b00000000,
+/* 00B0 */	0b00000000,
+/* 00B8 */	0b00000001,
+/* 00C0 */	0b00111000,
+/* 00C8 */	0b00000111,
+/* 00D0 */	0b11111111,
+/* 00D8 */	0b11111111,
+/* 00E0 */	0b11100000,
+/* 00E8 */	0b00000000,
+/* 00F0 */	0b00000000,
+/* 00F8 */	0b00000000
+};
+
+//-------------------------------------------------------------------------
+// Apply newly reloaded parameters
+//-------------------------------------------------------------------------
+__myevic__ void ApplyParameters()
+{
+	InitDisplay();
+	LEDGetColor();
+	SetBatteryModel();
+	ModeChange();
+
+	gFlags.refresh_display = 1;
+}
+
+
+//-------------------------------------------------------------------------
+// Restore a given profile
+//-------------------------------------------------------------------------
+__myevic__ void LoadProfile( int p )
+{
+	uint32_t addr, idx;
+	dfParams_t *params;
+	uint8_t *s, *d;
+
+	if ( p >= DATAFLASH_PROFILES_MAX )
+		return;
+
+	addr = DATAFLASH_PROFILES_BASE + p * DATAFLASH_PARAMS_SIZE;
+
+	params = (dfParams_t*)addr;
+
+	if (( params->Magic == DFMagicNumber ) && ( params->PCRC == CalcPageCRC( (uint32_t*)params ) ))
+	{
+		s = (uint8_t*)params;
+		d = (uint8_t*)DataFlash.params;
+
+		for ( idx = 0 ; idx < DATAFLASH_PARAMS_SIZE ; ++idx )
+			if ( ProfileFilter[idx/8] & ( 0x80 >> ( idx & 7 ) ) )
+				d[idx] = s[idx];
+
+		DFCheckValuesValidity();
+		ApplyParameters();
+	}
+
+	dfProfile = p;
+	UpdateDataFlash();
+}
+
+
+//-------------------------------------------------------------------------
+// Save the current profile
+//-------------------------------------------------------------------------
+__myevic__ void SaveProfile()
+{
+	uint8_t *df;
+	uint8_t *profile;
+
+	uint32_t idx;
+	uint32_t offset, addr;
+
+	uint8_t page[FMC_FLASH_PAGE_SIZE] __attribute__((aligned(4)));
+
+	offset = dfProfile * DATAFLASH_PARAMS_SIZE;
+	addr   = DATAFLASH_PROFILES_BASE + offset;
+
+	profile = (uint8_t*)addr;
+
+	df = (uint8_t*)&DataFlash.params;
+
+	// Only save profile if some of the relevant data has been modified
+
+	for ( idx = 0 ; idx < DATAFLASH_PARAMS_SIZE ; ++idx )
+	{
+		if ( ProfileFilter[idx/8] & ( 0x80 >> ( idx & 7 ) ) )
+			if ( df[idx] != profile[idx] )
+				break;
+	}
+
+	if ( idx != DATAFLASH_PARAMS_SIZE )
+	{
+		dfCRC = CalcPageCRC( DataFlash.params );
+
+		MemCpy( page, (void*)DATAFLASH_PROFILES_BASE, FMC_FLASH_PAGE_SIZE );
+		MemCpy( page + offset, df, DATAFLASH_PARAMS_SIZE );
+
+		SYS_UnlockReg();
+		FMC_ENABLE_ISP();
+		FMC_ENABLE_AP_UPDATE();
+
+		FMCEraseWritePage( DATAFLASH_PROFILES_BASE, (uint32_t*)page );
+
+		FMC_DISABLE_AP_UPDATE();
+		FMC_DISABLE_ISP();
+		SYS_LockReg();
+	}
+}

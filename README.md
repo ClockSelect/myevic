@@ -140,14 +140,16 @@ So as long as you have no warning (a blinking "balance" on the battery icon or a
 ----------
 
 ###Menus:
-Holding fire and right button a few seconds enters menus.
-There's many more to LOGO and Game menus now. See below.
+Holding Fire and Right (+) buttons 1/5th of a second enters menus.  
 
-* At any time, you may press simultaneously fire and right button to get out of the menus and return to the main screen.
-* When navigating in sub-menus, you may press simultaneously left and right buttons for one second to return to the parent (upper level) menu.
+* At any time, you may press simultaneously Fire and Right buttons to get out of the menus and return to the main screen.
+* When navigating in sub-menus, you may press simultaneously Left and Right buttons to return to the parent (upper level) menu.
 
     ![](http://i345.photobucket.com/albums/p374/ClockSelect/menus_zpsb8gftzok.png)  
 Main menu screen
+
+If you continue holding Fire and Right (+) buttons after entering menus, after two seconds, you'll enter the Profile selection screen (see the **Profile** section for more informations about configuration profiles).  
+
 
 ----------
 
@@ -344,7 +346,7 @@ Main menu screen
         
   * Fmt (date format)
 
-        Toggle date display format between day.month.year (default, logical, universal) format and month/day/year (US) format.
+        Toggle date display format between day.month.year (Western civilized world), month/day/year (US), day/month/year (Eastern civilized world), and year-month-day (Universe) format.
 
   * Size
 
@@ -465,7 +467,8 @@ Main menu screen
  
         *Warning: You can't use Joyetech's firmware updater while this option is "ON". It may aloso cause issues with third-party firmware management systems.*  
         Enables or disables partial compatibility with the [NFirmwareEditor 5.0+](https://github.com/TBXin/NFirmwareEditor/releases) myEvic Configuration Editor.  
-        This option is disabled by default; set it to "ON" if you plan to use developpement features of the NFE. You'll have access to monitoring, screenshot, and COM terminal.  
+        This option is disabled by default; set it to "ON" if you plan to use developpement features of the NFE. You'll have access to Monitoring, Screenshot, COM terminal, and Custom Battery Profile editor.  
+        Since compatibility is only partial at the moment, editing parameters other than Battery Profile will have no effect.  
  
   * SHR
   
@@ -484,8 +487,14 @@ Main menu screen
   * BAT
 
         Battery model.  
-        You can specify your battery brand and model among several ones: 25R, 30Q, HG2, HE4, VTC4, VTC5 and VTC6. "GEN" is the generic battery used by default and should be used for any other model of battery or for built-in batteries.  
-        At the moment, this information is used by the firmware to compute a more accurate state-of-charge than the generic setting.  
+        You can specify your battery brand and model among several ones: 25R, 30Q, HG2, HE4, VTC4, VTC5 and VTC6. "GEN" is the generic battery used by default and should be used for any other model of battery or for built-in battery.  
+
+        Custom Battery:  
+        By pressing the Fire button during two seconds while editing this option, the battery model changes to "CUS" (Custom Battery). The box will use the user-defined battery discharge curve and settings. Those informations can be edited using [NFirwareEditor](https://github.com/TBXin/NFirmwareEditor/releases) discharge profile editor (see [NFirwareEditor](https://github.com/TBXin/NFirmwareEditor/releases) documentation for more information).  
+        *The NFE compatibility mode must be set to ON in the expert menu for NFE to recognize the box as compatible.*
+
+        At the moment, battery model information is used by the firmware to compute a more accurate state-of-charge than the generic setting, and to avoid battery stress by limiting max Amp draw. Max Amps by battery model is based on Mooch's stress tests and are fairly reliable.  
+
         *On boxes with built-in battery (AIO, Basic, eGrip II, Cuboid Mini), this option should be kept on the "GEN" setting unless you've taken your box apart and manualy replaced the internal battery pack by something else.*  
 
   * BVO
@@ -499,6 +508,22 @@ Main menu screen
         * On a mixed single/dual-cells box, B1 is used for the lone battery in single-cell setting, and B2 & B3 for the two cells in a dual-cell setting.  
         * On a triple-cell box, I let you guess.  
 
+
+
+----------
+### Profiles
+
+You can switch between five different configuration profiles.  
+A Profile stores all data relevant to vaping configuration; that is, vaping mode, coils resistance, preheat and algo settings, etc. Interface, display or others non vape-related settings are not reloaded when switching profiles.
+
+To access the Profile selection screen, press and hold the Fire and (+) buttons for two seconds. On the Profile selection screen, select the profile and click Fire to activate it.  
+  
+![Profile Screen](https://www.dropbox.com/s/b4y1afx3vbmrgdp/profile.png?dl=1)
+
+Each line display the Profile number, the selected mode and last used resistance.  
+Empty lines correspond to empty profiles.  
+By selecting an empty profile, the current profile will be duplicated.  
+To duplicate current profile onto an existing profile (thus erasing it), select the target profile and press fire during two seconds. The target profile will be selected with a copy of the current profile.
 
 ----------
 

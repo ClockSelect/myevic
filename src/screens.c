@@ -28,6 +28,16 @@ uint8_t		BatAnimLevel;
 
 
 //=========================================================================
+// Change Screen
+void SetScreen( int screen, int duration )
+{
+	Screen = screen;
+	ScreenDuration = duration;
+	gFlags.refresh_display = 1;
+}
+
+
+//=========================================================================
 // Called at a frequency of 10Hz except when firing in TC modes.
 // Called at a frequency of 2Hz when firing in TC modes.
 
@@ -934,6 +944,17 @@ __myevic__ void ShowSetTime()
 //=========================================================================
 __myevic__ void ShowSetDate()
 {
+	const uint8_t cols[4][3] =
+	{
+		{ 0x1E, 0x1B, 0x0F },
+		{ 0x1E, 0x0F, 0x1B },
+		{ 0x1E, 0x1B, 0x0F },
+		{ 0x0F, 0x1B, 0x1E }
+	};
+
+	int f = dfStatus.dfmt1 | ( dfStatus.dfmt2 << 1 );
+	int col = cols[f][EditItemIndex];
+
 	S_RTC_TIME_DATA_T rtd;
 
 	GetRTC( &rtd );
@@ -942,7 +963,7 @@ __myevic__ void ShowSetDate()
 	DrawHLine( 0, 16, 63, 1 );
 
 	DrawTime( 6, 46, &rtd, 0x1F );
-	DrawDate( 4, 64, &SetTimeRTD, 0x1F & ~( 1 << ( EditItemIndex << 1 ) ) );
+	DrawDate( 4, 64, &SetTimeRTD, col );
 }
 
 

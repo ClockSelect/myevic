@@ -91,6 +91,82 @@ uint8_t CurrentMenuItem;
 
 
 //-----------------------------------------------------------------------------
+__myevic__ void ProfileMenuIDraw( int it, int line, int sel )
+{
+	if ( it >= DATAFLASH_PROFILES_MAX )
+		return;
+
+	dfParams_t *p = (dfParams_t*)( DATAFLASH_PROFILES_BASE + it * DATAFLASH_PARAMS_SIZE );
+
+	DrawImage( 4, line+2, 0x0C + it );
+	if ( sel ) InvertRect( 0, line, 13, line+12 );
+
+	if ( p->PCRC == 0xFFFF )
+		return;
+
+	uint8_t mode;
+	uint16_t rez;
+
+	const uint16_t *modes[] =
+		{ String_NI, String_TI, String_SS, String_TC, String_PW, String_BY, String_SM };
+
+	if ( it == dfProfile )
+	{
+		mode = dfMode;
+		rez  = dfResistance;
+	}
+	else
+	{
+		mode = p->Mode;
+		rez  = p->Resistance;
+	}
+
+	if ( mode > 6 )
+		return;
+
+	DrawString( modes[mode], 18, line+2 );
+	DrawValue( 34, line+2, rez, 2, 0x0B, 3 );
+	DrawImage( 56, line+2, 0xC0 );
+}
+
+
+__myevic__ int ProfileMenuOnEvent( int event )
+{
+	if ( CurrentMenuItem >= DATAFLASH_PROFILES_MAX )
+		return 0;
+
+	switch ( event )
+	{
+		case 1:
+			break;
+
+		case 15:
+			if ( CurrentMenuItem != dfProfile )
+			{
+				SaveProfile();
+				LoadProfile( CurrentMenuItem );
+			}
+			Event = EVENT_EXIT_MENUS;
+			break;
+
+		case EVENT_LONG_FIRE:
+			if ( CurrentMenuItem != dfProfile )
+			{
+				SaveProfile();
+				dfProfile = CurrentMenuItem;
+			}
+			Event = EVENT_EXIT_MENUS;
+			break;
+
+		default:
+			return 0;
+	}
+
+	return 1;
+}
+
+
+//-----------------------------------------------------------------------------
 
 __myevic__ void AlgoMenuIDraw( int it, int line, int sel )
 {
@@ -308,9 +384,15 @@ __myevic__ void ClockMenuIDraw( int it, int line, int sel )
 	switch ( it )
 	{
 		case 4:	// Format
-			DrawFillRect( 36, line, 63, line+12, 0 );
-			DrawString( dfStatus.mdy ? String_MDY : String_DMY, 40, line+2 );
+		{
+			const uint16_t *strings[] =
+				{ String_DMY1, String_MDY, String_DMY2, String_YMD };
+			int f = dfStatus.dfmt1 | ( dfStatus.dfmt2 << 1 );
+			const uint16_t *s = strings[f];
+			DrawFillRect( 28, line, 63, line+12, 0 );
+			DrawString( s, 32, line+2 );
 			break;
+		}
 
 		case 6:	// Dial
 			DrawFillRect( 36, line, 63, line+12, 0 );
@@ -333,10 +415,15 @@ __myevic__ void ClockMenuOnClick()
 			break;
 
 		case 4:	// Format
-			dfStatus.mdy ^= 1;
+		{
+			int f = dfStatus.dfmt1 | ( dfStatus.dfmt2 << 1 );
+			if ( ++f > 3 ) f = 0;
+			dfStatus.dfmt1 = f & 1;
+			dfStatus.dfmt2 = f >> 1;
 			UpdateDFTimer = 50;
 			gFlags.refresh_display = 1;
 			break;
+		}
 
 		case 6:	// Dial
 			dfStatus.digclk ^= 1;
@@ -846,9 +933,6 @@ __myevic__ void ExpertMenuOnClick()
 			if ( ++dfBatteryModel >= GetNBatteries() )
 				dfBatteryModel = 0;
 			SetBatteryModel();
-			gFlags.read_battery = 1;
-			NewBatteryVoltage();
-			SetBatMaxPower();
 			break;
 
 		case 8:	// BVO
@@ -906,6 +990,12 @@ __myevic__ int ExpertMenuOnEvent( int event )
 					AtoShuntRez = GetShuntRezValue();
 					dfShuntRez = 0;
 					gFlags.edit_value = 0;
+					vret = 1;
+					break;
+
+				case 7:	// Battery model
+					dfBatteryModel = BATTERY_CUSTOM;
+					SetBatteryModel();
 					vret = 1;
 					break;
 			}
@@ -2121,6 +2211,28 @@ const menu_t VapingMenu =
 	}
 };
 
+
+const menu_t ProfileMenu =
+{
+	String_Profile,
+	0,
+	0,
+	ProfileMenuIDraw+1,
+	0,
+	0,
+	ProfileMenuOnEvent+1,
+	6,
+	{
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 0, 0 },
+		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+	}
+};
+
+
 const menu_t MainMenu =
 {
 	String_Menus,
@@ -2616,9 +2728,7 @@ __myevic__ int MenuEvent( int event )
 		case 39:
 			CurrentMenu = &TCRSetMenu;
 			CurrentMenuItem = 0;
-			Screen = 102;
-			ScreenDuration = 30;
-			gFlags.refresh_display = 1;
+			SetScreen( 102, 30 );
 			vret = 1;
 			break;
 
@@ -2663,9 +2773,7 @@ __myevic__ int MenuEvent( int event )
 			{
 				CurrentMenuItem = 0;
 				if ( CurrentMenu->on_enter ) CurrentMenu->on_enter();
-				Screen = 102;
-				ScreenDuration = 30;
-				gFlags.refresh_display = 1;
+				SetScreen( 102, 30 );
 			}
 			else
 			{
@@ -2683,9 +2791,14 @@ __myevic__ int MenuEvent( int event )
 		case EVENT_TOGGLE_TDOM:
 			CurrentMenu = &PreheatMenu;
 			CurrentMenuItem = 1;
-			Screen = 102;
-			ScreenDuration = 30;
-			gFlags.refresh_display = 1;
+			SetScreen( 102, 30 );
+			vret = 1;
+			break;
+
+		case EVENT_PROFILE_MENU:
+			CurrentMenu = &ProfileMenu;
+			CurrentMenuItem = dfProfile;
+			SetScreen( 102, 30 );
 			vret = 1;
 			break;
 

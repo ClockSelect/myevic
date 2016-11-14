@@ -8,6 +8,27 @@
 #define BVO_MIN -30
 #define BVO_MAX  30
 
+#define BATTERY_CUSTOM	255
+
+//-------------------------------------------------------------------------
+
+typedef struct
+{
+	uint16_t percent;
+	uint16_t voltage;
+}
+BatV2P_t;
+
+typedef struct
+{
+	const uint16_t	*name;
+	BatV2P_t	V2P[11];
+	uint16_t	cutoff;
+	uint16_t	intrez;
+	uint16_t	maxamp;
+}
+Battery_t;
+
 //-------------------------------------------------------------------------
 
 extern uint16_t RTBattVolts;
@@ -36,6 +57,8 @@ extern uint8_t	byte_20000055;
 extern uint8_t	ChargeStatus;
 extern uint8_t	BatteryStatus;
 
+extern Battery_t CustomBattery;
+
 //-------------------------------------------------------------------------
 
 extern void ReadBatteryVoltage();
@@ -49,6 +72,10 @@ extern void ReadInternalResistance();
 extern void SetBatMaxPower();
 extern void BatteryChargeDual();
 extern void BatteryCharge();
+extern void SaveCustomBattery( const Battery_t *b );
+extern void LoadCustomBattery();
+extern void ResetCustomBattery();
+extern int  CheckCustomBattery();
 
 //=========================================================================
 #endif /* __BATTERY_H__ */

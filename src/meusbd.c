@@ -676,8 +676,11 @@ __myevic__ void usbdEP2Handler()
 //----- (00002C00) --------------------------------------------------------
 __myevic__ uint32_t hidResetParamCmd( CMD_T *pCmd )
 {
+	uint8_t p;
 	myprintf("Reset param\n");
+	p = dfProfile;
 	ResetDataFlash();
+	dfProfile = p;
 	gFlags.refresh_display = 1;
 	pCmd->u8Cmd = HID_CMD_NONE;
 	return 0;
@@ -759,6 +762,10 @@ __myevic__ uint32_t hidGetInfoCmd( CMD_T *pCmd )
 			df->p.ShuntRez = 100;
 			df->p.VVRatio = 200;	// PreheatPwr for NFE
 			df->p.DimTimeout = 30;
+			
+			LoadCustomBattery();
+			o = offsetof( dfStruct_t, p ) + 0xCA;	// NFE Custom Battery offset
+			MemCpy( &hidData[o], &CustomBattery.V2P, 48 );
 		}
 
 		df->Checksum = Checksum( (uint8_t *)df->params, FMC_FLASH_PAGE_SIZE - 4 );
@@ -1040,7 +1047,25 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 
 						if ( df->p.Magic == DATAFLASH_NFE_MAGIC )
 						{
+							uint32_t o;
+
 							dfBootFlag = df->p.BootFlag;
+
+							// Custom Battery
+							o = offsetof( dfStruct_t, p ) + 0xCA;
+							MemCpy( &CustomBattery.V2P, (uint8_t*)(&hidDFData) + o, 48 );
+
+							if ( CheckCustomBattery() )
+							{
+								SaveCustomBattery( &CustomBattery );
+								SetBatteryModel();
+							}
+							else
+							{
+								myprintf( "Invalid battery data.\n" );
+								LoadCustomBattery();
+							}
+
 							UpdateDataFlash();
 						}
 					}
