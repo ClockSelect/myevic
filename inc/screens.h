@@ -69,6 +69,7 @@ extern void ShowCheckBattery();
 extern void ShowCheckUSB();
 extern void ShowChargeError();
 extern void ShowImbBatts();
+extern void ShowPowerCurve();
 
 extern void ShowFireDuration( int line );
 
@@ -287,6 +288,9 @@ extern const uint16_t String_PW[];
 extern const uint16_t String_BY[];
 extern const uint16_t String_SM[];
 extern const uint16_t String_ProfPlus[];
+extern const uint16_t String_Curve[];
+extern const uint16_t String_Enable[];
+extern const uint16_t String_Reset[];
 
 
 //==============================================================================

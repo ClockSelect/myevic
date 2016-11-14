@@ -77,6 +77,7 @@ extern uint8_t	LastEvent;
 #define EVENT_MODE_CHANGE		117
 #define EVENT_PROFILE_MENU		118
 #define EVENT_NEXT_PROFILE		119
+#define EVENT_POWER_CURVE		120
 
 
 //==============================================================================

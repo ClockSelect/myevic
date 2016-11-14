@@ -508,11 +508,18 @@ __myevic__ void DrawPower( int pwr )
 		DrawImage( 54, 26, 0x98 );
 	}
 
-	if ( ISMODEVW(dfMode) && dfPreheatTime )
+	if ( ISMODEVW(dfMode) )
 	{
-		if ( !PreheatDelay || gFlags.osc_1hz )
+		if ( dfStatus.pcurve )
 		{
-			DrawImage( xp, yp, 0x77 );
+			DrawImage( xp, yp, 0x6A );
+		}
+		else if ( dfPreheatTime )
+		{
+			if ( !PreheatDelay || gFlags.osc_1hz )
+			{
+				DrawImage( xp, yp, 0x77 );
+			}
 		}
 	}
 }
@@ -533,35 +540,22 @@ __myevic__ void ShowMainView()
 	int v27; // r3@169
 
 
+	DrawMode();
+
 	pwr = dfPower;
 
-	if ( gFlags.firing && PreheatTimer )
+	if ( gFlags.firing )
 	{
-		pwr = PreheatPower;
+		pwr = AtoPower( AtoVolts );
 	}
-
-	if ( ISMODEBY(dfMode) )
+	else if ( ISMODEBY(dfMode) )
 	{
-		if ( gFlags.firing )
-		{
-			pwr = AtoPower( AtoVolts );
-		}
-		else
-		{
-			amps = 10 * BattVoltsTotal
-				/ ( 10 * AtoRez + NumBatteries * BatteryIntRez );
-			BypassVolts = AtoRez * amps;
-			if ( BypassVolts > AtoMaxVolts ) BypassVolts = AtoMaxVolts;
-			pwr  = ClampPower( BypassVolts, 0 );
-		}
+		amps = 10 * BattVoltsTotal
+			/ ( 10 * AtoRez + NumBatteries * BatteryIntRez );
+		BypassVolts = AtoRez * amps;
+		if ( BypassVolts > AtoMaxVolts ) BypassVolts = AtoMaxVolts;
+		pwr  = ClampPower( BypassVolts, 0 );
 	}
-
-	if ( Screen == 2 )
-	{
-		pwr = pwr * PowerScale / 100;
-	}
-
-	DrawMode();
 
 	if ( ISMODETC(dfMode) )
 	{
@@ -575,6 +569,7 @@ __myevic__ void ShowMainView()
 			{
 				pwr = dfTCPower;
 			}
+
 			DrawPower( pwr );
 		}
 		else
@@ -587,19 +582,6 @@ __myevic__ void ShowMainView()
 	{
 		DrawPower( pwr );
 	}
-
-//	if ( dfMode == 5 )
-//	{
-//		if ( gFlags.firing )
-//		{
-//			DrawValue( 0, 13, AtoVolts, 2, 0x48, 3 );
-//			DrawImage( 54, 26, 0x97 );
-//		}
-//		else
-//		{
-//			DrawPower( pwr );
-//		}
-//	}
 
 	if ( dfMode == 6 )
 	{

@@ -1075,6 +1075,14 @@ __myevic__ void TweakTargetVoltsVW()
 		pwr = dfPower;
 	}
 
+	if ( dfStatus.pcurve )
+	{
+		int t = FireDuration / 5;
+		if ( t > 19 ) t = 19;
+
+		pwr = dfPwrCurve[t] * pwr / 100;
+	}
+
 	pwr = AtoPowerLimit( pwr );
 	TargetVolts = GetVoltsForPower( pwr * PowerScale / 100 );
 }

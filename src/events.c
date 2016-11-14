@@ -482,6 +482,13 @@ __myevic__ void GetUserInput()
 			}
 		}
 	}
+	else if ( KeyPressTime == 500 )
+	{
+		if ( UserInputs == 5 )
+		{
+			Event = EVENT_POWER_CURVE;
+		}
+	}
 	else if ( ( KeyPressTime & 0x8000 ) || ( KeyPressTime & 0x7fff ) > 200 )
 	{
 		if ( UserInputs == 1 )
@@ -552,6 +559,13 @@ __myevic__ int EvtFire()
 			vret = 1;
 		}
 		break;
+		
+		case 107:
+		{
+			EditModeTimer = 3000;
+			gFlags.edit_value ^= 1;
+			vret = 1;
+		}
 	}
 
 	return vret;
@@ -577,6 +591,7 @@ __myevic__ int EvtSingleFire()
 		case 104:
 		case 105:
 		case 106:
+		case 107:
 		{
 			vret = 1;
 		}
@@ -744,6 +759,27 @@ __myevic__ int EvtPlusButton()
 			vret = 1;
 		}
 		break;
+
+		case 107:
+		{
+			if ( gFlags.edit_value )
+			{
+				if ( ++dfPwrCurve[EditItemIndex] > 200 )
+				{
+					if ( KeyTicks < 5 ) dfPwrCurve[EditItemIndex] = 0;
+					else dfPwrCurve[EditItemIndex] = 200;
+				}
+			}
+			else
+			{
+				++EditItemIndex;
+				EditItemIndex %= 20;
+			}
+			EditModeTimer = 3000;
+			gFlags.refresh_display = 1;
+			vret = 1;
+			break;
+		}
 	}
 
 	return vret;
@@ -870,6 +906,26 @@ __myevic__ int EvtMinusButton()
 			vret = 1;
 		}
 		break;
+
+		case 107:
+		{
+			if ( gFlags.edit_value )
+			{
+				if ( !dfPwrCurve[EditItemIndex]-- )
+				{
+					if ( KeyTicks < 5 ) dfPwrCurve[EditItemIndex] = 200;
+					else dfPwrCurve[EditItemIndex] = 0;
+				}
+			}
+			else
+			{
+				if ( !EditItemIndex-- ) EditItemIndex = 19;
+			}
+			EditModeTimer = 3000;
+			gFlags.refresh_display = 1;
+			vret = 1;
+			break;
+		}
 	}
 
 	return vret;
@@ -1107,6 +1163,12 @@ __myevic__ int CustomEvents()
 		case EVENT_NEXT_PROFILE:
 			LoadProfile( ( dfProfile + 1 ) % DATAFLASH_PROFILES_MAX );
 			ShowProfNum = 30;
+			break;
+
+		case EVENT_POWER_CURVE:
+			SetScreen( 107, 30 );
+			EditModeTimer = 3000;
+			EditItemIndex = 0;
 			break;
 
 		default:
