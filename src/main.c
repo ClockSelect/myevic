@@ -960,6 +960,9 @@ __myevic__ void Main()
 			if ( ShowWeakBatFlag )
 				--ShowWeakBatFlag;
 
+			if ( ShowProfNum )
+				--ShowProfNum;
+
 			if ( !( gFlags.firing && ISMODETC(dfMode) ) )
 			{
 				DrawScreen();

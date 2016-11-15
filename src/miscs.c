@@ -529,7 +529,7 @@ typedef int32_t matrix3d_t[3][3];
 static angles_t angles = { 0, 0, 0 };
 static angles_t speeds = { 3, 5, 1 };
 static matrix3d_t rot_matrix;
-static pt3d_t points[12];
+static pt3d_t points[20];
 
 uint8_t Object3D = 0;
 

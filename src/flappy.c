@@ -168,7 +168,7 @@ __myevic__ void fbCLSBuf()
 //----- (000022B8) --------------------------------------------------------
 __myevic__ void fbFillScreen( char v )
 {
-	MemSet( ScreenBuffer, SCREEN_BUFFER_SIZE, v );
+	MemSet( ScreenBuffer, v, SCREEN_BUFFER_SIZE );
 }
 
 

@@ -187,6 +187,10 @@ __myevic__ void DrawScreen()
 				ShowSetDate();
 				break;
 
+			case 107:
+				ShowPowerCurve();
+				break;
+
 			default:
 				break;
 		}
@@ -210,8 +214,8 @@ __myevic__ void DrawScreen()
 
 	TenthOfSecs = 0;
 
-	if (  10 * ScreenDuration < EditModeTimer )
-		ScreenDuration = EditModeTimer / 10 + 1;
+	if (  100 * ScreenDuration < EditModeTimer )
+		ScreenDuration = EditModeTimer / 100 + 1;
 
 	if ( ( Screen == 1 || Screen == 60 ) && ( ScreenDuration <= 4 ) )
 	{
@@ -311,6 +315,8 @@ __myevic__ void DrawScreen()
 		case 104: // Adjust Clock
 		case 105: // Set Time
 		case 106: // Set Date
+		case 107: // Power Curve
+			EditModeTimer = 0;
 			gFlags.edit_capture_evt = 0;
 			gFlags.edit_value = 0;
 			LEDOff();
@@ -970,7 +976,7 @@ __myevic__ void ShowSetDate()
 //=========================================================================
 __myevic__ int IsMenuScreen()
 {
-	return (( Screen >= 101 ) && ( Screen <= 106 ));
+	return (( Screen >= 101 ) && ( Screen <= 107 ));
 }
 
 
@@ -1004,5 +1010,33 @@ __myevic__ void ShowImbBatts()
 {
 	DrawStringCentered( String_Imbalanced, 88 );
 	DrawStringCentered( String_Batteries, 102 );
+}
+
+
+//=========================================================================
+__myevic__ void ShowPowerCurve()
+{
+	DrawHLine( 10, 127,  60, 1 );
+	DrawHLine( 10,  26,  60, 1 );
+	DrawVLine( 10,  27, 126, 1 );
+	DrawVLine( 60,  27, 126, 1 );
+
+	for ( int i = 0; i < 20; ++i )
+	{
+		DrawFillRect( 10, 27+i*5, 10+dfPwrCurve[i]/4, 31+i*5, 1 );
+	}
+
+	if ( !gFlags.edit_value || gFlags.draw_edited_item )
+	{
+		DrawImage( 6, 25+EditItemIndex*5, 0xD4 );
+	}
+
+	DrawImage( 12, 3, 0xAF );
+	DrawValueRight( 40, 3, EditItemIndex*5, 1, 0x0B, 2 );
+	DrawImage( 42, 3, 0x94 );
+
+	DrawImage( 12, 13, 0xAB );
+	DrawValueRight( 40, 13, dfPwrCurve[EditItemIndex], 0, 0x0B, 0 );
+	DrawImage( 42, 13, 0xC2 );
 }
 

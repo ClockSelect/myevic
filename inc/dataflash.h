@@ -82,6 +82,7 @@ typedef struct
 /* 02000000 */	unsigned int usbchgoff:1;
 /* 04000000 */	unsigned int chkmodeoff:1;
 /* 08000000 */	unsigned int dfmt2:1;
+/* 10000000 */	unsigned int pcurve:1;
 
 // Do not exceed 32 bits;
 // if you may do so, create another bitfield.
@@ -130,7 +131,8 @@ typedef struct dfParams
 /* 0021 */	uint8_t		StealthOn;
 /* 0022 */	uint16_t	TempCoefsNI;
 /* 0024 */	dfBattery_t	Battery;
-/* 003A */	uint8_t		Unused24[58];
+/* 003A */	uint8_t		PwrCurve[20];
+/* 004E */	uint8_t		Unused4E[38];
 /* 0074 */	uint16_t	TempCoefsTI;
 /* 0076 */	uint16_t	LEDColor;		//	former 2-bytes pad
 /* 0078 */	dfStatus_t	Status;
@@ -313,6 +315,7 @@ extern dfStruct_t DataFlash;
 #define dfStealthOn		DFP(StealthOn)
 #define dfTempCoefsNI	DFP(TempCoefsNI)
 #define dfBattery		DFP(Battery)
+#define dfPwrCurve		DFP(PwrCurve)
 #define dfTempCoefsTI	DFP(TempCoefsTI)
 #define dfLEDColor		DFP(LEDColor)
 #define dfStatus		DFP(Status)
@@ -397,6 +400,8 @@ extern uint16_t GetShuntRezValue();
 extern void LoadProfile( int p );
 extern void SaveProfile();
 extern void ApplyParameters();
+
+extern void ResetPowerCurve();
 
 //-------------------------------------------------------------------------
 

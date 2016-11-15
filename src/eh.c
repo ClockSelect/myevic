@@ -663,7 +663,11 @@ __myevic__ void EventHandler()
 
 			if ( ISMODEVW(dfMode) )
 			{
-				if ( !PreheatDelay && dfPreheatTime )
+				if ( dfStatus.pcurve )
+				{
+					pwr = dfPwrCurve[0] * pwr / 100;
+				}
+				else if ( !PreheatDelay && dfPreheatTime )
 				{
 					PreheatTimer = dfPreheatTime;
 

@@ -158,7 +158,7 @@ extern void MemCpy( void*, const void*, const uint32_t );
 extern void MemCpy2( const void*, void*, const uint32_t );
 extern void MemClear( void*, const uint32_t );
 extern void MemClear2( void*, void*, const uint32_t );
-extern void MemSet( void*, const uint32_t, const char );
+extern void MemSet( void*, const char, const uint32_t );
 
 extern void DrawHexDigit( int x, int y, int v );
 extern void DrawHexLong( int x, int y, int v, int font );

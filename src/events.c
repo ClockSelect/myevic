@@ -316,6 +316,10 @@ __myevic__ void GetUserInput()
 						case CLICK_ACTION_ON_OFF:
 							FireClicksEvent = 17;	// Switch On/Off
 							break;
+
+						case CLICK_ACTION_PROFILE:
+							FireClicksEvent = EVENT_NEXT_PROFILE;	// Cycle profile
+							break;
 					}
 					if ( dfStatus.off )
 					{
@@ -478,6 +482,13 @@ __myevic__ void GetUserInput()
 			}
 		}
 	}
+	else if ( KeyPressTime == 500 )
+	{
+		if ( UserInputs == 5 )
+		{
+			Event = EVENT_POWER_CURVE;
+		}
+	}
 	else if ( ( KeyPressTime & 0x8000 ) || ( KeyPressTime & 0x7fff ) > 200 )
 	{
 		if ( UserInputs == 1 )
@@ -548,6 +559,13 @@ __myevic__ int EvtFire()
 			vret = 1;
 		}
 		break;
+		
+		case 107:
+		{
+			EditModeTimer = 3000;
+			gFlags.edit_value ^= 1;
+			vret = 1;
+		}
 	}
 
 	return vret;
@@ -573,6 +591,7 @@ __myevic__ int EvtSingleFire()
 		case 104:
 		case 105:
 		case 106:
+		case 107:
 		{
 			vret = 1;
 		}
@@ -740,6 +759,27 @@ __myevic__ int EvtPlusButton()
 			vret = 1;
 		}
 		break;
+
+		case 107:
+		{
+			if ( gFlags.edit_value )
+			{
+				if ( ++dfPwrCurve[EditItemIndex] > 200 )
+				{
+					if ( KeyTicks < 5 ) dfPwrCurve[EditItemIndex] = 0;
+					else dfPwrCurve[EditItemIndex] = 200;
+				}
+			}
+			else
+			{
+				++EditItemIndex;
+				EditItemIndex %= 20;
+			}
+			EditModeTimer = 3000;
+			gFlags.refresh_display = 1;
+			vret = 1;
+			break;
+		}
 	}
 
 	return vret;
@@ -866,6 +906,26 @@ __myevic__ int EvtMinusButton()
 			vret = 1;
 		}
 		break;
+
+		case 107:
+		{
+			if ( gFlags.edit_value )
+			{
+				if ( !dfPwrCurve[EditItemIndex]-- )
+				{
+					if ( KeyTicks < 5 ) dfPwrCurve[EditItemIndex] = 200;
+					else dfPwrCurve[EditItemIndex] = 0;
+				}
+			}
+			else
+			{
+				if ( !EditItemIndex-- ) EditItemIndex = 19;
+			}
+			EditModeTimer = 3000;
+			gFlags.refresh_display = 1;
+			vret = 1;
+			break;
+		}
 	}
 
 	return vret;
@@ -935,9 +995,7 @@ __myevic__ int EvtLongFire()
 
 __myevic__ int EvtContrastMenu()
 {
-	Screen = 101;
-	ScreenDuration = 10;
-	gFlags.refresh_display = 1;
+	SetScreen( 101, 10 );
 	return 1;
 }
 
@@ -947,9 +1005,7 @@ __myevic__ int EvtEnterMenus()
 {
 	CurrentMenu = 0;
 	CurrentMenuItem = 0;
-	Screen = 102;
-	ScreenDuration = 30;
-	gFlags.refresh_display = 1;
+	SetScreen( 102, 30 );
 	return 1;
 }
 
@@ -960,9 +1016,7 @@ S_RTC_TIME_DATA_T SetTimeRTD;
 __myevic__ int EvtSetTime()
 {
 	GetRTC( &SetTimeRTD );
-	Screen = 105;
-	ScreenDuration = 60;
-	gFlags.refresh_display = 1;
+	SetScreen( 105, 60 );
 	EditItemIndex = 2;
 	EditModeTimer = 6000;
 	return 1;
@@ -971,9 +1025,7 @@ __myevic__ int EvtSetTime()
 __myevic__ int EvtSetDate()
 {
 	GetRTC( &SetTimeRTD );
-	Screen = 106;
-	ScreenDuration = 60;
-	gFlags.refresh_display = 1;
+	SetScreen( 106, 60 );
 	EditItemIndex = 2;
 	EditModeTimer = 6000;
 	return 1;
@@ -1089,15 +1141,11 @@ __myevic__ int CustomEvents()
 			break;
 
 		case EVENT_CLK_ADJUST:
-			Screen = 104;
-			ScreenDuration = 120;
-			gFlags.refresh_display = 1;
+			SetScreen( 104, 120 );
 			break;
 
 		case EVENT_CLK_SPEED:
-			Screen = 103;
-			ScreenDuration = 120;
-			gFlags.refresh_display = 1;
+			SetScreen( 103, 120 );
 			break;
 
 		case EVENT_INVERT_SCREEN:
@@ -1110,6 +1158,17 @@ __myevic__ int CustomEvents()
 
 		case EVENT_PROFILE_MENU:
 			vret = MenuEvent( LastEvent );
+			break;
+
+		case EVENT_NEXT_PROFILE:
+			LoadProfile( ( dfProfile + 1 ) % DATAFLASH_PROFILES_MAX );
+			ShowProfNum = 30;
+			break;
+
+		case EVENT_POWER_CURVE:
+			SetScreen( 107, 30 );
+			EditModeTimer = 3000;
+			EditItemIndex = 0;
 			break;
 
 		default:

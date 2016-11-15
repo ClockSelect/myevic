@@ -333,6 +333,13 @@ __myevic__ void UpdatePTCounters()
 
 
 //=========================================================================
+__myevic__ void ResetPowerCurve()
+{
+	MemSet( dfPwrCurve, 100, sizeof(dfPwrCurve) );
+}
+
+
+//=========================================================================
 //----- (00001C30) --------------------------------------------------------
 __myevic__ void ResetDataFlash()
 {
@@ -366,6 +373,7 @@ __myevic__ void ResetDataFlash()
 //	dfStealthOn = 0;
 	dfTempCoefsNI = 201;
 	ResetCustomBattery();
+	ResetPowerCurve();
 	dfTempCoefsTI = 101;
 	dfLEDColor = 25 << 10;
 //	dfStatus.off = 0;
@@ -504,8 +512,9 @@ __myevic__ void DFCheckValuesValidity()
 	{
 		dfTempCoefsNI = 201;
 		dfTempCoefsTI = 101;
-		
+
 		ResetCustomBattery();
+		ResetPowerCurve();
 	}
 	else
 	{
@@ -515,8 +524,19 @@ __myevic__ void DFCheckValuesValidity()
 		{
 			ResetCustomBattery();
 		}
+
+		for ( i = 0 ; i < sizeof(dfPwrCurve) ; ++i )
+		{
+			if ( dfPwrCurve[i] > 200 )
+			{
+				ResetPowerCurve();
+				break;
+			}
+		}
 	}
-	
+
+	MemSet( DataFlash.p.Unused4E, 0, sizeof(DataFlash.p.Unused4E) );
+
 	if ( dfShuntRez < SHUNT_MIN_VALUE || dfShuntRez > SHUNT_MAX_VALUE )
 		dfShuntRez = 0;
 
@@ -528,7 +548,7 @@ __myevic__ void DFCheckValuesValidity()
 
 	if ( dfScrMainTime > 5 )
 		dfScrMainTime = 0;
-	
+
 	if ( dfRezTCR > 150 )
 		dfRezTCR = 0;
 
@@ -1242,9 +1262,9 @@ const uint8_t ProfileFilter[32] =
 /* 0020 */	0b00000000,
 /* 0028 */	0b00000000,
 /* 0030 */	0b00000000,
-/* 0038 */	0b00000000,
-/* 0040 */	0b00000000,
-/* 0048 */	0b00000000,
+/* 0038 */	0b00111111,
+/* 0040 */	0b11111111,
+/* 0048 */	0b11111100,
 /* 0050 */	0b00000000,
 /* 0058 */	0b00000000,
 /* 0060 */	0b00000000,

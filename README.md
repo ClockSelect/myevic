@@ -297,6 +297,14 @@ If you continue holding Fire and Right (+) buttons after entering menus, after t
              There is no "best" algorithm; it will essentialy depend on your setup and on your personnal taste. Test and experiment to see what fits best to you. The device monitor of the [NFirmwareEditor](https://github.com/TBXin/NFirmwareEditor/releases) is a great tool to observe the behavior of the algorithms with different setups and parameters.  
              More algorithms may be implemented with time. Stay tuned.  
 
+      * Curve
+
+            *POWER/SMART mode only.*        
+            Enable, Reset and/or Edit the atomizer power curve.  
+            When power curve is enabled, it take precedence over preheating; a little "C" next to the power setting on main screen indicates the power curve is enabled.  
+            The values of the power curve are percentages (from 0 to 200%) of the main power setting. The whole power curve will thus scale with the main power setting. The default power curve (after reset) is a flat 100% curve, so will have no sensible effect.  
+            You may have one different power curve per configuration profile.  
+
       * Boost
     
              A parameter controling the Boost algorithm (see above).  
@@ -422,6 +430,7 @@ If you continue holding Fire and Right (+) buttons after entering menus, after t
         * Toggle the "Priority Power" mode (basically, switches temperature and power on the main screen display in TC mode, see above "PPwr On/Off" doc), *OR* enters the Preheat menu if box is in POWER mode.
         * Switch to next vaping mode ( TC -> POWER -> BYPASS -> ... )
         * Switch box On or Off
+        * Cycle through configuration profiles
 
         As a security feature, if none of the action are configured to be the "Edit" mode, the firmware will redefine the triple click action to "Edit" at next reset.
 
