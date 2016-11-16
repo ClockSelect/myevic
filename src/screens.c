@@ -1023,7 +1023,14 @@ __myevic__ void ShowPowerCurve()
 
 	for ( int i = 0; i < 20; ++i )
 	{
-		DrawFillRect( 10, 27+i*5, 10+dfPwrCurve[i]/4, 31+i*5, 1 );
+		if ( i == EditItemIndex )
+		{
+			DrawFillRect( 10, 27+i*5, 10+dfPwrCurve[i]/4, 31+i*5, 1 );
+		}
+		else
+		{
+			DrawVLine( 10+dfPwrCurve[i]/4, 27+i*5, 31+i*5, 1 );
+		}
 	}
 
 	if ( !gFlags.edit_value || gFlags.draw_edited_item )
