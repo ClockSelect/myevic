@@ -270,7 +270,7 @@ If you continue holding Fire and Right (+) buttons after entering menus, after t
         The **Unit** may be absolute Watts or percents of the main power setting.   
         The **Delay** allows to configure a dead time after fire, during which the preheating function will be disabled. This dead time goes from zero (Off) to 3 minutes. The delay runs from the end of fire. Use this feature if you use high inertia (heavy) builds to prevent over-heating when chain-vaping.  
         A small **P** icon will appear on the main screen next to the the power setting to remind you the preheat function is enabled ("POWER" mode only). A blinking **P** indicates the dead time period.  
-        *If you configured a **PPwr** action in the multi-clicks configuration (see **Interface** menu), this action will pop-up this menu when in "POWER" or "SMART" mode.*  
+        *If you configured a "PPwr" action in the multi-clicks configuration (see **Interface** menu), this action will pop-up this menu when in "POWER" or "SMART" mode.*  
 
     * Modes
 
@@ -289,21 +289,13 @@ If you continue holding Fire and Right (+) buttons after entering menus, after t
 
          * Algo  
          Choose betwen several algorithms for temperature control.
-           * Off: use the default standard agorythm from stock firmware.
+           * Off: use the default standard agorithm from stock firmware.
            * Sweet: much like the default, but smoothes out oscillations in regulation phase.
            * Boost: speeds up temperature ramp-up and reduces oscillations, but with the risk of overshooting the target temperature if not configured properly. See the Boost option below.
            * PID: A standard PID algorithm
          
              There is no "best" algorithm; it will essentialy depend on your setup and on your personnal taste. Test and experiment to see what fits best to you. The device monitor of the [NFirmwareEditor](https://github.com/TBXin/NFirmwareEditor/releases) is a great tool to observe the behavior of the algorithms with different setups and parameters.  
              More algorithms may be implemented with time. Stay tuned.  
-
-      * Curve
-
-            *POWER/SMART mode only.*        
-            Enable, Reset and/or Edit the atomizer power curve.  
-            When power curve is enabled, it take precedence over preheating; a little "C" next to the power setting on main screen indicates the power curve is enabled.  
-            The values of the power curve are percentages (from 0 to 200%) of the main power setting. The whole power curve will thus scale with the main power setting. The default power curve (after reset) is a flat 100% curve, so will have no sensible effect.  
-            You may have one different power curve per configuration profile.  
 
       * Boost
     
@@ -319,6 +311,14 @@ If you continue holding Fire and Right (+) buttons after entering menus, after t
             Algorithm is implemented in its independant form.  
             Sample time (50Hz) is scaled to one for parameters uniformity.  
             Units: **P** is expressed in mW/°C, **I** in mW/°C/s, **D** in mW.s/°C.
+
+    * Curve
+
+          *POWER/SMART mode only.*        
+          Enable, Reset and/or Edit the atomizer power curve.  
+          When power curve is enabled, it take precedence over preheating; a little "C" next to the power setting on main screen indicates the power curve is enabled.  
+          The values of the power curve are percentages (from 0 to 200%) of the main power setting. The whole power curve will thus scale with the main power setting. The default power curve (after reset) is a flat 100% curve, so will have no sensible effect.  
+          You may have one different power curve per configuration profile.  
 
     * Prot.
 

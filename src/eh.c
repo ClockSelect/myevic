@@ -666,6 +666,11 @@ __myevic__ void EventHandler()
 				if ( dfStatus.pcurve )
 				{
 					pwr = dfPwrCurve[0] * pwr / 100;
+
+					if ( pwr > AtoMaxPower )
+					{
+						pwr = AtoMaxPower;
+					}
 				}
 				else if ( !PreheatDelay && dfPreheatTime )
 				{
@@ -686,25 +691,19 @@ __myevic__ void EventHandler()
 					}
 
 					pwr = PreheatPower;
+				}
 
-					TargetVolts = GetVoltsForPower( PreheatPower );
-				}
-				else if ( pwr <= 300 )
-				{
-					TargetVolts = dfVWVolts;
-				}
-				else
-				{
-					TargetVolts = GetVoltsForPower( 300 );
-				}
+				if ( pwr > 300 ) pwr = 300;
 
 				gFlags.limit_power = 0;
 				if ( pwr > BatteryMaxPwr )
 				{
 					gFlags.limit_power = 1;
 					PowerScale = 100 * BatteryMaxPwr / pwr;
-					TargetVolts = GetVoltsForPower( BatteryMaxPwr );
+					pwr = BatteryMaxPwr;
 				}
+
+				TargetVolts = GetVoltsForPower( pwr );
 
 				LowBatVolts = ( BatteryVoltage > BatteryCutOff + 100 ) ? 0 : BatteryVoltage;
 			}

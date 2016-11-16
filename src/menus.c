@@ -1317,6 +1317,7 @@ __myevic__ void CoilsIClick()
 				dfSavedCfgRez[i] = 0;
 				dfSavedCfgPwr[i] = 0;
 			}
+			ResetResistance();
 			break;
 
 		case 5:	// Check
