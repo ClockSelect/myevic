@@ -268,9 +268,14 @@ Main Menü
 
     * Preheat:
     
-        ![TCR Set Menu](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/preheat_zpsrpcu0fml.png)
+        ![TCR Set Menu](https://www.dropbox.com/s/d1ncqa9heec6grx/preheat1.png?dl=1)
         
-        Coil Preheat Funktion. Hier können Sie einstellen, wie lange die Coil und mit welcher Temperatur/ Watt Leistung vorheizen soll, wenn Sie die Feuertaste betätigen. Nach diesem Vorgang erhitzt der Coil wieder mit der Standard Einstellung. Setzen Sie die Einstellung auf “Null” um die Preheat Funktion wieder abzuschalten. Ein kleines "P" auf dem Hauptbildschirm erinnert Sie daran, dass die Preheat Funktion abgeschaltet ist. (Nur im "POWER" Modus). Diese Funktion kann nur im "POWER" und "SMART" Modus aktiviert werden; In allen anderen Modi wird diese ignoriert.
+        Coil Preheat Funktion.  
+        *Diese Funktion kann nur im "POWER" und "SMART" Modus aktiviert werden; In allen anderen Modi wird diese Funktion ignoriert.
+        Stelle unter ( **Pwr** ) die Wattzahl und das Zeitintervall ( **Time** ) ein, wie lange und mit welcher Wattzahl der Coil vorgeheizt werden soll, wenn du die Feuer Taste drückst. Nachdem die angegebene Zeit verstrichen ist, feuert der Coil mit der Standardeinstellung weiter. Willst du die Preheat Funktion nicht nutzen, setzte die Zeit (**Time**) auf Null, somit wird die Funktion abgeschaltet.
+        Die Einstellung kann in in Watt oder Prozent vorgenommen werden.  
+        Die Funktion **Delay** erlaubt dir, eine Abschaltzeit für die Preheat Funktion einzustellen. Die Abschaltzeit liegt zwischen 0(deaktiviert) bis 3 Minuten. Diese Funktion ist sinnvoll, bei hohen Ohm Werten oder Coils die etwas länger brauchen um heiss zu werden.
+        Ein kleines **P** Icon im Hauptbildschirm zeigt dir an, dass die Preheat Funktion aktiviert ist. (Nur im "POWER" Modus). Ein blinkendes **P** zeigt dir die Abschaltautomatik an. *Hast du im **PPwr** Modus eine Multi Click Variation eingestellt, (siehe auch **Interface** Menü), erscheint dieses im  "POWER" oder "SMART" Modus.*
 
     * Modes
 
@@ -314,6 +319,14 @@ Längeres drücken der Feuertaste bringt euch wieder zu den Standardeinstellunge
             Der Algorithmus ist in seiner Ursprungsform implementiert.  
             Standard (50Hz) ist eingestellt.  
             Einheiten: **P** bedeutet mW/°C, **I** bedeutet mW/°C/s, **D** bedeutet mW.s/°C.
+
+    * Curve
+
+         *Nur im POWER/SMART Modus.*        
+         Einstellen, zurücksetzen oder bearbeiten der Atomizer Leistungskurve.  
+         Wenn die Leistungskurve aktiviert ist, ist ihre Priorität höher, als der der Preheat Funktion; ein kleines "C" oben im Hauptbildschirm zeigt an, dass die Leistungskurve aktiviert ist. 
+Die Werte der Leistungskurve  liegen zwischen 0 und 200 Prozent. Die ganze Leistungskurve wird über die Standardeinstellungen angesteuert.Die Standart Leistungskurve (nach einem Reset) steht bei 100% , damit die Box keine Schäden davonträgt.  
+         Du kannst pro Profil nur eine Leistungskurve einstellen.
 
     * Prot.
     
@@ -493,11 +506,18 @@ Die Uhr wird erst ungenau, wenn die Box ausgeschaltet oder sich im Sleepmode bef
         Wenn du ein externes Ladegerät nutzt und deine Akkus etwas schützen willst, ist es ratsam die USB Ladefunktion zu deaktivieren, um fehlerhaftes oder ungleichmäßiges laden zu verhindern.
  
   * BAT
- 
-        Batterie Model. 
-        Du kannst Marke und Model deiner Akkus einstellen: 25R, 30Q, HG2, HE4, VTC4, VTC5 und VTC6. "GEN" ist eine Standarteinstellung und sollte bei allen anderen Akku Modellen genutzt werden.
-        Zu Beginn nutzt die Firmware die Einstellung “GEN” um die Akkus so gut es geht zu schonen.
-        *Bei Boxen mit fest verbauten Akku (AIO, Basic, eGrip II, Cuboid Mini), sollte diese Option auf "GEN" stehen bleiben, es sei denn du hast die Box zerlegt und den Akku durch einen anderen ausgetauscht.*
+
+        Batterie Modell: 
+        Du kannst deinen Batterietyp einstellen: 25R, 30Q, HG2, HE4, VTC4, VTC5 und VTC6. "GEN" ist die Standarteinstellung, die bei allen anderen Batteriemodellen genutzt werden sollte.
+        
+        Benutzerdefinierte Batterie:  
+        Drückt ihr 2 Sekunden lang die Feuer Taste , ändert sich das Batteriemodell in "CUS" (benutzerdefinierte Batterie). Die Box nutzt dann die vom Nutzer eingestellten Einstellungen Diese informationen können über [NFirwareEditor](https://github.com/TBXin/NFirmwareEditor/releases) discharge profile editor eingestellt werden.
+        Siehe auch: [NFirwareEditor](https://github.com/TBXin/NFirmwareEditor/releases) für weitere Informationen.
+        *Der Kompatibilitätsmodus “NFE” muss aktiviert sein, damit die Box als Kompatibel angezeigt wird.*
+
+        Diese Funktion soll dazu genutzt werden, um den relativ ungenauen Angaben der Batterie Hersteller entgegenzuwirken.
+
+        *Bei Boxen mit fest eingebauten Batterien (AIO, Basic, eGrip II, Cuboid Mini), sollte diese Funktion auf "GEN" eingestellt sein, außer die Fest eingebaute Batterie wurde durch eine andere ersetzt.*
  
   * BVO
  
@@ -511,6 +531,25 @@ Die Uhr wird erst ungenau, wenn die Box ausgeschaltet oder sich im Sleepmode bef
         * Auf Boxen mit drei Akku Betrieb könnt ihr es vielleicht schon denken.
  
  
+----------
+
+### Profile
+
+
+Du kannst zwischen fünf verschiedenen Einstellungsprofilen wechseln.  
+Ein Profil speichert alle relevanten Daten, die für das Dampfen benötigt werden; z.B. Vaping Modus, Coil Widerstand, Preheat und Algo Einstellungen, usw. Das Interface, Display oder andere nicht relevante Einstellungen werden beim Profilwechsel nicht übernommen.
+
+
+Um zum Einstellungsmenü der Profile zu gelangen,drücke und halte die Feuer- und (+) Taste für 2 Sekunden. Im Profil Auswahlfenster wählt das zu nutzende Profil aus und drück die Feuertaste um es zu aktivieren.   
+![Profile Screen](https://www.dropbox.com/s/b4y1afx3vbmrgdp/profile.png?dl=1)
+
+
+In jeder Zeile wird die Profilnummer, der ausgewählte Modus und der letzte verwendete Widerstand angezeigt. 
+Leere Zeilen sind gleichzeitig auch leere Profile. 
+Bei Auswahl einer leeren Zeile,wird das gerade genutzte Profil dupliziert.
+Um ein ausgewähltes Profil gegen ein vorhandenes  Profil auszutauschen  (das löscht das vorhandene), wähle dein Profil aus und drücke die Feuer Taste für 2 Sekunden. Das neue Profil wird mit einem duplikat deines ausgewählten Profils ausgewählt.
+
+
 ----------
  
 ### Build:
