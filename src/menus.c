@@ -1318,6 +1318,10 @@ __myevic__ void CoilsIClick()
 				dfSavedCfgPwr[i] = 0;
 			}
 			ResetResistance();
+			if ( AtoStatus == 4 )
+			{
+				SwitchRezLock();
+			}
 			break;
 
 		case 5:	// Check
