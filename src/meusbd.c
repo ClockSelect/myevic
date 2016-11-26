@@ -234,6 +234,14 @@ __myevic__ void USBD_IRQHandler(void)
 	}
 
 	//------------------------------------------------------------------
+	if(u32IntSts & USBD_INTSTS_WAKEUP)
+	{
+		// Wake-Up
+		USBD_CLR_INT_FLAG(USBD_INTSTS_WAKEUP);
+		gFlags.wake_up = 1;
+	}
+
+	//------------------------------------------------------------------
 	if(u32IntSts & USBD_INTSTS_BUS)
 	{
 		/* Clear event flag */
