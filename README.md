@@ -268,7 +268,7 @@ If you continue holding Fire and Right (+) buttons after entering menus, after t
         *This function can only be active in "POWER" and "SMART" modes; it is ignored in all other modes.*  
         Set at wich power ( **Pwr** ) and how long ( **Time** ) you want the coil to be preheated when you fire; after this delay, the atomizer will be powered by your regular setting. Set the **Time** to zero to switch preheating off.  
         The **Unit** may be absolute Watts or percents of the main power setting.   
-        The **Delay** allows to configure a dead time after fire, during which the preheating function will be disabled. This dead time goes from zero (Off) to 3 minutes. The delay runs from the end of fire. Use this feature if you use high inertia (heavy) builds to prevent over-heating when chain-vaping.  
+        The **Delay** allows to configure a dead time after fire, during which the preheating function will be disabled. This dead time goes from zero (Off) to 3 minutes. The delay runs from the end of fire. Use this feature if you use high inertia (heavy) builds to prevent over-heating when chain-vaping. The **Delay** also apply on power curves, preventing power to fire over 100% of the preset power within the given time.  
         A small **P** icon will appear on the main screen next to the the power setting to remind you the preheat function is enabled ("POWER" mode only). A blinking **P** indicates the dead time period.  
         *If you configured a "PPwr" action in the multi-clicks configuration (see **Interface** menu), this action will pop-up this menu when in "POWER" or "SMART" mode.*  
 
@@ -318,6 +318,7 @@ If you continue holding Fire and Right (+) buttons after entering menus, after t
           Enable, Reset and/or Edit the atomizer power curve.  
           When power curve is enabled, it take precedence over preheating; a little "C" next to the power setting on main screen indicates the power curve is enabled.  
           The values of the power curve are percentages (from 0 to 200%) of the main power setting. The whole power curve will thus scale with the main power setting. The default power curve (after reset) is a flat 100% curve, so will have no sensible effect.  
+          The **Delay** setting of the **Preheat** function prevent the power curve to apply a power above 100% during some time after the end of the lest puff. See the **Vaping>Preheat** menu documentation for more informations.  
           You may have one different power curve per configuration profile.  
 
     * Prot.

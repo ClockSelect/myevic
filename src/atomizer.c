@@ -1080,7 +1080,10 @@ __myevic__ void TweakTargetVoltsVW()
 		int t = FireDuration / 5;
 		if ( t > 19 ) t = 19;
 
-		pwr = dfPwrCurve[t] * pwr / 100;
+		int p = dfPwrCurve[t];
+		if ( p > 100 && PreheatDelay ) p = 100;
+
+		pwr = p * pwr / 100;
 	}
 
 	pwr = AtoPowerLimit( pwr );

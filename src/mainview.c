@@ -512,7 +512,10 @@ __myevic__ void DrawPower( int pwr )
 	{
 		if ( dfStatus.pcurve )
 		{
-			DrawImage( xp, yp, 0x6A );
+			if ( !PreheatDelay || gFlags.osc_1hz )
+			{
+				DrawImage( xp, yp, 0x6A );
+			}
 		}
 		else if ( dfPreheatTime )
 		{
