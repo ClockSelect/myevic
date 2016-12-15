@@ -1260,6 +1260,10 @@ __myevic__ void SetAtoSMARTParams()
 		if ( dfMode == 4 )
 		{
 			dfPower = dfSavedCfgPwr[i];
+			if ( dfStatus.onewatt )
+			{
+				dfPower -= dfPower % 10;
+			}
 		}
 		if ( dfSavedCfgRez[9] )
 		{
