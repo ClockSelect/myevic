@@ -307,17 +307,8 @@ __myevic__ void InitVariables()
 	gFlags.refresh_battery = 1;
 	gFlags.read_battery = 1;
 	gFlags.read_bir = 1;
-	if ( dfStatus.onewatt )
-	{
-		WattsInc = 10;
-		dfPower -= dfPower % 10;
-		dfTCPower -= dfTCPower % 10;
-		dfPreheatPwr -= dfPreheatPwr % 10;
-	}
-	else
-	{
-		WattsInc = 1;
-	}
+	WattsInc = dfStatus.onewatt ? 10 : 1;
+	RoundPowers();
 	AtoMinVolts = 50;
 	AtoMaxVolts = MaxVolts;
 	AtoMinPower = 10;

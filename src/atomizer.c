@@ -1186,6 +1186,15 @@ __myevic__ void SetMinMaxVolts()
 
 
 //=========================================================================
+void RoundPowers()
+{
+	dfPower -= dfPower % WattsInc;
+	dfTCPower -= dfTCPower % WattsInc;
+	dfPreheatPwr -= dfPreheatPwr % WattsInc;
+}
+
+
+//=========================================================================
 // SMART mode resistances values
 const uint16_t SMARTRezValues[] =
 		{	50, 60, 100, 150	};
@@ -1260,10 +1269,7 @@ __myevic__ void SetAtoSMARTParams()
 		if ( dfMode == 4 )
 		{
 			dfPower = dfSavedCfgPwr[i];
-			if ( dfStatus.onewatt )
-			{
-				dfPower -= dfPower % 10;
-			}
+			RoundPowers();
 		}
 		if ( dfSavedCfgRez[9] )
 		{

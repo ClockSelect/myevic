@@ -523,9 +523,7 @@ __myevic__ void IFMenuOnClick()
 			if ( dfStatus.onewatt )
 			{
 				WattsInc = 10;
-				dfPower -= dfPower % 10;
-				dfTCPower -= dfTCPower % 10;
-				dfPreheatPwr -= dfPreheatPwr % 10;
+				RoundPowers();
 			}
 			else
 			{

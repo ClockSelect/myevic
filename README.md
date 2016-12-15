@@ -347,7 +347,7 @@ If you continue holding Fire and Right (+) buttons after entering menus, after t
 
         There is some other ways to setup time:
         * use the ```evic-usb time``` command, if you installed the [python-evic](https://github.com/ClockSelect/python-evic "python-evic") command-line utility;
-        * use the Configuration Editor of the [NFirmwareEditor 5.0](https://github.com/TBXin/NFirmwareEditor/releases); open the Configuration Editor and click "Upload settings" to upload the current time.
+        * use the Time synchronization function of the [NToolbox](https://github.com/TBXin/NFirmwareEditor/releases) of the NFirmwareEditor 6.0+; (check the time synch feature in the system tray).
         * MicroSur's [FWUpdater](https://www.dropbox.com/s/83zd19gu05pl3r6/EvicVTCFont.rar?dl=1) also as a "Set current time" function.
 
         * Joyetech's official firmware updater also sets date & time when uploading a firmware.  
@@ -476,7 +476,7 @@ If you continue holding Fire and Right (+) buttons after entering menus, after t
   * NFE
  
         *Warning: You can't use Joyetech's firmware updater while this option is "ON". It may aloso cause issues with third-party firmware management systems.*  
-        Enables or disables partial compatibility with the [NFirmwareEditor 5.0+](https://github.com/TBXin/NFirmwareEditor/releases) myEvic Configuration Editor.  
+        Enables or disables partial compatibility with the [NFirmwareEditor 5.x](https://github.com/TBXin/NFirmwareEditor/releases) myEvic Configuration Editor.  
         This option is disabled by default; set it to "ON" if you plan to use developpement features of the NFE. You'll have access to Monitoring, Screenshot, COM terminal, and Custom Battery Profile editor.  
         Since compatibility is only partial at the moment, editing parameters other than Battery Profile will have no effect.  
  

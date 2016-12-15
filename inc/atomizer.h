@@ -124,6 +124,7 @@ extern void SwitchRezLock();
 
 extern int SearchSMARTRez( uint16_t rez );
 extern void SetAtoSMARTParams();
+extern void RoundPowers();
 
 extern uint16_t CelsiusToF( uint16_t tc );
 extern uint16_t FarenheitToC( uint16_t tf );

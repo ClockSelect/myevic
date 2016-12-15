@@ -544,6 +544,9 @@ __myevic__ void InitUSB()
 #define HID_CMD_MONITORING	0x43
 #define HID_CMD_AUTO_PUFF	0x44
 #define HID_CMD_SETPARAMS	0x53
+#define HID_CMD_READCONFIG	0x60
+#define HID_CMD_WRITECONFIG	0x61
+#define HID_CMD_SETDATETIME	0x64
 #define HID_CMD_GETMONDATA	0x66
 #define HID_CMD_RESETPARAMS	0x7C
 #define HID_CMD_SETLOGO		0xA5
@@ -551,6 +554,8 @@ __myevic__ void InitUSB()
 #define HID_CMD_FMCREAD		0xC0
 #define HID_CMD_SCREENSHOT	0xC1
 #define HID_CMD_APUPDATE	0xC3
+
+#define HID_CONFIG_LENGTH	0x400
 
 
 typedef struct __attribute__((packed))
@@ -588,12 +593,25 @@ typedef struct __attribute__((packed))
 
 	uint8_t		BoardTemperature;
 }
-MonData_t;
+HIDMonData_t;
+
+typedef struct __attribute__((packed))
+{
+	uint16_t	Year;
+	uint8_t		Month;
+	uint8_t		Day;
+	uint8_t		Hour;
+	uint8_t		Minute;
+	uint8_t		Second;
+}
+HIDDateTime_t;
+
 
 uint8_t *hidInDataPtr;
 uint8_t hidData[FMC_FLASH_PAGE_SIZE];
 uint32_t hidDFData[FMC_FLASH_PAGE_SIZE/4];
 uint32_t hidDataIndex;
+
 
 //=========================================================================
 //----- (00001204) --------------------------------------------------------
@@ -796,7 +814,7 @@ __myevic__ uint32_t hidGetInfoCmd( CMD_T *pCmd )
 			df->p.ShuntRez = 100;
 			df->p.VVRatio = 200;	// PreheatPwr for NFE
 			df->p.DimTimeout = 30;
-			
+
 			LoadCustomBattery();
 			o = offsetof( dfStruct_t, p ) + 0xCA;	// NFE Custom Battery offset
 			MemCpy( &hidData[o], &CustomBattery.V2P, 48 );
@@ -833,6 +851,26 @@ __myevic__ uint32_t hidSetParamCmd( CMD_T *pCmd )
 
 
 //-------------------------------------------------------------------------
+// Read Configuration
+//-------------------------------------------------------------------------
+__myevic__ uint32_t hidReadConfig( CMD_T *pCmd )
+{
+	uint32_t u32StartAddr;
+	uint32_t u32ParamLen;
+
+	u32StartAddr = pCmd->u32Arg1;
+	u32ParamLen = pCmd->u32Arg2;
+
+	MemSet( hidData, 0, HID_CONFIG_LENGTH );
+
+	hidInDataPtr = &hidData[u32StartAddr];
+	hidStartInReport( u32ParamLen );
+
+	return 0;
+}
+
+
+//-------------------------------------------------------------------------
 // Monitoring
 //-------------------------------------------------------------------------
 __myevic__ uint32_t hidGetMonData( CMD_T *pCmd )
@@ -843,20 +881,20 @@ __myevic__ uint32_t hidGetMonData( CMD_T *pCmd )
 	u32StartAddr = pCmd->u32Arg1;
 	u32ParamLen = pCmd->u32Arg2;
 
-	myprintf( "Get Monitoring Data command - Start Addr: %d    Param Len: %d\n", pCmd->u32Arg1, pCmd->u32Arg2 );
-	
+//	myprintf( "Get Monitoring Data command - Start Addr: %d    Param Len: %d\n", pCmd->u32Arg1, pCmd->u32Arg2 );
+
 	if ( u32StartAddr != 0 || u32ParamLen != 0x40 )
 	{
-		myprintf( "Invalid parameters\n" );
+//		myprintf( "Invalid parameters\n" );
 		return 1;
 	}
 
-	MonData_t *mondata = (MonData_t*)hidData;
+	HIDMonData_t *mondata = (HIDMonData_t*)hidData;
 
 	MemSet( mondata, 0, u32ParamLen );
 
 	mondata->Timestamp = TMR2Counter / 10;
-	
+
 	mondata->IsFiring = gFlags.firing;
 	mondata->IsCharging = gFlags.battery_charging;
 	mondata->IsCelsius = dfIsCelsius;
@@ -906,7 +944,7 @@ __myevic__ uint32_t hidGetMonData( CMD_T *pCmd )
 	mondata->RealResistance = AtoRezMilli;
 
 	mondata->BoardTemperature = BoardTemp;
-	
+
 	hidInDataPtr = &hidData[u32StartAddr];
 	hidStartInReport( u32ParamLen );
 
@@ -1043,6 +1081,11 @@ int32_t hidProcessCommand( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 		case HID_CMD_RESETPARAMS:
 		{
 			hidResetParamCmd( &hidCmd );
+			break;
+		}
+		case HID_CMD_READCONFIG:
+		{
+			hidReadConfig( &hidCmd );
 			break;
 		}
 		case HID_CMD_GETMONDATA:
@@ -1313,6 +1356,30 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 				myprintf( "Update LDROM command complete.\n" );
 			}
 
+			break;
+		}
+
+		case HID_CMD_SETDATETIME:
+		{
+			HIDDateTime_t *dt = (HIDDateTime_t*)pu8Buffer;
+
+			if ( dt->Year >= 2000 && dt->Year <= 2099 )
+			{
+				S_RTC_TIME_DATA_T rtd;
+				rtd.u32Year = dt->Year;
+				rtd.u32Month = dt->Month;
+				rtd.u32Day = dt->Day;
+				rtd.u32DayOfWeek = 0;
+				rtd.u32Hour = dt->Hour;
+				rtd.u32Minute = dt->Minute;
+				rtd.u32Second = dt->Second;
+				rtd.u32TimeScale = RTC_CLOCK_24;
+				SetRTC( &rtd );
+			}
+
+			u8Cmd = HID_CMD_NONE;
+
+			myprintf( "Set Date/Time command complete.\n" );
 			break;
 		}
 
