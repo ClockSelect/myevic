@@ -266,7 +266,7 @@ If you continue holding Fire and Right (+) buttons after entering menus, after t
         
         Coil preheat function.  
         *This function can only be active in "POWER" and "SMART" modes; it is ignored in all other modes.*  
-        Set at wich power ( **Pwr** ) and how long ( **Time** ) you want the coil to be preheated when you fire; after this delay, the atomizer will be powered by your regular setting. Set the **Time** to zero to switch preheating off.  
+        Set at which power ( **Pwr** ) and how long ( **Time** ) you want the coil to be preheated when you fire; after this delay, the atomizer will be powered by your regular setting. Set the **Time** to zero to switch preheating off.  
         The **Unit** may be absolute Watts or percents of the main power setting.   
         The **Delay** allows to configure a dead time after fire, during which the preheating function will be disabled. This dead time goes from zero (Off) to 3 minutes. The delay runs from the end of fire. Use this feature if you use high inertia (heavy) builds to prevent over-heating when chain-vaping. The **Delay** also apply on power curves, preventing power to fire over 100% of the preset power within the given time.  
         A small **P** icon will appear on the main screen next to the the power setting to remind you the preheat function is enabled ("POWER" mode only). A blinking **P** indicates the dead time period.  
