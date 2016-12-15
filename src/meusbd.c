@@ -544,6 +544,7 @@ __myevic__ void InitUSB()
 #define HID_CMD_MONITORING	0x43
 #define HID_CMD_AUTO_PUFF	0x44
 #define HID_CMD_SETPARAMS	0x53
+#define HID_CMD_GETMONDATA	0x66
 #define HID_CMD_RESETPARAMS	0x7C
 #define HID_CMD_SETLOGO		0xA5
 #define HID_CMD_RESET		0xB4
@@ -560,9 +561,34 @@ typedef struct __attribute__((packed))
     uint32_t u32Arg2;
     uint32_t u32Signature;
     uint32_t u32Checksum;
-} CMD_T;
+}
+CMD_T;
 
 CMD_T hidCmd;
+
+typedef struct __attribute__((packed))
+{
+	uint32_t	Timestamp; // X * 100 (seconds)
+
+	uint8_t		IsFiring;
+	uint8_t		IsCharging;
+	uint8_t		IsCelsius;
+
+	uint8_t		BatteryVoltage[3]; // Offsetted by 275, 420 - 275 = value
+
+	uint16_t	PowerSet; // X * 10
+	uint16_t	TemperatureSet;
+	uint16_t	Temperature;
+
+	uint16_t	OutputVoltage; // X * 100
+	uint16_t	OutputCurrent; // X * 100
+
+	uint16_t	Resistance; // X * 1000
+	uint16_t	RealResistance;   // X * 1000
+
+	uint8_t		BoardTemperature;
+}
+MonData_t;
 
 uint8_t *hidInDataPtr;
 uint8_t hidData[FMC_FLASH_PAGE_SIZE];
@@ -806,6 +832,88 @@ __myevic__ uint32_t hidSetParamCmd( CMD_T *pCmd )
 }
 
 
+//-------------------------------------------------------------------------
+// Monitoring
+//-------------------------------------------------------------------------
+__myevic__ uint32_t hidGetMonData( CMD_T *pCmd )
+{
+	uint32_t u32StartAddr;
+	uint32_t u32ParamLen;
+
+	u32StartAddr = pCmd->u32Arg1;
+	u32ParamLen = pCmd->u32Arg2;
+
+	myprintf( "Get Monitoring Data command - Start Addr: %d    Param Len: %d\n", pCmd->u32Arg1, pCmd->u32Arg2 );
+	
+	if ( u32StartAddr != 0 || u32ParamLen != 0x40 )
+	{
+		myprintf( "Invalid parameters\n" );
+		return 1;
+	}
+
+	MonData_t *mondata = (MonData_t*)hidData;
+
+	MemSet( mondata, 0, u32ParamLen );
+
+	mondata->Timestamp = TMR2Counter / 10;
+	
+	mondata->IsFiring = gFlags.firing;
+	mondata->IsCharging = gFlags.battery_charging;
+	mondata->IsCelsius = dfIsCelsius;
+
+	uint16_t temp = dfIsCelsius ? FarenheitToC( AtoTemp ) : AtoTemp;
+
+	if ( gFlags.firing )
+	{
+		for ( int i = 0 ; i < NumBatteries ; ++i )
+		{
+			mondata->BatteryVoltage[i] = RTBVolts[i] - 275;
+		}
+
+		if ( ISMODETC(dfMode) )
+		{
+			mondata->Temperature = temp;
+		}
+
+		mondata->OutputVoltage = AtoVolts;
+		mondata->OutputCurrent = AtoCurrent * 10;
+	}
+	else
+	{
+		for ( int i = 0 ; i < NumBatteries ; ++i )
+		{
+			mondata->BatteryVoltage[i] = BattVolts[i] - 275;
+		}
+
+		if ( ISMODETC(dfMode) )
+		{
+			ReadAtoTemp();
+			mondata->Temperature = temp;
+		}
+	}
+
+	if ( ISMODETC(dfMode) )
+	{
+		mondata->PowerSet = dfTCPower;
+		mondata->TemperatureSet = dfTemp;
+	}
+	else
+	{
+		mondata->PowerSet = dfPower;
+	}
+
+	mondata->Resistance = dfResistance * 10 + RezMillis;
+	mondata->RealResistance = AtoRezMilli;
+
+	mondata->BoardTemperature = BoardTemp;
+	
+	hidInDataPtr = &hidData[u32StartAddr];
+	hidStartInReport( u32ParamLen );
+
+	return 0;
+}
+
+
 //----- (0000272C) --------------------------------------------------------
 __myevic__ uint32_t hidLDUpdateCmd( CMD_T *pCmd )
 {
@@ -935,6 +1043,11 @@ int32_t hidProcessCommand( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 		case HID_CMD_RESETPARAMS:
 		{
 			hidResetParamCmd( &hidCmd );
+			break;
+		}
+		case HID_CMD_GETMONDATA:
+		{
+			hidGetMonData( &hidCmd );
 			break;
 		}
 		case HID_CMD_SETLOGO:

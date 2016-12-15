@@ -32,6 +32,7 @@ Battery_t;
 //-------------------------------------------------------------------------
 
 extern uint16_t RTBattVolts;
+extern uint16_t	RTBVolts[3];
 extern uint16_t	RTBVTotal;
 extern uint16_t LowBatVolts;
 extern uint32_t	PowerScale;

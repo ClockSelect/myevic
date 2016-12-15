@@ -228,6 +228,7 @@ uint8_t		MaxBatteries;
 uint16_t	ChargerDuty;
 uint16_t	MaxChargerDuty;
 uint16_t	RTBattVolts;
+uint16_t	RTBVolts[3];
 uint16_t	RTBVTotal;
 
 uint8_t		BattProbeCount;
@@ -682,6 +683,9 @@ __myevic__ int CheckBattery()
 				bv  += dfBVOffset[1];
 				bv2 += dfBVOffset[2];
 
+				RTBVolts[0] = bv;
+				RTBVolts[1] = bv2;
+
 				RTBVTotal = bv + bv2;
 
 				if ( bv2 < bv ) bv = bv2;
@@ -689,6 +693,8 @@ __myevic__ int CheckBattery()
 			else
 			{
 				bv  += dfBVOffset[0];
+
+				RTBVolts[0] = bv;
 
 				RTBVTotal = bv;
 			}
@@ -710,6 +716,9 @@ __myevic__ int CheckBattery()
 
 			bv  += dfBVOffset[0];
 			bv2 += dfBVOffset[1];
+
+			RTBVolts[0] = bv;
+			RTBVolts[1] = bv2;
 
 			RTBVTotal = bv + bv2;
 
@@ -733,6 +742,9 @@ __myevic__ int CheckBattery()
 					bv  += dfBVOffset[0];
 					bv2 += dfBVOffset[1];
 
+					RTBVolts[0] = bv;
+					RTBVolts[1] = bv2;
+
 					RTBVTotal = bv + bv2;
 				}
 				else
@@ -748,6 +760,10 @@ __myevic__ int CheckBattery()
 					bv2 += dfBVOffset[1];
 					bv3 += dfBVOffset[2];
 
+					RTBVolts[0] = bv;
+					RTBVolts[1] = bv2;
+					RTBVolts[2] = bv3;
+
 					RTBVTotal = bv + bv2 + bv3;
 
 					if ( bv3 < bv ) bv = bv3;
@@ -755,10 +771,20 @@ __myevic__ int CheckBattery()
 
 				if ( bv2 < bv ) bv = bv2;
 			}
+			else
+			{
+				bv  += dfBVOffset[0];
+
+				RTBVolts[0] = bv;
+
+				RTBVTotal = bv;
+			}
 		}
 		else
 		{
 			bv = ( ReadBatterySample( 0 ) >> 3 ) + dfBVOffset[0];
+
+			RTBVolts[0] = bv;
 
 			RTBVTotal = bv;
 		}
