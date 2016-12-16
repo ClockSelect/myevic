@@ -8,6 +8,7 @@
 #include "battery.h"
 #include "meusbd.h"
 #include "dtmacros.h"
+#include "screens.h"
 
 void usbdEP2Handler();
 void usbdEP3Handler();
@@ -556,6 +557,7 @@ __myevic__ void InitUSB()
 #define HID_CMD_APUPDATE	0xC3
 
 #define HID_CONFIG_LENGTH	0x400
+#define HID_CONFIG_FORMAT	0x03
 
 
 typedef struct __attribute__((packed))
@@ -606,6 +608,131 @@ typedef struct __attribute__((packed))
 }
 HIDDateTime_t;
 
+typedef struct __attribute__((packed))
+{
+	uint32_t	ProductId;
+	uint32_t	HardwareVersion;
+	uint16_t	MaxPower;
+	uint8_t		NumberOfBatteries;
+	uint32_t	FirmwareVersion;
+	uint32_t	FirmwareBuild;
+	uint8_t		SettingsVersion;
+}
+HIDDeviceInfo_t;
+
+typedef struct __attribute__((packed))
+{
+	char		Name[8];
+	uint8_t		Flags;
+	uint8_t		PreheatType;
+	uint8_t		SelectedCurve;
+	uint8_t		PreheatTime;	// 0 - Off, unit is 1/100 sec
+	uint8_t		PreheatDelay;	// 0 - Off, units is 1/10 sec
+	uint16_t	PreheatPower;	// Watts * 10
+	uint16_t	Power;			// Watts * 10
+	uint16_t	Temperature;
+	uint16_t	Resistance;		// Multiplied by 1000
+	uint16_t	TCR;
+}
+HIDProfile_t;
+
+typedef struct __attribute__((packed))
+{
+	HIDProfile_t	Profiles[8];
+	uint8_t		SelectedProfile;
+	uint8_t		IsSmartEnabled;
+	uint8_t		SmartRange;		// 1..15, percents
+}
+HIDGeneralConfig_t;
+
+typedef struct __attribute__((packed))
+{
+	uint8_t		Clicks[3];
+	uint8_t		VWLines[4];
+	uint8_t		TCLines[4];
+	uint8_t		Brightness;
+	uint8_t		DimTimeout;
+	uint8_t		IsFlipped;
+	uint8_t		IsStealthMode;
+	uint8_t		WakeUpByPlusMinus;
+	uint8_t		IsPowerStep1W;
+	uint8_t		ChargeScreenType;
+	uint8_t		IsLogoEnabled;
+	uint8_t		IsClassicMenu;
+	uint8_t		ClockType;
+	uint8_t		IsClockOnMainScreen;
+	uint8_t		ScreensaveDuration;
+}
+HIDUIConfig_t;
+
+typedef struct __attribute__((packed))
+{
+	uint16_t	PuffCount;
+	uint16_t	TimeCount;
+	HIDDateTime_t	DateTime;
+}
+HIDCounters_t;
+
+typedef struct __attribute__((packed))
+{
+	BatV2P_t	V2P[11];
+	uint16_t	cutoff;
+}
+HIDBattery_t;
+
+typedef struct __attribute__((packed))
+{
+	uint16_t	Temperature;
+	uint16_t	Factor;
+}
+HIDTFRPoint_t;
+
+typedef struct __attribute__((packed))
+{
+	char			Name[4];
+	HIDTFRPoint_t	Points[7];
+}
+HIDTFRTable_t;
+
+typedef struct __attribute__((packed))
+{
+	uint8_t	Time;
+	uint8_t	Percent;
+}
+HIDPowerCurvePoint_t;
+
+typedef struct __attribute__((packed))
+{
+	char					Name[8];
+	HIDPowerCurvePoint_t	Points[12];
+}
+HIDPowerCurve_t;
+
+typedef struct __attribute__((packed))
+{
+	uint8_t			ShuntCorrection; // Value from 85 to 115
+	uint8_t			BatteryModel;
+	HIDBattery_t	CustomBatteryProfile;
+	uint8_t			IsX32;
+	uint8_t			IsLightSleepMode;
+	uint8_t			IsUsbCharge;
+	uint8_t			ResetCountersOnStartup;
+	HIDTFRTable_t	TFRTables[8];
+	uint8_t			PuffCutOff; // Value from 10 to 150
+	HIDPowerCurve_t	PowerCurves[8];
+}
+HIDAdvConfig_t;
+
+typedef struct __attribute__((packed))
+{
+	HIDDeviceInfo_t	Info;
+	HIDGeneralConfig_t General;
+	HIDUIConfig_t Interface;
+	HIDCounters_t Counters;
+	HIDAdvConfig_t Advanced;
+}
+HIDConfiguration_t;
+
 
 uint8_t *hidInDataPtr;
 uint8_t hidData[FMC_FLASH_PAGE_SIZE];
@@ -648,6 +775,7 @@ __myevic__ void hidSetInReport()
 	{
 		case HID_CMD_GETINFO:
 		case HID_CMD_SCREENSHOT:
+		case HID_CMD_READCONFIG:
 		{
 			if ( hidDataIndex )
 			{
@@ -855,13 +983,112 @@ __myevic__ uint32_t hidSetParamCmd( CMD_T *pCmd )
 //-------------------------------------------------------------------------
 __myevic__ uint32_t hidReadConfig( CMD_T *pCmd )
 {
+	int i, j;
+
 	uint32_t u32StartAddr;
 	uint32_t u32ParamLen;
+
+	myprintf( "Read Configuration command - Start Addr: %d    Param Len: %d\n", pCmd->u32Arg1, pCmd->u32Arg2 );
 
 	u32StartAddr = pCmd->u32Arg1;
 	u32ParamLen = pCmd->u32Arg2;
 
 	MemSet( hidData, 0, HID_CONFIG_LENGTH );
+
+	if ( dfStatus.nfe )
+	{
+		HIDConfiguration_t *config = (HIDConfiguration_t*)hidData;
+
+		config->Info.ProductId = dfProductID;
+		config->Info.HardwareVersion = dfHWVersion;
+		config->Info.MaxPower = MaxPower;
+		config->Info.NumberOfBatteries = NumBatteries;
+		config->Info.FirmwareVersion = dfFWVersion;
+		config->Info.FirmwareBuild = __BUILD1;
+		config->Info.SettingsVersion = HID_CONFIG_FORMAT;
+
+		for ( i = 0 ; i < 8 ; ++i )
+		{
+			HIDProfile_t *p = (HIDProfile_t*)&config->General.Profiles[i];
+			MemCpy( p->Name, "PROFILE ", 8 );
+			p->Name[7] = '1' + i;
+			p->Flags = 0b01000000;
+		//	p->PreheatType = 0;
+		//	p->SelectedCurve = 0;
+		//	p->PreheatTime = 0;
+		//	p->PreheatDelay = 0;
+			p->Power = 200;
+		//	p->PreheatPower = 0;
+		//	p->Temperature = 0;
+		//	p->Resistance = 0;
+		//	p->TCR = 0;
+		}
+
+		config->General.SelectedProfile = 0;
+		config->General.IsSmartEnabled = 1;
+		config->General.SmartRange = 10;
+
+		for ( i = 0 ; i < 3 ; ++i )
+		{
+			config->Interface.Clicks[i] = dfClick[i];
+		}
+		config->Interface.VWLines[0] = 0xB4;
+		config->Interface.VWLines[1] = 0x20;
+		config->Interface.VWLines[2] = 0x30;
+		config->Interface.VWLines[3] = 0x40;
+		config->Interface.TCLines[0] = 0x00;
+		config->Interface.TCLines[1] = 0x20;
+		config->Interface.TCLines[2] = 0x30;
+		config->Interface.TCLines[3] = 0x40;
+		config->Interface.Brightness = dfContrast;
+		config->Interface.DimTimeout = GetMainScreenDuration();
+		config->Interface.IsFlipped = dfStatus.flipped;
+		config->Interface.IsStealthMode = dfStealthOn;
+		config->Interface.WakeUpByPlusMinus = dfStatus.wakeonpm;
+		config->Interface.IsPowerStep1W = dfStatus.onewatt;
+		config->Interface.ChargeScreenType = 0;
+		config->Interface.IsLogoEnabled = !dfStatus.nologo;
+		config->Interface.IsClassicMenu = 1;
+		config->Interface.ClockType = dfStatus.digclk;
+		config->Interface.IsClockOnMainScreen = dfStatus.clock;
+		config->Interface.ScreensaveDuration = dfScreenProt;
+
+		config->Counters.PuffCount = dfPuffCount;
+		config->Counters.TimeCount = dfTimeCount;
+
+		config->Advanced.ShuntCorrection = 100;
+		config->Advanced.BatteryModel = dfBatteryModel;
+		LoadCustomBattery();
+		MemCpy( &config->Advanced.CustomBatteryProfile, &CustomBattery.V2P, 46 );
+		config->Advanced.IsX32 = !dfStatus.x32off;
+		config->Advanced.IsLightSleepMode = !dfStatus.lsloff;
+		config->Advanced.IsUsbCharge = !dfStatus.usbchgoff;
+		config->Advanced.ResetCountersOnStartup = 0;
+
+		config->Advanced.PuffCutOff = dfProtec;
+		
+		for ( i = 0 ; i < 8 ; ++i )
+		{
+			MemCpy( config->Advanced.TFRTables[i].Name, "TFR ", 4 );
+			config->Advanced.TFRTables[i].Name[3] = '1' + i;
+			for ( j = 0 ; j < 7 ; ++j )
+			{
+				config->Advanced.TFRTables[i].Points[j].Temperature = 200 + 50 * j;
+				config->Advanced.TFRTables[i].Points[j].Factor = 10000;
+			}
+		}
+
+		for ( i = 0 ; i < 8 ; ++i )
+		{
+			MemCpy( config->Advanced.PowerCurves[i].Name, "PC     ", 8 );
+			config->Advanced.PowerCurves[i].Name[2] = '1' + i;
+			for ( j = 0 ; j < 12 ; ++j )
+			{
+				config->Advanced.PowerCurves[i].Points[j].Time = j * 5;
+				config->Advanced.PowerCurves[i].Points[j].Percent = 100;
+			}
+		}
+	}
 
 	hidInDataPtr = &hidData[u32StartAddr];
 	hidStartInReport( u32ParamLen );
@@ -1383,11 +1610,23 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 			break;
 		}
 
+		case HID_CMD_WRITECONFIG:
+		{
+			USBD_MemCopy( hidDataPtr, pu8Buffer, EP3_MAX_PKT_SIZE );
+			hidDataIndex += EP3_MAX_PKT_SIZE;
+
+			if ( hidDataIndex >= u32DataSize )
+			{
+				u8Cmd = HID_CMD_NONE;
+				// TODO : Write Config
+			}
+		}
+
 		default:
 		{
 			if ( hidProcessCommand( pu8Buffer, u32BufferLen ) )
 			{
-				myprintf( "Unknown HID command!\n" );
+				myprintf( "Unknown HID command %02X!\n", hidCmd.u8Cmd );
 			}
 			return;
 		}
