@@ -54,7 +54,9 @@ __myevic__ void DrawScreen()
 		gFlags.refresh_display = 1;
 	}
 	else if ( ScreenRefreshTimer && !--ScreenRefreshTimer )
+	{
 		gFlags.refresh_display = 1;
+	}
 
 	if ( gFlags.refresh_display )
 	{
@@ -204,19 +206,6 @@ __myevic__ void DrawScreen()
 		DisplayRefresh();
 	}
 
-	if (( gFlags.firing ) && ISMODETC(dfMode))
-		TenthOfSecs += 5;
-	else
-		TenthOfSecs += 1;
-
-	if ( TenthOfSecs < 10 )
-		return;
-
-	TenthOfSecs = 0;
-
-	if (  100 * ScreenDuration < EditModeTimer )
-		ScreenDuration = EditModeTimer / 100 + 1;
-
 	if ( ( Screen == 1 || Screen == 60 ) && ( ScreenDuration <= 4 ) )
 	{
 		if ( !gFlags.fading  )
@@ -231,6 +220,19 @@ __myevic__ void DrawScreen()
 		DisplaySetContrast( dfContrast );
 		gFlags.fading = 0;
 	}
+
+	if (( gFlags.firing ) && ISMODETC(dfMode))
+		TenthOfSecs += 5;
+	else
+		TenthOfSecs += 1;
+
+	if ( TenthOfSecs < 10 )
+		return;
+
+	TenthOfSecs = 0;
+
+	if (  100 * ScreenDuration < EditModeTimer )
+		ScreenDuration = EditModeTimer / 100 + 1;
 
 	if ( ScreenDuration && --ScreenDuration )
 		return;
