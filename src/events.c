@@ -1122,8 +1122,9 @@ __myevic__ int CustomEvents()
 			t = t - ( t% 86400 );
 			MilliJoules = 0;
 			RTCWriteRegister( RTCSPARE_VV_BASE, t );
-			EditModeTimer = 0;
+			EditModeTimer = 1000;
 			gFlags.refresh_display = 1;
+			gFlags.draw_edited_item = 1;
 			break;
 		}
 
