@@ -204,6 +204,8 @@ typedef struct
 /* 0044 */	uint8_t		Hour;
 /* 0045 */	uint8_t		Minute;
 /* 0046 */	uint8_t		Second;
+/* 0047 */	uint8_t		Format;
+/* 0048 */	uint32_t	Build;
 }
 dfInfos_t;
 
@@ -392,6 +394,7 @@ extern uint8_t	DFMagicNumber;
 extern void InitDataFlash();
 extern void ResetDataFlash();
 extern void DFCheckValuesValidity();
+extern uint32_t CalcPageCRC( uint32_t *pu32Addr );
 extern void UpdateDataFlash();
 extern void UpdatePTCounters();
 extern void DataFlashUpdateTick();
