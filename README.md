@@ -16,6 +16,7 @@ This is myevic Custom Firmware.
 * Wismec Reuleaux RX75
 * Wismec Reuleaux RX200S
 * Wismec Reuleaux RX2/3
+* Wismec Reuleaux RXmini
 
 
 ### Based on:

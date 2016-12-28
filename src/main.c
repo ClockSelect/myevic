@@ -641,6 +641,7 @@ void GoToSleep()
 		SYS_UnlockReg();
 		WDT_Close();
 		FlushAndSleep();
+		PreheatDelay = 0;
 	}
 	WDT_Open( WDT_TIMEOUT_2POW14, WDT_RESET_DELAY_18CLK, TRUE, FALSE );
 	SYS_LockReg();

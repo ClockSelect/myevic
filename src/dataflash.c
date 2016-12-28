@@ -53,6 +53,7 @@ const char pid_vtcdual	[8]	__PIDATTR__	= { 'E','0','7','9', 1, 0, 1, 0 };
 const char pid_cuboid	[8]	__PIDATTR__	= { 'E','0','6','0', 1, 0, 2, 0 };
 const char pid_rx200s	[8]	__PIDATTR__	= { 'W','0','3','3', 1, 0, 0, 0 };
 const char pid_rx23		[8]	__PIDATTR__	= { 'W','0','1','8', 1, 0, 1, 0 };
+const char pid_rxmini	[8]	__PIDATTR__	= { 'W','0','7','3', 1, 0, 0, 0 };
 
 #define MAKEPID(p) (((p)[0])|((p)[1]<<8)|((p)[2]<<16)|((p)[3]<<24))
 #define MAKEHWV(p) (((p)[4])|((p)[5]<<8)|((p)[6]<<16)|((p)[7]<<24))
@@ -73,6 +74,7 @@ const char pid_rx23		[8]	__PIDATTR__	= { 'W','0','1','8', 1, 0, 1, 0 };
 #define PID_CUBOID		MAKEPID(pid_cuboid)
 #define PID_RX200S		MAKEPID(pid_rx200s)
 #define PID_RX23		MAKEPID(pid_rx23)
+#define PID_RXMINI		MAKEPID(pid_rxmini)
 
 #define HWV_VTCMINI		MAKEHWV(pid_vtcmini)
 #define HWV_VTWOMINI	MAKEHWV(pid_vtwomini)
@@ -88,6 +90,7 @@ const char pid_rx23		[8]	__PIDATTR__	= { 'W','0','1','8', 1, 0, 1, 0 };
 #define HWV_CUBOID		MAKEHWV(pid_cuboid)
 #define HWV_RX200S		MAKEHWV(pid_rx200s)
 #define HWV_RX23		MAKEHWV(pid_rx23)
+#define HWV_RXMINI		MAKEHWV(pid_rxmini)
 
 
 //=========================================================================
@@ -223,6 +226,14 @@ __myevic__ void SetProductID()
 			dfMaxHWVersion = HWV_WRX75TC;
 			DFMagicNumber = 0x32;
 			BoxModel = BOX_WRX75TC;
+			X32Off = 1;
+			break;
+		}
+		else if ( u32Data == PID_RXMINI )
+		{
+			dfMaxHWVersion = HWV_RXMINI;
+			DFMagicNumber = 0x10;
+			BoxModel = BOX_RXMINI;
 			X32Off = 1;
 			break;
 		}
@@ -988,7 +999,7 @@ __myevic__ void InitDataFlash()
 	{
 		MaxPower = 600;
 	}
-	else if ( ISVTWO || ISEGRIPII || ISCUBOMINI )
+	else if ( ISVTWO || ISEGRIPII || ISCUBOMINI || ISRXMINI )
 	{
 		MaxPower = 800;
 	}
@@ -1128,7 +1139,7 @@ __myevic__ uint16_t GetShuntRezValue()
 {
 	uint16_t rez;
 
-	if ( ISPRESA75W || ISEVICAIO )
+	if ( ISPRESA75W || ISEVICAIO || ISRXMINI )
 	{
 		rez = 100;
 	}

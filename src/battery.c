@@ -33,6 +33,28 @@ const Battery_t BatteryCuboMini =
 	20
 };
 
+// Wismec RX Mini
+const Battery_t BatteryRXMini =
+{
+	String_GEN,
+	{
+		{   0, 310 },
+		{  10, 330 },
+		{  20, 367 },
+		{  30, 370 },
+		{  40, 373 },
+		{  50, 377 },
+		{  60, 382 },
+		{  70, 389 },
+		{  80, 395 },
+		{  90, 402 },
+		{ 100, 410 }
+	},
+	280,
+	25,
+	20
+};
+
 const Battery_t const Batteries[] =
 {
 	// Generic 18650
@@ -265,6 +287,10 @@ __myevic__ void SetBatteryModel()
 			if ( ISCUBOMINI || ISEVICBASIC || ISEGRIPII )
 			{
 				Battery = &BatteryCuboMini;
+			}
+			else if ( ISRXMINI )
+			{
+				Battery = &BatteryRXMini;
 			}
 		}
 	}
