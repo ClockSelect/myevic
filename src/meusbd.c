@@ -905,7 +905,7 @@ __myevic__ uint32_t hidGetProfile( CMD_T *pCmd )
 //-------------------------------------------------------------------------
 __myevic__ uint32_t hidSetProfile( CMD_T *pCmd )
 {
-	myprintf( "Set Profile command - Profile: %d\n", pCmd->u32Arg1, pCmd->u32Arg2 );
+	myprintf( "Set Profile command - Start: %d - Length: %d\n", pCmd->u32Arg1, pCmd->u32Arg2 );
 	hidDataIndex = 0;
 	return 0;
 }
@@ -1227,42 +1227,26 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 					break;
 				}
 
-				if ( u32StartAddr > DATAFLASH_PROFILES_MAX )
+				if ( p->Profile > DATAFLASH_PROFILES_MAX )
 				{
 					myprintf( "Invalid profile #.\n" );
 					break;
 				}
 
-				if ( u32StartAddr == 0 ) // profile #
-				{
-					p->Profile = dfProfile;
-					MemCpy( DataFlash.params, p, DATAFLASH_PARAMS_SIZE );
-
-					DFCheckValuesValidity();
-					UpdateDataFlash();
+				// if profile number different, save old profile
+				if ( p->Profile != dfProfile) {
+					SaveProfile();
 				}
-				else
-				{
-					p->Profile = u32StartAddr - 1;
-					p->PCRC = CalcPageCRC( (uint32_t*)p );
 
-					uint8_t page[FMC_FLASH_PAGE_SIZE] __attribute__((aligned(4)));
+				// save new profile to dataflash (overwrite active profile)
+				myprintf("Overwrite profile # %d\n", p->Profile);
+				MemCpy( DataFlash.params, p, DATAFLASH_PARAMS_SIZE );
 
-					uint32_t offset = p->Profile * DATAFLASH_PARAMS_SIZE;
+				DFCheckValuesValidity();
+				UpdateDataFlash();
 
-					MemCpy( page, (void*)DATAFLASH_PROFILES_BASE, FMC_FLASH_PAGE_SIZE );
-					MemCpy( page + offset, p, DATAFLASH_PARAMS_SIZE );
-
-					SYS_UnlockReg();
-					FMC_ENABLE_ISP();
-					FMC_ENABLE_AP_UPDATE();
-
-					FMCEraseWritePage( DATAFLASH_PROFILES_BASE, (uint32_t*)page );
-
-					FMC_DISABLE_AP_UPDATE();
-					FMC_DISABLE_ISP();
-					SYS_LockReg();
-				}
+				// save dataflash to profiles
+				SaveProfile();
 
 				myprintf( "Set Profile command complete.\n" );
 			}
