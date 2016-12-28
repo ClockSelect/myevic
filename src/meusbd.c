@@ -882,7 +882,7 @@ __myevic__ uint32_t hidGetProfile( CMD_T *pCmd )
 			return 1;
 		}
 
-		p = (dfParams_t*)(DATAFLASH_PROFILES_SPACE+DATAFLASH_PARAMS_SIZE*(u32ProfileNum-1));
+		p = (dfParams_t*)(DATAFLASH_PROFILES_BASE+DATAFLASH_PARAMS_SIZE*(u32ProfileNum-1));
 	}
 
 	MemCpy( &hidData[0], (uint8_t *)p, DATAFLASH_PARAMS_SIZE );
