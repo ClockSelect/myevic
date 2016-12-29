@@ -882,7 +882,7 @@ __myevic__ uint32_t hidGetProfile( CMD_T *pCmd )
 			return 1;
 		}
 
-		p = (dfParams_t*)(DATAFLASH_PROFILES_SPACE+DATAFLASH_PARAMS_SIZE*(u32ProfileNum-1));
+		p = (dfParams_t*)(DATAFLASH_PROFILES_BASE+DATAFLASH_PARAMS_SIZE*(u32ProfileNum-1));
 	}
 
 	MemCpy( &hidData[0], (uint8_t *)p, DATAFLASH_PARAMS_SIZE );
@@ -905,7 +905,7 @@ __myevic__ uint32_t hidGetProfile( CMD_T *pCmd )
 //-------------------------------------------------------------------------
 __myevic__ uint32_t hidSetProfile( CMD_T *pCmd )
 {
-	myprintf( "Set Profile command - Profile: %d\n", pCmd->u32Arg1, pCmd->u32Arg2 );
+	myprintf( "Set Profile command - Profile: %d\n", pCmd->u32Arg1 );
 	hidDataIndex = 0;
 	return 0;
 }
@@ -1235,7 +1235,12 @@ __myevic__ void hidGetOutReport( uint8_t *pu8Buffer, uint32_t u32BufferLen )
 
 				if ( u32StartAddr == 0 ) // profile #
 				{
-					p->Profile = dfProfile;
+					if ( p->Profile != dfProfile )
+					{
+						// Profile selection change
+						SaveProfile();
+					}
+
 					MemCpy( DataFlash.params, p, DATAFLASH_PARAMS_SIZE );
 
 					DFCheckValuesValidity();
