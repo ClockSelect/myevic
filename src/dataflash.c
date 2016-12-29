@@ -55,7 +55,8 @@ const char pid_rx200s	[8]	__PIDATTR__	= { 'W','0','3','3', 1, 0, 0, 0 };
 const char pid_rx23		[8]	__PIDATTR__	= { 'W','0','1','8', 1, 0, 1, 0 };
 const char pid_rxmini	[8]	__PIDATTR__	= { 'W','0','7','3', 1, 0, 0, 0 };
 
-#define MAKEPID(p) (((p)[0])|((p)[1]<<8)|((p)[2]<<16)|((p)[3]<<24))
+#define PID_SCRAMBLE 0x12345678UL
+#define MAKEPID(p) ((((p)[0])|((p)[1]<<8)|((p)[2]<<16)|((p)[3]<<24))^PID_SCRAMBLE)
 #define MAKEHWV(p) (((p)[4])|((p)[5]<<8)|((p)[6]<<16)|((p)[7]<<24))
 
 #define HWV2INT(v) (((v)&0xff)*100+(((v)>>8)&0xff)*10+(((v)>>16)&0xff))
@@ -128,6 +129,7 @@ __myevic__ void SetProductID()
 	for ( offset = 0 ; offset < LDROM_SIZE ; offset += 4 )
 	{
 		u32Data = FMC_Read( LDROM_BASE + offset );
+		u32Data ^= PID_SCRAMBLE;
 
 		if ( u32Data == PID_VTCMINI )
 		{
