@@ -270,7 +270,7 @@ __myevic__ void SetProductID()
 
 	if ( offset < LDROM_SIZE )
 	{
-		dfProductID = u32Data;
+		dfProductID = u32Data ^ PID_SCRAMBLE;
 
 	//	What's the right behavior in case of bad
 	//	hardware version?
