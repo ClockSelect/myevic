@@ -502,6 +502,7 @@ __myevic__ void DrawPower( int pwr )
 		}
 		else
 		{
+		//	DrawValue( 5, 13, pwr / 10, 0, 0x48, 3 );
 			DrawValue( 0, 18, pwr, 1, 0x29, 4 );
 		}
 
