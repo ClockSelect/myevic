@@ -256,7 +256,7 @@ __myevic__ void DrawAPTLine( int line )
 		case 1:	// Puff counter
 		{
 			DrawString( String_PUFF_s, 0, line+2 );
-			DrawValue( 24, line, dfPuffCount, 0, 0x1F, 5 );
+			DrawValueRight( 24+8*5, line, dfPuffCount, 0, 0x1F, 0 );
 			break;
 		}
 
@@ -502,8 +502,8 @@ __myevic__ void DrawPower( int pwr )
 		}
 		else
 		{
-		//	DrawValue( 5, 13, pwr / 10, 0, 0x48, 3 );
-			DrawValue( 0, 18, pwr, 1, 0x29, 4 );
+			DrawValue( 5, 13, pwr / 10, 0, 0x48, 3 );
+		//	DrawValue( 0, 18, pwr, 1, 0x29, 4 );
 		}
 
 		DrawImage( 54, 26, 0x98 );

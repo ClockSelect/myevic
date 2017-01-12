@@ -40,7 +40,7 @@ uint16_t	fmcCntrsIndex;
 	__attribute__((section (".productid")))
 
 const char pid_vtcmini	[8]	__PIDATTR__	= { 'E','0','5','2', 1, 1, 1, 0 };
-const char pid_vtwomini	[8]	__PIDATTR__	= { 'E','1','1','5', 1, 0, 0, 0 };
+const char pid_vtwomini	[8]	__PIDATTR__	= { 'E','1','1','5', 1, 0, 1, 0 };
 const char pid_vtwo		[8]	__PIDATTR__	= { 'E','0','4','3', 1, 0, 1, 0 };
 const char pid_evicaio	[8]	__PIDATTR__	= { 'E','0','9','2', 1, 0, 1, 0 };
 const char pid_egripii	[8]	__PIDATTR__	= { 'E','0','8','3', 1, 0, 0, 0 };
@@ -1149,9 +1149,23 @@ __myevic__ uint16_t GetShuntRezValue()
 	{
 		rez = 92;
 	}
-	else if ( ISVTWOMINI || ISVTWO )
+	else if ( ISVTWO )
 	{
 		rez = 115;
+	}
+	else if ( ISVTWOMINI )
+	{
+		switch ( dfHWVersion )
+		{
+			case 100:
+			default:
+				rez = 115;
+				break;
+
+			case 101:
+				rez = 119;
+				break;
+		}
 	}
 	else if ( ISEGRIPII || ISEVICBASIC )
 	{
