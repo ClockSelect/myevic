@@ -2,21 +2,25 @@
 This is myevic Custom Firmware.
 
 ### Compatible hardwares:
-* eVic VTC Mini
-* eVic VTC Dual
-* eVic VTwo Mini
-* eVic VTwo
-* eVic AIO
-* eVic Basic
-* eGrip II / Light
-* Cuboid
-* Cuboid Mini
-* Wismec Presa TC75W
-* Wismec Presa TC100W
-* Wismec Reuleaux RX75
-* Wismec Reuleaux RX200S
-* Wismec Reuleaux RX2/3
-* Wismec Reuleaux RXmini
+* Joyetech
+  * eVic VTC Mini
+  * eVic VTC Dual
+  * eVic VTwo Mini
+  * eVic VTwo
+  * eVic AIO
+  * eVic Basic
+  * eGrip II / Light
+  * Cuboid
+  * Cuboid Mini
+* Wismec
+  * Presa TC75W
+  * Presa TC100W
+  * Reuleaux RX75
+  * Reuleaux RX200S
+  * Reuleaux RX2/3
+  * Reuleaux RXmini
+* Others
+  * Vaponaute La Petite Box
 
 
 ### Based on:
@@ -513,11 +517,12 @@ If you continue holding Fire and Right (+) buttons after entering menus, after t
         Battery Voltage Offset submenu  
         Corrective offset value of the battery voltage. Depending on your box, the displayed battery voltage may be off by a few tens of millivolts. It's usually not a concern, but it may make the box locking the vape too early (wasting some battery capacity) or too late (box resets due to low voltage when firing).  
         Use an external accurate voltmeter (your battery charger may do the job) to compare the displayed voltages on the box to the actual battery voltages, then adjust the displayed voltages with this item.  
-        Range is -300 to +300 milliVolts by step of 10mV.  
+        Range is -1.00 to +1.00 Volts by step of 10mV.  
         * On a single-cell box, only the first setting (B1) is significant. B2 and B3 are ignored.  
         * On a fixed dual-cells box, the two first settings (B1 & B2) are used, respectively, for the first and the second battery (depending on the box, you'll have to determine wich one wich with your voltmeter). B3 is ignored.  
         * On a mixed single/dual-cells box, B1 is used for the lone battery in single-cell setting, and B2 & B3 for the two cells in a dual-cell setting.  
-        * On a triple-cell box, I let you guess.  
+        * On a triple-cell box, B4 is ignored.  
+        * On a quad-cell box, I let you guess.  
 
 
 

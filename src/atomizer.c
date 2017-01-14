@@ -108,7 +108,7 @@ __myevic__ void SetPWMClock()
 #define MaxBuck  MaxDuty
 #define MinBoost MaxDuty
 
-	if ( ISRX200S || ISRX23 )
+	if ( ISRX200S || ISRX23 || ISRX300 )
 	{
 		MaxDuty = 95 * PWMCycles / 100;
 	}
@@ -141,7 +141,7 @@ __myevic__ void InitPWM()
 	BuckDuty = 0;
 	PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, 0 );
 
-	if ( ISVTCDUAL || ISCUBOID || ISRX200S || ISRX23 )
+	if ( ISVTCDUAL || ISCUBOID || ISRX200S || ISRX23 || ISRX300 )
 	{
 		PWM_ConfigOutputChannel( PWM0, BBC_PWMCH_CHARGER, BBC_PWM_FREQ, 0 );
 		PWM_EnableOutput( PWM0, 1 << BBC_PWMCH_CHARGER );
@@ -150,7 +150,7 @@ __myevic__ void InitPWM()
 		ChargerDuty = 0;
 		PWM_SET_CMR( PWM0, BBC_PWMCH_CHARGER, 0 );
 
-		if ( ISRX200S || ISRX23 )
+		if ( ISRX200S || ISRX23 || ISRX300 )
 		{
 			MaxChargerDuty = 512;
 		}
@@ -306,7 +306,7 @@ __myevic__ void StopFire()
 	{
 		GPIO_SetMode( PD, GPIO_PIN_PIN1_Msk, GPIO_MODE_INPUT );
 	}
-	else if ( !ISCUBOID && !ISRX200S && !ISRX23 )
+	else if ( !ISCUBOID && !ISRX200S && !ISRX23 && !ISRX300 )
 	{
 		GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_INPUT );
 	}
@@ -324,7 +324,7 @@ __myevic__ void StopFire()
 
 	SetADCState( 1, 0 );
 	SetADCState( 2, 0 );
-	if ( ISRX200S || ISRX23 )
+	if ( ISRX200S || ISRX23 || ISRX300 )
 	{
 		SetADCState( 15, 0 );
 	}
@@ -409,7 +409,7 @@ __myevic__ void ReadAtoCurrent()
 
 	if ( gFlags.firing || gFlags.probing_ato )
 	{
-		if ( ISRX200S || ISRX23 )
+		if ( ISRX200S || ISRX23 || ISRX300 )
 		{
 			CLK_SysTickDelay( 10 );
 			adcShunt2 = ADC_Read( 15 );
@@ -426,7 +426,7 @@ __myevic__ void ReadAtoCurrent()
 		CLK_SysTickDelay( 10 );
 		adcAtoVolts = ADC_Read( 1 );
 
-		if ( ISRX200S || ISRX23 )
+		if ( ISRX200S || ISRX23 || ISRX300 )
 		{
 			current1 = ( ( 10 * 2560 * adcShunt2 ) >> 12 ) / AtoShuntRez;
 			if ( gFlags.firing )
@@ -677,7 +677,7 @@ __myevic__ void ReadAtomizer()
 
 		for ( int count = 0 ; count < NumShuntSamples ; ++count )
 		{
-			if ( ISRX200S || ISRX23 )
+			if ( ISRX200S || ISRX23 || ISRX300 )
 			{
 				CLK_SysTickDelay( 10 );
 				ADCShuntSum2 += ADC_Read( 15 );
@@ -829,7 +829,7 @@ __myevic__ void RegulateBuckBoost()
 	AtoVoltsADC = ADC_Read( 1 );
 	AtoVolts = ( 1109 * AtoVoltsADC ) >> 12;
 
-	if ( ISRX200S || ISRX23 )
+	if ( ISRX200S || ISRX23 || ISRX300 )
 	{
 		RegulateDualBuck();
 		return;
@@ -1362,7 +1362,7 @@ __myevic__ void SetAtoLimits()
 __myevic__ void ProbeAtomizer()
 {
 	if (( ISVTCDUAL && ( BatteryStatus == 2 || !PA3 ) )
-	||  ( ( ISCUBOID || ISRX200S || ISRX23 ) && ( BatteryStatus == 2 || !PF0 ) ))
+	||  ( ( ISCUBOID || ISRX200S || ISRX23 || ISRX300 ) && ( BatteryStatus == 2 || !PF0 ) ))
 	{
 		AtoStatus = 0;
 //		myprintf( "Can't Probe: BS=%d PF0=%d\n", BatteryStatus, PF0 );
@@ -1371,7 +1371,7 @@ __myevic__ void ProbeAtomizer()
 	{
 		SetADCState( 1, 1 );
 		SetADCState( 2, 1 );
-		if ( ISRX200S || ISRX23 )
+		if ( ISRX200S || ISRX23 || ISRX300 )
 		{
 			SetADCState( 15, 1 );
 		}
@@ -1413,7 +1413,7 @@ __myevic__ void ProbeAtomizer()
 			if ( !ISVTCDUAL ) PC3 = 0;
 			SetADCState( 1, 0 );
 			SetADCState( 2, 0 );
-			if ( ISRX200S || ISRX23 )
+			if ( ISRX200S || ISRX23 || ISRX300 )
 			{
 				SetADCState( 15, 0 );
 			}
@@ -1578,13 +1578,20 @@ __myevic__ void ReadBoardTemp()
 	int v6;
 	int v7;
 
-	static uint32_t BTempSampleSum;
+	static uint32_t BTempSample;
 	static uint8_t	BTempSampleCnt;
 
 
 	while ( BTempSampleCnt++ < 16 )
 	{
-		BTempSampleSum += ADC_Read( 14 );
+		if ( ISRX300 )
+		{
+			BTempSample += ADC_Read( 17 );
+		}
+		else
+		{
+			BTempSample += ADC_Read( 14 );
+		}
 
 		if ( !gFlags.sample_btemp )
 			return;
@@ -1592,60 +1599,81 @@ __myevic__ void ReadBoardTemp()
 
 	gFlags.sample_btemp = 0;
 
-	sample = BTempSampleSum >> 4;
+	sample = BTempSample >> 4;
 
-	BoardTemp = 0;
-
-	if ( sample != 4095 && sample > 100 )
+	if ( ISRX300 )
 	{
-		if ( NumBatteries == 1 )
-		{
-			uint16_t v;
+		sample = 2560 * 1000 * sample >> 12;
 
-			if ( BatteryVoltage <= 360 )
-			{
-				v = BatteryVoltage - 33;
-			}
-			else
-			{
-				v = 320;
-			}
-			tdr = ( 20000 * sample / ( 16 * v - sample ));
+		if ( sample >= 748000 )
+		{
+			BoardTemp = 0;
 		}
 		else
 		{
-			tdr = ( 20000 * sample / ( 5280 - sample ));
-		}
+			BoardTemp = ( 748000 - sample ) / 1672;
 
-		if ( tdr <= 630 )
-		{
-			BoardTemp = 99;
-		}
-		else if ( tdr < 34800 )
-		{
-			for ( v3 = 1 ; v3 < 20 ; ++v3 )
+			if ( BoardTemp > 10 )
 			{
-				if ( BoardTempTable[v3] <= tdr )
-					break;
+				BoardTemp -= 5;
+			}
+		}
+	}
+	else
+	{
+		BoardTemp = 0;
+
+		if ( sample != 4095 && sample > 100 )
+		{
+			if ( NumBatteries == 1 )
+			{
+				uint16_t v;
+
+				if ( BatteryVoltage <= 360 )
+				{
+					v = BatteryVoltage - 33;
+				}
+				else
+				{
+					v = 320;
+				}
+				tdr = ( 20000 * sample / ( 16 * v - sample ));
+			}
+			else
+			{
+				tdr = ( 20000 * sample / ( 5280 - sample ));
 			}
 
-			v4 = BoardTempTable[v3];
-			v6 = (( 10 * BoardTempTable[v3 - 1] - 10 * v4 ) / 5 );
-			v7 = 0;
-			do
+			if ( tdr <= 630 )
 			{
-				if ( v6 * v7 + 10 * v4 <= 10 * tdr && (v7 + 1) * v6 + 10 * v4 > 10 * tdr )
-					break;
-				++v7;
+				BoardTemp = 99;
 			}
-			while ( v7 < 5 );
+			else if ( tdr < 34800 )
+			{
+				for ( v3 = 1 ; v3 < 20 ; ++v3 )
+				{
+					if ( BoardTempTable[v3] <= tdr )
+						break;
+				}
 
-			BoardTemp = 5 * v3 - v7;
+				v4 = BoardTempTable[v3];
+				v6 = (( 10 * BoardTempTable[v3 - 1] - 10 * v4 ) / 5 );
+				v7 = 0;
+				do
+				{
+					if ( v6 * v7 + 10 * v4 <= 10 * tdr && (v7 + 1) * v6 + 10 * v4 > 10 * tdr )
+						break;
+					++v7;
+				}
+				while ( v7 < 5 );
+
+				BoardTemp = 5 * v3 - v7;
+			}
 		}
 	}
 
 	BTempSampleCnt = 0;
-	BTempSampleSum = 0;
+	BTempSample = 0;
 }
 
 

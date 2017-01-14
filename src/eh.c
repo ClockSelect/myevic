@@ -545,7 +545,7 @@ __myevic__ void EventHandler()
 				GPIO_SetMode( PD, GPIO_PIN_PIN1_Msk, GPIO_MODE_OUTPUT );
 				PD1 = 0;
 			}
-			else if ( !ISCUBOID && !ISRX200S && !ISRX23 )
+			else if ( !ISCUBOID && !ISRX200S && !ISRX23 && !ISRX300 )
 			{
 				GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_OUTPUT );
 				PD7 = 0;
@@ -715,7 +715,7 @@ __myevic__ void EventHandler()
 
 			SetADCState( 1, 1 );
 			SetADCState( 2, 1 );
-			if ( ISRX200S || ISRX23 )
+			if ( ISRX200S || ISRX23 || ISRX300 )
 			{
 				SetADCState( 15, 1 );
 			}
@@ -974,7 +974,14 @@ __myevic__ void EventHandler()
 
 		case 10:	// USB cable attach
 			ChargeStatus = 1;
-			byte_20000055 = 1;
+			if ( NumBatteries > 1 )
+			{
+				USBMaxLoad = 2;
+			}
+			else
+			{
+				USBMaxLoad = 1;
+			}
 			gFlags.low_battery = 0;
 			gFlags.usb_attached = 1;
 			if ( !dfStatus.off )

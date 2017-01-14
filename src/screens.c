@@ -676,11 +676,11 @@ __myevic__ void ShowBattVolts()
 {
 	if ( NumBatteries > 1 )
 	{
-		DrawStringCentered( String_Batteries, 52 );
+		DrawStringCentered( String_Batteries, 32 );
 		for ( int i = 0 ; i < NumBatteries ; ++i )
 		{
-			DrawValue(  6, 64+20*i, BattVolts[i], 2, 0x29, 3 );
-			DrawImage( 46, 64+20*i, 0xB8 );
+			DrawValue(  6, 44+20*i, BattVolts[i], 2, 0x29, 3 );
+			DrawImage( 46, 44+20*i, 0xB8 );
 		}
 	}
 	else

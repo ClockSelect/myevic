@@ -56,6 +56,7 @@ enum
 	BOX_CUBOID,
 	BOX_RX200S,
 	BOX_RX23,
+	BOX_RX300,
 	BOX_RXMINI
 };
 
@@ -73,6 +74,7 @@ enum
 #define ISCUBOID		(BoxModel==BOX_CUBOID)
 #define ISRX200S		(BoxModel==BOX_RX200S)
 #define ISRX23			(BoxModel==BOX_RX23)
+#define ISRX300			(BoxModel==BOX_RX300)
 #define ISRXMINI		(BoxModel==BOX_RXMINI)
 
 

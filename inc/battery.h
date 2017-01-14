@@ -5,8 +5,8 @@
 
 #define BBC_PWMCH_CHARGER	5
 
-#define BVO_MIN -30
-#define BVO_MAX  30
+#define BVO_MIN -100
+#define BVO_MAX  100
 
 #define BATTERY_CUSTOM	255
 
@@ -32,13 +32,13 @@ Battery_t;
 //-------------------------------------------------------------------------
 
 extern uint16_t RTBattVolts;
-extern uint16_t	RTBVolts[3];
+extern uint16_t	RTBVolts[4];
 extern uint16_t	RTBVTotal;
 extern uint16_t LowBatVolts;
 extern uint32_t	PowerScale;
 extern uint16_t	BatteryVoltage;
 extern uint16_t	BattVoltsTotal;
-extern uint16_t	BattVolts[3];
+extern uint16_t	BattVolts[4];
 extern uint16_t	BatteryCutOff;
 extern uint16_t	BatteryIntRez;
 extern uint16_t	BatteryMaxPwr;
@@ -51,12 +51,14 @@ extern uint8_t	NumBatteries;
 extern uint8_t	MaxBatteries;
 extern uint16_t	ChargerDuty;
 extern uint16_t	MaxChargerDuty;
+extern uint16_t	ChBalTimer;
 
 extern uint8_t	BattProbeCount;
 
-extern uint8_t	byte_20000055;
+extern uint8_t	USBMaxLoad;
 extern uint8_t	ChargeStatus;
 extern uint8_t	BatteryStatus;
+extern uint8_t	BBBits;
 
 extern Battery_t CustomBattery;
 

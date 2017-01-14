@@ -53,7 +53,9 @@ const char pid_vtcdual	[8]	__PIDATTR__	= { 'E','0','7','9', 1, 0, 1, 0 };
 const char pid_cuboid	[8]	__PIDATTR__	= { 'E','0','6','0', 1, 0, 2, 0 };
 const char pid_rx200s	[8]	__PIDATTR__	= { 'W','0','3','3', 1, 0, 0, 0 };
 const char pid_rx23		[8]	__PIDATTR__	= { 'W','0','1','8', 1, 0, 2, 0 };
+const char pid_rx300	[8]	__PIDATTR__	= { 'W','0','6','9', 1, 0, 0, 0 };
 const char pid_rxmini	[8]	__PIDATTR__	= { 'W','0','7','3', 1, 0, 0, 0 };
+const char pid_lpb		[8]	__PIDATTR__	= { 'W','0','4','3', 1, 0, 0, 0 };
 
 #define PID_SCRAMBLE 0x12345678UL
 #define MAKEPID(p) ((((p)[0])|((p)[1]<<8)|((p)[2]<<16)|((p)[3]<<24))^PID_SCRAMBLE)
@@ -75,7 +77,9 @@ const char pid_rxmini	[8]	__PIDATTR__	= { 'W','0','7','3', 1, 0, 0, 0 };
 #define PID_CUBOID		MAKEPID(pid_cuboid)
 #define PID_RX200S		MAKEPID(pid_rx200s)
 #define PID_RX23		MAKEPID(pid_rx23)
+#define PID_RX300		MAKEPID(pid_rx300)
 #define PID_RXMINI		MAKEPID(pid_rxmini)
+#define PID_LPB			MAKEPID(pid_lpb)
 
 #define HWV_VTCMINI		MAKEHWV(pid_vtcmini)
 #define HWV_VTWOMINI	MAKEHWV(pid_vtwomini)
@@ -91,7 +95,9 @@ const char pid_rxmini	[8]	__PIDATTR__	= { 'W','0','7','3', 1, 0, 0, 0 };
 #define HWV_CUBOID		MAKEHWV(pid_cuboid)
 #define HWV_RX200S		MAKEHWV(pid_rx200s)
 #define HWV_RX23		MAKEHWV(pid_rx23)
+#define HWV_RX300		MAKEHWV(pid_rx300)
 #define HWV_RXMINI		MAKEHWV(pid_rxmini)
+#define HWV_LPB			MAKEHWV(pid_lpb)
 
 
 //=========================================================================
@@ -236,6 +242,14 @@ __myevic__ void SetProductID()
 			dfMaxHWVersion = HWV_RXMINI;
 			DFMagicNumber = 0x10;
 			BoxModel = BOX_RXMINI;
+			X32Off = 1;
+			break;
+		}
+		else if ( u32Data == PID_LPB )
+		{
+			dfMaxHWVersion = HWV_LPB;
+			DFMagicNumber = 0x31;
+			BoxModel = BOX_PRESA75W;	// Act as Presa 75W
 			X32Off = 1;
 			break;
 		}
@@ -641,10 +655,6 @@ __myevic__ void DFCheckValuesValidity()
 	if (( dfBatteryModel >= GetNBatteries() ) && ( dfBatteryModel != BATTERY_CUSTOM ))
 		dfBatteryModel = 0;
 
-	for ( i = 0 ; i < 3 ; ++i )
-		if ( dfBVOffset[i] < BVO_MIN || dfBVOffset[i] > BVO_MAX )
-			dfBVOffset[i] = 0;
-
 	if ( dfStatus.phpct )
 	{
 		if (( dfPreheatPwr < 50 ) || ( dfPreheatPwr > 300 ))
@@ -655,6 +665,8 @@ __myevic__ void DFCheckValuesValidity()
 		if ( dfPreheatPwr > MaxPower )
 			dfPreheatPwr = dfPower;
 	}
+
+	MemSet( DataFlash.p.UnusedCA, 0, sizeof(DataFlash.p.UnusedCA) );
 
 	if ( dfPreheatTime > 200 )
 		dfPreheatTime = 0;
@@ -677,6 +689,11 @@ __myevic__ void DFCheckValuesValidity()
 		dfPID.I = PID_I_DEF;
 		dfPID.D = PID_D_DEF;
 	}
+
+	for ( i = 0 ; i < 4 ; ++i )
+	if ( dfBVOffset[i] < BVO_MIN || dfBVOffset[i] > BVO_MAX )
+		dfBVOffset[i] = 0;
+
 }
 
 
@@ -995,7 +1012,14 @@ __myevic__ void InitDataFlash()
 
 	dfFWVersion	= FWVERSION;
 
-	MaxVolts = 900;
+	if ( ISRX300 )
+	{
+		MaxVolts = 990;
+	}
+	else
+	{
+		MaxVolts = 900;
+	}
 
 	if ( ISEVICBASIC )
 	{
@@ -1021,6 +1045,10 @@ __myevic__ void InitDataFlash()
 	else if ( ISRX200S || ISRX23 )
 	{
 		MaxPower = 2500;
+	}
+	else if ( ISRX300 )
+	{
+		MaxPower = 3000;
 	}
 	else
 	{
@@ -1235,6 +1263,10 @@ __myevic__ uint16_t GetShuntRezValue()
 	else if ( ISRX200S )
 	{
 		rez = 110;
+	}
+	else if ( ISRX300 )
+	{
+		rez = 106;
 	}
 	else
 	{

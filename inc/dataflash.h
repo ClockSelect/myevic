@@ -163,7 +163,7 @@ typedef struct dfParams
 /* 00C5 */	uint8_t		Clicks[3];
 /* 00C8 */	uint8_t		DimTimeout;
 /* 00C9 */	uint8_t		BatteryModel;
-/* 00CA */	int8_t		BVOffset[3];
+/* 00CA */	int8_t		UnusedCA[3];
 /* 00CD */	uint8_t		PreheatTime;
 /* 00CE */	uint16_t	PreheatPwr;
 /* 00D0 */	uint16_t	AtoPreheatPwr;
@@ -173,6 +173,7 @@ typedef struct dfParams
 /* 00DA */	dfPID_t		PID;
 /* 00E0 */	uint16_t	Millis;
 /* 00E2 */	uint8_t		Profile;
+/* 00E3 */	int8_t		BVOffset[4];
 }
 dfParams_t;
 

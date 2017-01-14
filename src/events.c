@@ -166,7 +166,7 @@ __myevic__ void GetUserInput()
 			{
 				UserInputs = 10;
 				BattProbeCount = 0;
-				
+
 				if ( dfStatus.off && FireClickCount == 1 )
 				{
 					FireClickCount = 0;
@@ -202,7 +202,7 @@ __myevic__ void GetUserInput()
 					}
 				}
 			}
-			else if ( !ISCUBOID && !ISRX200S && !ISRX23 )
+			else if ( !ISCUBOID && !ISRX200S && !ISRX23 && !ISRX300 )
 			{
 				if ( !PD7 && !gFlags.battery_charging )
 				{

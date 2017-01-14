@@ -793,8 +793,8 @@ __myevic__ void BVOMenuIDraw( int it, int line, int sel )
 	{
 		for ( int i = 0 ; i < NumBatteries ; ++i )
 		{
-			DrawValue( 19, 80 + i * 12, BattVolts[i], 2, 0x0B, 3 );
-			DrawImage( 40, 80 + i * 12, 0x7D );
+			DrawValue(  2 + 32 * ( i & 1 ), 100 + ( i >> 1 ) * 12, BattVolts[i], 2, 0x0B, 3 );
+			DrawImage( 23 + 32 * ( i & 1 ), 100 + ( i >> 1 ) * 12, 0x7D );
 		}
 		ScreenRefreshTimer = 10;
 	}
@@ -1931,6 +1931,14 @@ const mdata_t BVO3Data =
 	0
 };
 
+const mdata_t BVO4Data =
+{
+	&dfBVOffset[3],
+	&BVODesc,
+	MITYPE_SBYTE,
+	0
+};
+
 const menu_t BVOMenu =
 {
 	String_BVO,
@@ -1940,11 +1948,12 @@ const menu_t BVOMenu =
 	0,
 	0,
 	0,
-	4,
+	5,
 	{
 		{ String_B1, &BVO1Data, 0, MACTION_DATA },
 		{ String_B2, &BVO2Data, 0, MACTION_DATA },
 		{ String_B3, &BVO3Data, 0, MACTION_DATA },
+		{ String_B4, &BVO4Data, 0, MACTION_DATA },
 		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };

@@ -169,7 +169,7 @@ __myevic__ void TimedItems()
 		if ( !PD1 && ( BattProbeCount >= 2 ) && ( BattProbeCount < 50 ) && ( NumBatteries == 1 ) )
 			++BattProbeCount;
 	}
-	else if ( !ISCUBOID && !ISRX200S && !ISRX23 )
+	else if ( !ISCUBOID && !ISRX200S && !ISRX23 && !ISRX300 )
 	{
 		if ( !PD7 && ( BattProbeCount >= 2 ) && ( BattProbeCount < 50 ) )
 			++BattProbeCount;
@@ -272,6 +272,8 @@ __myevic__ void TimedItems()
 			gFlags.refresh_display = 1;
 		}
 	}
+
+	++ChBalTimer;
 }
 
 

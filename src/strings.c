@@ -166,6 +166,7 @@ __string__ String_Isoca		[] = { 0xA4, 0x94, 0x90, 0x84, 0x82, 0 };
 __string__ String_B1		[] = { 0x9D, 0x0C, 0 };
 __string__ String_B2		[] = { 0x9D, 0x0D, 0 };
 __string__ String_B3		[] = { 0x9D, 0x0E, 0 };
+__string__ String_B4		[] = { 0x9D, 0x0F, 0 };
 __string__ String_M1		[] = { 0xA8, 0x0C, 0 };
 __string__ String_M2		[] = { 0xA8, 0x0D, 0 };
 __string__ String_M3		[] = { 0xA8, 0x0E, 0 };
