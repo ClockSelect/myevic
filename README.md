@@ -19,9 +19,11 @@ This is myevic Custom Firmware.
   * Reuleaux RX200S
   * Reuleaux RX2/3
   * Reuleaux RXmini
+  * Reuleaux RX300(*)
 * Others
   * Vaponaute La Petite Box
 
+(\*) *Recharging box via USB is not yet functional on the RX300. External charger required.*
 
 ### Based on:
 *Original VTC Mini 3.03 firmware*

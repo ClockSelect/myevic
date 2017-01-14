@@ -277,6 +277,18 @@ __myevic__ void SetProductID()
 			X32Off = 1;
 			break;
 		}
+		else if ( u32Data == PID_RX300 )
+		{
+			dfMaxHWVersion = HWV_RX300;
+			DFMagicNumber = 0x12;
+			BoxModel = BOX_RX300;
+			NumBatteries = 4;
+			MaxBatteries = 4;
+			MaxCurrent = 50;
+			gFlags.pwm_pll = 1;
+			X32Off = 1;
+			break;
+		}
 	}
 
 	FMC_DISABLE_ISP();
