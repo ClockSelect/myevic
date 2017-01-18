@@ -119,6 +119,7 @@ extern const uint16_t String_Easy[];
 extern const uint16_t String_Normal[];
 extern const uint16_t String_Hard[];
 extern const uint16_t String_Exit[];
+extern const uint16_t String_Back[];
 extern const uint16_t String_NI[];
 extern const uint16_t String_TI[];
 extern const uint16_t String_SS[];

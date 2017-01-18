@@ -49,7 +49,7 @@ __myevic__ void DrawScreen()
 	if ( Screen == 2 && FireDuration && FireDuration != CurrentFD )
 	{
 		CurrentFD = FireDuration;
-		ScreenDuration = ISMODETC(dfMode) ? 1 : 2;
+		ScreenDuration = ISMODETC(dfMode) ? 1 : 3;
 		TenthOfSecs = 0;
 		gFlags.refresh_display = 1;
 	}
@@ -522,6 +522,8 @@ __myevic__ int IsClockOnScreen()
 //----- (000067C8) --------------------------------------------------------
 __myevic__ void ShowBattery()
 {
+	if ( BLINKITEM(5) ) return;
+
 	if ( dfStatus.battpc )
 	{
 		if ( dfStatus.battv )

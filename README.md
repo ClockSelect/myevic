@@ -144,6 +144,11 @@ So as long as you have no warning (a blinking "balance" on the battery icon or a
 
         ![](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/mainscreen2_zpsclbvvdah.png)
 
+* Battery layout:
+
+    In Edit mode (Triple click by default), the battery layout can be chosen between regular battery display, battery percentage, and battery voltage.  
+
+
 ----------
 
 ###Menus:
@@ -394,10 +399,6 @@ If you continue holding Fire and Right (+) buttons after entering menus, after t
 * Interface
 
     ![Interface menu screen](http://i345.photobucket.com/albums/p374/ClockSelect/eVic/interface_zpshqw8kg89.png)
-
-  * BatV% Off / % / V
-
-        Display battery charge percentage or voltage next to the battery picture on main screen.
 
   * 1Watt On/Off
 

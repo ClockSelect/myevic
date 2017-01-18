@@ -1086,7 +1086,14 @@ __myevic__ void EventHandler()
 					{
 						if ( dfMode == 6 )
 						{
-							EditItemIndex = 0;
+							if ( EditItemIndex == 0 )
+							{
+								EditItemIndex = 5;
+							}
+							else
+							{
+								EditItemIndex = 0;
+							}
 						}
 						else
 						{
@@ -1096,13 +1103,14 @@ __myevic__ void EventHandler()
 							}
 							else
 							{
-								EditItemIndex = 0;
+								if ( ++EditItemIndex > 5 )
+									EditItemIndex = 0;
 							}
 						}
 					}
 					else
 					{
-						if ( ++EditItemIndex > 4 )
+						if ( ++EditItemIndex > 5 )
 							EditItemIndex = 0;
 					}
 				}
@@ -1240,6 +1248,23 @@ __myevic__ void EventHandler()
 
 						case 4:
 							if ( ++dfAPT > 8 ) dfAPT = 0;
+							break;
+
+						case 5:
+							if ( !dfStatus.battpc )
+							{
+								dfStatus.battpc = 1;
+								dfStatus.battv = 0;
+							}
+							else if ( !dfStatus.battv )
+							{
+								dfStatus.battv = 1;
+							}
+							else
+							{
+								dfStatus.battv = 0;
+								dfStatus.battpc = 0;
+							}
 							break;
 					}
 

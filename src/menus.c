@@ -449,45 +449,27 @@ __myevic__ void IFMenuIDraw( int it, int line, int sel )
 
 	switch ( it )
 	{
-		case 0:	// Batt%
-			if ( !dfStatus.battpc )
-			{
-				DrawString( String_Off, 44, line+2 );
-			}
-			else
-			{
-				if ( dfStatus.battv )
-				{
-					DrawImage( 44, line+2, 0xB1 );
-				}
-				else
-				{
-					DrawImage( 44, line+2, 0xC2 );
-				}
-			}
-			break;
-
-		case 1:	// 1Watt
+		case 0:	// 1Watt
 			DrawString( dfStatus.onewatt ? String_On : String_Off, 44, line+2 );
 			break;
 
-		case 2:	// 1C5F
+		case 1:	// 1C5F
 			DrawString( dfStatus.onedegree ? String_On : String_Off, 44, line+2 );
 			break;
 
-		case 3:	// Wake -+
+		case 2:	// Wake -+
 			DrawString( dfStatus.wakeonpm ? String_On : String_Off, 44, line+2 );
 			break;
 
-		case 4:	// Font
+		case 3:	// Font
 			DrawImage( 44, line+2, dfStatus.font ? 0x9D : 0x9C );
 			break;
 
-		case 5:	// Temp
+		case 4:	// Temp
 			DrawImage( 44, line+2, dfIsCelsius ? 0xC9 : 0xC8 );
 			break;
 
-		case 6:	// TDom
+		case 5:	// TDom
 			DrawString( dfStatus.priopwr ? String_On : String_Off, 44, line+2 );
 			break;
 
@@ -501,24 +483,7 @@ __myevic__ void IFMenuOnClick()
 {
 	switch ( CurrentMenuItem )
 	{
-		case 0:	// Batt%
-			if ( !dfStatus.battpc )
-			{
-				dfStatus.battpc = 1;
-				dfStatus.battv = 0;
-			}
-			else if ( !dfStatus.battv )
-			{
-				dfStatus.battv = 1;
-			}
-			else
-			{
-				dfStatus.battv = 0;
-				dfStatus.battpc = 0;
-			}
-			break;
-
-		case 1:	// 1Watt
+		case 0:	// 1Watt
 			dfStatus.onewatt ^= 1;
 			if ( dfStatus.onewatt )
 			{
@@ -531,7 +496,7 @@ __myevic__ void IFMenuOnClick()
 			}
 			break;
 
-		case 2:	// 1C5F
+		case 1:	// 1C5F
 			dfStatus.onedegree ^= 1;
 			if ( !dfStatus.onedegree )
 			{
@@ -539,16 +504,16 @@ __myevic__ void IFMenuOnClick()
 			}
 			break;
 
-		case 3:	// Wake -+
+		case 2:	// Wake -+
 			dfStatus.wakeonpm ^= 1;
 			break;
 
-		case 4:	// Font
+		case 3:	// Font
 			dfStatus.font ^= 1;
 			DisplaySetFont();
 			break;
 
-		case 5:	// Temp
+		case 4:	// Temp
 			dfIsCelsius ^= 1;
 			if ( dfIsCelsius )
 			{
@@ -567,7 +532,7 @@ __myevic__ void IFMenuOnClick()
 			}
 			break;
 
-		case 6:	// TDom
+		case 5:	// TDom
 			dfStatus.priopwr ^= 1;
 			break;
 
@@ -940,9 +905,8 @@ __myevic__ void ExpertMenuOnClick()
 		case 8:	// BVO
 			break;
 
-		case 9:	// Exit
+		case 9:	// Back
 			UpdateDataFlash();
-			MainView();
 			break;
 	}
 
@@ -1543,14 +1507,14 @@ const menu_t GameMenu =
 		{ String_Easy, 0, 0, 0 },
 		{ String_Normal, 0, 0, 0 },
 		{ String_Hard, 0, 0, 0 },
-		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };
 
 const menu_t ModesMenu =
 {
 	String_Modes,
-	&MainMenu,
+	&VapingMenu,
 	ModesMEnter+1,
 	ModesIDraw+1,
 	0,
@@ -1565,7 +1529,7 @@ const menu_t ModesMenu =
 		{ String_POWER_s, 0, 0, 0 },
 		{ String_BYPASS_s, 0, 0, 0 },
 		{ String_SMART_s, 0, 0, 0 },
-		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };
 
@@ -1584,7 +1548,7 @@ const menu_t PreheatMenu =
 		{ String_Pwr, 0, 0, 0 },
 		{ String_Time, 0, 0, 0 },
 		{ String_Delay, 0, 0, 0 },
-		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 },
+		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };
 
@@ -1705,7 +1669,7 @@ const menu_t TCRSetMenu =
 		{ String_NI, &TCRNIData, 0, MACTION_DATA },
 		{ String_TI, &TCRTIData, 0, MACTION_DATA },
 		{ String_SS, &TCRSSData, 0, MACTION_DATA },
-		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };
 
@@ -1726,7 +1690,7 @@ const menu_t CoilsMgmtMenu =
 		{ String_TCR, 0, 0, 0 },
 		{ String_Zero_All, 0, 0, 0 },
 		{ String_Check, 0, 0, 0 },
-		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };
 
@@ -1743,7 +1707,7 @@ const menu_t CoilsMenu =
 	{
 		{ String_Manage, &CoilsMgmtMenu, 0, MACTION_SUBMENU },
 		{ String_TCRSet, &TCRSetMenu, 0, MACTION_SUBMENU },
-		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };
 
@@ -1818,7 +1782,7 @@ const menu_t LedMenu =
 		{ String_Red, &LedRedData, 0, MACTION_DATA },
 		{ String_Green, &LedGreenData, 0, MACTION_DATA },
 		{ String_Blue, &LedBlueData, 0, MACTION_DATA },
-		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };
 
@@ -1836,7 +1800,7 @@ const menu_t MiscsMenu =
 		{ String_Game, &GameMenu, 0, MACTION_SUBMENU },
 		{ String_Led, &LedMenu, 0, MACTION_SUBMENU },
 		{ String_3D, &Object3DMenu, 0, MACTION_SUBMENU },
-		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };
 
@@ -1873,7 +1837,7 @@ const menu_t ClockMenu =
 		{ String_Fmt, 0, 0, 0 },
 		{ String_Size, &ClkSizeData, 0, MACTION_DATA },
 		{ String_Dial, 0, 0, 0 },
-		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };
 
@@ -1890,7 +1854,7 @@ const menu_t ScreenProtMenu =
 	{
 		{ String_Saver, 0, 0, 0 },
 		{ String_Main, 0, 0, 0 },
-		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };
 
@@ -1954,7 +1918,7 @@ const menu_t BVOMenu =
 		{ String_B2, &BVO2Data, 0, MACTION_DATA },
 		{ String_B3, &BVO3Data, 0, MACTION_DATA },
 		{ String_B4, &BVO4Data, 0, MACTION_DATA },
-		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };
 
@@ -1978,7 +1942,7 @@ const menu_t ExpertMenu =
 		{ String_UCH, 0, 0, 0 },
 		{ String_BAT, 0, 0, 0 },
 		{ String_BVO, &BVOMenu, 0, MACTION_SUBMENU },
-		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };
 
@@ -2038,7 +2002,7 @@ const menu_t LogoMenu =
 	{
 		{ String_Show, &LogoShowData, 0, MACTION_DATA },
 		{ String_Where, &LogoWhereData, 0, MACTION_DATA },
-		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };
 
@@ -2067,7 +2031,7 @@ const menu_t ScreenMenu =
 		{ String_Logo, &LogoMenu, 0, MACTION_SUBMENU },
 		{ String_Invert, &ScreenInvData, EVENT_INVERT_SCREEN, MACTION_DATA },
 		{ String_Miscs, &MiscsMenu, 0, MACTION_SUBMENU },
-		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };
 
@@ -2085,7 +2049,7 @@ const menu_t ClicksMenu =
 		{ String_2, 0, 0, 0 },
 		{ String_3, 0, 0, 0 },
 		{ String_4, 0, 0, 0 },
-		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 },
+		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };
 
@@ -2098,9 +2062,8 @@ const menu_t IFMenu =
 	0,
 	IFMenuOnClick+1,
 	0,
-	9,
+	8,
 	{
-		{ String_BattPC, 0, 0, 0 },
 		{ String_1Watt, 0, 0, 0 },
 		{ String_1C5F, 0, 0, 0 },
 		{ String_WakeMP, 0, 0, 0 },
@@ -2108,7 +2071,7 @@ const menu_t IFMenu =
 		{ String_Temp, 0, 0, 0 },
 		{ String_PPwr, 0, 0, 0 },
 		{ String_Clicks, &ClicksMenu, 0, MACTION_SUBMENU },
-		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };
 
@@ -2213,7 +2176,7 @@ const menu_t AlgoMenu =
 		{ String_P, &PIDPData, 0, MACTION_DATA },
 		{ String_I, &PIDIData, 0, MACTION_DATA },
 		{ String_D, &PIDDData, 0, MACTION_DATA },
-		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };
 
@@ -2247,7 +2210,7 @@ const menu_t CurveMenu =
 		{ String_Enable, &CurveEnaData, 0, MACTION_DATA },
 		{ String_Reset, 0, EVENT_POWER_CURVE, 0 },
 		{ String_Edit, 0, EVENT_POWER_CURVE, 0 },
-		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };
 
@@ -2270,7 +2233,7 @@ const menu_t VapingMenu =
 		{ String_Prot, 0, 0, 0 },
 		{ String_Vaped, 0, 0, 0 },
 		{ String_mlkJ, 0, 0, 0 },
-		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };
 
