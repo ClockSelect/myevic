@@ -264,6 +264,9 @@ uint8_t		USBMaxLoad;
 uint8_t		ChargeStatus;
 uint8_t		BatteryStatus;
 uint8_t		BBBits;
+uint8_t		ChargeMode;
+uint8_t		ChargeStep;
+
 
 //=========================================================================
 
@@ -318,7 +321,7 @@ __myevic__ void SetBatteryModel()
 }
 
 
-__myevic__ const uint16_t *GetBatteryName()
+__myevic__ const uint8_t *GetBatteryName()
 {
 	return Battery->name;
 }
@@ -1289,6 +1292,7 @@ __myevic__ void BatteryCharge()
 
 	static uint32_t ChargerTarget = 0;
 	static uint32_t ChargerTempo = 0;
+	static uint8_t	EOCTempo = 0;
 
 	if ( ISRX300 )
 	{
@@ -1358,9 +1362,7 @@ __myevic__ void BatteryCharge()
 
 	if ( gFlags.usb_attached )
 	{
-		// TODO : RX300 USB Charging
-		// USB Charging on RX300 is currently disabled
-		if ( dfStatus.usbchgoff || ISRX300 )
+		if ( dfStatus.usbchgoff )
 		{
 			if ( ChargeStatus != 5 && ChargeStatus != 6 )
 			{
@@ -1398,122 +1400,171 @@ __myevic__ void BatteryCharge()
 			}
 			ChargeStatus = 6;
 		}
+		else if ( ChargeMode == 2 && ChargeStatus != 5 )
+		{
+			if ( BBBits )
+			{
+				if ( BattVoltsHighest < 412 || BatteryVoltage <= 300 )
+				{
+					EOCTempo = 0;
+
+					ChargeMode = 1;
+					Event = 12;
+					ChargeStatus = 0;
+				}
+			}
+			else
+			{
+				if ( BattVoltsHighest > 418 )
+				{
+					ChargeMode = 0;
+					Event = 13;
+					ChargeStatus = 5;
+				}
+				else
+				{
+					EOCTempo = 0;
+
+					ChargeMode = 1;
+					Event = 12;
+					ChargeStatus = 0;
+				}
+			}
+		}
 		else if ( !gFlags.battery_charging )
 		{
-			if ( ( BattVoltsHighest < 420 ) && ( ChargeStatus != 5 ) )
-			{
-				Event = 12;
-				ChargeStatus = 0;
-			}
-		}
-		else if ( ( BattVoltsHighest > 422 ) && ( ChargeStatus == 4 ) )
-		{
-			Event = 13;
-			ChargeStatus = 5;
-		}
-		else if ( ChargeStatus != 5 && ChargeStatus != 6 )
-		{
+			EOCTempo = 0;
 
-			if ( BatteryVoltage < 290 )
+			if ( ChargeStatus != 5 )
 			{
-				ChargeStatus = 2;
-				ChargerTarget = 300;
-			}
-			else if ( BattVoltsHighest < 416 )
-			{
-				if ( ChargeStatus != 4 )
+				if ( ( BattVoltsHighest < 420 ) || ( BBBits && BatteryVoltage < 415 ) )
 				{
-					ChargeStatus = 3;
+					Event = 12;
+					ChargeStatus = 0;
+				}
+			}
+		}
+		else
+		{
+			if ( ( ChargeStatus == 4 ) && ( BattVoltsHighest > 422 ) )
+			{
+				if ( EOCTempo < 10 ) ++EOCTempo;
 
-					if ( USBMaxLoad == 2 )
+				if ( EOCTempo >= 10 )
+				{
+					if ( BBBits
+						 && ( BattVoltsHighest > BatteryVoltage + 5 )
+						 && ( ChargeStep < 2 ) )
 					{
-						if ( USBVolts <= 420 )
-						{
-							USBMaxLoad = 1;
-							ChargerTarget = 1000;
-						}
-						else
-						{
-							ChargerTarget = 1500;
-						}
+						++ChargeStep;
+						ChargeMode = 2;
+						ChargeStatus = 1;
 					}
-					else if ( USBMaxLoad )
+					else
 					{
-						if ( USBVolts <= 420 )
-						{
-							USBMaxLoad = 0;
-							ChargerTarget = 500;
-						}
-						else
-						{
-							ChargerTarget = 1000;
-						}
+						ChargeMode = 0;
+						Event = 13;
+						ChargeStatus = 5;
 					}
 				}
 			}
 			else
 			{
-				ChargeStatus = 4;
-				ChargerTarget = 600;
+				EOCTempo = 0;
 			}
+		}
 
-			BBC_Configure( BBC_PWMCH_CHARGER, 1 );
+		if ( gFlags.battery_charging && ChargeStatus != 5 && ChargeStatus != 6 )
+		{
+			EOCTempo = 0;
 
-			if ( ( ChargeCurrent > ChargerTarget + 10 ) || ( USBVolts < 400 ) )
+			if ( ChargeMode != 2 )
 			{
-				if ( ChargerDuty )
+				if ( BatteryVoltage < 290 )
 				{
-					--ChargerDuty;
+					ChargeStatus = 2;
+					ChargerTarget = 300;
 				}
-			}
-			else if ( ChargeCurrent < ChargerTarget )
-			{
-				if (( ++ChargerTempo >  10 && ChargeCurrent <  1300 )
-				||	(	ChargerTempo > 100 && ChargeCurrent >= 1300 ))
+				else if ( BattVoltsHighest < 416 )
 				{
-					ChargerTempo = 0;
+					if ( ChargeStatus != 4 )
+					{
+						ChargeStatus = 3;
 
-					if ( ChargeCurrent < 180 )
-					{
-						if ( ChargerDuty < MaxChargerDuty )
+						if ( USBMaxLoad == 2 )
 						{
-							++ChargerDuty;
-						}
-						else
-						{
-							BatteryStatus = 4;
-							PF0 = 0;
-						}
-					}
-					else
-					{
-						if ( ChargeCurrent < 1507 )
-						{
-							if ( ChargerDuty < MaxChargerDuty )
+							if ( USBVolts <= 420 )
 							{
-								++ChargerDuty;
+								USBMaxLoad = 1;
+								ChargerTarget = 1000;
+							}
+							else
+							{
+								ChargerTarget = 1500;
+							}
+						}
+						else if ( USBMaxLoad )
+						{
+							if ( USBVolts <= 420 )
+							{
+								USBMaxLoad = 0;
+								ChargerTarget = 500;
+							}
+							else
+							{
+								ChargerTarget = 1000;
 							}
 						}
 					}
 				}
+				else
+				{
+					ChargeStatus = 4;
+					ChargerTarget = 600;
+				}
+
+				BBC_Configure( BBC_PWMCH_CHARGER, 1 );
+
+				if ( ( ChargeCurrent > ChargerTarget + 10 ) || ( USBVolts < 400 ) )
+				{
+					if ( ChargerDuty )
+					{
+						--ChargerDuty;
+					}
+				}
+				else if ( ChargeCurrent < ChargerTarget )
+				{
+					if (( ++ChargerTempo >  10 && ChargeCurrent <  1300 )
+					||	(	ChargerTempo > 100 && ChargeCurrent >= 1300 ))
+					{
+						ChargerTempo = 0;
+
+						if ( ChargerDuty >= MaxChargerDuty )
+						{
+							if ( ChargeCurrent < 180 )
+							{
+								BatteryStatus = 4;
+								PF0 = 0;
+							}
+						}
+						else if ( ChargeCurrent < 1507 )
+						{
+							++ChargerDuty;
+						}
+					}
+				}
+
+				PWM_SET_CMR( PWM0, BBC_PWMCH_CHARGER, ChargerDuty );
+
+				return;
 			}
-
-			PWM_SET_CMR( PWM0, BBC_PWMCH_CHARGER, ChargerDuty );
-
-			return;
-
 		}
 	}
 
-	if ( gFlags.battery_charging )
-	{
-		gFlags.battery_charging = 0;
-
-		PD7 = 0;
-		BBC_Configure( BBC_PWMCH_CHARGER, 0 );
-		PD7 = 0;
-		ChargerDuty = 0;
-	}
+	PD7 = 0;
+	BBC_Configure( BBC_PWMCH_CHARGER, 0 );
+	PD7 = 0;
+	ChargerDuty = 0;
 }
 
 

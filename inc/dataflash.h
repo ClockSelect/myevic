@@ -106,6 +106,15 @@ typedef struct
 }
 dfBattery_t;
 
+#define PWR_CURVE_PTS	10
+
+typedef struct
+{
+	uint8_t time;
+	uint8_t power;
+}
+dfPCPoint_t;
+
 typedef struct dfParams
 {
 /* 0000 */	uint32_t	PCRC;
@@ -131,7 +140,7 @@ typedef struct dfParams
 /* 0021 */	uint8_t		StealthOn;
 /* 0022 */	uint16_t	TempCoefsNI;
 /* 0024 */	dfBattery_t	Battery;
-/* 003A */	uint8_t		PwrCurve[20];
+/* 003A */	dfPCPoint_t	PwrCurve[PWR_CURVE_PTS];
 /* 004E */	uint8_t		Unused4E[38];
 /* 0074 */	uint16_t	TempCoefsTI;
 /* 0076 */	uint16_t	LEDColor;		//	former 2-bytes pad

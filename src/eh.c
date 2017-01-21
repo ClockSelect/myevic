@@ -665,7 +665,7 @@ __myevic__ void EventHandler()
 			{
 				if ( dfStatus.pcurve )
 				{
-					pwr = dfPwrCurve[0] * pwr / 100;
+					pwr = dfPwrCurve[0].power * pwr / 100;
 
 					if ( pwr > AtoMaxPower )
 					{
@@ -852,7 +852,8 @@ __myevic__ void EventHandler()
 				if ( ( BatteryVoltage > BatteryCutOff + 20 ) || gFlags.usb_attached )
 				{
 					dfStatus.off = 0;
-					MainView();
+					SetScreen( 108, 3 );
+				//	MainView();
 				}
 			}
 			else
@@ -946,6 +947,8 @@ __myevic__ void EventHandler()
 				PF2 = 0;
 				PA2 = 0;
 			}
+			ChargeMode = 0;
+			ChargeStep = 0;
 			ChargeStatus = 0;
 			if ( BatteryStatus == 3 || BatteryStatus == 4 )
 			{
@@ -973,6 +976,8 @@ __myevic__ void EventHandler()
 			return;
 
 		case 10:	// USB cable attach
+			ChargeMode = 0;
+			ChargeStep = 0;
 			ChargeStatus = 1;
 			if ( NumBatteries > 1 )
 			{
@@ -1214,6 +1219,7 @@ __myevic__ void EventHandler()
 				if ( EditModeTimer )
 				{
 					EditModeTimer = 1000;
+					gFlags.draw_edited_item = 1;
 
 					switch ( EditItemIndex )
 					{

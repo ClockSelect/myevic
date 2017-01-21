@@ -143,9 +143,8 @@ typedef struct
 /* 00040000 */	int rtcinit:1;
 /* 00080000 */	int light_sleep:1;
 /* 00100000 */	int wake_up:1;
-/* 00200000 */	int scr_noinv:1;
-/* 00400000 */	int fading:1;
-/* 00800000 */	int led_on:1;
+/* 00200000 */	int fading:1;
+/* 00400000 */	int led_on:1;
 }
 
 gFlags_t;

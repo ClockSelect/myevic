@@ -20,7 +20,7 @@
 
 #define FIRE_PROTEC_MIN  20
 #define FIRE_PROTEC_DEF 100
-#define FIRE_PROTEC_MAX 150
+#define FIRE_PROTEC_MAX 250
 
 enum
 {

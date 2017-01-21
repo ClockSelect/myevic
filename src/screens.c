@@ -192,6 +192,9 @@ __myevic__ void DrawScreen()
 			case 107:
 				ShowPowerCurve();
 				break;
+			
+			case 108:
+				ShowSplash();
 
 			default:
 				break;
@@ -308,6 +311,7 @@ __myevic__ void DrawScreen()
 		case  56: // Check Battery
 		case  57: // Check USB Adapter
 		case  58: // Charge Error
+		case 108: // Splash Screen
 			MainView();
 			break;
 
@@ -385,7 +389,7 @@ __myevic__ uint16_t GetMainScreenDuration()
 
 //=========================================================================
 
-__myevic__ int convert_string1( uint16_t *strbuf, const char *s )
+__myevic__ int convert_string1( uint8_t *strbuf, const char *s )
 {
 	int i;
 	char c;
@@ -429,7 +433,7 @@ __myevic__ void ChargeView()
 
 __myevic__ void ShowInfos()
 {
-	uint16_t strbuf[20];
+	uint8_t strbuf[20];
 
 	// TODO : infos page
 	convert_string1( strbuf, "Ferox" );
@@ -707,7 +711,7 @@ __myevic__ void ShowBoardTemp()
 //----- (00007684) --------------------------------------------------------
 __myevic__ void ShowVersion()
 {
-	uint16_t buf[12];
+	uint8_t buf[12];
 
 	DrawStringCentered( String_myevic, 32 );
 
@@ -750,7 +754,7 @@ __myevic__ void ShowNewCoil()
 		{
 			rez = dfRezTCR;
 		}
-		DrawValue( 16, 102, rez, 2, 11, 3 );
+		DrawValue( 16, 102, rez, 2, 0x0B, 3 );
 	}
 
 	DrawImage( 40, 102, 0xC0 );
@@ -1025,29 +1029,83 @@ __myevic__ void ShowPowerCurve()
 	DrawVLine( 10,  27, 126, 1 );
 	DrawVLine( 60,  27, 126, 1 );
 
-	for ( int i = 0; i < 20; ++i )
+	int t = EditItemIndex * 5;
+	int j = -1;
+
+	for ( int i = 0; i < PWR_CURVE_PTS; ++i )
 	{
-		if ( i == EditItemIndex )
+		int t1, t2;
+
+		t1 = dfPwrCurve[i].time;
+
+		if ( ( i > 0 ) && ( t1 == 0 ) )
+			break;
+
+		if ( i < PWR_CURVE_PTS - 1 )
 		{
-			DrawFillRect( 10, 27+i*5, 10+dfPwrCurve[i]/4, 31+i*5, 1 );
+			t2 = dfPwrCurve[i+1].time;
+
+			if ( t2 == 0 ) t2 = 250;
 		}
 		else
 		{
-			DrawVLine( 10+dfPwrCurve[i]/4, 27+i*5, 31+i*5, 1 );
+			t2 = 250;
+		}
+
+		DrawVLine(	10 + dfPwrCurve[i].power / 4,
+					27 + 2 * t1 / 5,
+					27 + 2 * t2 / 5,
+					1 );
+
+		if (( t2 > t ) && ( j < 0 ))
+		{
+			j = i;
+
+			if ( t == t1 )
+			{
+				DrawFillRect(	10,
+								27 + 2 * t1 / 5,
+								10 + dfPwrCurve[i].power / 4,
+								28 + 2 * t1 / 5,
+								1 );
+			}
 		}
 	}
 
 	if ( !gFlags.edit_value || gFlags.draw_edited_item )
 	{
-		DrawImage( 6, 25+EditItemIndex*5, 0xD4 );
+		DrawImage( 6, 23 + EditItemIndex * 2 , 0xD4 );
 	}
 
 	DrawImage( 12, 3, 0xAF );
-	DrawValueRight( 40, 3, EditItemIndex*5, 1, 0x0B, 2 );
-	DrawImage( 42, 3, 0x94 );
+	DrawValueRight( 44, 3, t, 1, 0x0B, 0 );
+	DrawImage( 46, 3, 0x94 );
 
 	DrawImage( 12, 13, 0xAB );
-	DrawValueRight( 40, 13, dfPwrCurve[EditItemIndex], 0, 0x0B, 0 );
-	DrawImage( 42, 13, 0xC2 );
+	DrawValueRight( 44, 13, dfPwrCurve[j].power, 0, 0x0B, 0 );
+	DrawImage( 46, 13, 0xC2 );
 }
 
+
+//=========================================================================
+__myevic__ void ShowSplash()
+{
+	int i, h, l;
+	const image_t *img = Images[0xFF-1];
+
+	h = img->height;
+	l = img->width * h / 8;
+
+	for ( i = 0 ; i < l ; ++i )
+		if ( img->bitmap[i] ) break;
+
+	if ( l && i < l )
+	{
+		DrawImage( 0, 0, 0xFF );
+		ScreenDuration = 3;
+	}
+	else
+	{
+		MainView();
+	}
+}

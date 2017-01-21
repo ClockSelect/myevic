@@ -347,8 +347,9 @@ __myevic__ void StopFire()
 		}
 
 		RTCWriteRegister( RTCSPARE_VV_MJOULES, MilliJoules );
-		
-		if ( FireDuration * 10 >= dfPreheatTime )
+
+		if (( FireDuration * 10 >= dfPreheatTime )
+		||  ( dfStatus.pcurve && FireDuration > 10 ))
 		{
 			PreheatDelay = dfPHDelay * 100;
 		}
@@ -1079,10 +1080,12 @@ __myevic__ void TweakTargetVoltsVW()
 
 	if ( dfStatus.pcurve )
 	{
-		int t = FireDuration / 5;
-		if ( t > 19 ) t = 19;
+		int t;
+		for ( t = 0 ; t < PWR_CURVE_PTS-1 ; ++t )
+			if ( dfPwrCurve[t+1].time > FireDuration )
+				break;
 
-		int p = dfPwrCurve[t];
+		int p = dfPwrCurve[t].power;
 		if ( p > 100 && PreheatDelay ) p = 100;
 
 		pwr = p * pwr / 100;

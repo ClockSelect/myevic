@@ -19,11 +19,11 @@ This is myevic Custom Firmware.
   * Reuleaux RX200S
   * Reuleaux RX2/3
   * Reuleaux RXmini
-  * Reuleaux RX300(*)
+  * Reuleaux RX300
 * Others
   * Vaponaute La Petite Box
 
-(\*) *Recharging box via USB is not yet functional on the RX300. External charger required.*
+
 
 ### Based on:
 *Original VTC Mini 3.03 firmware*
@@ -330,7 +330,7 @@ If you continue holding Fire and Right (+) buttons after entering menus, after t
           Enable, Reset and/or Edit the atomizer power curve.  
           When power curve is enabled, it take precedence over preheating; a little "C" next to the power setting on main screen indicates the power curve is enabled.  
           The values of the power curve are percentages (from 0 to 200%) of the main power setting. The whole power curve will thus scale with the main power setting. The default power curve (after reset) is a flat 100% curve, so will have no sensible effect.  
-          The **Delay** setting of the **Preheat** function prevent the power curve to apply a power above 100% during some time after the end of the lest puff. See the **Vaping>Preheat** menu documentation for more informations.  
+          The **Delay** setting prevents the power curve to apply a power above 100% during some time after the end of the last puff. See the **Vaping>Preheat** menu documentation for more informations.  
           You may have one different power curve per configuration profile.  
 
     * Prot.

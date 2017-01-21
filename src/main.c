@@ -806,7 +806,8 @@ __myevic__ void Main()
 	ReadBoardTemp();
 
 	InitDisplay();
-	MainView();
+	SetScreen( 108, 3 );
+//	MainView();
 
 	CustomStartup();
 

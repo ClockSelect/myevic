@@ -21,7 +21,7 @@ BatV2P_t;
 
 typedef struct
 {
-	const uint16_t	*name;
+	const uint8_t	*name;
 	BatV2P_t	V2P[11];
 	uint16_t	cutoff;
 	uint16_t	intrez;
@@ -59,6 +59,8 @@ extern uint8_t	USBMaxLoad;
 extern uint8_t	ChargeStatus;
 extern uint8_t	BatteryStatus;
 extern uint8_t	BBBits;
+extern uint8_t	ChargeMode;
+extern uint8_t	ChargeStep;
 
 extern Battery_t CustomBattery;
 
@@ -70,7 +72,7 @@ extern void NewBatteryVoltage();
 extern int CheckBattery();
 extern int GetNBatteries();
 extern void SetBatteryModel();
-extern const uint16_t *GetBatteryName();
+extern const uint8_t *GetBatteryName();
 extern void ReadInternalResistance();
 extern void SetBatMaxPower();
 extern void BatteryChargeDual();

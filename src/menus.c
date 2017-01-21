@@ -36,8 +36,8 @@ struct mbitdesc_s
 {
 	const uint8_t div;
 	const uint8_t pos;
-	const uint16_t* const on;
-	const uint16_t* const off;
+	const uint8_t* const on;
+	const uint8_t* const off;
 };
 
 struct mvaluedesc_s
@@ -48,9 +48,9 @@ struct mvaluedesc_s
 	const uint8_t dp;
 	const int16_t min;
 	const int16_t max;
-	void (*draw)( int x, int y, int v, uint8_t dp, uint16_t z, uint8_t nd );
-	const uint16_t* const unit_s;
-	const uint16_t unit_c;
+	void (*draw)( int x, int y, int v, uint8_t dp, uint8_t z, uint8_t nd );
+	const uint8_t* const unit_s;
+	const uint8_t unit_c;
 	const uint8_t z;
 	const uint8_t inc;
 	const int16_t def1;
@@ -67,7 +67,7 @@ struct mdata_s
 
 struct mitem_s
 {
-	const uint16_t* const caption;
+	const uint8_t* const caption;
 	const void* const action;
 	const uint8_t event;
 	const uint8_t action_type;
@@ -75,7 +75,7 @@ struct mitem_s
 
 struct menu_s
 {
-	const uint16_t* const caption;
+	const uint8_t* const caption;
 	const struct menu_s const *parent;
 	void (*on_enter)();
 	void (*on_drawitem)( int mi, int y, int sel );
@@ -107,7 +107,7 @@ __myevic__ void ProfileMenuIDraw( int it, int line, int sel )
 	uint8_t mode;
 	uint16_t rez;
 
-	const uint16_t *modes[] =
+	const uint8_t *modes[] =
 		{ String_NI, String_TI, String_SS, String_TC, String_PW, String_BY, String_SM };
 
 	if ( it == dfProfile )
@@ -389,10 +389,10 @@ __myevic__ void ClockMenuIDraw( int it, int line, int sel )
 	{
 		case 4:	// Format
 		{
-			const uint16_t *strings[] =
+			const uint8_t *strings[] =
 				{ String_DMY1, String_MDY, String_DMY2, String_YMD };
 			int f = dfStatus.dfmt1 | ( dfStatus.dfmt2 << 1 );
-			const uint16_t *s = strings[f];
+			const uint8_t *s = strings[f];
 			DrawFillRect( 28, line, 63, line+12, 0 );
 			DrawString( s, 32, line+2 );
 			break;
@@ -600,22 +600,6 @@ __myevic__ void PreheatIDraw( int it, int line, int sel )
 			img = 0x94;
 			break;
 
-		case 3:	// Delay
-			DrawFillRect( 34, line, 63, line+12, 0 );
-			if ( dfPHDelay == 0 )
-			{
-				DrawString( String_Off, 37, line+2 );
-			}
-			else
-			{
-				DrawValue( 38, line+2, dfPHDelay / 60, 0, 0x0B, 1 );
-				DrawImage( 43, line+2, 0x103 );
-				DrawValue( 46, line+2, dfPHDelay % 60, 0, 0x0B, 2 );
-			}
-			if ( sel && gFlags.edit_value )
-				InvertRect( 0, line, 63, line+12 );
-			return;
-
 		default:
 			return;
 	}
@@ -637,10 +621,24 @@ __myevic__ void PreheatIDraw( int it, int line, int sel )
 }
 
 
+__myevic__ void DrawPreheatDelay( int x, int y, int v, uint8_t dp, uint8_t z, uint8_t nd )
+{
+	if ( v == 0 )
+	{
+		DrawString( String_Off, x, y+2 );
+	}
+	else
+	{
+		DrawValue( x+1, y+2, v / 60, 0, 0x0B, 1 );
+		DrawImage( x+6, y+2, 0xD7 );
+		DrawValue( x+9, y+2, v % 60, 0, 0x0B, 2 );
+	}
+}
+
 __myevic__ int PreheatMEvent( int event )
 {
 	int vret = 0;
-	if ( CurrentMenuItem > 3 )
+	if ( CurrentMenuItem > 2 )
 		return vret;
 
 	switch ( event )
@@ -662,10 +660,7 @@ __myevic__ int PreheatMEvent( int event )
 					if ( dfPreheatPwr < 10 ) dfPreheatPwr = 10;
 				}
 			}
-			else
-			{
-				gFlags.edit_value ^= 1;
-			}
+			gFlags.edit_value ^= 1;
 			UpdateDFTimer = 50;
 			gFlags.refresh_display = 1;
 			vret = 1;
@@ -693,11 +688,6 @@ __myevic__ int PreheatMEvent( int event )
 				{
 					if ( dfPreheatTime < 200 ) dfPreheatTime += 10;
 					else if ( KeyTicks < 5 ) dfPreheatTime = 0;
-				}
-				else if ( CurrentMenuItem == 3 )
-				{
-					if ( dfPHDelay < 180 ) ++dfPHDelay;
-					else if ( KeyTicks < 5 ) dfPHDelay = 0;
 				}
 				UpdateDFTimer = 50;
 				gFlags.refresh_display = 1;
@@ -728,21 +718,10 @@ __myevic__ int PreheatMEvent( int event )
 					if ( dfPreheatTime > 0 ) dfPreheatTime -= 10;
 					else if ( KeyTicks < 5 ) dfPreheatTime = 200;
 				}
-				else if ( CurrentMenuItem == 3 )
-				{
-					if ( dfPHDelay > 0 ) --dfPHDelay;
-					else if ( KeyTicks < 5 ) dfPHDelay = 180;
-				}
 				UpdateDFTimer = 50;
 				gFlags.refresh_display = 1;
 				vret = 1;
 			}
-			break;
-
-		case EVENT_LONG_FIRE:
-			UpdateDataFlash();
-			MainView();
-			vret = 1;
 			break;
 
 	}
@@ -1249,7 +1228,7 @@ __myevic__ void CoilsIDraw( int it, int line, int sel )
 
 		case 5:	// Check
 		{
-			const uint16_t *s;
+			const uint8_t *s;
 			DrawFillRect( 36, line, 63, line+12, 0 );
 			s = ( ISMODETC(dfMode) && dfStatus.chkmodeoff ) ?
 				String_No : String_Yes;
@@ -1413,7 +1392,7 @@ __myevic__ int CoilsMEvent( int event )
 
 //-----------------------------------------------------------------------------
 
-__myevic__ void DrawTCRP( int x, int y, int v, uint8_t dp, uint16_t z, uint8_t nd )
+__myevic__ void DrawTCRP( int x, int y, int v, uint8_t dp, uint8_t z, uint8_t nd )
 {
 	if ( v == 0 )
 	{
@@ -1434,7 +1413,7 @@ __myevic__ int TCRSetOnEvent( int event )
 
 //-----------------------------------------------------------------------------
 
-__myevic__ void DrawLedColor( int x, int y, int v, uint8_t dp, uint16_t z, uint8_t nd )
+__myevic__ void DrawLedColor( int x, int y, int v, uint8_t dp, uint8_t z, uint8_t nd )
 {
 	DrawValueRight( x, y + 2, v * 4, dp, z, nd );
 	DrawImage( x + 1, y + 2, 0xC2 );
@@ -1533,6 +1512,27 @@ const menu_t ModesMenu =
 	}
 };
 
+const mvaluedesc_t PreheatDelayDesc =
+{
+	34, 37,
+	3, 2,
+	0, 180,
+	&DrawPreheatDelay+1,
+	0,
+	0,
+	0x0B,
+	1,
+	-1, 0
+};
+
+const mdata_t PreheatDelayData =
+{
+	&dfPHDelay,
+	&PreheatDelayDesc,
+	MITYPE_BYTE,
+	0
+};
+
 const menu_t PreheatMenu =
 {
 	String_Preheat,
@@ -1547,7 +1547,7 @@ const menu_t PreheatMenu =
 		{ String_Unit, 0, 0, 0 },
 		{ String_Pwr, 0, 0, 0 },
 		{ String_Time, 0, 0, 0 },
-		{ String_Delay, 0, 0, 0 },
+		{ String_Delay, &PreheatDelayData, 0, MACTION_DATA },
 		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };
@@ -2196,6 +2196,27 @@ const mdata_t CurveEnaData =
 	28
 };
 
+const mvaluedesc_t CurveDelayDesc =
+{
+	36, 40,
+	3, 2,
+	0, 180,
+	&DrawPreheatDelay+1,
+	0,
+	0,
+	0x0B,
+	1,
+	-1, 0
+};
+
+const mdata_t CurveDelayData =
+{
+	&dfPHDelay,
+	&CurveDelayDesc,
+	MITYPE_BYTE,
+	0
+};
+
 const menu_t CurveMenu =
 {
 	String_Curve,
@@ -2205,11 +2226,12 @@ const menu_t CurveMenu =
 	0,
 	CurveMenuOnClick+1,
 	0,
-	4,
+	5,
 	{
 		{ String_Enable, &CurveEnaData, 0, MACTION_DATA },
 		{ String_Reset, 0, EVENT_POWER_CURVE, 0 },
 		{ String_Edit, 0, EVENT_POWER_CURVE, 0 },
+		{ String_Delay, &CurveDelayData, 0, MACTION_DATA },
 		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };

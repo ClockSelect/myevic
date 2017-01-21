@@ -8,7 +8,6 @@
 
 uint8_t	DisplayModel;
 uint8_t	DisplayCmdByte;
-uint8_t DisplayEorByte;
 
 const image_t **Images;
 
@@ -112,23 +111,15 @@ __myevic__ void DisplaySetContrast( const uint8_t c )
 //=========================================================================
 __myevic__ void DisplaySetInverse( const uint8_t i )
 {
-	if ( gFlags.scr_noinv )
+	switch ( DisplayModel )
 	{
-		DisplayEorByte = i ? 0 : 0xFF;
-		DisplayRefresh();
-	}
-	else
-	{
-		switch ( DisplayModel )
-		{
-			case 0:
-				SSD1306_SetInverse( i );
-				break;
+		case 0:
+			SSD1306_SetInverse( i );
+			break;
 
-			case 1:
-				SSD1327_SetInverse( i );
-				break;
-		}
+		case 1:
+			SSD1327_SetInverse( i );
+			break;
 	}
 }
 
@@ -139,9 +130,9 @@ __myevic__ void DrawTimeSmall( int x, int y, S_RTC_TIME_DATA_T *rtd, int colors 
 	if ( gFlags.draw_edited_item ) colors = 0x1F;
 
 	if (colors&0x10) DrawValue( x   , y, rtd->u32Hour, 0, 0x0B, 2 );
-	if (colors&0x08) DrawImage( x+12, y, 0x103 );
+	if (colors&0x08) DrawImage( x+12, y, 0xD7 );
 	if (colors&0x04) DrawValue( x+14, y, rtd->u32Minute, 0, 0x0B, 2 );
-	if (colors&0x02) DrawImage( x+26, y, 0x103 );
+	if (colors&0x02) DrawImage( x+26, y, 0xD7 );
 	if (colors&0x01) DrawValue( x+28, y, rtd->u32Second, 0, 0x0B, 2 );
 }
 
@@ -158,7 +149,7 @@ __myevic__ void DrawTime( int x, int y, S_RTC_TIME_DATA_T *rtd, int colors )
 
 typedef struct
 {
-	uint16_t separator;
+	uint8_t separator;
 	uint8_t	dayoffset;
 	uint8_t	monthoffset;
 	uint8_t	yearoffset;
@@ -171,10 +162,10 @@ __myevic__ void DrawDate( int x, int y, S_RTC_TIME_DATA_T *rtd, int colors )
 {
 	const datefmt_t format[] =
 	{
-		{  0xC1,  0, 16, 32, 12, 28 },
-		{ 0x102, 16,  0, 32, 12, 28 },
-		{ 0x102,  0, 16, 32, 12, 28 },
-		{  0xD9, 44, 28,  0, 24, 40 }
+		{ 0xC1,  0, 16, 32, 12, 28 },
+		{ 0xD6, 16,  0, 32, 12, 28 },
+		{ 0xD6,  0, 16, 32, 12, 28 },
+		{ 0xD9, 44, 28,  0, 24, 40 }
 	};
 
 	const datefmt_t *f = &format[ dfStatus.dfmt1 | ( dfStatus.dfmt2 << 1 ) ];
@@ -242,14 +233,14 @@ __myevic__ void DisplayRefresh()
 
 //=========================================================================
 //----- (000051CC) --------------------------------------------------------
-__myevic__ int GetImageWidth( const uint16_t imgnum )
+__myevic__ int GetImageWidth( const uint8_t imgnum )
 {
 	return Images[imgnum - 1]->width;
 }
 
 
 //=========================================================================
-__myevic__ int GetStringWidth( const uint16_t str[] )
+__myevic__ int GetStringWidth( const uint8_t str[] )
 {
 	int width = 0;
 
@@ -264,7 +255,7 @@ __myevic__ int GetStringWidth( const uint16_t str[] )
 
 //=========================================================================
 //----- (000051A8) --------------------------------------------------------
-__myevic__ int GetStrCenteredX( const uint16_t str[] )
+__myevic__ int GetStrCenteredX( const uint8_t str[] )
 {
 	return ( ( 64 - GetStringWidth( str ) ) >> 1 );
 }
@@ -308,7 +299,7 @@ __myevic__ void DrawFillRect( const int x1, const int y1,const  int x2, const in
 
 //=========================================================================
 //----- (0000579C) --------------------------------------------------------
-__myevic__ uint32_t DrawImage( const int x, const int y, const uint16_t img )
+__myevic__ uint32_t DrawImage( const int x, const int y, const uint8_t img )
 {
 	switch ( DisplayModel )
 	{
@@ -325,7 +316,7 @@ __myevic__ uint32_t DrawImage( const int x, const int y, const uint16_t img )
 
 //=========================================================================
 //----- (000057B8) --------------------------------------------------------
-__myevic__ uint32_t DrawImageInv( const int x, const int y, const uint16_t img )
+__myevic__ uint32_t DrawImageInv( const int x, const int y, const uint8_t img )
 {
 	switch ( DisplayModel )
 	{
@@ -391,9 +382,9 @@ __myevic__ void DrawLOGO( const int x, const int y )
 
 //=========================================================================
 //-------------------------------------------------------------------------
-__myevic__ uint16_t* Value2Str( uint16_t *str, int v, int dp, uint16_t z, int nd )
+__myevic__ uint8_t* Value2Str( uint8_t *str, int v, int dp, uint8_t z, int nd )
 {
-	uint16_t dot;
+	uint8_t dot;
 	int i, d;
 
 	if ( !nd )
@@ -460,9 +451,9 @@ __myevic__ uint16_t* Value2Str( uint16_t *str, int v, int dp, uint16_t z, int nd
 
 //=========================================================================
 //----- (000058A4) --------------------------------------------------------
-__myevic__ void DrawValue( int x, int y, int v, uint8_t dp, uint16_t z, uint8_t nd )
+__myevic__ void DrawValue( int x, int y, int v, uint8_t dp, uint8_t z, uint8_t nd )
 {
-	uint16_t str[12];
+	uint8_t str[12];
 
 	Value2Str( str, v, dp, z, nd );
 	DrawString( str, x, y );
@@ -472,9 +463,9 @@ __myevic__ void DrawValue( int x, int y, int v, uint8_t dp, uint16_t z, uint8_t 
 //=========================================================================
 // Draw right-justified numerical value
 //-------------------------------------------------------------------------
-__myevic__ void DrawValueRight( int x, int y, int v, uint8_t dp, uint16_t z, uint8_t nd )
+__myevic__ void DrawValueRight( int x, int y, int v, uint8_t dp, uint8_t z, uint8_t nd )
 {
-	uint16_t str[12];
+	uint8_t str[12];
 
 	Value2Str( str, v, dp, z, nd );
 	DrawString( str, x - GetStringWidth( str ), y );
@@ -483,9 +474,9 @@ __myevic__ void DrawValueRight( int x, int y, int v, uint8_t dp, uint16_t z, uin
 
 //=========================================================================
 //----- (000058A4) --------------------------------------------------------
-__myevic__ void DrawValueInv( int x, int y, int v, uint8_t dp, uint16_t z, uint8_t nd )
+__myevic__ void DrawValueInv( int x, int y, int v, uint8_t dp, uint8_t z, uint8_t nd )
 {
-	uint16_t str[12];
+	uint8_t str[12];
 
 	Value2Str( str, v, dp, z, nd );
 	DrawStringInv( str, x, y );
@@ -494,7 +485,7 @@ __myevic__ void DrawValueInv( int x, int y, int v, uint8_t dp, uint16_t z, uint8
 
 //=========================================================================
 //----- (00005A52) --------------------------------------------------------
-__myevic__ void DrawString( const uint16_t s[], int x, int y )
+__myevic__ void DrawString( const uint8_t s[], int x, int y )
 {
 	while ( *s )
 	{
@@ -505,7 +496,7 @@ __myevic__ void DrawString( const uint16_t s[], int x, int y )
 
 //=========================================================================
 //----- (00005A72) --------------------------------------------------------
-__myevic__ void DrawStringInv( const uint16_t s[], int x, int y )
+__myevic__ void DrawStringInv( const uint8_t s[], int x, int y )
 {
 	while ( *s )
 	{
@@ -516,14 +507,14 @@ __myevic__ void DrawStringInv( const uint16_t s[], int x, int y )
 
 //=========================================================================
 //----- (00005A92) --------------------------------------------------------
-__myevic__ void DrawStringCentered( const uint16_t s[], int y )
+__myevic__ void DrawStringCentered( const uint8_t s[], int y )
 {
 	DrawString( s, GetStrCenteredX( s ), y );
 }
 
 
 //=========================================================================
-__myevic__ void DrawStringRight( const uint16_t s[], int x, int y )
+__myevic__ void DrawStringRight( const uint8_t s[], int x, int y )
 {
 	DrawString( s, x - GetStringWidth( s ), y );
 }

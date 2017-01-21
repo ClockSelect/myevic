@@ -266,9 +266,9 @@ __myevic__ void DrawAPTLine( int line )
 		//	DrawValue( 24, line, dfTimeCount / 10, 0, 0x1F, 5 );
 			DrawString( String_PUFF_s, 0, line+2 );
 			DrawValueRight( 34, line+2, dfTimeCount / 36000, 0, 0x0B, 0 );
-			DrawImage( 34, line+2, 0x103 );
+			DrawImage( 34, line+2, 0xD7 );
 			DrawValue( 37, line+2, dfTimeCount / 600 % 60, 0, 0x0B, 2 );
-			DrawImage( 49, line+2, 0x103 );
+			DrawImage( 49, line+2, 0xD7 );
 			DrawValue( 52, line+2, dfTimeCount / 10 % 60, 0, 0x0B, 2 );
 			break;
 		}
@@ -654,7 +654,7 @@ __myevic__ void ShowMainView()
 			}
 			else
 			{
-				DrawValue( 10, 110, FireDuration, 1, 41, 2 );
+				DrawValue( 10, 110, FireDuration, 1, 0x29, 2 );
 				DrawImage( 40, 110, 0xB7 );
 			}
 		}
@@ -734,7 +734,7 @@ __myevic__ void DrawClock( int line )
 
 	int c = line + 32;
 
-	DrawImage( 0, line, 0x104 );
+	DrawImage( 0, line, 0xFE );
 	DrawCircle( 32, c, 3, 1, 1 );
 
 	int32_t h = ( rtd.u32Hour % 12 ) * 30 + ( rtd.u32Minute >> 1 );

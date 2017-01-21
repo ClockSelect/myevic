@@ -374,7 +374,11 @@ __myevic__ void UpdatePTCounters()
 //=========================================================================
 __myevic__ void ResetPowerCurve()
 {
-	MemSet( dfPwrCurve, 100, sizeof(dfPwrCurve) );
+	for ( int i = 0 ; i < PWR_CURVE_PTS ; ++i )
+	{
+		dfPwrCurve[i].time = 0;
+		dfPwrCurve[i].power = 100;
+	}
 }
 
 
@@ -564,9 +568,11 @@ __myevic__ void DFCheckValuesValidity()
 			ResetCustomBattery();
 		}
 
-		for ( i = 0 ; i < sizeof(dfPwrCurve) ; ++i )
+		for ( i = 0 ; i < PWR_CURVE_PTS ; ++i )
 		{
-			if ( dfPwrCurve[i] > 200 )
+			if (( dfPwrCurve[i].time > 250 || dfPwrCurve[i].power > 200 )
+			||	( i == 0 && dfPwrCurve[i].time != 0 )
+			||	( i != 0 && dfPwrCurve[i].time <= dfPwrCurve[i-1].time ))
 			{
 				ResetPowerCurve();
 				break;
@@ -871,9 +877,6 @@ __myevic__ void UpdateDataFlash()
 	}
 }
 
-//=========================================================================
-
-const uint32_t GCUID[3] = { 0x000F00EF, 0xFF25C498, 0x00002574 };
 
 //=========================================================================
 //----- (00001940) --------------------------------------------------------
@@ -988,13 +991,6 @@ __myevic__ void InitDataFlash()
 				break;
 			default:
 				DisplayModel = 0;
-
-				for ( i = 0 ; i < 3 ; ++i )
-				{
-					if ( dffmcUID[i] != GCUID[i] )
-						break;
-				}
-				if ( i == 3 ) gFlags.scr_noinv=1;
 				break;
 		}
 	}

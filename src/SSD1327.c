@@ -177,7 +177,7 @@ __myevic__ void SSD1327_Plot( int x, int y, int color )
 
 //=========================================================================
 //----- (0000533C) --------------------------------------------------------
-__myevic__ uint32_t SSD1327_Image( int x, int y, uint16_t img, int color )
+__myevic__ uint32_t SSD1327_Image( int x, int y, uint8_t img, int color )
 {
 	if ( img == 0x88 || img == 0x8B || img == 0x91 || img == 0x92 || img == 0x9A )
 	{
@@ -275,8 +275,6 @@ __myevic__ void SSD1327_WriteBytes( const int isData, const uint8_t data[], cons
 
 		if ( is_data )
 		{
-			d ^= DisplayEorByte;
-
 			for ( pairs = 0 ; pairs < 4 ; ++pairs )
 			{
 				mask = ( 1 << ( 7 - 2 * pairs ));

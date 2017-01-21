@@ -27,8 +27,75 @@ uint16_t	KeyPressTime;
 
 //-------------------------------------------------------------------------
 
-
 //=========================================================================
+// Power Curve Editing
+//-------------------------------------------------------------------------
+
+__myevic__ int PCGetPoint()
+{
+	int t = EditItemIndex * 5;
+	int i;
+
+	for ( i = 0 ; i < PWR_CURVE_PTS ; ++i )
+		if ( dfPwrCurve[i].time == t )
+			return i;
+
+	return -1;
+}
+
+__myevic__ void PCRemovePoint( int i )
+{
+	if ( i > 0 )
+	{
+		for ( ; i < PWR_CURVE_PTS ; ++i )
+		{
+			dfPwrCurve[i].time  = dfPwrCurve[i+1].time;
+			dfPwrCurve[i].power = dfPwrCurve[i+1].power;
+		}
+		--i;
+		dfPwrCurve[i].time = 0;
+		dfPwrCurve[i].power = 100;
+	}
+}
+
+__myevic__ int PCAddPoint()
+{
+	int i;
+
+	int t = EditItemIndex * 5;
+
+	if ( t == 0 )
+		return 0;
+
+	for ( i = 1 ; i < PWR_CURVE_PTS ; ++i )
+		if ( ( dfPwrCurve[i].time == 0 ) || ( dfPwrCurve[i].time > t ) )
+			break;
+
+	if ( dfPwrCurve[i-1].time == t )
+		return ( i - 1 );
+
+	if ( dfPwrCurve[PWR_CURVE_PTS - 1].time > 0 )
+		return -1;
+
+	for ( int j = PWR_CURVE_PTS - 1 ; j > i ; --j )
+	{
+		dfPwrCurve[j].time  = dfPwrCurve[j-1].time;
+		dfPwrCurve[j].power = dfPwrCurve[j-1].power;
+	}
+
+	dfPwrCurve[i].time  = t;
+	dfPwrCurve[i].power = dfPwrCurve[i-1].power;
+
+	return i;
+}
+
+__myevic__ void PCCompact()
+{
+	for ( int i = PWR_CURVE_PTS - 1 ; i > 0 ; --i )
+		if ( dfPwrCurve[i].time )
+			if ( dfPwrCurve[i].power == dfPwrCurve[i-1].power )
+				PCRemovePoint( i );
+}
 
 
 //=========================================================================
@@ -524,7 +591,7 @@ __myevic__ int EvtFire()
 		case 101:
 		{
 			UpdateDataFlash();
-			MainView();
+			Event = EVENT_PARENT_MENU;
 			vret = 1;
 		}
 		break;
@@ -563,7 +630,18 @@ __myevic__ int EvtFire()
 		case 107:
 		{
 			EditModeTimer = 3000;
-			gFlags.edit_value ^= 1;
+			if ( gFlags.edit_value )
+			{
+				gFlags.edit_value = 0;
+				PCCompact();
+			}
+			else
+			{
+				if (( PCGetPoint() >= 0 ) || ( PCAddPoint() >= 0 ))
+				{
+					gFlags.edit_value = 1;
+				}
+			}
 			vret = 1;
 		}
 	}
@@ -764,16 +842,18 @@ __myevic__ int EvtPlusButton()
 		{
 			if ( gFlags.edit_value )
 			{
-				if ( ++dfPwrCurve[EditItemIndex] > 200 )
+				int i = PCGetPoint();
+
+				if ( ++dfPwrCurve[i].power > 200 )
 				{
-					if ( KeyTicks < 5 ) dfPwrCurve[EditItemIndex] = 0;
-					else dfPwrCurve[EditItemIndex] = 200;
+					if ( KeyTicks < 5 ) dfPwrCurve[i].power = 0;
+					else dfPwrCurve[i].power = 200;
 				}
 			}
 			else
 			{
 				++EditItemIndex;
-				EditItemIndex %= 20;
+				EditItemIndex %= 50;
 			}
 			EditModeTimer = 3000;
 			gFlags.refresh_display = 1;
@@ -911,15 +991,17 @@ __myevic__ int EvtMinusButton()
 		{
 			if ( gFlags.edit_value )
 			{
-				if ( !dfPwrCurve[EditItemIndex]-- )
+				int i = PCGetPoint();
+
+				if ( !dfPwrCurve[i].power-- )
 				{
-					if ( KeyTicks < 5 ) dfPwrCurve[EditItemIndex] = 200;
-					else dfPwrCurve[EditItemIndex] = 0;
+					if ( KeyTicks < 5 ) dfPwrCurve[i].power = 200;
+					else dfPwrCurve[i].power = 0;
 				}
 			}
 			else
 			{
-				if ( !EditItemIndex-- ) EditItemIndex = 19;
+				if ( !EditItemIndex-- ) EditItemIndex = 49;
 			}
 			EditModeTimer = 3000;
 			gFlags.refresh_display = 1;
@@ -986,6 +1068,16 @@ __myevic__ int EvtLongFire()
 			MainView();
 			vret = 1;
 			break;
+
+		case 107:
+		{
+			int i = PCGetPoint();
+			if ( i > 0 )
+				PCRemovePoint( i );
+			gFlags.edit_value = 0;
+			gFlags.refresh_display = 1;
+			vret = 1;
+		}
 	}
 
 	return vret;
