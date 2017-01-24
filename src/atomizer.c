@@ -108,7 +108,7 @@ __myevic__ void SetPWMClock()
 #define MaxBuck  MaxDuty
 #define MinBoost MaxDuty
 
-	if ( ISRX200S || ISRX23 || ISRX300 )
+	if ( ISCUBO200 || ISRX200S || ISRX23 || ISRX300 )
 	{
 		MaxDuty = 95 * PWMCycles / 100;
 	}
@@ -141,7 +141,7 @@ __myevic__ void InitPWM()
 	BuckDuty = 0;
 	PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, 0 );
 
-	if ( ISVTCDUAL || ISCUBOID || ISRX200S || ISRX23 || ISRX300 )
+	if ( ISVTCDUAL || ISCUBOID || ISCUBO200 || ISRX200S || ISRX23 || ISRX300 )
 	{
 		PWM_ConfigOutputChannel( PWM0, BBC_PWMCH_CHARGER, BBC_PWM_FREQ, 0 );
 		PWM_EnableOutput( PWM0, 1 << BBC_PWMCH_CHARGER );
@@ -150,7 +150,7 @@ __myevic__ void InitPWM()
 		ChargerDuty = 0;
 		PWM_SET_CMR( PWM0, BBC_PWMCH_CHARGER, 0 );
 
-		if ( ISRX200S || ISRX23 || ISRX300 )
+		if ( ISCUBO200 || ISRX200S || ISRX23 || ISRX300 )
 		{
 			MaxChargerDuty = 512;
 		}
@@ -306,7 +306,7 @@ __myevic__ void StopFire()
 	{
 		GPIO_SetMode( PD, GPIO_PIN_PIN1_Msk, GPIO_MODE_INPUT );
 	}
-	else if ( !ISCUBOID && !ISRX200S && !ISRX23 && !ISRX300 )
+	else if ( !ISCUBOID && !ISCUBO200 && !ISRX200S && !ISRX23 && !ISRX300 )
 	{
 		GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_INPUT );
 	}
@@ -324,7 +324,7 @@ __myevic__ void StopFire()
 
 	SetADCState( 1, 0 );
 	SetADCState( 2, 0 );
-	if ( ISRX200S || ISRX23 || ISRX300 )
+	if ( ISCUBO200 || ISRX200S || ISRX23 || ISRX300 )
 	{
 		SetADCState( 15, 0 );
 	}
@@ -410,7 +410,7 @@ __myevic__ void ReadAtoCurrent()
 
 	if ( gFlags.firing || gFlags.probing_ato )
 	{
-		if ( ISRX200S || ISRX23 || ISRX300 )
+		if ( ISCUBO200 || ISRX200S || ISRX23 || ISRX300 )
 		{
 			CLK_SysTickDelay( 10 );
 			adcShunt2 = ADC_Read( 15 );
@@ -427,7 +427,7 @@ __myevic__ void ReadAtoCurrent()
 		CLK_SysTickDelay( 10 );
 		adcAtoVolts = ADC_Read( 1 );
 
-		if ( ISRX200S || ISRX23 || ISRX300 )
+		if ( ISCUBO200 || ISRX200S || ISRX23 || ISRX300 )
 		{
 			current1 = ( ( 10 * 2560 * adcShunt2 ) >> 12 ) / AtoShuntRez;
 			if ( gFlags.firing )
@@ -678,7 +678,7 @@ __myevic__ void ReadAtomizer()
 
 		for ( int count = 0 ; count < NumShuntSamples ; ++count )
 		{
-			if ( ISRX200S || ISRX23 || ISRX300 )
+			if ( ISCUBO200 || ISRX200S || ISRX23 || ISRX300 )
 			{
 				CLK_SysTickDelay( 10 );
 				ADCShuntSum2 += ADC_Read( 15 );
@@ -830,7 +830,7 @@ __myevic__ void RegulateBuckBoost()
 	AtoVoltsADC = ADC_Read( 1 );
 	AtoVolts = ( 1109 * AtoVoltsADC ) >> 12;
 
-	if ( ISRX200S || ISRX23 || ISRX300 )
+	if ( ISCUBO200|| ISRX200S || ISRX23 || ISRX300 )
 	{
 		RegulateDualBuck();
 		return;
@@ -1365,7 +1365,7 @@ __myevic__ void SetAtoLimits()
 __myevic__ void ProbeAtomizer()
 {
 	if (( ISVTCDUAL && ( BatteryStatus == 2 || !PA3 ) )
-	||  ( ( ISCUBOID || ISRX200S || ISRX23 || ISRX300 ) && ( BatteryStatus == 2 || !PF0 ) ))
+	||  ( ( ISCUBOID || ISCUBO200 || ISRX200S || ISRX23 || ISRX300 ) && ( BatteryStatus == 2 || !PF0 ) ))
 	{
 		AtoStatus = 0;
 //		myprintf( "Can't Probe: BS=%d PF0=%d\n", BatteryStatus, PF0 );
@@ -1374,7 +1374,7 @@ __myevic__ void ProbeAtomizer()
 	{
 		SetADCState( 1, 1 );
 		SetADCState( 2, 1 );
-		if ( ISRX200S || ISRX23 || ISRX300 )
+		if ( ISCUBO200 || ISRX200S || ISRX23 || ISRX300 )
 		{
 			SetADCState( 15, 1 );
 		}
@@ -1416,7 +1416,7 @@ __myevic__ void ProbeAtomizer()
 			if ( !ISVTCDUAL ) PC3 = 0;
 			SetADCState( 1, 0 );
 			SetADCState( 2, 0 );
-			if ( ISRX200S || ISRX23 || ISRX300 )
+			if ( ISCUBO200 || ISRX200S || ISRX23 || ISRX300 )
 			{
 				SetADCState( 15, 0 );
 			}

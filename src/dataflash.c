@@ -51,6 +51,7 @@ const char pid_presa100w[8]	__PIDATTR__	= { 'W','0','1','7', 1, 0, 0, 0 };
 const char pid_wrx75tc	[8]	__PIDATTR__	= { 'W','0','2','6', 1, 0, 3, 0 };
 const char pid_vtcdual	[8]	__PIDATTR__	= { 'E','0','7','9', 1, 0, 1, 0 };
 const char pid_cuboid	[8]	__PIDATTR__	= { 'E','0','6','0', 1, 0, 2, 0 };
+const char pid_cubo200	[8]	__PIDATTR__	= { 'E','1','6','6', 1, 0, 0, 0 };
 const char pid_rx200s	[8]	__PIDATTR__	= { 'W','0','3','3', 1, 0, 0, 0 };
 const char pid_rx23		[8]	__PIDATTR__	= { 'W','0','1','8', 1, 0, 2, 0 };
 const char pid_rx300	[8]	__PIDATTR__	= { 'W','0','6','9', 1, 0, 0, 0 };
@@ -75,6 +76,7 @@ const char pid_lpb		[8]	__PIDATTR__	= { 'W','0','4','3', 1, 0, 0, 0 };
 #define PID_WRX75TC		MAKEPID(pid_wrx75tc)
 #define PID_VTCDUAL		MAKEPID(pid_vtcdual)
 #define PID_CUBOID		MAKEPID(pid_cuboid)
+#define PID_CUBO200		MAKEPID(pid_cubo200)
 #define PID_RX200S		MAKEPID(pid_rx200s)
 #define PID_RX23		MAKEPID(pid_rx23)
 #define PID_RX300		MAKEPID(pid_rx300)
@@ -93,6 +95,7 @@ const char pid_lpb		[8]	__PIDATTR__	= { 'W','0','4','3', 1, 0, 0, 0 };
 #define HWV_WRX75TC		MAKEHWV(pid_wrx75tc)
 #define HWV_VTCDUAL		MAKEHWV(pid_vtcdual)
 #define HWV_CUBOID		MAKEHWV(pid_cuboid)
+#define HWV_CUBO200		MAKEHWV(pid_cubo200)
 #define HWV_RX200S		MAKEHWV(pid_rx200s)
 #define HWV_RX23		MAKEHWV(pid_rx23)
 #define HWV_RX300		MAKEHWV(pid_rx300)
@@ -202,6 +205,18 @@ __myevic__ void SetProductID()
 			MaxBatteries = 2;
 			gFlags.pwm_pll = 1;
 			ScrFlip = 1;
+			X32Off = 1;
+			break;
+		}
+		else if ( u32Data == PID_CUBO200 )
+		{
+			dfMaxHWVersion = HWV_CUBO200;
+			DFMagicNumber = 0x10;
+			BoxModel = BOX_CUBO200;
+			NumBatteries = 3;
+			MaxBatteries = 3;
+			MaxCurrent = 50;
+			gFlags.pwm_pll = 1;
 			X32Off = 1;
 			break;
 		}
@@ -1046,7 +1061,7 @@ __myevic__ void InitDataFlash()
 		MaxPower = 1500;
 		gFlags.batt_unk = 1;
 	}
-	else if ( ISCUBOID )
+	else if ( ISCUBOID || ISCUBO200 )
 	{
 		MaxPower = 2000;
 	}
@@ -1185,7 +1200,7 @@ __myevic__ uint16_t GetShuntRezValue()
 	{
 		rez = 92;
 	}
-	else if ( ISVTWO )
+	else if ( ISVTWO || ISCUBO200 )
 	{
 		rez = 115;
 	}

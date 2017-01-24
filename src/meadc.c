@@ -18,7 +18,7 @@ __myevic__ void ADC00_IRQHandler()
 //=============================================================================
 __myevic__ void InitEADC()
 {
-	if ( ISRX200S || ISRX23 || ISRX300 )
+	if ( ISCUBO200 || ISRX200S || ISRX23 || ISRX300 )
 	{
 		// Configure PB.0 - PB.7 analog input pins
 		SYS->GPB_MFPL &= ~(SYS_GPB_MFPL_PB0MFP_Msk | SYS_GPB_MFPL_PB1MFP_Msk |

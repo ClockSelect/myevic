@@ -12,6 +12,7 @@ This is myevic Custom Firmware.
   * eGrip II / Light
   * Cuboid
   * Cuboid Mini
+  * Cuboid 200
 * Wismec
   * Presa TC75W
   * Presa TC100W

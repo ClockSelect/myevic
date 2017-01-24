@@ -54,6 +54,7 @@ enum
 	BOX_EVICBASIC,
 	BOX_VTCDUAL,
 	BOX_CUBOID,
+	BOX_CUBO200,
 	BOX_RX200S,
 	BOX_RX23,
 	BOX_RX300,
@@ -72,6 +73,7 @@ enum
 #define ISEVICBASIC		(BoxModel==BOX_EVICBASIC)
 #define ISVTCDUAL		(BoxModel==BOX_VTCDUAL)
 #define ISCUBOID		(BoxModel==BOX_CUBOID)
+#define ISCUBO200		(BoxModel==BOX_CUBO200)
 #define ISRX200S		(BoxModel==BOX_RX200S)
 #define ISRX23			(BoxModel==BOX_RX23)
 #define ISRX300			(BoxModel==BOX_RX300)

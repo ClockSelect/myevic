@@ -269,7 +269,7 @@ __myevic__ void GetUserInput()
 					}
 				}
 			}
-			else if ( !ISCUBOID && !ISRX200S && !ISRX23 && !ISRX300 )
+			else if ( !ISCUBOID && !ISCUBO200 && !ISRX200S && !ISRX23 && !ISRX300 )
 			{
 				if ( !PD7 && !gFlags.battery_charging )
 				{
@@ -1050,7 +1050,7 @@ __myevic__ int EvtLongFire()
 		case 102:
 			vret = MenuEvent( LastEvent );
 			break;
-		
+
 		case 106:
 		{
 			S_RTC_TIME_DATA_T rtd;
