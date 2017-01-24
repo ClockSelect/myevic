@@ -1955,14 +1955,15 @@ const menu_t ScreenSaveMenu =
 	ScreenSaveOnSelect+1,
 	0,
 	0,
-	6,
+	7,
 	{
 		{ String_None, 0, EVENT_EXIT_MENUS, 0 },
 		{ String_Clock, 0, EVENT_EXIT_MENUS, 0 },
 		{ String_3D, 0, EVENT_EXIT_MENUS, 0 },
 		{ String_Logo, 0, EVENT_EXIT_MENUS, 0 },
 		{ String_Qix, 0, EVENT_EXIT_MENUS, 0 },
-		{ String_Snow, 0, EVENT_EXIT_MENUS, 0 }
+		{ String_Snow, 0, EVENT_EXIT_MENUS, 0 },
+		{ String_Splash, 0, EVENT_EXIT_MENUS, 0 }
 	}
 };
 

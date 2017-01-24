@@ -32,6 +32,7 @@ enum {
 	SSAVER_LOGO,
 	SSAVER_QIX,
 	SSAVER_SNOW,
+	SSAVER_SPLASH,
 	SSAVER_MAX
 };
 
@@ -294,6 +295,7 @@ extern const uint8_t String_ProfPlus[];
 extern const uint8_t String_Curve[];
 extern const uint8_t String_Enable[];
 extern const uint8_t String_Reset[];
+extern const uint8_t String_Splash[];
 
 
 //==============================================================================

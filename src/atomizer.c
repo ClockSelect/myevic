@@ -461,16 +461,17 @@ __myevic__ void ReadAtoCurrent()
 		{
 			s = 2;
 		}
-		else if ( ( current1 >= 255 || current2 >= 255 ) && !ISMODEBY(dfMode) )
-		{
-			// Original comparisons where "> 256".
-			// This case can only occur if shunt resistance value is below 1 mOhm,
-			// due to the resolution of the EADC. On all hardware versions, shunts
-			// are between 1.00 and 1.25 mOhm so we could never get there.
-			// This test seems useless anyway since AtoPowerLimit() is called
-			// systematicaly before each power regulation, but eh.
-			s = 3;
-		}
+	//	Definitely useless.
+	//	else if ( ( current1 >= 255 || current2 >= 255 ) && !ISMODEBY(dfMode) )
+	//	{
+	//		// Original comparisons where "> 256".
+	//		// This case can only occur if shunt resistance value is below 1 mOhm,
+	//		// due to the resolution of the EADC. On all hardware versions, shunts
+	//		// are between 1.00 and 1.25 mOhm so we could never get there.
+	//		// This test seems useless anyway since AtoPowerLimit() is called
+	//		// systematicaly before each power regulation, but eh.
+	//		s = 3;
+	//	}
 		else
 		{
 			return;

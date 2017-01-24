@@ -515,7 +515,7 @@ __myevic__ int IsClockOnScreen()
 {
 	return (  ((( Screen == 1 ) || ( Screen == 2 )) && ( dfAPT == 8 ))
 			|| (( Screen == 1 ) && ( dfStatus.clock ))
-			|| (( Screen == 60 ) && ( dfScreenSaver == 1 ))
+			|| (( Screen == 60 ) && ( dfScreenSaver == SSAVER_CLOCK ))
 			||  ( Screen == 103 )
 			||  ( Screen == 104 )
 			);
@@ -655,7 +655,7 @@ __myevic__ void ShowBatCharging()
 		}
 	}
 
-	if (( dfScreenSaver == 1 ) || ( dfScreenSaver == 3 ))
+	if (( dfScreenSaver == SSAVER_CLOCK ) || ( dfScreenSaver == SSAVER_LOGO ))
 	{
 		DrawValue(  6, 104, BatteryVoltage, 2, 0x0B, 3 );
 		DrawImage( 27, 104, 0x7D );
@@ -915,6 +915,10 @@ __myevic__ void ShowScreenSaver()
 			Snow( 1 );
 			break;
 
+		case SSAVER_SPLASH:
+			DrawImage( 0, 0, 0xFF );
+			break;
+
 		default:
 			break;
 	}
@@ -1088,18 +1092,26 @@ __myevic__ void ShowPowerCurve()
 
 
 //=========================================================================
-__myevic__ void ShowSplash()
+__myevic__ int SplashExists()
 {
 	int i, h, l;
 	const image_t *img = Images[0xFF-1];
 
 	h = img->height;
 	l = img->width * h / 8;
+	
+	if ( img->width != 64 ) return 0;
 
 	for ( i = 0 ; i < l ; ++i )
 		if ( img->bitmap[i] ) break;
 
-	if ( l && i < l )
+	return ( ( l && i < l ) ? 1 : 0 );
+}
+
+
+__myevic__ void ShowSplash()
+{
+	if ( SplashExists() )
 	{
 		DrawImage( 0, 0, 0xFF );
 		ScreenDuration = 3;
