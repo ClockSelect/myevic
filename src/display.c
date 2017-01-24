@@ -91,6 +91,8 @@ __myevic__ void InitDisplay()
 	DisplaySetContrast( dfContrast );
 	DisplaySetInverse( dfStatus.invert );
 	DisplaySetFont();
+
+	gFlags.splash = SplashExists();
 }
 
 //=========================================================================

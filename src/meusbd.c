@@ -585,7 +585,7 @@ typedef struct __attribute__((packed))
 	uint8_t		IsCharging;
 	uint8_t		IsCelsius;
 
-	uint8_t		BatteryVoltage[3]; // Offsetted by 275, 420 - 275 = value
+	uint8_t		BatteryVoltage[4]; // Offsetted by 275, 420 - 275 = value
 
 	uint16_t	PowerSet; // X * 10
 	uint16_t	TemperatureSet;

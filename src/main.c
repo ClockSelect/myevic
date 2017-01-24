@@ -317,7 +317,6 @@ __myevic__ void InitVariables()
 	AtoMaxPower = MaxPower;
 	Object3D = 1;
 	AtoTemp = 70;
-	gFlags.splash = SplashExists();
 }
 
 
