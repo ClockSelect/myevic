@@ -935,10 +935,10 @@ __myevic__ int CheckBattery()
 			}
 			else if ( ISRX300 )
 			{
-				bv4 = 29 * ( ReadBatterySample( 3 ) >> 4 ) >> 6;
-				bv3 = 3 * ( ReadBatterySample( 2 ) >> 4 ) >> 3;
-				bv  = ReadBatterySample( 0 ) >> 7;
-				bv2 = 139 * ( ReadBatterySample( 1 ) >> 4 ) / 624;
+				bv4 = 29 * ReadBatterySample( 3 ) >> 6;
+				bv3 = 3 * ReadBatterySample( 2 ) >> 3;
+				bv  = ReadBatterySample( 0 ) >> 3;
+				bv2 = 139 * ReadBatterySample( 1 ) / 624;
 
 				if ( bv4 < bv3 )
 					bv4 = 0;

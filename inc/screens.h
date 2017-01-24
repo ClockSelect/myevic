@@ -86,6 +86,7 @@ extern void ChargeView();
 extern void AnimateScreenSaver();
 extern int IsClockOnScreen();
 extern int IsMenuScreen();
+extern int SplashExists();
 
 
 //==============================================================================

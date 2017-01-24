@@ -609,8 +609,8 @@ __myevic__ void ShowBatCharging()
 
 	switch ( dfScreenSaver )
 	{
-		case 1:
-		case 3:
+		case SSAVER_CLOCK:
+		case SSAVER_LOGO:
 			ShowScreenSaver();
 			break;
 
@@ -1111,7 +1111,7 @@ __myevic__ int SplashExists()
 
 __myevic__ void ShowSplash()
 {
-	if ( SplashExists() )
+	if ( gFlags.splash )
 	{
 		DrawImage( 0, 0, 0xFF );
 		ScreenDuration = 3;
