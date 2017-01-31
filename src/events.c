@@ -303,6 +303,12 @@ __myevic__ void GetUserInput()
 		LastInputs = UserInputs;
 		KeyPressTime = 0;
 		gFlags.user_idle = 0;
+
+		if ( UserInputs < 10 )
+		{
+			SplashTimer = 0;
+		}
+
 		return;
 	}
 

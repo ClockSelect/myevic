@@ -193,9 +193,6 @@ __myevic__ void DrawScreen()
 				ShowPowerCurve();
 				break;
 			
-			case 108:
-				ShowSplash();
-
 			default:
 				break;
 		}
@@ -311,7 +308,6 @@ __myevic__ void DrawScreen()
 		case  56: // Check Battery
 		case  57: // Check USB Adapter
 		case  58: // Charge Error
-		case 108: // Splash Screen
 			MainView();
 			break;
 

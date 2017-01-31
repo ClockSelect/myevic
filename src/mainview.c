@@ -10,9 +10,10 @@
 
 //=============================================================================
 
-uint16_t	HideLogo = 0;
 uint16_t	BypassVolts;
+uint8_t		HideLogo;
 uint8_t		ShowProfNum;
+uint8_t		SplashTimer;
 
 
 //=============================================================================
@@ -543,6 +544,14 @@ __myevic__ void ShowMainView()
 	unsigned int v26; // r2@168
 	int v27; // r3@169
 
+	if ( !gFlags.firing )
+	{
+		if ( gFlags.splash && SplashTimer )
+		{
+			ShowSplash();
+			return;
+		}
+	}
 
 	DrawMode();
 

@@ -852,8 +852,8 @@ __myevic__ void EventHandler()
 				if ( ( BatteryVoltage > BatteryCutOff + 20 ) || gFlags.usb_attached )
 				{
 					dfStatus.off = 0;
-					SetScreen( 108, 3 );
-				//	MainView();
+					MainView();
+					SplashTimer = 3;
 				}
 			}
 			else

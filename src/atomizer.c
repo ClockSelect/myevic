@@ -997,8 +997,8 @@ __myevic__ void AtoWarmUp()
 	// ProbeDuty > 3124 * PWMCycles / AtoShuntRez / NumBatteries / 250
 	// to read rez > 500000Ω if no atomizer (simplified).
 	ProbeDuty = PWMCycles / NumBatteries / 8;
-	// For real-time atomizer measure accuracy (10 bits).
-	if ( AtoProbeCount >= 12 ) ProbeDuty <<= 1;
+//	// For real-time atomizer measure accuracy (10 bits).
+//	if ( AtoProbeCount >= 12 ) ProbeDuty <<= 1;
 
 	WUC = 0;
 	WarmUpCounter = ( !gFlags.pwm_pll || NumBatteries > 1 ) ? 2000 : 3000;

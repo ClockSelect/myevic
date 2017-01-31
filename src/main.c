@@ -806,7 +806,8 @@ __myevic__ void Main()
 	ReadBoardTemp();
 
 	InitDisplay();
-	SetScreen( 108, 3 );
+	MainView();
+	SplashTimer = 3;
 
 	CustomStartup();
 
@@ -1084,6 +1085,16 @@ __myevic__ void Main()
 		{
 			// 1Hz
 			gFlags.tick_1hz = 0;
+
+			if ( SplashTimer )
+			{
+				--SplashTimer;
+				
+				if ( !SplashTimer )
+				{
+					MainView();
+				}
+			}
 
 			if ( !gFlags.firing && !dfStatus.off && !EditModeTimer )
 			{
