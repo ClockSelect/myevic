@@ -718,7 +718,7 @@ __myevic__ void ReadAtomizer()
 			{
 				myprintf( "RL_LOW %d\n", AtoRezMilli );
 				AtoStatus = 2;
-				if ( gFlags.firing)
+				if ( gFlags.firing )
 				{
 					Event = 27;
 				}
@@ -728,7 +728,7 @@ __myevic__ void ReadAtomizer()
 			{
 				AtoStatus = 0;
 				AtoRezMilli = 0;
-				if ( gFlags.firing)
+				if ( gFlags.firing )
 				{
 					Event = 26;
 				}
@@ -1083,7 +1083,7 @@ __myevic__ void TweakTargetVoltsVW()
 	{
 		int t;
 		for ( t = 0 ; t < PWR_CURVE_PTS-1 ; ++t )
-			if ( dfPwrCurve[t+1].time > FireDuration )
+			if (( dfPwrCurve[t+1].time > FireDuration ) || ( dfPwrCurve[t+1].time == 0 ))
 				break;
 
 		int p = dfPwrCurve[t].power;
