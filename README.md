@@ -194,7 +194,7 @@ If you continue holding Fire and Right (+) buttons after entering menus, after t
 
   * Logo
 
-         The Logo submenu is used to toggle display of the custom logo On of Off, and to choose where to display it. Logo may be displayed on the top of the screen (in place of the power/temp setting zone) or in the middle of the screen in place of the two first information lines.
+         The Logo submenu is used to toggle display of the custom logo On of Off (custom logo must be 64*40 pixel momchrom bitmap), and to choose where to display it. Logo may be displayed on the top of the screen (in place of the power/temp setting zone) or in the middle of the screen in place of the two first information lines.
 
   * Invert  
   
