@@ -586,17 +586,19 @@ __myevic__ void ShowBattery()
 		}
 	}
 
-	if ( gFlags.battery_10pc && !gFlags.battery_charging && NumBatteries == 1 ) // full battery bar
+	if ( gFlags.battery_10pc && !gFlags.battery_charging) // full battery bar
 	{
 		if ( gFlags.draw_battery )
 		{
-			if ( dfStatus.battpc )
-			{
-				DrawImage( 30, 114, 0xE2 );
-			}
-			else
-			{
-				DrawImage( 8, 115, 0xC4 );
+			if ( NumBatteries == 1 || !dfStatus.battv && NumBatteries > 1 ) {
+				if ( dfStatus.battpc )
+				{
+					DrawImage( 30, 114, 0xE2 );
+				}
+				else
+				{
+					DrawImage( 8, 115, 0xC4 );
+				}
 			}
 		}
 	}
