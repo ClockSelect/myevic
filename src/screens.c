@@ -528,9 +528,56 @@ __myevic__ void ShowBattery()
 	{
 		if ( dfStatus.battv )
 		{
-			uint16_t bv = gFlags.firing ? RTBattVolts : BatteryVoltage;
-			DrawValueRight(	20, 118, bv, 2, 0x0B, 0 );
-			DrawImage( 21, 118, 0x7D );
+			switch (NumBatteries) {
+				case 1: {
+					uint16_t bv = gFlags.firing ? RTBattVolts : BatteryVoltage;
+					DrawValueRight(	20, 118, bv, 2, 0x0B, 0 );
+					DrawImage( 21, 118, 0x7D );
+					break;
+				}
+				case 2: {
+					if (!gFlags.battery_charging) {
+						uint16_t bv = gFlags.firing ? RTBVolts[0] : BattVolts[0];
+						DrawValueRight(	23, 111, bv, 2, 0x15, 0 );
+						DrawImage( 24, 117, 0x7D );
+						uint16_t bv2 = gFlags.firing ? RTBVolts[1] : BattVolts[1];
+						DrawValueRight(	58, 111, bv2, 2, 0x15, 0 );
+						DrawImage( 59, 117, 0x7D );
+					}
+					break;
+				}
+				case 3: {
+					if (!gFlags.battery_charging) {
+						uint16_t bv = gFlags.firing ? RTBVolts[0] : BattVolts[0];
+						DrawValueRight(	20, 109, bv, 2, 0x0B, 0 );
+						DrawImage( 21, 109, 0x7D );
+						uint16_t bv2 = gFlags.firing ? RTBVolts[1] : BattVolts[1];
+						DrawValueRight(	57, 109, bv2, 2, 0x0B, 0 );
+						DrawImage( 58, 109, 0x7D );
+						uint16_t bv3 = gFlags.firing ? RTBVolts[2] : BattVolts[2];
+						DrawValueRight(	39, 120, bv3, 2, 0x0B, 0 );
+						DrawImage( 40, 120, 0x7D );
+					}
+					break;
+				}
+				case 4: {
+					if (!gFlags.battery_charging) {
+						uint16_t bv = gFlags.firing ? RTBVolts[0] : BattVolts[0];
+						DrawValueRight(	20, 109, bv, 2, 0x0B, 0 );
+						DrawImage( 21, 109, 0x7D );
+						uint16_t bv2 = gFlags.firing ? RTBVolts[1] : BattVolts[1];
+						DrawValueRight(	57, 109, bv2, 2, 0x0B, 0 );
+						DrawImage( 58, 109, 0x7D );
+						uint16_t bv3 = gFlags.firing ? RTBVolts[2] : BattVolts[2];
+						DrawValueRight(	39, 120, bv3, 2, 0x0B, 0 );
+						DrawImage( 40, 120, 0x7D );
+						uint16_t bv4 = gFlags.firing ? RTBVolts[4] : BattVolts[4];
+						DrawValueRight(	57, 120, bv4, 2, 0x0B, 0 );
+						DrawImage( 58, 120, 0x7D );
+					}
+					break;
+				}
+			}
 		}
 		else
 		{
@@ -539,7 +586,7 @@ __myevic__ void ShowBattery()
 		}
 	}
 
-	if ( gFlags.battery_10pc && !gFlags.battery_charging )
+	if ( gFlags.battery_10pc && !gFlags.battery_charging && NumBatteries == 1 ) // full battery bar
 	{
 		if ( gFlags.draw_battery )
 		{
@@ -557,14 +604,56 @@ __myevic__ void ShowBattery()
 	{
 		if ( dfStatus.battpc )
 		{
-			DrawImage( 30, 114, 0xE3 );
+			if (dfStatus.battv && NumBatteries >= 2) {
+				switch (NumBatteries) {
+					case 2: {
+						uint16_t bv = gFlags.firing ? RTBVolts[0] : BattVolts[0];
+						DrawValueRight(	23, 111, bv, 2, 0x15, 0 );
+						DrawImage( 24, 117, 0x7D );
+						uint16_t bv2 = gFlags.firing ? RTBVolts[1] : BattVolts[1];
+						DrawValueRight(	58, 111, bv2, 2, 0x15, 0 );
+						DrawImage( 59, 117, 0x7D );
+						break;
+					}
+					case 3: {
+						uint16_t bv = gFlags.firing ? RTBVolts[0] : BattVolts[0];
+						DrawValueRight(	20, 109, bv, 2, 0x0B, 0 );
+						DrawImage( 21, 109, 0x7D );
+						uint16_t bv2 = gFlags.firing ? RTBVolts[1] : BattVolts[1];
+						DrawValueRight(	57, 109, bv2, 2, 0x0B, 0 );
+						DrawImage( 58, 109, 0x7D );
+						uint16_t bv3 = gFlags.firing ? RTBVolts[2] : BattVolts[2];
+						DrawValueRight(	39, 120, bv3, 2, 0x0B, 0 );
+						DrawImage( 40, 120, 0x7D );
+						break;
+					}
+					case 4: {
+						uint16_t bv = gFlags.firing ? RTBVolts[0] : BattVolts[0];
+						DrawValueRight(	20, 109, bv, 2, 0x0B, 0 );
+						DrawImage( 21, 109, 0x7D );
+						uint16_t bv2 = gFlags.firing ? RTBVolts[1] : BattVolts[1];
+						DrawValueRight(	57, 109, bv2, 2, 0x0B, 0 );
+						DrawImage( 58, 109, 0x7D );
+						uint16_t bv3 = gFlags.firing ? RTBVolts[2] : BattVolts[2];
+						DrawValueRight(	39, 120, bv3, 2, 0x0B, 0 );
+						DrawImage( 40, 120, 0x7D );
+						uint16_t bv4 = gFlags.firing ? RTBVolts[4] : BattVolts[4];
+						DrawValueRight(	57, 120, bv4, 2, 0x0B, 0 );
+						DrawImage( 58, 120, 0x7D );
+						break;
+					}
+				}
+			}
+			else {
+				DrawImage( 30, 114, 0xE3 );
+			}
 		}
 		else
 		{
 			DrawImage( 8, 115, 0xC5 );
 		}
 	}
-	else
+	else if ( NumBatteries == 1 || !dfStatus.battv && NumBatteries > 1 ) // idle show battery bar
 	{
 		if ( dfStatus.battpc )
 		{

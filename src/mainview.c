@@ -672,7 +672,7 @@ __myevic__ void ShowMainView()
 	if ( dfMode != 6 )
 	{
 		DrawHLine( 0, 43, 63, 1 );
-		DrawHLine( 0, 107, 63, 1 );
+		DrawHLine( 0, 106, 63, 1 );
 
 		ShowBattery();
 
