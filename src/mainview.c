@@ -315,7 +315,15 @@ __myevic__ void DrawAPTLine( int line )
 			break;
 		}
 
-		case 6:	// Board temperature
+		case 6:	// Battery percentage
+		{
+			DrawString( String_BATT_s, 0, line+2 );
+			DrawValue( BatteryPercent>99?30:38, line, BatteryPercent, 0, 0x1F, 0 );
+			DrawImage( 55, line+2, 0xC2 );
+			break;
+		}
+
+		case 7:	// Board temperature
 		{
 			DrawString( String_BOARD_s, 0, line+2 );
 
@@ -326,7 +334,7 @@ __myevic__ void DrawAPTLine( int line )
 			break;
 		}
 
-		case 7:	// Real-time atomizer resistance
+		case 8:	// Real-time atomizer resistance
 		{
 			int rez = AtoError ? 0 : AtoRezMilli;
 			int nd = ( rez < 1000 ) ? 3 : 4;
@@ -338,7 +346,7 @@ __myevic__ void DrawAPTLine( int line )
 			break;
 		}
 
-		case 8:	// Real-time clock
+		case 9:	// Real-time clock
 		{
 			S_RTC_TIME_DATA_T rtd;
 			GetRTC( &rtd );
