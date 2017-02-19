@@ -526,7 +526,12 @@ __myevic__ void ShowBattery()
 
 	if ( dfStatus.battpc )
 	{
-		if ( dfStatus.battv )
+		if ( dfStatus.battv ) {
+			uint16_t bv = gFlags.firing ? RTBattVolts : BatteryVoltage;
+			DrawValueRight(	20, 118, bv, 2, 0x0B, 0 );
+			DrawImage( 21, 118, 0x7D );
+		}
+		else if ( dfStatus.battvs )
 		{
 			switch (NumBatteries) {
 				case 1: {
@@ -590,7 +595,7 @@ __myevic__ void ShowBattery()
 	{
 		if ( gFlags.draw_battery )
 		{
-			if ( NumBatteries == 1 || !dfStatus.battv && NumBatteries > 1 ) {
+			if ( NumBatteries == 1 || !dfStatus.battvs && NumBatteries > 1 ) {
 				if ( dfStatus.battpc )
 				{
 					DrawImage( 30, 114, 0xE2 );
@@ -606,7 +611,7 @@ __myevic__ void ShowBattery()
 	{
 		if ( dfStatus.battpc )
 		{
-			if (dfStatus.battv && NumBatteries >= 2) {
+			if (dfStatus.battvs && NumBatteries >= 2) {
 				switch (NumBatteries) {
 					case 2: {
 						uint16_t bv = gFlags.firing ? RTBVolts[0] : BattVolts[0];
@@ -655,7 +660,7 @@ __myevic__ void ShowBattery()
 			DrawImage( 8, 115, 0xC5 );
 		}
 	}
-	else if ( NumBatteries == 1 || !dfStatus.battv && NumBatteries > 1 ) // idle show battery bar
+	else if ( NumBatteries == 1 || !dfStatus.battvs && NumBatteries > 1 ) // idle show battery bar
 	{
 		if ( dfStatus.battpc )
 		{

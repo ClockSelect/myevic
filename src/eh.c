@@ -1261,13 +1261,20 @@ __myevic__ void EventHandler()
 							{
 								dfStatus.battpc = 1;
 								dfStatus.battv = 0;
+								dfStatus.battvs = 0;
 							}
-							else if ( !dfStatus.battv )
+							else if ( dfStatus.battpc && !dfStatus.battv && !dfStatus.battvs )
 							{
 								dfStatus.battv = 1;
 							}
+							else if ( dfStatus.battpc && dfStatus.battv && !dfStatus.battvs && NumBatteries >= 2 ) 
+							{
+								dfStatus.battv = 0;
+								dfStatus.battvs = 1;
+							}
 							else
 							{
+								dfStatus.battvs = 0;
 								dfStatus.battv = 0;
 								dfStatus.battpc = 0;
 							}
