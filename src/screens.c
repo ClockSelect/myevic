@@ -534,12 +534,6 @@ __myevic__ void ShowBattery()
 		else if ( dfStatus.battvs )
 		{
 			switch (NumBatteries) {
-				case 1: {
-					uint16_t bv = gFlags.firing ? RTBattVolts : BatteryVoltage;
-					DrawValueRight(	20, 118, bv, 2, 0x0B, 0 );
-					DrawImage( 21, 118, 0x7D );
-					break;
-				}
 				case 2: {
 					if (!gFlags.battery_charging) {
 						uint16_t bv = gFlags.firing ? RTBVolts[0] : BattVolts[0];
