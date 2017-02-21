@@ -708,7 +708,9 @@ __myevic__ void ShowMainView()
 			}
 			else
 			{
-				DrawInfoLines();
+				if ( !dfStatus.logomid || dfStatus.logomid && HideLogo ) {
+					DrawInfoLines();
+				}
 			}
 		}
 
@@ -722,7 +724,7 @@ __myevic__ void ShowMainView()
 				{
 					DrawFillRect( 0, 48, 63, h, 0 );
 				}
-				DrawLOGO( 0, dfStatus.logomid ? 46 : 0 );
+				DrawLOGO( 0, dfStatus.logomid ? 50 : 0 );
 			}
 		}
 	}
