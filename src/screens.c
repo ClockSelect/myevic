@@ -568,8 +568,8 @@ __myevic__ void ShowBattery()
 						DrawValueRight(	57, 109, bv2, 2, 0x0B, 0 );
 						DrawImage( 58, 109, 0x7D );
 						uint16_t bv3 = gFlags.firing ? RTBVolts[2] : BattVolts[2];
-						DrawValueRight(	39, 120, bv3, 2, 0x0B, 0 );
-						DrawImage( 40, 120, 0x7D );
+						DrawValueRight(	20, 120, bv3, 2, 0x0B, 0 );
+						DrawImage( 21, 120, 0x7D );
 						uint16_t bv4 = gFlags.firing ? RTBVolts[4] : BattVolts[4];
 						DrawValueRight(	57, 120, bv4, 2, 0x0B, 0 );
 						DrawImage( 58, 120, 0x7D );
