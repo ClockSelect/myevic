@@ -195,6 +195,9 @@ $(TARGET)_dec.bin: $(OBJS_FIXPATH) $(MYEVIC_OBJS)
 	$(LD) --start-group $(LIBS) $(OBJS_FIXPATH) $(MYEVIC_OBJS) --end-group $(LDFLAGS) -o $(OUTDIR)/$(TARGET).elf
 	$(OBJCOPY) -O binary -j .text -j .data $(OUTDIR)/$(TARGET).elf $(OUTDIR)/$(TARGET)_dec.bin
 
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+
 $(TARGET).bin: $(TARGET)_dec.bin
 	evic convert $(OUTDIR)/$(TARGET)_dec.bin -o $(OUTDIR)/$(TARGET).bin
 
