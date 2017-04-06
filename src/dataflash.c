@@ -467,6 +467,7 @@ __myevic__ void ResetDataFlash()
 //	dfFBBest = 0;
 //	dfFBSpeed = 0;
 //	dfBattPC = 0;
+        dfTTBest = 0;
 	dfContrast = 45;
 //	dfModesSel = 0;
 	dfClkRatio = RTC_DEF_CLK_RATIO;

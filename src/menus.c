@@ -6,6 +6,7 @@
 #include "dataflash.h"
 #include "miscs.h"
 #include "flappy.h"
+#include "tetris.h"
 #include "meusbd.h"
 #include "atomizer.h"
 #include "battery.h"
@@ -1133,6 +1134,22 @@ __myevic__ void GameIClick()
 	fbStartGame();
 }
 
+__myevic__ void GameTtMEnter()
+{
+	CurrentMenuItem = dfTTSpeed;
+}
+
+__myevic__ void GameTtISelect()
+{
+	dfTTSpeed = CurrentMenuItem;
+	UpdateDFTimer = 50;
+}
+
+__myevic__ void GameTtIClick()
+{
+	ttStartGame();
+}
+
 //-----------------------------------------------------------------------------
 
 __myevic__ void ModesMEnter()
@@ -1489,7 +1506,23 @@ const menu_t GameMenu =
 		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };
-
+const menu_t GameTtMenu =
+{
+	String_Tetris,
+	&MiscsMenu,
+	GameTtMEnter+1,
+	0,
+	GameTtISelect+1,
+	GameTtIClick+1,
+	0,
+	4,
+	{
+		{ String_Easy, 0, 0, 0 },
+		{ String_Normal, 0, 0, 0 },
+		{ String_Hard, 0, 0, 0 },
+		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
+	}
+};
 const menu_t ModesMenu =
 {
 	String_Modes,
@@ -1795,9 +1828,10 @@ const menu_t MiscsMenu =
 	0,
 	0,
 	0,
-	4,
+	5,
 	{
 		{ String_Game, &GameMenu, 0, MACTION_SUBMENU },
+                { String_Tetris, &GameTtMenu, 0, MACTION_SUBMENU },                        
 		{ String_Led, &LedMenu, 0, MACTION_SUBMENU },
 		{ String_3D, &Object3DMenu, 0, MACTION_SUBMENU },
 		{ String_Back, 0, EVENT_PARENT_MENU, 0 }

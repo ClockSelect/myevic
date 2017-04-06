@@ -658,7 +658,7 @@ __myevic__ void fbStartScreen()
 			fbAnimStep = 1;
 		}
 		fbSetBirdColumn( 100 );
-		fbDrawText( 10, fbBirdLine + 16, "Flappy Bird" );
+		fbDrawText( 10, fbBirdLine + 16, "FLAPPY BIRD" );
 		fbBirdAnim( fbBirdLine + 16 );
 		DisplayRefresh();
 		fbCLSBuf();

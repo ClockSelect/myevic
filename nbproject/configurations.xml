@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="100">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="." name="0">
+      <df name="inc">
+        <in>atomizer.h</in>
+        <in>battery.h</in>
+        <in>dataflash.h</in>
+        <in>display.h</in>
+        <in>dtmacros.h</in>
+        <in>events.h</in>
+        <in>flappy.h</in>
+        <in>meadc.h</in>
+        <in>megpio.h</in>
+        <in>menus.h</in>
+        <in>meusbd.h</in>
+        <in>miscs.h</in>
+        <in>myevic.h</in>
+        <in>myprintf.h</in>
+        <in>myrtc.h</in>
+        <in>screens.h</in>
+        <in>storage.h</in>
+        <in>tetris.h</in>
+        <in>timers.h</in>
+        <in>vcom.h</in>
+      </df>
+      <df name="src">
+        <in>SSD1306.c</in>
+        <in>SSD1327.c</in>
+        <in>atomizer.c</in>
+        <in>battery.c</in>
+        <in>dataflash.c</in>
+        <in>display.c</in>
+        <in>eh.c</in>
+        <in>events.c</in>
+        <in>fbdata.c</in>
+        <in>flappy.c</in>
+        <in>fonts.c</in>
+        <in>main.c</in>
+        <in>mainview.c</in>
+        <in>meadc.c</in>
+        <in>megpio.c</in>
+        <in>menus.c</in>
+        <in>meusbd.c</in>
+        <in>miscs.c</in>
+        <in>myevic.s</in>
+        <in>myprintf.c</in>
+        <in>myrtc.c</in>
+        <in>screens.c</in>
+        <in>storage.c</in>
+        <in>strings.c</in>
+        <in>tetris.c</in>
+        <in>timers.c</in>
+        <in>ttdata.c</in>
+        <in>vcom.c</in>
+      </df>
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+      <itemPath>nbproject/private/launcher.properties</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>false</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <codeAssistance>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>${MAKE} -f Makefile</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath></executablePath>
+          <cTool>
+            <incDir>
+              <pElem>C:/cygwin/home/Admin/evic-sdk/nuvoton-sdk/Library/CMSIS/Include</pElem>
+              <pElem>C:/cygwin/home/Admin/evic-sdk/nuvoton-sdk/Library/Device/Nuvoton/M451Series/Include</pElem>
+              <pElem>C:/cygwin/home/Admin/evic-sdk/nuvoton-sdk/Library/NuEdu/inc</pElem>
+              <pElem>C:/cygwin/home/Admin/evic-sdk/nuvoton-sdk/Library/SmartcardLib/Include</pElem>
+              <pElem>C:/cygwin/home/Admin/evic-sdk/nuvoton-sdk/Library/StdDriver/inc</pElem>
+              <pElem>C:/cygwin/home/Admin/evic-sdk/nuvoton-sdk/Library/UsbHostLib/INCLUDE</pElem>
+              <pElem>C:/cygwin/home/Admin/evic-sdk/nuvoton-sdk/Library/UsbHostLib/INCLUDE/inc_mass</pElem>
+            </incDir>
+          </cTool>
+        </makeTool>
+        <preBuild>
+          <preBuildCommandWorkingDir>.</preBuildCommandWorkingDir>
+          <preBuildCommand></preBuildCommand>
+        </preBuild>
+      </makefileType>
+      <item path="inc/atomizer.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="inc/battery.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="inc/dataflash.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="inc/display.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="inc/dtmacros.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="inc/events.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="inc/flappy.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="inc/meadc.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="inc/megpio.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="inc/menus.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="inc/meusbd.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="inc/miscs.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="inc/myevic.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="inc/myprintf.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="inc/myrtc.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="inc/screens.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="inc/storage.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="inc/tetris.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="inc/timers.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="inc/vcom.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/SSD1306.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/SSD1327.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/atomizer.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/battery.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/dataflash.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/display.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/eh.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/events.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/fbdata.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/flappy.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/fonts.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/main.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/mainview.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/meadc.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/megpio.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/menus.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/meusbd.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/miscs.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/myevic.s" ex="false" tool="4" flavor2="0">
+      </item>
+      <item path="src/myprintf.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/myrtc.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/screens.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/storage.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/strings.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/tetris.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/timers.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/ttdata.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/vcom.c" ex="false" tool="0" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>

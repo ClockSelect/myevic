@@ -12,6 +12,7 @@
 #include "meusbd.h"
 #include "miscs.h"
 #include "flappy.h"
+#include "tetris.h"
 
 
 //=========================================================================
@@ -830,9 +831,32 @@ __myevic__ void Main()
 				gFlags.tick_100hz = 0;
 				ResetWatchDog();
 				TimedItems();
-				SleepIfIdle();
+				//SleepIfIdle();
 				GetUserInput();
-				if ( !PE0 )
+				//if ( !PE0 )
+				//	SleepTimer = 3000;
+			}
+			if ( gFlags.tick_10hz )
+			{
+				// 10Hz
+				gFlags.tick_10hz = 0;
+				DataFlashUpdateTick();
+			}
+		}
+                
+		while ( gFlags.playing_tt )
+		{
+			// Tetris game loop
+			ttCallTimeouts();
+			if ( gFlags.tick_100hz )
+			{
+				// 100Hz
+				gFlags.tick_100hz = 0;
+				ResetWatchDog();
+				TimedItems();
+				//SleepIfIdle();
+				GetUserInput();
+				//if ( !PE0 )
 					SleepTimer = 3000;
 			}
 			if ( gFlags.tick_10hz )
@@ -842,7 +866,7 @@ __myevic__ void Main()
 				DataFlashUpdateTick();
 			}
 		}
-
+                
 		if ( gFlags.firing )
 		{
 			ReadAtoCurrent();

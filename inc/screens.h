@@ -119,6 +119,7 @@ extern const uint8_t String_Right[];
 extern const uint8_t String_Left[];
 extern const uint8_t String_Logo[];
 extern const uint8_t String_Game[];
+extern const uint8_t String_Tetris[];
 extern const uint8_t String_Easy[];
 extern const uint8_t String_Normal[];
 extern const uint8_t String_Hard[];
