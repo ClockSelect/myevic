@@ -300,6 +300,14 @@ extern const uint8_t String_Enable[];
 extern const uint8_t String_Reset[];
 extern const uint8_t String_Splash[];
 
+//from display.c
+extern const uint8_t String_Sunday[];
+extern const uint8_t String_Monday[];
+extern const uint8_t String_Tuesday[];
+extern const uint8_t String_Wednesday[];
+extern const uint8_t String_Thursday[];
+extern const uint8_t String_Friday[];
+extern const uint8_t String_Saturday[];
 
 //==============================================================================
 

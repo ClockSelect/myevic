@@ -690,7 +690,7 @@ __myevic__ void ShowMainView()
 			{
 				if ( dfStatus.digclk )
 				{
-					DrawDigitClock( 63 );
+					DrawDigitClock( 58 );
 				}
 				else
 				{

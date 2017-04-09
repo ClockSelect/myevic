@@ -58,7 +58,7 @@ __myevic__ time_t time_to_epoch ( const struct tm *ltm, int utcdiff )
 
 	tyears = ltm->tm_year - 70 ; // tm->tm_year is from 1900.
 	leaps = (tyears + 2) / 4; // no of next two lines until year 2100.
-	//i = (ltm->tm_year – 100) / 100;
+	//i = (ltm->tm_year ï¿½ 100) / 100;
 	//leaps -= ( (i/4)*3 + i%4 );
 	tdays = 0;
 	for (i=0; i < ltm->tm_mon; i++) tdays += mon_days[i];
@@ -123,7 +123,7 @@ __myevic__ void RTCTimeToEpoch( time_t *t, const S_RTC_TIME_DATA_T *d )
 	s.tm_min   = d->u32Minute;
 	s.tm_sec   = d->u32Second;
 	s.tm_yday  = 0;
-	s.tm_wday  = 0;
+	s.tm_wday  = d->u32DayOfWeek;
 	s.tm_isdst = 0;
 
 	*t = time_to_epoch( &s, 0 );

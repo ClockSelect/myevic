@@ -462,15 +462,15 @@ __myevic__ void IFMenuIDraw( int it, int line, int sel )
 			DrawString( dfStatus.wakeonpm ? String_On : String_Off, 44, line+2 );
 			break;
 
-		case 3:	// Font
-			DrawImage( 44, line+2, dfStatus.font ? 0x9D : 0x9C );
-			break;
+		//case 3:	// Font
+		//	DrawImage( 44, line+2, dfStatus.font ? 0x9D : 0x9C );
+		//	break;
 
-		case 4:	// Temp
+		case 3:	// Temp
 			DrawImage( 44, line+2, dfIsCelsius ? 0xC9 : 0xC8 );
 			break;
 
-		case 5:	// TDom
+		case 4:	// TDom
 			DrawString( dfStatus.priopwr ? String_On : String_Off, 44, line+2 );
 			break;
 
@@ -509,12 +509,12 @@ __myevic__ void IFMenuOnClick()
 			dfStatus.wakeonpm ^= 1;
 			break;
 
-		case 3:	// Font
-			dfStatus.font ^= 1;
-			DisplaySetFont();
-			break;
+		//case 3:	// Font
+		//	dfStatus.font ^= 1;
+		//	DisplaySetFont();
+		//	break;
 
-		case 4:	// Temp
+		case 3:	// Temp
 			dfIsCelsius ^= 1;
 			if ( dfIsCelsius )
 			{
@@ -533,7 +533,7 @@ __myevic__ void IFMenuOnClick()
 			}
 			break;
 
-		case 5:	// TDom
+		case 4:	// TDom
 			dfStatus.priopwr ^= 1;
 			break;
 
@@ -2097,12 +2097,12 @@ const menu_t IFMenu =
 	0,
 	IFMenuOnClick+1,
 	0,
-	8,
+	7,
 	{
 		{ String_1Watt, 0, 0, 0 },
 		{ String_1C5F, 0, 0, 0 },
 		{ String_WakeMP, 0, 0, 0 },
-		{ String_Font, 0, 0, 0 },
+	//	{ String_Font, 0, 0, 0 },
 		{ String_Temp, 0, 0, 0 },
 		{ String_PPwr, 0, 0, 0 },
 		{ String_Clicks, &ClicksMenu, 0, MACTION_SUBMENU },

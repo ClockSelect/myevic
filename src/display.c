@@ -159,9 +159,9 @@ typedef struct
 	uint8_t sep2offset;
 }
 datefmt_t;
-
+  
 __myevic__ void DrawDate( int x, int y, S_RTC_TIME_DATA_T *rtd, int colors )
-{
+{ 
 	const datefmt_t format[] =
 	{
 		{ 0xC1,  0, 16, 32, 12, 28 },
@@ -179,6 +179,32 @@ __myevic__ void DrawDate( int x, int y, S_RTC_TIME_DATA_T *rtd, int colors )
 	if (colors&0x01) DrawValue( x + f->yearoffset,  y, rtd->u32Year,  0, 0x0B, 4 );
 	if (colors&0x08) DrawImage( x + f->sep1offset,  y, f->separator );
 	if (colors&0x02) DrawImage( x + f->sep2offset,  y, f->separator );
+        
+        y += 13;
+            switch ( rtd->u32DayOfWeek )
+	{
+		case 0:
+			DrawStringCentered( String_Sunday, y );
+			break;
+		case 1:
+			DrawStringCentered( String_Monday, y );
+			break;
+                case 2:
+			DrawStringCentered( String_Tuesday, y );
+			break;
+                case 3:
+			DrawStringCentered( String_Wednesday, y );
+			break;
+                case 4:
+			DrawStringCentered( String_Thursday, y );
+			break;
+                case 5:
+			DrawStringCentered( String_Friday, y );
+			break;
+                case 6:
+			DrawStringCentered( String_Saturday, y );
+			break;
+	}       
 }
 
 
@@ -668,13 +694,15 @@ __myevic__ void Screen2Bitmap( uint8_t *pu8Bitmap )
 //-------------------------------------------------------------------------
 __myevic__ void DisplaySetFont()
 {
-	if ( dfStatus.font )
-	{
+	//if ( dfStatus.font )
+	//{
 		Images = font0_1306;
+/*
 	}
 	else
 	{
 		Images = font1_1306;
 	}
+*/
 }
 
