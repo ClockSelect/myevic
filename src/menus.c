@@ -365,6 +365,14 @@ __myevic__ void ClicksMenuIDraw( int it, int line, int sel )
 		case CLICK_ACTION_PROFILE:
 			DrawString( String_ProfPlus, 20, line+2 );
 			break;
+
+		case CLICK_ACTION_GAME:
+			DrawString( String_Game, 20, line+2 );
+			break;
+
+		case CLICK_ACTION_TETRIS:
+			DrawString( String_Tetris, 20, line+2 );
+			break;
 	}
 }
 

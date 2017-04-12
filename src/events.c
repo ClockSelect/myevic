@@ -394,6 +394,14 @@ __myevic__ void GetUserInput()
 						case CLICK_ACTION_PROFILE:
 							FireClicksEvent = EVENT_NEXT_PROFILE;	// Cycle profile
 							break;
+                                                        
+                                                case CLICK_ACTION_TETRIS:
+							FireClicksEvent = EVENT_TETRIS; // tetris
+							break;
+                                                        
+                                                case CLICK_ACTION_GAME:
+							FireClicksEvent = 41;	// Game
+							break;
 					}
 					if ( dfStatus.off )
 					{
@@ -1281,7 +1289,21 @@ __myevic__ int CustomEvents()
 			EditModeTimer = 3000;
 			EditItemIndex = 0;
 			break;
-
+                        
+		case 40:
+			SetScreen( 107, 30 );
+			EditModeTimer = 3000;
+			EditItemIndex = 0;
+			break;
+                        
+                case 41:
+			fbStartGame();
+			break;
+                        
+                case EVENT_TETRIS:
+ 			ttStartGame();
+			break;
+                        
 		default:
 			vret = 0;
 			break;
