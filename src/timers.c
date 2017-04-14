@@ -123,9 +123,9 @@ __myevic__ void TMR2_IRQHandler()
 		}
                 if ( gFlags.playing_tt )
 		{
-			if ( (!(TMR2Counter % 15) && dfTTSpeed == 0)
-			  || (!(TMR2Counter % 10) && dfTTSpeed == 1)
-			  || (!(TMR2Counter % 5) && dfTTSpeed == 2) )
+			if ( (!(TMR2Counter % 20) && dfTTSpeed == 0)
+			  || (!(TMR2Counter % 10) && (dfTTSpeed == 1 || dfTTSpeed == 2)))
+			//  || (!(TMR2Counter % 5) && dfTTSpeed == 2) )  //5 10 15
 			{
 				ttTickTimeouts();
 			}

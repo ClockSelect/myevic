@@ -551,7 +551,9 @@ void CompletedLines() {
             levellineCount = 0;
             //do level up affect
         }
-        if (level > 10) gameOver = 1;
+        if (dfTTSpeed != 2) {
+            if (level > 10) gameOver = 1;
+        }
         setLevel(level, 1);
 
     }
@@ -811,8 +813,7 @@ void ttGame() {
 
     }
 
-    countdown = 5 * (11 - level);
-    //countdown = 50;
+    if (dfTTSpeed != 2) countdown = 5 * (11 - level);
     ttSetTimeoutDelay(countdown);
 
     movePieceDown();
@@ -826,11 +827,12 @@ void ttStartGame() {
         if (dfTTBest < ttScore) {
             dfTTBest = ttScore;
             ttSetTimeoutDelay(4);
-            UpdateDFTimer = 50;
+            UpdateDFTimer = 50; //survive
         }
-        
+
         if (dfTTSpeed == 2) {
-            bto = 8;
+            bto = 5;
+            countdown = 50;
         } else if (dfTTSpeed == 1) {
             bto = 5;
         } else {

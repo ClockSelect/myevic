@@ -668,6 +668,7 @@ __myevic__ int PreheatMEvent( int event )
 					if ( dfPreheatPwr > MaxPower ) dfPreheatPwr = MaxPower;
 					if ( dfPreheatPwr < 10 ) dfPreheatPwr = 10;
 				}
+                                gFlags.edit_value = 1;
 			}
 			gFlags.edit_value ^= 1;
 			UpdateDFTimer = 50;
@@ -1527,7 +1528,7 @@ const menu_t GameTtMenu =
 	{
 		{ String_Easy, 0, 0, 0 },
 		{ String_Normal, 0, 0, 0 },
-		{ String_Hard, 0, 0, 0 },
+		{ String_Survival, 0, 0, 0 },
 		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };

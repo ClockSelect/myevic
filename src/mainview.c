@@ -687,22 +687,22 @@ __myevic__ void ShowMainView()
 				anim3d( 1 );
 			}
 			else if ( dfStatus.clock )
-			{
+			{                                
 				if ( dfStatus.digclk )
 				{
 					DrawDigitClock( 58 );
 				}
 				else
-				{
-					DrawFillRect( 0, 44, 63, 127, 0 );
-					DrawClock( 54 );
+				{	
+                                        DrawFillRect( 0, 44, 63, 127, 0 );
+					DrawClock( 54 );                         
 				}
 			}
 			else
 			{
-				DrawInfoLines();
-			}
-		}
+			if ( !dfStatus.logomid || (dfStatus.logomid && HideLogo) ) DrawInfoLines();	
+                        }
+                }
 
 		if (( Screen == 1 ) && ( !HideLogo ))
 		{
@@ -714,7 +714,7 @@ __myevic__ void ShowMainView()
 				{
 					DrawFillRect( 0, 48, 63, h, 0 );
 				}
-				DrawLOGO( 0, dfStatus.logomid ? 46 : 0 );
+				DrawLOGO( 0, dfStatus.logomid ? 50 : 0 );
 			}
 		}
 	}
