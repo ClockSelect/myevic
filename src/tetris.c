@@ -288,6 +288,12 @@ void DrawDot(int X, int Y, uint8_t dot) {
     DrawFillRect(X, Y, X + 4, Y + 4, dot);
 }
 
+void DrawHole(int X, int Y) {
+    X = oledX(X);
+    Y = oledY(Y);
+    DrawFillRect(X + 1, Y + 1, X + 3, Y + 3, 0);
+}
+
 void DrawBoard() {
     //21
     // .    0..3
@@ -311,8 +317,8 @@ void DrawTTCup() {
     //DrawHLine( const int x1, const int y, const int x2, const int color )
     DrawHLine(0, 127, 62, 1);
     //DrawVLine( const int x, const int y1, const int y2, const int color )
-    DrawVLine(0, 7, 127, 1);
-    DrawVLine(62, 7, 127, 1);
+    DrawVLine(0, 8, 127, 1);
+    DrawVLine(62, 8, 127, 1);
 }
 
 int CheckCollision() {
@@ -470,14 +476,16 @@ void CompletedLines() {
             //make line values 3's and render
             for (int c = 2; c < 12; c++) {
                 tetrisScreen[c][rowCheck] = 3; //to del
+                 DrawHole(c, rowCheck); 
+                 DisplayRefresh();
             }
             //  bottomRow = rowCheck - 1; ?
             linesProcessed++;
             // animation 
         }
-        DrawBoard();
+       DrawBoard();
     }
-
+    
     if (linesProcessed) {
 
         clearedLines = linesProcessed;
@@ -588,8 +596,8 @@ void DrawLandedPiece() {
         pieceRow++;
     }
 
-    FastMove += noRotate * 10;
-    FastMove += noShift * 10;
+    if (CurPieceNumber) FastMove += noRotate * 10; //score bonus
+    FastMove += noShift * 20;
     noRotate = 1;
     noShift = 1;
 
@@ -806,8 +814,8 @@ void ttGame() {
             UpdateDFTimer = 50;
         }
 
-        ClearScreenBuffer();
-        DisplayRefresh();
+        //ClearScreenBuffer();
+        //DisplayRefresh();
         ttDeleteTimeout(ttCurrentTimeout);
         ttCreateTimeout(ttStartScreen + 1);
 
@@ -846,7 +854,7 @@ void ttStartGame() {
         gFlags.refresh_display = 1;
 
         NoEventTimer = 0;
-        SleepTimer = 3000;
+        SleepTimer = 0;
 
         ttInitTimeouts();
         ClearScreenBuffer();
