@@ -53,25 +53,25 @@ __myevic__ void DrawMode()
 		switch ( dfMode )
 		{
 			case 0:
-				DrawString( String_TEMP, 0, 2 );
+				DrawString( String_TEMP, 10, 0 );
 				break;
 			case 1:
-				DrawString( String_TEMP, 0, 2 );
+				DrawString( String_TEMP, 10, 0 );
 				break;
 			case 2:
-				DrawString( String_TEMP, 0, 2 );
+				DrawString( String_TEMP, 10, 0 );
 				break;
 			case 3:
-				DrawString( String_TCR, 0, 2 );
+				DrawString( String_TCR, 1, 0 );
 				break;
 			case 4:
-				DrawString( String_POWER, 0, 2 );
+				DrawStringCentered( String_POWER, 0 );
 				break;
 			case 5:
-				DrawString( String_BYPASS, 0, 2 );
+				DrawStringCentered( String_BYPASS, 0 );
 				break;
 			case 6:
-				DrawString( String_SMART, 13, 4 );
+				DrawStringCentered( String_SMART, 0 );
 				break;
 			default:
 				break;
@@ -83,21 +83,21 @@ __myevic__ void DrawMode()
 		switch ( dfMode )
 		{
 			case 0:
-				DrawString( String_NI, 32, 2 );
+				DrawString( String_NI, 42, 0 );
 				break;
 			case 1:
-				DrawString( String_TI, 32, 2 );
+				DrawString( String_TI, 42, 0 );
 				break;
 			case 2:
-				DrawString( String_SS, 32, 2 );
-				DrawImage( 48, 3, 0x04 );
-				DrawImage( 54, 3, 0x02 );
-				DrawImage( 59, 3, 0x07 );
+				DrawString( String_SS, 42 , 0 );
+				//DrawImage( 48, 3, 0x04 );
+				//DrawImage( 54, 3, 0x02 );
+				//DrawImage( 59, 3, 0x07 );
 				break;
 			case 3:
-				DrawValue( 25, 2, dfTCRM[dfTCRIndex], 0, 0x0B, 3 );
-				DrawImage( 49, 2, 0xA8 );
-				DrawValue( 57, 2, dfTCRIndex + 1, 0, 0x0B, 1 );
+				DrawValue( 26, 0, dfTCRM[dfTCRIndex], 0, 0x0B, 3 );
+				DrawImage( 49, 0, 0xA8 );
+				DrawValue( 57, 0, dfTCRIndex + 1, 0, 0x0B, 1 );
 				break;
 			default:
 				break;
@@ -490,7 +490,7 @@ __myevic__ void DrawPower( int pwr )
 		yp = 13;
 
 		DrawValue( 5, 13, pwr, 1, 0x48, 2 );
-		DrawImage( 45, 18, 0xB9 );
+		DrawImage( 46, 19, 0xB9 );
 	}
 	else
 	{
@@ -507,7 +507,7 @@ __myevic__ void DrawPower( int pwr )
 		//	DrawValue( 0, 18, pwr, 1, 0x29, 4 );
 		}
 
-		DrawImage( 54, 26, 0x98 );
+		DrawImage( 54, 27, 0x98 );
 	}
 
 	if ( ISMODEVW(dfMode) )
@@ -687,22 +687,22 @@ __myevic__ void ShowMainView()
 				anim3d( 1 );
 			}
 			else if ( dfStatus.clock )
-			{
+			{                                
 				if ( dfStatus.digclk )
 				{
-					DrawDigitClock( 63 );
+					DrawDigitClock( 58 );
 				}
 				else
-				{
-					DrawFillRect( 0, 44, 63, 127, 0 );
-					DrawClock( 54 );
+				{	
+                                        DrawFillRect( 0, 44, 63, 127, 0 );
+					DrawClock( 54 );                         
 				}
 			}
 			else
 			{
-				DrawInfoLines();
-			}
-		}
+			if ( !dfStatus.logomid || (dfStatus.logomid && HideLogo) ) DrawInfoLines();	
+                        }
+                }
 
 		if (( Screen == 1 ) && ( !HideLogo ))
 		{
@@ -710,11 +710,14 @@ __myevic__ void ShowMainView()
 
 			if ( h > 0 )
 			{
+                                if (dfStatus.clock) DrawFillRect( 0, 48, 63, 106, 0 );
 				if ( h > 40 )
-				{
-					DrawFillRect( 0, 48, 63, h, 0 );
-				}
-				DrawLOGO( 0, dfStatus.logomid ? 46 : 0 );
+				{	
+                                    
+                                        DrawLOGO( 0, dfStatus.logomid ? 50 : 0 );
+				} else {
+                                        DrawLOGO( 0, dfStatus.logomid ? 56 : 0 );
+                                }
 			}
 		}
 	}

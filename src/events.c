@@ -8,6 +8,7 @@
 #include "atomizer.h"
 #include "battery.h"
 #include "flappy.h"
+#include "tetris.h"
 #include "timers.h"
 #include "meusbd.h"
 
@@ -393,6 +394,14 @@ __myevic__ void GetUserInput()
 						case CLICK_ACTION_PROFILE:
 							FireClicksEvent = EVENT_NEXT_PROFILE;	// Cycle profile
 							break;
+                                                        
+                                                case CLICK_ACTION_TETRIS:
+							FireClicksEvent = EVENT_TETRIS; // tetris
+							break;
+                                                        
+                                                case CLICK_ACTION_GAME:
+							FireClicksEvent = 41;	// Game
+							break;
 					}
 					if ( dfStatus.off )
 					{
@@ -483,17 +492,28 @@ __myevic__ void GetUserInput()
 			}
 			else if ( !dfStatus.off )
 			{
-				if ( !gFlags.playing_fb )
+				if ( !gFlags.playing_fb && !gFlags.playing_tt)
 				{
 					Event = EVENT_ENTER_MENUS;
 				}
 				else
 				{
+                                    if ( gFlags.playing_fb)
+                                    {
 					gFlags.playing_fb = 0;
 					Event = 0;
 					fbInitTimeouts();
 					MainView();
-				}
+                                    }
+                                    if ( gFlags.playing_tt)
+                                    {
+					gFlags.playing_tt = 0;
+					Event = 0;
+					ttInitTimeouts();
+					MainView();
+                                    }
+
+				}                                
 			}
 		}
 	}
@@ -1269,7 +1289,21 @@ __myevic__ int CustomEvents()
 			EditModeTimer = 3000;
 			EditItemIndex = 0;
 			break;
-
+                        
+		case 40:
+			SetScreen( 107, 30 );
+			EditModeTimer = 3000;
+			EditItemIndex = 0;
+			break;
+                        
+                case 41:
+			fbStartGame();
+			break;
+                        
+                case EVENT_TETRIS:
+ 			ttStartGame();
+			break;
+                        
 		default:
 			vret = 0;
 			break;

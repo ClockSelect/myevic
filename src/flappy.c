@@ -47,8 +47,8 @@ extern const uint8_t	fbBird0[];
 extern const uint8_t	fbBird1[];
 extern const uint8_t	fbBird2[];
 extern const uint8_t	fbBirdDead[];
-extern const uint8_t	fbFont[95][16];
-
+extern const uint8_t	fbFont[16][16];
+extern const uint8_t	fbFontDigit[10][16];
 //-------------------------------------------------------------------------
 
 #define FB_NUM_TIMERS 3
@@ -244,11 +244,15 @@ __myevic__ void fbDrawSprite( int x, int y, int w, int h, const uint8_t bitmap[]
 
 //=========================================================================
 //----- (00007F9C) --------------------------------------------------------
-__myevic__ void fbDrawChar( int x, int y, const char c )
+__myevic__ void fbDrawChar( int x, int y, const uint8_t c )
 {
-	fbDrawSprite( x, y, 8, 16, fbFont[c-32] );
+	fbDrawSprite( x, y, 8, 16, fbFont[c] );
 }
 
+__myevic__ void fbDrawDigit( int x, int y, const uint8_t c )
+{
+	fbDrawSprite( x, y, 8, 16, fbFontDigit[c] );
+}
 
 //=========================================================================
 //----- (00007FB8) --------------------------------------------------------
@@ -281,7 +285,7 @@ __myevic__ void fbDrawNumber( int x, int y, int nd, int v )
 				break;
 		}
 
-		fbDrawChar( x, y, '0' + d );
+		fbDrawDigit( x, y, d );
 		x += 8;
 	}
 }
@@ -289,7 +293,7 @@ __myevic__ void fbDrawNumber( int x, int y, int nd, int v )
 
 //=========================================================================
 //----- (0000803E) --------------------------------------------------------
-__myevic__ void fbDrawText( int x, int y, const char *s )
+__myevic__ void fbDrawText( int x, int y, const uint8_t *s )
 {
 	for ( ; *s ; ++s )
 	{
@@ -486,8 +490,13 @@ __myevic__ void fbDeathScreen()
 			fbDrawColumn( &fbColumn3 );
 			fbDrawRect( 26, 16, 98, 52, 0, 1 );
 			fbDrawRect( 26, 16, 98, 52, 1, 0 );
-			fbDrawText( 27, 18, "SCORE" );
-			fbDrawText( 27, 36, "BEST" );
+			//fbDrawText( 27, 18, "SCORE" );
+			//fbDrawText( 27, 36, "BEST" );
+                        const uint8_t Str_BS [] = { 2, 5, 12, 13, 0 };
+                        const uint8_t Str_SC [] = { 12, 3, 9, 11, 5, 0 };
+                        fbDrawText( 27, 18, Str_SC );
+			fbDrawText( 27, 36, Str_BS );
+                        
 			fbDrawNumber( 71, 18, fbNumDigits( fbScore ), fbScore );
 			fbDrawNumber( 71, 36, fbNumDigits( dfFBBest ), dfFBBest );
 			DisplayRefresh();
@@ -658,7 +667,10 @@ __myevic__ void fbStartScreen()
 			fbAnimStep = 1;
 		}
 		fbSetBirdColumn( 100 );
-		fbDrawText( 10, fbBirdLine + 16, "Flappy Bird" );
+		//fbDrawText( 10, fbBirdLine + 16, "FLAPPY BIRD" );
+                const uint8_t Str_FB [] = { 6, 8, 1, 10, 10, 14, 15, 2, 7, 11, 4, 0 };
+                fbDrawText( 10, fbBirdLine + 16, Str_FB );
+                
 		fbBirdAnim( fbBirdLine + 16 );
 		DisplayRefresh();
 		fbCLSBuf();
@@ -698,7 +710,8 @@ __myevic__ void fbStartGame()
 		fbInitTimeouts();
 		ClearScreenBuffer();
 		DisplayRefresh();
-		fbBirdAnim( 24 );
+                fbAnimStep = 0;
+		//fbBirdAnim( 24 );
 		fbCreateTimeout( fbStartScreen + 1 );
 	}
 }

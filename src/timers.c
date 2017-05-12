@@ -6,6 +6,7 @@
 #include "battery.h"
 #include "atomizer.h"
 #include "flappy.h"
+#include "tetris.h"
 #include "display.h"
 #include "miscs.h"
 
@@ -118,6 +119,15 @@ __myevic__ void TMR2_IRQHandler()
 			  || (!(TMR2Counter % 10) && dfFBSpeed == 2) )
 			{
 				fbTickTimeouts();
+			}
+		}
+                if ( gFlags.playing_tt )
+		{
+			if ( (!(TMR2Counter % 20) && dfTTSpeed == 0)
+			  || (!(TMR2Counter % 10) && (dfTTSpeed == 1 || dfTTSpeed == 2)))
+			//  || (!(TMR2Counter % 5) && dfTTSpeed == 2) )  //5 10 15
+			{
+				ttTickTimeouts();
 			}
 		}
 	}

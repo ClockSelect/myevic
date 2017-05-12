@@ -119,6 +119,7 @@ extern const uint8_t String_Right[];
 extern const uint8_t String_Left[];
 extern const uint8_t String_Logo[];
 extern const uint8_t String_Game[];
+extern const uint8_t String_Tetris[];
 extern const uint8_t String_Easy[];
 extern const uint8_t String_Normal[];
 extern const uint8_t String_Hard[];
@@ -299,6 +300,15 @@ extern const uint8_t String_Enable[];
 extern const uint8_t String_Reset[];
 extern const uint8_t String_Splash[];
 
+//from display.c
+extern const uint8_t String_Sunday[];
+extern const uint8_t String_Monday[];
+extern const uint8_t String_Tuesday[];
+extern const uint8_t String_Wednesday[];
+extern const uint8_t String_Thursday[];
+extern const uint8_t String_Friday[];
+extern const uint8_t String_Saturday[];
+extern const uint8_t String_Survival[];
 
 //==============================================================================
 

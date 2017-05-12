@@ -183,6 +183,8 @@ typedef struct dfParams
 /* 00E0 */	uint16_t	Millis;
 /* 00E2 */	uint8_t		Profile;
 /* 00E3 */	int8_t		BVOffset[4];
+/* 00E7 */	uint16_t	TTBest;
+/* 00E9 */	uint8_t		TTSpeed;
 }
 dfParams_t;
 
@@ -349,6 +351,8 @@ extern dfStruct_t DataFlash;
 #define dfSavedCfgPwr	DFP(SavedCfgPwr)
 #define dfFBBest		DFP(FBBest)
 #define dfFBSpeed		DFP(FBSpeed)
+#define dfTTBest		DFP(TTBest)
+#define dfTTSpeed		DFP(TTSpeed)
 #define dfBattPC		DFP(BattPC)
 #define dfContrast		DFP(Contrast)
 #define dfModesSel		DFP(ModesSel)
