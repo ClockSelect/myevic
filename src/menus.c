@@ -660,6 +660,10 @@ __myevic__ int PreheatMEvent( int event )
 					if ( dfPreheatPwr < 10 ) dfPreheatPwr = 10;
 				}
 			}
+			else
+			{
+				gFlags.edit_value ^= 1;
+			}
 			UpdateDFTimer = 50;
 			gFlags.refresh_display = 1;
 			vret = 1;

@@ -1373,7 +1373,7 @@ const uint8_t ProfileFilter[32] =
 /* 0060 */	0b00000000,
 /* 0068 */	0b00000000,
 /* 0070 */	0b00000011,
-/* 0078 */	0b00000000,
+/* 0078 */	0b11110000,
 /* 0080 */	0b11101011,
 /* 0088 */	0b11111110,
 /* 0090 */	0b10000000,
@@ -1391,6 +1391,11 @@ const uint8_t ProfileFilter[32] =
 /* 00F0 */	0b00000000,
 /* 00F8 */	0b00000000
 };
+
+// Saved status bits
+// - Power curve enable state
+const uint32_t StatusFilter = 0b00010000000000000000000000000000;
+
 
 //-------------------------------------------------------------------------
 // Apply newly reloaded parameters
@@ -1427,9 +1432,17 @@ __myevic__ void LoadProfile( int p )
 		s = (uint8_t*)params;
 		d = (uint8_t*)DataFlash.params;
 
+		uint32_t new_status = *(uint32_t*)&s[offsetof(dfParams_t,Status)];
+		uint32_t old_status = *(uint32_t*)&d[offsetof(dfParams_t,Status)];
+
+		new_status &= StatusFilter;
+		old_status &= ~StatusFilter;
+
 		for ( idx = 0 ; idx < DATAFLASH_PARAMS_SIZE ; ++idx )
 			if ( ProfileFilter[idx/8] & ( 0x80 >> ( idx & 7 ) ) )
 				d[idx] = s[idx];
+
+		*(uint32_t*)&d[offsetof(dfParams_t,Status)] = old_status | new_status;
 
 		DFCheckValuesValidity();
 		ApplyParameters();
