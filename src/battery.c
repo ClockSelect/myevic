@@ -336,7 +336,7 @@ __myevic__ uint32_t ReadBatterySample( int nbat )
 	{
 		if ( nbat == 0 )
 		{
-			if ( ISVTWOMINI || ISEVICAIO )
+			if ( ISPRIMOMINI || ISVTWOMINI || ISEVICAIO )
 			{
 				sample = ADC_Read( 0 );
 			}

@@ -41,6 +41,7 @@ uint16_t	fmcCntrsIndex;
 
 const char pid_vtcmini	[8]	__PIDATTR__	= { 'E','0','5','2', 1, 1, 1, 0 };
 const char pid_vtwomini	[8]	__PIDATTR__	= { 'E','1','1','5', 1, 0, 1, 0 };
+const char pid_primomini[8]	__PIDATTR__	= { 'E','1','9','6', 1, 0, 0, 0 };
 const char pid_vtwo		[8]	__PIDATTR__	= { 'E','0','4','3', 1, 0, 1, 0 };
 const char pid_evicaio	[8]	__PIDATTR__	= { 'E','0','9','2', 1, 0, 1, 0 };
 const char pid_egripii	[8]	__PIDATTR__	= { 'E','0','8','3', 1, 0, 0, 0 };
@@ -66,6 +67,7 @@ const char pid_lpb		[8]	__PIDATTR__	= { 'W','0','4','3', 1, 0, 0, 0 };
 
 #define PID_VTCMINI		MAKEPID(pid_vtcmini)
 #define PID_VTWOMINI	MAKEPID(pid_vtwomini)
+#define PID_PRIMOMINI	MAKEPID(pid_primomini)
 #define PID_VTWO		MAKEPID(pid_vtwo)
 #define PID_EVICAIO		MAKEPID(pid_evicaio)
 #define PID_EGRIPII		MAKEPID(pid_egripii)
@@ -85,6 +87,7 @@ const char pid_lpb		[8]	__PIDATTR__	= { 'W','0','4','3', 1, 0, 0, 0 };
 
 #define HWV_VTCMINI		MAKEHWV(pid_vtcmini)
 #define HWV_VTWOMINI	MAKEHWV(pid_vtwomini)
+#define HWV_PRIMOMINI	MAKEHWV(pid_primomini)
 #define HWV_VTWO		MAKEHWV(pid_vtwo)
 #define HWV_EVICAIO		MAKEHWV(pid_evicaio)
 #define HWV_EGRIPII		MAKEHWV(pid_egripii)
@@ -153,6 +156,13 @@ __myevic__ void SetProductID()
 			dfMaxHWVersion = HWV_VTWOMINI;
 			DFMagicNumber = 0x10;
 			BoxModel = BOX_VTWOMINI;
+			break;
+		}
+		else if ( u32Data == PID_PRIMOMINI )
+		{
+			dfMaxHWVersion = HWV_PRIMOMINI;
+			DFMagicNumber = 0x11;
+			BoxModel = BOX_PRIMOMINI;
 			break;
 		}
 		else if ( u32Data == PID_VTWO )
@@ -1048,7 +1058,7 @@ __myevic__ void InitDataFlash()
 	{
 		MaxPower = 600;
 	}
-	else if ( ISVTWO || ISEGRIPII || ISCUBOMINI || ISRXMINI )
+	else if ( ISPRIMOMINI || ISVTWO || ISEGRIPII || ISCUBOMINI || ISRXMINI )
 	{
 		MaxPower = 800;
 	}
@@ -1172,15 +1182,22 @@ __myevic__ int FMCEraseWritePage( uint32_t u32Addr, uint32_t *src )
 //----- (00002030) --------------------------------------------------------
 __myevic__ void DataFlashUpdateTick()
 {
-	if ( UpdateDFTimer )
+	if ( gFlags.firing )
 	{
-		if ( !--UpdateDFTimer )
-		UpdateDataFlash();
+		UpdateDFTimer = 50;
 	}
-	if ( UpdatePTTimer )
+	else
 	{
-		if ( !--UpdatePTTimer )
-		UpdatePTCounters();
+		if ( UpdateDFTimer )
+		{
+			if ( !--UpdateDFTimer )
+			UpdateDataFlash();
+		}
+		if ( UpdatePTTimer )
+		{
+			if ( !--UpdatePTTimer )
+			UpdatePTCounters();
+		}
 	}
 }
 
@@ -1217,6 +1234,10 @@ __myevic__ uint16_t GetShuntRezValue()
 				rez = 119;
 				break;
 		}
+	}
+	else if ( ISPRIMOMINI )
+	{
+		rez = 109;
 	}
 	else if ( ISEGRIPII || ISEVICBASIC )
 	{

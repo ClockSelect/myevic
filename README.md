@@ -7,6 +7,7 @@ This is myevic Custom Firmware.
   * eVic VTC Dual
   * eVic VTwo Mini
   * eVic VTwo
+  * eVic Primo Mini
   * eVic AIO
   * eVic Basic
   * eGrip II / Light
