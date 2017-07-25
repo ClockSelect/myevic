@@ -595,6 +595,9 @@ __myevic__ void DFCheckValuesValidity()
 
 		for ( i = 0 ; i < PWR_CURVE_PTS ; ++i )
 		{
+			if ( i > 0 && dfPwrCurve[i].time == 0 )
+				break;
+
 			if (( dfPwrCurve[i].time > 250 || dfPwrCurve[i].power > 200 )
 			||	( i == 0 && dfPwrCurve[i].time != 0 )
 			||	( i != 0 && dfPwrCurve[i].time <= dfPwrCurve[i-1].time ))
@@ -881,6 +884,8 @@ __myevic__ void UpdateDataFlash()
 
 //	dfAtoRez = AtoRez;
 //	dfAtoStatus = AtoStatus;
+
+	UpdateDFTimer = 0;
 
 	df = (uint8_t*)&DataFlash.params;
 
@@ -1499,4 +1504,52 @@ __myevic__ void SaveProfile()
 		FMC_DISABLE_ISP();
 		SYS_LockReg();
 	}
+}
+
+//-------------------------------------------------------------------------
+// Erase a profile
+//-------------------------------------------------------------------------
+__myevic__ void EraseProfile( int p )
+{
+	uint32_t offset;
+
+	uint8_t page[FMC_FLASH_PAGE_SIZE] __attribute__((aligned(4)));
+
+	offset = p * DATAFLASH_PARAMS_SIZE;
+
+	MemCpy( page, (void*)DATAFLASH_PROFILES_BASE, FMC_FLASH_PAGE_SIZE );
+	MemSet( page + offset, 0xFF, DATAFLASH_PARAMS_SIZE );
+
+	SYS_UnlockReg();
+	FMC_ENABLE_ISP();
+	FMC_ENABLE_AP_UPDATE();
+
+	FMCEraseWritePage( DATAFLASH_PROFILES_BASE, (uint32_t*)page );
+
+	FMC_DISABLE_AP_UPDATE();
+	FMC_DISABLE_ISP();
+	SYS_LockReg();
+}
+
+//-------------------------------------------------------------------------
+// Test a given profile
+//-------------------------------------------------------------------------
+__myevic__ int IsProfileValid( int p )
+{
+	uint32_t addr;
+	dfParams_t *params;
+
+	if ( p >= DATAFLASH_PROFILES_MAX )
+		return 0;
+
+	addr = DATAFLASH_PROFILES_BASE + p * DATAFLASH_PARAMS_SIZE;
+
+	params = (dfParams_t*)addr;
+
+	if (( params->Magic == DFMagicNumber ) && ( params->PCRC == CalcPageCRC( (uint32_t*)params ) ))
+	{
+		return 1;
+	}
+	
+	return 0;
 }

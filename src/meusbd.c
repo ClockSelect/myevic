@@ -870,7 +870,7 @@ __myevic__ uint32_t hidGetProfile( CMD_T *pCmd )
 
 	dfParams_t *p;
 
-	if ( u32ProfileNum == 0 )
+	if (( u32ProfileNum == 0 ) || ( u32ProfileNum == dfProfile + 1 ))
 	{
 		dfCRC = CalcPageCRC( DataFlash.params );
 		p = (dfParams_t*)&DataFlash.p;

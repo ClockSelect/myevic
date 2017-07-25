@@ -24,7 +24,7 @@
 #define DATAFLASH_PROFILES_END		DATAFLASH_PARAMS_BASE
 #define DATAFLASH_PROFILES_BASE		(DATAFLASH_PROFILES_END-DATAFLASH_PROFILES_SPACE)
 
-#define DATAFLASH_PROFILES_MAX		5
+#define DATAFLASH_PROFILES_MAX		7
 
 // Custom Logo space
 // Those addresses are hardcoded in Joyetech's custom logo utility so
@@ -412,6 +412,8 @@ extern uint16_t GetShuntRezValue();
 
 extern void LoadProfile( int p );
 extern void SaveProfile();
+extern void EraseProfile( int p );
+extern int	IsProfileValid( int p );
 extern void ApplyParameters();
 
 extern void ResetPowerCurve();

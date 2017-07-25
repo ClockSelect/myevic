@@ -700,34 +700,29 @@ __myevic__ void ShowMainView()
 					DrawClock( 54 );
 				}
 			}
-			else if ( ( h == 0 ) || !dfStatus.logomid )
+			else if ( ( h > 0 ) && dfStatus.logomid )
+			{
+				DrawLOGO( 0, ( 63 - h ) / 2 + 44 );
+			}
+			else
 			{
 				DrawInfoLines();
 			}
 		}
 
-		if (( Screen == 1 ) && ( h > 0 ))
+		if (( Screen == 1 ) && ( h > 0 ) && !dfStatus.logomid )
 		{
-			int l = 0;
+			if ( h > 43 )
+			{
+				DrawHLine( 0, 43, 63, 0 );
 
-			if ( dfStatus.logomid )
-			{
-				l = ( 63 - h ) / 2 + 44;
-			}
-			else
-			{
-				if ( h > 43 )
+				if ( h > 50 )
 				{
-					DrawHLine( 0, 43, 63, 0 );
-
-					if ( h > 50 )
-					{
-						DrawFillRect( 0, 52, 63, 70, 0 );
-					}
+					DrawFillRect( 0, 52, 63, 70, 0 );
 				}
 			}
 
-			DrawLOGO( 0, l );
+			DrawLOGO( 0, 0 );
 		}
 	}
 
