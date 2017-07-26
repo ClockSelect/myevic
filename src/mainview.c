@@ -730,12 +730,7 @@ __myevic__ void ShowMainView()
 				{
 					DrawFillRect( 0, 52, 63, 70, 0 );
 				}
-<<<<<<< HEAD
-				DrawLOGO( 0, dfStatus.logomid ? 50 : 0 );
-=======
->>>>>>> upstream/master
 			}
-
 			DrawLOGO( 0, 0 );
 		}
 	}
