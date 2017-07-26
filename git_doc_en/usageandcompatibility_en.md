@@ -57,4 +57,4 @@ So as long as you have no warning (a blinking "balance" on the battery icon or a
 
 -----
 
-Next Page: [Profiles](behaviourchanges_en.md)→
+Next Page: [Behaviour Changes](behaviourchanges_en.md)→
