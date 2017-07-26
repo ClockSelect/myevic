@@ -98,10 +98,10 @@ __myevic__ void ProfileMenuIDraw( int it, int line, int sel )
 
 	dfParams_t *p = (dfParams_t*)( DATAFLASH_PROFILES_BASE + it * DATAFLASH_PARAMS_SIZE );
 
-	DrawImage( 4, line+2, 0x0C + it );
+	DrawImage( 4, line+2, 0x0B + it + 1 );
 	if ( sel ) InvertRect( 0, line, 13, line+12 );
 
-	if ( p->PCRC == 0xFFFF )
+	if ( ( it != dfProfile ) && !IsProfileValid( it ) )
 		return;
 
 	uint8_t mode;
@@ -127,6 +127,8 @@ __myevic__ void ProfileMenuIDraw( int it, int line, int sel )
 	DrawString( modes[mode], 18, line+2 );
 	DrawValue( 34, line+2, rez, 2, 0x0B, 3 );
 	DrawImage( 56, line+2, 0xC0 );
+
+	if ( it == dfProfile ) InvertRect( 16, line, 63, line+12 );
 }
 
 
@@ -144,7 +146,15 @@ __myevic__ int ProfileMenuOnEvent( int event )
 			if ( CurrentMenuItem != dfProfile )
 			{
 				SaveProfile();
-				LoadProfile( CurrentMenuItem );
+				if ( IsProfileValid( CurrentMenuItem ) )
+				{
+					LoadProfile( CurrentMenuItem );
+				}
+				else
+				{
+					dfProfile = CurrentMenuItem;
+					SaveProfile();
+				}
 			}
 			Event = EVENT_EXIT_MENUS;
 			break;
@@ -152,10 +162,19 @@ __myevic__ int ProfileMenuOnEvent( int event )
 		case EVENT_LONG_FIRE:
 			if ( CurrentMenuItem != dfProfile )
 			{
-				SaveProfile();
-				dfProfile = CurrentMenuItem;
+				if ( IsProfileValid( CurrentMenuItem ) )
+				{
+					EraseProfile( CurrentMenuItem );
+				}
+				else
+				{
+					SaveProfile();
+					dfProfile = CurrentMenuItem;
+					SaveProfile();
+				}
+				gFlags.refresh_display = 1;
+				UpdateDFTimer = 50;
 			}
-			Event = EVENT_EXIT_MENUS;
 			break;
 
 		default:
@@ -664,7 +683,10 @@ __myevic__ int PreheatMEvent( int event )
 					if ( dfPreheatPwr < 10 ) dfPreheatPwr = 10;
 				}
 			}
-			gFlags.edit_value ^= 1;
+			else
+			{
+				gFlags.edit_value ^= 1;
+			}
 			UpdateDFTimer = 50;
 			gFlags.refresh_display = 1;
 			vret = 1;
@@ -2274,14 +2296,15 @@ const menu_t ProfileMenu =
 	0,
 	0,
 	ProfileMenuOnEvent+1,
-	6,
+	7,
 	{
 		{ 0, 0, 0, 0 },
 		{ 0, 0, 0, 0 },
 		{ 0, 0, 0, 0 },
 		{ 0, 0, 0, 0 },
 		{ 0, 0, 0, 0 },
-		{ String_Exit, 0, EVENT_EXIT_MENUS, 0 }
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 0, 0 }
 	}
 };
 

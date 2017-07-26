@@ -289,7 +289,7 @@ __myevic__ void SetBatteryModel()
 
 		if ( dfBatteryModel == 0 )
 		{
-			if ( ISCUBOMINI || ISEVICBASIC || ISEGRIPII )
+			if ( ISCUBOMINI || ISEVICBASIC || ISEGRIPII || ISVTWO )
 			{
 				Battery = &BatteryCuboMini;
 			}
@@ -336,7 +336,7 @@ __myevic__ uint32_t ReadBatterySample( int nbat )
 	{
 		if ( nbat == 0 )
 		{
-			if ( ISVTWOMINI || ISEVICAIO )
+			if ( ISPRIMOMINI || ISVTWOMINI || ISEVICAIO )
 			{
 				sample = ADC_Read( 0 );
 			}

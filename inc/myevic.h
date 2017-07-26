@@ -44,6 +44,7 @@ enum
 {
 	BOX_VTCMINI,
 	BOX_VTWOMINI,
+	BOX_PRIMOMINI,
 	BOX_VTWO,
 	BOX_PRESA75W,
 	BOX_WRX75TC,
@@ -63,6 +64,7 @@ enum
 
 #define ISVTCMINI		(BoxModel==BOX_VTCMINI)
 #define ISVTWOMINI		(BoxModel==BOX_VTWOMINI)
+#define ISPRIMOMINI		(BoxModel==BOX_PRIMOMINI)
 #define ISVTWO			(BoxModel==BOX_VTWO)
 #define ISPRESA75W		(BoxModel==BOX_PRESA75W)
 #define ISPRESA100W		(BoxModel==BOX_PRESA100W)

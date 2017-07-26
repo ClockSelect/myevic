@@ -684,6 +684,8 @@ __myevic__ void ShowMainView()
 
 		ShowBattery();
 
+		int h = ( dfStatus.nologo || HideLogo ) ? 0 : GetLogoHeight();
+
 		if ( Screen == 2 || EditModeTimer )
 		{
 			DrawInfoLines();
@@ -706,6 +708,10 @@ __myevic__ void ShowMainView()
 					DrawClock( 54 );
 				}
 			}
+			else if ( ( h > 0 ) && dfStatus.logomid )
+			{
+				DrawLOGO( 0, ( 63 - h ) / 2 + 44 );
+			}
 			else
 			{
 				if ( !dfStatus.logomid || dfStatus.logomid && HideLogo ) {
@@ -714,18 +720,23 @@ __myevic__ void ShowMainView()
 			}
 		}
 
-		if (( Screen == 1 ) && ( !HideLogo ))
+		if (( Screen == 1 ) && ( h > 0 ) && !dfStatus.logomid )
 		{
-			int h = GetLogoHeight();
-
-			if ( h > 0 )
+			if ( h > 43 )
 			{
-				if ( h > 40 )
+				DrawHLine( 0, 43, 63, 0 );
+
+				if ( h > 50 )
 				{
-					DrawFillRect( 0, 48, 63, h, 0 );
+					DrawFillRect( 0, 52, 63, 70, 0 );
 				}
+<<<<<<< HEAD
 				DrawLOGO( 0, dfStatus.logomid ? 50 : 0 );
+=======
+>>>>>>> upstream/master
 			}
+
+			DrawLOGO( 0, 0 );
 		}
 	}
 

@@ -348,8 +348,8 @@ __myevic__ void StopFire()
 
 		RTCWriteRegister( RTCSPARE_VV_MJOULES, MilliJoules );
 
-		if (( FireDuration * 10 >= dfPreheatTime )
-		||  ( dfStatus.pcurve && FireDuration > 10 ))
+		if (( dfPreheatTime && ( FireDuration * 10 >= dfPreheatTime ))
+		||  ( dfStatus.pcurve && ( FireDuration > 10 )))
 		{
 			PreheatDelay = dfPHDelay * 100;
 		}

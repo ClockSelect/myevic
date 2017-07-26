@@ -41,6 +41,7 @@ uint16_t	fmcCntrsIndex;
 
 const char pid_vtcmini	[8]	__PIDATTR__	= { 'E','0','5','2', 1, 1, 1, 0 };
 const char pid_vtwomini	[8]	__PIDATTR__	= { 'E','1','1','5', 1, 0, 1, 0 };
+const char pid_primomini[8]	__PIDATTR__	= { 'E','1','9','6', 1, 0, 0, 0 };
 const char pid_vtwo		[8]	__PIDATTR__	= { 'E','0','4','3', 1, 0, 1, 0 };
 const char pid_evicaio	[8]	__PIDATTR__	= { 'E','0','9','2', 1, 0, 1, 0 };
 const char pid_egripii	[8]	__PIDATTR__	= { 'E','0','8','3', 1, 0, 0, 0 };
@@ -66,6 +67,7 @@ const char pid_lpb		[8]	__PIDATTR__	= { 'W','0','4','3', 1, 0, 0, 0 };
 
 #define PID_VTCMINI		MAKEPID(pid_vtcmini)
 #define PID_VTWOMINI	MAKEPID(pid_vtwomini)
+#define PID_PRIMOMINI	MAKEPID(pid_primomini)
 #define PID_VTWO		MAKEPID(pid_vtwo)
 #define PID_EVICAIO		MAKEPID(pid_evicaio)
 #define PID_EGRIPII		MAKEPID(pid_egripii)
@@ -85,6 +87,7 @@ const char pid_lpb		[8]	__PIDATTR__	= { 'W','0','4','3', 1, 0, 0, 0 };
 
 #define HWV_VTCMINI		MAKEHWV(pid_vtcmini)
 #define HWV_VTWOMINI	MAKEHWV(pid_vtwomini)
+#define HWV_PRIMOMINI	MAKEHWV(pid_primomini)
 #define HWV_VTWO		MAKEHWV(pid_vtwo)
 #define HWV_EVICAIO		MAKEHWV(pid_evicaio)
 #define HWV_EGRIPII		MAKEHWV(pid_egripii)
@@ -153,6 +156,13 @@ __myevic__ void SetProductID()
 			dfMaxHWVersion = HWV_VTWOMINI;
 			DFMagicNumber = 0x10;
 			BoxModel = BOX_VTWOMINI;
+			break;
+		}
+		else if ( u32Data == PID_PRIMOMINI )
+		{
+			dfMaxHWVersion = HWV_PRIMOMINI;
+			DFMagicNumber = 0x11;
+			BoxModel = BOX_PRIMOMINI;
 			break;
 		}
 		else if ( u32Data == PID_VTWO )
@@ -585,6 +595,9 @@ __myevic__ void DFCheckValuesValidity()
 
 		for ( i = 0 ; i < PWR_CURVE_PTS ; ++i )
 		{
+			if ( i > 0 && dfPwrCurve[i].time == 0 )
+				break;
+
 			if (( dfPwrCurve[i].time > 250 || dfPwrCurve[i].power > 200 )
 			||	( i == 0 && dfPwrCurve[i].time != 0 )
 			||	( i != 0 && dfPwrCurve[i].time <= dfPwrCurve[i-1].time ))
@@ -872,6 +885,8 @@ __myevic__ void UpdateDataFlash()
 //	dfAtoRez = AtoRez;
 //	dfAtoStatus = AtoStatus;
 
+	UpdateDFTimer = 0;
+
 	df = (uint8_t*)&DataFlash.params;
 
 	for ( idx = 0 ; idx < DATAFLASH_PARAMS_SIZE ; ++idx )
@@ -1048,7 +1063,7 @@ __myevic__ void InitDataFlash()
 	{
 		MaxPower = 600;
 	}
-	else if ( ISVTWO || ISEGRIPII || ISCUBOMINI || ISRXMINI )
+	else if ( ISPRIMOMINI || ISVTWO || ISEGRIPII || ISCUBOMINI || ISRXMINI )
 	{
 		MaxPower = 800;
 	}
@@ -1172,15 +1187,22 @@ __myevic__ int FMCEraseWritePage( uint32_t u32Addr, uint32_t *src )
 //----- (00002030) --------------------------------------------------------
 __myevic__ void DataFlashUpdateTick()
 {
-	if ( UpdateDFTimer )
+	if ( gFlags.firing )
 	{
-		if ( !--UpdateDFTimer )
-		UpdateDataFlash();
+		UpdateDFTimer = 50;
 	}
-	if ( UpdatePTTimer )
+	else
 	{
-		if ( !--UpdatePTTimer )
-		UpdatePTCounters();
+		if ( UpdateDFTimer )
+		{
+			if ( !--UpdateDFTimer )
+			UpdateDataFlash();
+		}
+		if ( UpdatePTTimer )
+		{
+			if ( !--UpdatePTTimer )
+			UpdatePTCounters();
+		}
 	}
 }
 
@@ -1217,6 +1239,10 @@ __myevic__ uint16_t GetShuntRezValue()
 				rez = 119;
 				break;
 		}
+	}
+	else if ( ISPRIMOMINI )
+	{
+		rez = 109;
 	}
 	else if ( ISEGRIPII || ISEVICBASIC )
 	{
@@ -1352,7 +1378,7 @@ const uint8_t ProfileFilter[32] =
 /* 0060 */	0b00000000,
 /* 0068 */	0b00000000,
 /* 0070 */	0b00000011,
-/* 0078 */	0b00000000,
+/* 0078 */	0b11110000,
 /* 0080 */	0b11101011,
 /* 0088 */	0b11111110,
 /* 0090 */	0b10000000,
@@ -1370,6 +1396,11 @@ const uint8_t ProfileFilter[32] =
 /* 00F0 */	0b00000000,
 /* 00F8 */	0b00000000
 };
+
+// Saved status bits
+// - Power curve enable state
+const uint32_t StatusFilter = 0b00010000000000000000000000000000;
+
 
 //-------------------------------------------------------------------------
 // Apply newly reloaded parameters
@@ -1406,9 +1437,17 @@ __myevic__ void LoadProfile( int p )
 		s = (uint8_t*)params;
 		d = (uint8_t*)DataFlash.params;
 
+		uint32_t new_status = *(uint32_t*)&s[offsetof(dfParams_t,Status)];
+		uint32_t old_status = *(uint32_t*)&d[offsetof(dfParams_t,Status)];
+
+		new_status &= StatusFilter;
+		old_status &= ~StatusFilter;
+
 		for ( idx = 0 ; idx < DATAFLASH_PARAMS_SIZE ; ++idx )
 			if ( ProfileFilter[idx/8] & ( 0x80 >> ( idx & 7 ) ) )
 				d[idx] = s[idx];
+
+		*(uint32_t*)&d[offsetof(dfParams_t,Status)] = old_status | new_status;
 
 		DFCheckValuesValidity();
 		ApplyParameters();
@@ -1465,4 +1504,52 @@ __myevic__ void SaveProfile()
 		FMC_DISABLE_ISP();
 		SYS_LockReg();
 	}
+}
+
+//-------------------------------------------------------------------------
+// Erase a profile
+//-------------------------------------------------------------------------
+__myevic__ void EraseProfile( int p )
+{
+	uint32_t offset;
+
+	uint8_t page[FMC_FLASH_PAGE_SIZE] __attribute__((aligned(4)));
+
+	offset = p * DATAFLASH_PARAMS_SIZE;
+
+	MemCpy( page, (void*)DATAFLASH_PROFILES_BASE, FMC_FLASH_PAGE_SIZE );
+	MemSet( page + offset, 0xFF, DATAFLASH_PARAMS_SIZE );
+
+	SYS_UnlockReg();
+	FMC_ENABLE_ISP();
+	FMC_ENABLE_AP_UPDATE();
+
+	FMCEraseWritePage( DATAFLASH_PROFILES_BASE, (uint32_t*)page );
+
+	FMC_DISABLE_AP_UPDATE();
+	FMC_DISABLE_ISP();
+	SYS_LockReg();
+}
+
+//-------------------------------------------------------------------------
+// Test a given profile
+//-------------------------------------------------------------------------
+__myevic__ int IsProfileValid( int p )
+{
+	uint32_t addr;
+	dfParams_t *params;
+
+	if ( p >= DATAFLASH_PROFILES_MAX )
+		return 0;
+
+	addr = DATAFLASH_PROFILES_BASE + p * DATAFLASH_PARAMS_SIZE;
+
+	params = (dfParams_t*)addr;
+
+	if (( params->Magic == DFMagicNumber ) && ( params->PCRC == CalcPageCRC( (uint32_t*)params ) ))
+	{
+		return 1;
+	}
+	
+	return 0;
 }

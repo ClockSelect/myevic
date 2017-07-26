@@ -57,3 +57,4 @@ driver/*.sys
 *.map
 genuine/
 wrkspc.txt
+.vscode/*
