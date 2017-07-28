@@ -4,7 +4,7 @@ Questo è il Custom Firmware myevic.
 #### Basato su:
 *Original VTC Mini 3.03 firmware*
 
-#### Funzionalità principali:
+
 L'interfaccia utente del firmware myevic non è molto diversa da quella del firmware ufficiale.
 Sono state aggiunte molte altre funzioni tramite i menù di sistema. 
 Pertanto vi invitiamo a leggere la seguente documentazione.
