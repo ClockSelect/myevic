@@ -1253,7 +1253,7 @@ __myevic__ void EventHandler()
 							break;
 
 						case 4:
-							if ( ++dfAPT > 8 ) dfAPT = 0;
+							if ( ++dfAPT > 9 ) dfAPT = 0;
 							break;
 
 						case 5:
@@ -1261,13 +1261,20 @@ __myevic__ void EventHandler()
 							{
 								dfStatus.battpc = 1;
 								dfStatus.battv = 0;
+								dfStatus.battvs = 0;
 							}
-							else if ( !dfStatus.battv )
+							else if ( dfStatus.battpc && !dfStatus.battv && !dfStatus.battvs )
 							{
 								dfStatus.battv = 1;
 							}
+							else if ( dfStatus.battpc && dfStatus.battv && !dfStatus.battvs && NumBatteries >= 2 ) 
+							{
+								dfStatus.battv = 0;
+								dfStatus.battvs = 1;
+							}
 							else
 							{
+								dfStatus.battvs = 0;
 								dfStatus.battv = 0;
 								dfStatus.battpc = 0;
 							}

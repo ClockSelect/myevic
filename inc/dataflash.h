@@ -83,6 +83,7 @@ typedef struct
 /* 04000000 */	unsigned int chkmodeoff:1;
 /* 08000000 */	unsigned int dfmt2:1;
 /* 10000000 */	unsigned int pcurve:1;
+/* 20000000 */	unsigned int battvs:1;
 
 // Do not exceed 32 bits;
 // if you may do so, create another bitfield.

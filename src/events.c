@@ -393,6 +393,10 @@ __myevic__ void GetUserInput()
 						case CLICK_ACTION_PROFILE:
 							FireClicksEvent = EVENT_NEXT_PROFILE;	// Cycle profile
 							break;
+
+						case CLICK_ACTION_GAME:
+							FireClicksEvent = 40;	// Game
+							break;
 					}
 					if ( dfStatus.off )
 					{
@@ -1264,6 +1268,10 @@ __myevic__ int CustomEvents()
 		case EVENT_NEXT_PROFILE:
 			LoadProfile( ( dfProfile + 1 ) % DATAFLASH_PROFILES_MAX );
 			ShowProfNum = 30;
+			break;
+
+		case 40: // Game
+			fbStartGame();
 			break;
 
 		case EVENT_POWER_CURVE:
