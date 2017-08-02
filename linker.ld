@@ -6,10 +6,14 @@ MEMORY {
 
 /* Library configurations */
 GROUP(
-	armv7e-m/libnosys.a
+/*	armv7e-m/libnosys.a
 	armv7e-m/libgcc.a
 	armv7e-m/libc.a
-	armv7e-m/libm.a
+	armv7e-m/libm.a		*/
+	v7e-m/libnosys.a
+	v7e-m/libgcc.a
+	v7e-m/libc.a
+	v7e-m/libm.a
 )
 
 ENTRY(Reset_Handler)

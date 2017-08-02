@@ -98,7 +98,8 @@ ifneq ($(ARMGCC),)
 	ifdef CC_IS_CLANG
 		CFLAGS += -target armv7em-none-eabi -fshort-enums
 
-		AEABI_COUNT := $(shell arm-none-eabi-nm -g $(ARMGCC)/arm-none-eabi/lib/armv7e-m/libc.a | grep -Ec 'T __aeabi_mem(set|clr)[48]?$$')
+#		AEABI_COUNT := $(shell arm-none-eabi-nm -g $(ARMGCC)/arm-none-eabi/lib/armv7e-m/libc.a | grep -Ec 'T __aeabi_mem(set|clr)[48]?$$')
+		AEABI_COUNT := $(shell arm-none-eabi-nm -g $(ARMGCC)/arm-none-eabi/lib/thumb/v7e-m/libc.a | grep -Ec 'T __aeabi_mem(set|clr)[48]?$$')
 		ifeq ($(AEABI_COUNT), 0)
 			# __aeabi_memset* and __aeabi_memclr* are not exported by libc
 			# We provide our own implementations
@@ -151,9 +152,9 @@ GCC_VERSION := $(shell arm-none-eabi-gcc -dumpversion)
 
 LIBDIRS := -L$(ARMGCC)/arm-none-eabi/lib \
 	-L$(ARMGCC)/arm-none-eabi/newlib \
-	-L$(ARMGCC)/lib/arm-none-eabi/newlib \
+	-L$(ARMGCC)/arm-none-eabi/newlib/thumb \
 	-L$(ARMGCC)/gcc/arm-none-eabi/$(GCC_VERSION) \
-	-L$(ARMGCC)/lib/gcc/arm-none-eabi/$(GCC_VERSION)
+	-L$(ARMGCC)/gcc/arm-none-eabi/$(GCC_VERSION)/thumb
 
 CFLAGS += -Wall -mcpu=$(CPU) -mfpu=$(FPU) -mthumb -Os -fdata-sections -ffunction-sections -std=c99
 CFLAGS += -fno-builtin-printf

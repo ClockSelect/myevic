@@ -18,6 +18,7 @@
   * Reuleaux RX2/3
   * Reuleaux RXmini
   * Reuleaux RX300
+  * Sinuous P228
 * Others
   * Vaponaute La Petite Box
   

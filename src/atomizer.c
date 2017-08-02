@@ -141,7 +141,7 @@ __myevic__ void InitPWM()
 	BuckDuty = 0;
 	PWM_SET_CMR( PWM0, BBC_PWMCH_BUCK, 0 );
 
-	if ( ISVTCDUAL || ISCUBOID || ISCUBO200 || ISRX200S || ISRX23 || ISRX300 )
+	if ( ISVTCDUAL || ISCUBOID || ISCUBO200 || ISRX200S || ISRX23 || ISRX300 || ISPRIMO1 || ISPRIMO2 || ISPREDATOR )
 	{
 		PWM_ConfigOutputChannel( PWM0, BBC_PWMCH_CHARGER, BBC_PWM_FREQ, 0 );
 		PWM_EnableOutput( PWM0, 1 << BBC_PWMCH_CHARGER );
@@ -153,6 +153,14 @@ __myevic__ void InitPWM()
 		if ( ISCUBO200 || ISRX200S || ISRX23 || ISRX300 )
 		{
 			MaxChargerDuty = 512;
+		}
+		else if ( ISPRIMO1 )
+		{
+			MaxChargerDuty = 288;
+		}
+		else if ( ISPRIMO2 || ISPREDATOR )
+		{
+			MaxChargerDuty = 320;
 		}
 		else
 		{
@@ -306,7 +314,7 @@ __myevic__ void StopFire()
 	{
 		GPIO_SetMode( PD, GPIO_PIN_PIN1_Msk, GPIO_MODE_INPUT );
 	}
-	else if ( !ISCUBOID && !ISCUBO200 && !ISRX200S && !ISRX23 && !ISRX300 )
+	else if ( !ISCUBOID && !ISCUBO200 && !ISRX200S && !ISRX23 && !ISRX300 && !ISPRIMO1 && !ISPRIMO2 && !ISPREDATOR )
 	{
 		GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_INPUT );
 	}
@@ -691,8 +699,8 @@ __myevic__ void ReadAtomizer()
 		}
 
 		ADCShuntSum = ( ADCShuntSum1 + ADCShuntSum2 ) ? : 1;
-
-		AtoRezMilli = 13 * AtoShuntRez * ADCAtoSum / ( 3 * ( ADCShuntSum ) );
+		AtoRezMilli = 13 * AtoShuntRez * ADCAtoSum / ( 3 * ADCShuntSum );
+		if ( ISPRIMO1 || ISPRIMO2 || ISPREDATOR ) AtoRezMilli /= 2;
 
 		if ( gFlags.firing )
 		{
@@ -1365,11 +1373,11 @@ __myevic__ void SetAtoLimits()
 //----- (00006038) --------------------------------------------------------
 __myevic__ void ProbeAtomizer()
 {
-	if (( ISVTCDUAL && ( BatteryStatus == 2 || !PA3 ) )
-	||  ( ( ISCUBOID || ISCUBO200 || ISRX200S || ISRX23 || ISRX300 ) && ( BatteryStatus == 2 || !PF0 ) ))
+	if ( ( ISVTCDUAL && ( BatteryStatus == 2 || !PA3 ) )
+		|| ( ( ISCUBOID || ISCUBO200 || ISRX200S || ISRX23 || ISRX300 ) && ( BatteryStatus == 2 || !PF0 ) )
+		|| ( ( ISPRIMO1 || ISPRIMO2 || ISPREDATOR ) && ( BatteryStatus == 2 || !PD1 ) ))
 	{
 		AtoStatus = 0;
-//		myprintf( "Can't Probe: BS=%d PF0=%d\n", BatteryStatus, PF0 );
 	}
 	else
 	{
