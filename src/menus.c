@@ -2527,7 +2527,7 @@ __myevic__ int MenuDataAction( int event, const mdata_t *data )
 					if ( *p == desc->def1 )
 						break;
 
-					*p += desc->inc * ( KeyTicks >= 105 ) ? 10 : 1;
+					*p += desc->inc && ( KeyTicks >= 105 ) ? 10 : 1;
 
 					if ( *p > desc->max )
 					{
@@ -2545,7 +2545,7 @@ __myevic__ int MenuDataAction( int event, const mdata_t *data )
 					if ( *p == desc->def1 )
 						break;
 
-					*p += desc->inc * ( KeyTicks >= 105 ) ? 10 : 1;
+					*p += desc->inc && ( KeyTicks >= 105 ) ? 10 : 1;
 
 					if ( *p > desc->max )
 					{
@@ -2563,7 +2563,7 @@ __myevic__ int MenuDataAction( int event, const mdata_t *data )
 					if ( *p == desc->def1 )
 						break;
 
-					*p += desc->inc * ( KeyTicks >= 105 ) ? 10 : 1;
+					*p += desc->inc && ( KeyTicks >= 105 ) ? 10 : 1;
 
 					if ( *p > desc->max )
 					{
@@ -2594,7 +2594,7 @@ __myevic__ int MenuDataAction( int event, const mdata_t *data )
 					if ( *p == desc->def1 )
 						break;
 
-					uint16_t inc = desc->inc * ( KeyTicks >= 105 ) ? 10 : 1;
+					uint16_t inc = desc->inc && ( KeyTicks >= 105 ) ? 10 : 1;
 
 					if ( ( *p <= desc->min + inc ) || ( ( *p -= inc ) < desc->min ) )
 					{
@@ -2612,7 +2612,7 @@ __myevic__ int MenuDataAction( int event, const mdata_t *data )
 					if ( *p == desc->def1 )
 						break;
 
-					uint16_t inc = desc->inc * ( KeyTicks >= 105 ) ? 10 : 1;
+					uint16_t inc = desc->inc && ( KeyTicks >= 105 ) ? 10 : 1;
 
 					if ( ( *p -= inc ) < desc->min )
 					{
@@ -2630,7 +2630,7 @@ __myevic__ int MenuDataAction( int event, const mdata_t *data )
 					if ( *p == desc->def1 )
 						break;
 
-					uint16_t inc = desc->inc * ( KeyTicks >= 105 ) ? 10 : 1;
+					uint16_t inc = desc->inc && ( KeyTicks >= 105 ) ? 10 : 1;
 
 					if ( ( *p -= inc ) < desc->min )
 					{
