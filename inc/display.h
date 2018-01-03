@@ -31,10 +31,10 @@ extern uint8_t ScreenBuffer[];
 
 extern const image_t **Images;
 
-extern const image_t const *font0_1306[];
-extern const image_t const *font0_1327[];
-extern const image_t const *font1_1306[];
-extern const image_t const *font1_1327[];
+extern const image_t *font0_1306[];
+extern const image_t *font0_1327[];
+extern const image_t *font1_1306[];
+extern const image_t *font1_1327[];
 
 //-------------------------------------------------------------------------
 
