@@ -36,6 +36,8 @@ extern void qix_diddle(int16_t *ptr );
 
 extern void Snow( int );
 
+extern void AnimPwrBar( int );
+
 extern uint8_t LEDRed;
 extern uint8_t LEDGreen;
 extern uint8_t LEDBlue;

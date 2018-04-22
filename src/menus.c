@@ -492,6 +492,15 @@ __myevic__ void IFMenuIDraw( int it, int line, int sel )
 			DrawString( dfStatus.priopwr ? String_On : String_Off, 44, line+2 );
 			break;
 
+		case 6: // PwrBar
+			if ( dfStatus.priopwr ) {
+				// PwrBar doesn't work in PPwr mode; draw a lock icon.
+				DrawImage( 44, line+2, 0xC3 );
+			} else {
+				DrawString( dfStatus.pwrbar ? String_On : String_Off, 44, line+2 );
+			}
+			break;
+
 		default:
 			break;
 	}
@@ -553,6 +562,10 @@ __myevic__ void IFMenuOnClick()
 
 		case 5:	// TDom
 			dfStatus.priopwr ^= 1;
+			break;
+
+		case 6:	// PwrBar
+			if ( !dfStatus.priopwr ) dfStatus.pwrbar ^= 1;
 			break;
 
 		default: // Exit
@@ -2085,7 +2098,7 @@ const menu_t IFMenu =
 	0,
 	IFMenuOnClick+1,
 	0,
-	8,
+	9,
 	{
 		{ String_1Watt, 0, 0, 0 },
 		{ String_1C5F, 0, 0, 0 },
@@ -2093,6 +2106,7 @@ const menu_t IFMenu =
 		{ String_Font, 0, 0, 0 },
 		{ String_Temp, 0, 0, 0 },
 		{ String_PPwr, 0, 0, 0 },
+		{ String_PwrBar, 0, 0, 0 },
 		{ String_Clicks, &ClicksMenu, 0, MACTION_SUBMENU },
 		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}

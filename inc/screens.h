@@ -228,6 +228,7 @@ extern const uint8_t String_4[];
 extern const uint8_t String_OnOff[];
 extern const uint8_t String_ModePlus[];
 extern const uint8_t String_PPwr[];
+extern const uint8_t String_PwrBar[];
 extern const uint8_t String_Clicks[];
 extern const uint8_t String_BAT[];
 extern const uint8_t String_GEN[];
