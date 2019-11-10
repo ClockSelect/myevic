@@ -55,7 +55,7 @@ const Battery_t BatteryRXMini =
 	20
 };
 
-const Battery_t const Batteries[] =
+const Battery_t Batteries[] =
 {
 	// Generic 18650
 	{
