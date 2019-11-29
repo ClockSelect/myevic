@@ -723,6 +723,7 @@ __myevic__ void EventHandler()
 			if ( !gFlags.firing || LastInputs != 1 )
 				StopFire();
 			gFlags.refresh_display = 1;
+			gFlags.animpwrbar = 0; // Screen 2 may decide to set this.
 			Screen = 2;
 			ScreenDuration = 1;
 			return;

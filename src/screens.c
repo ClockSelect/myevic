@@ -38,8 +38,7 @@ void SetScreen( int screen, int duration )
 
 
 //=========================================================================
-// Called at a frequency of 10Hz except when firing in TC modes.
-// Called at a frequency of 2Hz when firing in TC modes.
+// Called at a frequency of 10Hz
 
 __myevic__ void DrawScreen()
 {
@@ -51,7 +50,11 @@ __myevic__ void DrawScreen()
 		CurrentFD = FireDuration;
 		ScreenDuration = ISMODETC(dfMode) ? 1 : 3;
 		TenthOfSecs = 0;
-		gFlags.refresh_display = 1;
+		// Refresh at 2Hz in TC mode, or 10Hz otherwise.
+		if ( !ISMODETC(dfMode) || FireDuration % 5 == 1 )
+		{
+			gFlags.refresh_display = 1;
+		}
 	}
 	else if ( ScreenRefreshTimer && !--ScreenRefreshTimer )
 	{
@@ -221,12 +224,7 @@ __myevic__ void DrawScreen()
 		gFlags.fading = 0;
 	}
 
-	if (( gFlags.firing ) && ISMODETC(dfMode))
-		TenthOfSecs += 5;
-	else
-		TenthOfSecs += 1;
-
-	if ( TenthOfSecs < 10 )
+	if ( ++TenthOfSecs < 10 )
 		return;
 
 	TenthOfSecs = 0;

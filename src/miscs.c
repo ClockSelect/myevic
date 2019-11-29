@@ -789,6 +789,59 @@ __myevic__ void Snow( int redraw )
 	}
 }
 
+//=========================================================================
+// Analog Power Bar
+//
+// When PwBar is enabled, the firing screen calls this (with first=1)
+// instead of drawing the "PWR" label.  It will also set animpwrbar=1,
+// to request updates (with first=0) at 100 Hz.
+//
+// It's important to clear animpwrbar before switching to Screen 2,
+// so that updates only occur under the expected constraints.
+//-------------------------------------------------------------------------
+
+__myevic__ void AnimPwrBar( int first )
+{
+	static const int LINE = 52;
+	static const int WIDTH = 24;
+	if ( first ) {
+		// Draw the tick marks.
+		for ( int x = 0; x <= WIDTH; x += 3 ) {
+			int h;
+			if ( x == 0 ) {
+				h = 2;
+			} else if ( x % 12 == 0 ) {
+				h = 1;
+			} else {
+				h = 0;
+			}
+			DrawVLine( x, LINE, LINE+h, 1 );
+			DrawVLine( x, LINE+9, LINE+9-h, 1 );
+		}
+	} else {
+		// Animate subsequent frames at 50 Hz.
+		static uint8_t tscaler = 0;
+		if ( ++tscaler < 2 ) return;
+		tscaler = 0;
+	}
+
+	// Zero the bar when not firing, because Screen 2 remains visible
+	// for ~1 second after firing stops.
+	const int pwr = gFlags.firing ? AtoPower( AtoVolts ) : 0;
+	const int pwrmax = dfTCPower;
+
+	int bar = ( pwr * WIDTH / pwrmax );
+	if ( bar < 0 ) bar = 0;
+	if ( bar > WIDTH ) bar = WIDTH;
+
+	DrawFillRect( 0, LINE+3, WIDTH, LINE+6, 0 );
+	DrawFillRect( 0, LINE+3, bar, LINE+6, 1 );
+
+	if ( !first ) {
+		DisplayRefresh();
+	}
+}
+
 
 //=========================================================================
 // LED Stuff
